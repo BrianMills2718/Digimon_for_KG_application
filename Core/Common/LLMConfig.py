@@ -12,7 +12,7 @@ from typing import Optional
 from pydantic import field_validator
 
 from Core.Common.Constants import CONFIG_ROOT, LLM_API_TIMEOUT, METAGPT_ROOT
-from metagpt.utils.yaml_model import YamlModel
+from Core.Utils.YamlModel import YamlModel
 
 
 class LLMType(Enum):
