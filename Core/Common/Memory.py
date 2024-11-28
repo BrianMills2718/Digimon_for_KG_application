@@ -11,7 +11,7 @@ from typing import DefaultDict, Iterable, Set
 from pydantic import BaseModel, Field, SerializeAsAny
 
 from Core.Common.Constants import IGNORED_MESSAGE_ID
-from metagpt.schema import Message
+from Core.Schema.Message import Message
 from Core.Common.Utils import any_to_str, any_to_str_set
 
 
