@@ -7,7 +7,6 @@ from pydantic import (
     model_serializer,
     model_validator,
 )
-
 class CommunityReportsResult:
     """Community reports result class definition."""
     report_string: str

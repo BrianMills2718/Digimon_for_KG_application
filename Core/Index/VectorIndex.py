@@ -20,6 +20,8 @@ from colbert.data import Queries
 from Core.Index import get_index
 from Core.Common.Utils import mdhash_id
 from Core.Index.Schema import ColBertIndexConfig
+
+
 class VectorIndex():
     """VectorIndex is designed to be simple and straightforward.
 
@@ -27,27 +29,27 @@ class VectorIndex():
     """
 
     def __init__(
-        self, config
+            self, config
     ) -> None:
         self._index = None
         self.config = config
         self._index = get_index(self.config)
 
-
     async def upsert(self, data: list[Any]):
         if len(data) == 0:
             logger.warning("No data needs to insert into the vector database")
-            return 
+            return
         if isinstance(data, dict):
             logger.info(f"Start inserting {len(data)} documents into the vector database")
             list_data = [
-            {
-                "__id__": k,
-                **{k1: v1 for k1, v1 in v.items()},
-            }
-            for k, v in data.items()
+                {
+                    "__id__": k,
+                    **{k1: v1 for k1, v1 in v.items()},
+                }
+                for k, v in data.items()
             ]
-            documents = [Document(text = t['content'], doc_id = t['__id__'], metadata = {"entity_name": t['entity_name']}, excluded_embed_metadata_keys=["entity_name"]) for t in list_data]
+            documents = [Document(text=t['content'], doc_id=t['__id__'], metadata={"entity_name": t['entity_name']},
+                                  excluded_embed_metadata_keys=["entity_name"]) for t in list_data]
             await self._update_index_from_documents(documents)
 
         elif isinstance(data[0], Document):
@@ -55,48 +57,47 @@ class VectorIndex():
         elif isinstance(data[0], BaseNode):
             await self._update_index_from_nodes(data)
         elif isinstance(data[0], str) and not isinstance(self.config, ColBertIndexConfig):
-            documents = [Document(text = t, key = mdhash_id(t)) for t in data]
+            documents = [Document(text=t, key=mdhash_id(t)) for t in data]
             await self._update_index_from_documents(documents)
         elif isinstance(data[0], str) and isinstance(self.config, ColBertIndexConfig):
             await self._update_index_from_lists(data)
         else:
             logger.warning("The type of data is not supported")
-    
+
     async def upsert_with_embedding(self, text: str, embedding: List[float], metadata: dict):
-        await self._update_index_from_documents([Document(text = text, embedding = embedding, metadata = metadata)])
-    
+        await self._update_index_from_documents([Document(text=text, embedding=embedding, metadata=metadata)])
+
     def exist_index(self):
-        
+
         return os.path.exists(self.config.persist_path)
 
-    async def retrieval(self, query, top_k = None):
+    async def retrieval(self, query, top_k=None):
         if not top_k:
             top_k = self._get_retrieve_top_k()
         if isinstance(self.config, ColBertIndexConfig):
-            return await self._index.query(query_str = query, top_k = top_k)
+            return await self._index.query(query_str=query, top_k=top_k)
         else:
-            retriever: BaseRetriever = self._index.as_retriever(similarity_top_k = top_k)
+            retriever: BaseRetriever = self._index.as_retriever(similarity_top_k=top_k)
             nodes = await retriever.aretrieve(query)
             return nodes
 
-    async def retrieve_batch(self, queries, top_k = None):
+    async def retrieve_batch(self, queries, top_k=None):
         if not top_k:
             top_k = self._get_retrieve_top_k()
         if isinstance(self.config, ColBertIndexConfig):
             try:
                 if not isinstance(queries, Queries):
-                    queries = Queries(data = queries)
-                return self._index.query_batch(queries = queries, top_k = top_k)
+                    queries = Queries(data=queries)
+                return self._index.query_batch(queries=queries, top_k=top_k)
             except Exception as e:
                 logger.exception(f"fail to search {queries} for {e}")
                 return []
+
     def _get_retrieve_top_k(self):
         return self.retriever_configs.top_k
 
     def _storage_index(self):
         self._index.storage_context.persist(persist_dir=self.config.persist_path)
-
-
 
     async def _update_index_from_documents(self, docs: list[Any]):
         refreshed_docs = self._index.refresh_ref_docs(docs)
@@ -109,7 +110,6 @@ class VectorIndex():
         self._index._build_index_from_nodes(nodes)
 
         logger.info("insert node to index is {}".format(len(nodes)))
-
 
     async def _update_index_from_lists(self, docs_list: list[str]):
         # Only used for Colbert

@@ -5,8 +5,10 @@ import re
 import numbers
 from Core.Common.Logger import logger
 import tiktoken
-from tenacity import RetryCallState, RetryError, _utils
+from tenacity import RetryCallState
 import numpy as np
+
+
 def singleton(cls):
     instances = {}
 
@@ -17,8 +19,10 @@ def singleton(cls):
 
     return get_instance
 
+
 def mdhash_id(content, prefix: str = ""):
     return prefix + md5(content.encode()).hexdigest()
+
 
 def clean_str(input: Any) -> str:
     """Clean an input string by removing HTML escapes, control characters, and other unwanted characters."""
@@ -28,11 +32,14 @@ def clean_str(input: Any) -> str:
 
     result = html.unescape(input.strip())
     # https://stackoverflow.com/questions/4324790/removing-control-characters-from-a-string-in-python
-    return re.sub(r"[\x00-\x1f\x7f-\x9f]", "", result)
+    result =  re.sub(r"[\x00-\x1f\x7f-\x9f]", "", result)
+
+    # Remove non-alphanumeric characters and convert to lowercase
+    return re.sub('[^A-Za-z0-9 ]', ' ', result.lower()).strip()
 
 
 def split_string_by_multi_markers(
-    text: str, delimiters: list[str]
+        text: str, delimiters: list[str]
 ) -> list[str]:
     """
     Split a string by multiple delimiters.
@@ -68,6 +75,8 @@ def is_float_regex(value: str) -> bool:
 
 import json
 import os
+
+
 def write_json(json_obj, file_name):
     with open(file_name, "w", encoding="utf-8") as f:
         json.dump(json_obj, f, indent=2, ensure_ascii=False)
@@ -78,7 +87,7 @@ def load_json(file_name):
         return None
     with open(file_name, encoding="utf-8") as f:
         return json.load(f)
-    
+
 
 def community_report_from_json(parsed_output: dict) -> str:
     """Generate a community report string from parsed JSON output.
@@ -106,21 +115,22 @@ def community_report_from_json(parsed_output: dict) -> str:
     return f"# {title}\n\n{summary}\n\n" + "\n\n".join(report_sections)
 
 
-
 def list_to_quoted_csv_string(data: List[List[Any]]) -> str:
-        """Converts a list of lists into a CSV formatted string with quoted values."""
-        def enclose_string_with_quotes(content: Any) -> str:
-            if isinstance(content, numbers.Number):
-                return str(content)
-            content = str(content).strip().strip("'").strip('"')
-            return f'"{content}"'
-        
-        return "\n".join(
-            [
-                ",\t".join([enclose_string_with_quotes(data_dd) for data_dd in data_d])
-                for data_d in data
-            ]
-        )
+    """Converts a list of lists into a CSV formatted string with quoted values."""
+
+    def enclose_string_with_quotes(content: Any) -> str:
+        if isinstance(content, numbers.Number):
+            return str(content)
+        content = str(content).strip().strip("'").strip('"')
+        return f'"{content}"'
+
+    return "\n".join(
+        [
+            ",\t".join([enclose_string_with_quotes(data_dd) for data_dd in data_d])
+            for data_d in data
+        ]
+    )
+
 
 def parse_value_from_string(value: str):
     """
@@ -170,7 +180,7 @@ def prase_json_from_response(response: str) -> dict:
             if stack:
                 start = stack.pop()
                 if not stack:
-                    first_json_str = response[first_json_start:i+1]
+                    first_json_str = response[first_json_start:i + 1]
                     try:
                         # Attempt to parse the JSON string
                         return json.loads(first_json_str.replace("\n", ""))
@@ -203,40 +213,30 @@ def prase_json_from_response(response: str) -> dict:
     return extracted_values
 
 
-
 def encode_string_by_tiktoken(content: str, model_name: str = "cl100k_base"):
-    
     ENCODER = tiktoken.get_encoding(model_name)
     tokens = ENCODER.encode(content)
     return tokens
 
+
 def truncate_list_by_token_size(list_data: list, key: callable, max_token_size: int):
-        """Truncate a list of data based on the token size."""
-        # Default: cl100k_base 
-        if max_token_size <= 0:
-            return []
-        tokens = 0
-        result = []
-        for data in list_data:
-            token_count = len(encode_string_by_tiktoken(key(data)))
-            if tokens + token_count > max_token_size:
-                break
-            tokens += token_count
-            result.append(data)
-        return result    
+    """Truncate a list of data based on the token size."""
+    # Default: cl100k_base
+    if max_token_size <= 0:
+        return []
+    tokens = 0
+    result = []
+    for data in list_data:
+        token_count = len(encode_string_by_tiktoken(key(data)))
+        if tokens + token_count > max_token_size:
+            break
+        tokens += token_count
+        result.append(data)
+    return result
 
 
-def processing_phrases(phrase: str) -> str:
-    """
-    Process a phrase string, removing non-alphanumeric characters and converting to lowercase.
-    
-    Args:
-        phrase (str): The string to process.
-    
-    Returns:
-        str: The processed string.
-    """
-    return re.sub('[^A-Za-z0-9 ]', ' ', phrase.lower()).strip()
+
+
 
 
 def min_max_normalize(x):
@@ -248,6 +248,7 @@ def min_max_normalize(x):
         Returns: A list of normalized values.
     """
     return (x - np.min(x)) / (np.max(x) - np.min(x))
+
 
 def get_class_name(cls) -> str:
     """Return class name"""
@@ -262,7 +263,6 @@ def any_to_str(val: Any) -> str:
         return get_class_name(type(val))
     else:
         return get_class_name(val)
-    
 
 
 def log_and_reraise(retry_state: RetryCallState):

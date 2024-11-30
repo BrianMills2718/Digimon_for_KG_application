@@ -32,7 +32,6 @@ from Core.Community.ClusterFactory import get_community_instance
 from Core.Common.QueryConfig import QueryConfig
 from Core.Prompt import QueryPrompt
 from Core.Common.QueryConfig import query_config
-from metagpt.provider.llm_provider_registry import create_llm_instance
 from pydantic import model_validator
 from Core.Index import (
     get_rag_embedding
