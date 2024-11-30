@@ -119,8 +119,9 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
             for edge_key, edge_value in edge.as_dict.items():
                 upsert_edge_data[edge_key].append(edge_value)
         source_id, total_weight, merge_description, keywords, relation_name = upsert_edge_data["source_id"], \
-        upsert_edge_data[
-            "weight"], upsert_edge_data["description"], upsert_edge_data["keywords"], upsert_edge_data["relation_name"]
+            upsert_edge_data[
+                "weight"], upsert_edge_data["description"], upsert_edge_data["keywords"], upsert_edge_data[
+            "relation_name"]
         if existing_edge_data:
             merge_edge_data.update({
                 "source_id": split_string_by_multi_markers(existing_edge_data["source_id"], [GRAPH_FIELD_SEP]),
@@ -220,26 +221,58 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
 
     async def __graph__(self, elements: list):
+        """
+        Build the graph based on the input elements.
+        """
+
+        # Initialize dictionaries to hold aggregated node and edge information
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
+
+        # Iterate through each tuple of nodes and edges in the input elements
         for m_nodes, m_edges in elements:
+            # Aggregate node information
             for k, v in m_nodes.items():
                 maybe_nodes[k].extend(v)
+
+            # Aggregate edge information
             for k, v in m_edges.items():
                 maybe_edges[tuple(sorted(k))].extend(v)
 
+        # Asynchronously merge and upsert nodes
         await asyncio.gather(*[self._merge_nodes_then_upsert(k, v) for k, v in maybe_nodes.items()])
+
+        # Asynchronously merge and upsert edges
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
 
     async def _handle_entity_relation_summary(self, entity_or_relation_name: str, description: str) -> str:
+        """
+           Generate a summary for an entity or relationship.
+
+           Args:
+               entity_or_relation_name (str): The name of the entity or relationship.
+               description (str): The detailed description of the entity or relationship.
+
+           Returns:
+               str: The generated summary.
+        """
+
+        # Encode the description into tokens
         tokens = self.ENCODER.encode(description)
+
+        # Check if the token length is within the maximum allowed tokens for summarization
         if len(tokens) < self.config.summary_max_tokens:
             return description
 
+        # Truncate the description to fit within the maximum token limit
         use_description = self.ENCODER.decode(tokens[:self.llm.get_maxtokens()])
+
+        # Construct the context base for the prompt
         context_base = dict(
             entity_name=entity_or_relation_name,
             description_list=use_description.split(GRAPH_FIELD_SEP)
         )
         use_prompt = GraphPrompt.SUMMARIZE_ENTITY_DESCRIPTIONS.format(**context_base)
         logger.debug(f"Trigger summary: {entity_or_relation_name}")
+
+        # Asynchronously generate the summary using the language model
         return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
