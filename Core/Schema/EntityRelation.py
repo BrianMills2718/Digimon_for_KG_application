@@ -22,6 +22,7 @@ class Entity:
     def as_dict(self):
         return asdict(self)
 
+
 @dataclass
 class Relationship:
 
@@ -43,6 +44,7 @@ class Relationship:
         """
         self.src_id = src_id  # Name of the entity on the left side of the edge
         self.tgt_id = tgt_id  # Name of the entity on the right side of the edge
+        # (src_id, tgt_id), serving as the primary key for one edge.
         self.source_id = source_id  # Unique identifier of the source from which this edge is derived
         self.relation_name = kwargs.get('relation_name', "")  # Name of the relation
         self.relation_type = kwargs.get('relation_type', "")  # Type of the relation

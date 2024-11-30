@@ -16,8 +16,7 @@ from Core.Prompt.Base import TextPrompt
 from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Constants import (
     NODE_PATTERN,
-    REL_PATTERN,
-    DEFAULT_ENTITY_TYPES
+    REL_PATTERN
 )
 
 
@@ -56,19 +55,12 @@ async def _build_graph_from_tuples(entities, triples, chunk_key):
            entities (List[str]): A list of entity strings.
            triples (List[Tuple[str, str, str]]): A list of triples, where each triple contains three strings (source entity, relation, target entity).
            chunk_key (str): A key used to identify the data chunk.
-
-       Returns:
-           Tuple[Dict[str, List[Dict[str, str]]], Dict[Tuple[str, str], List[Relationship]]]:
-               Returns a tuple containing two dictionaries. The first dictionary's keys are entity names,
-               and the values are lists containing entity information. The second dictionary's keys are
-               tuples of (source entity, target entity), and the values are lists containing relationship information.
-
        """
     maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 
     for _entity in entities:
         entity_name = clean_str(_entity)
-        entity = Entity(entity_name=entity_name, entity_type=DEFAULT_ENTITY_TYPES, source_id=chunk_key)
+        entity = Entity(entity_name=entity_name, source_id=chunk_key)
         maybe_nodes[entity_name].append(entity)
 
         for triple in triples:
@@ -123,10 +115,10 @@ class ERGraph(BaseGraph):
         else:
             # Use KGAgent from camel for one-step entity and relationship extraction (used in MedicalRAG)
             # Refer to: https://github.com/SuperMedIntel/Medical-Graph-RAG
-            graph_element = await self._kgagent(chunk_info)
+            graph_element = await self._kg_agent(chunk_info)
             return await _build_graph_by_regular_matching(graph_element, chunk_key)
 
-    async def _kgagent(self, chunk_info):
+    async def _kg_agent(self, chunk_info):
         knowledge_graph_prompt = TextPrompt(GraphPrompt.KG_AGNET)
         knowledge_graph_generation = knowledge_graph_prompt.format(
             task=chunk_info
@@ -148,14 +140,3 @@ class ERGraph(BaseGraph):
             logger.exception(f"Error building graph: {e}")
         finally:
             logger.info("Constructing graph finished")
-
-    async def __graph__(self, results: list):
-        maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
-        for m_nodes, m_edges in results:
-            for k, v in m_nodes.items():
-                maybe_nodes[k].extend(v)
-            for k, v in m_edges.items():
-                maybe_edges[tuple(sorted(k))].extend(v)
-
-        await asyncio.gather(*[self._merge_nodes_then_upsert(k, v) for k, v in maybe_nodes.items()])
-        await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])

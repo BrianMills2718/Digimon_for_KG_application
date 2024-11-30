@@ -1,4 +1,4 @@
-from Core.Graph.KGraph import ERGraph
+from Core.Graph.RKGraph import ERGraph
 
 import asyncio
 if __name__ == "__main__":

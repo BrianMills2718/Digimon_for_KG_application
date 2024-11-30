@@ -2,18 +2,19 @@ import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
 
-from Core.Common.Utils import mdhash_id
+from Core.Common.Logger import logger
 from typing import Any, Optional, Union, Type, Dict, List
 from Core.Common.ContextMixin import ContextMixin
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from pydantic import BaseModel, ConfigDict, model_validator
-from Core.Graph.ChunkFactory import get_chunks
 import tiktoken
 from Core.Common.Memory import Memory
+from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Utils import (split_string_by_multi_markers, clean_str)
+from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 
 class BaseGraph(ABC, ContextMixin, BaseModel):
@@ -35,26 +36,6 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
 
         return data
 
-    async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
-        """Chunk the given documents into smaller chunks.
-
-        Args:
-        docs (Union[str, list[str]]): The documents to chunk, either as a single string or a list of strings.
-
-        Returns:
-        dict[str, dict[str, str]]: A dictionary where the keys are the MD5 hashes of the chunks, and the values are dictionaries containing the chunk content.
-        """
-        if isinstance(docs, str):
-            docs = [docs]
-
-        if isinstance(docs[0], dict):
-            new_docs = {doc['id']: {"content": doc['content'].strip()} for doc in docs}
-        else:
-            new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
-        chunks = await get_chunks(new_docs, "chunking_by_seperators", self.ENCODER, is_chunked=is_chunked)
-        self.chunks = chunks
-        return chunks
-
     async def build_graph(self, chunks):
         """
         Builds or loads a graph based on the input chunks.
@@ -67,6 +48,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         """
         # If the graph already exists, load it
         if self._exist_graph():
+            logger.info("Graph already exists")
             return self._load_graph()
 
         # Build the graph based on the input chunks
@@ -81,55 +63,84 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         """
         pass
 
-    async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]) -> Dict[str, Any]:
+    def _load_graph(self):
+        """
+        Loads the graph from the file
+        """
+        pass
+
+    async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self.er_graph.get_node(entity_name)
+        merge_nodes_data = {}
+        # Groups node properties by their keys for upsert operation.
+        upsert_nodes_data = defaultdict(list)
+        for node in nodes_data:
+            for node_key, node_value in node.as_dict.items():
+                upsert_nodes_data[node_key].append(node_value)
+        source_id, new_entity_type, merge_description = upsert_nodes_data["source_id"], upsert_nodes_data[
+            "entity_type"], upsert_nodes_data["description"]
+
         if existing_node:
-            existing_source_ids = existing_node["source_id"].split(GRAPH_FIELD_SEP)
-        else:
-            existing_source_ids = []
+            merge_nodes_data.update({
+                "source_id": existing_node["source_id"].split(GRAPH_FIELD_SEP),
+            })
+            if self.config.enable_entity_description:
+                merge_nodes_data.update({
+                    "description": existing_node["description"].split(GRAPH_FIELD_SEP),
+                })
+            if self.config.enable_entity_type:
+                merge_nodes_data.update({
+                    "entity_type": existing_node["entity_type"].split(GRAPH_FIELD_SEP),
+                })
+            source_id, new_entity_type, merge_description = await MergeEntity.merge_info(upsert_nodes_data,
+                                                                                         merge_nodes_data)
 
-        # Extract source_ids from nodes_data and merge with existing_source_ids
-        new_source_ids = [dp.source_id for dp in nodes_data]
-        merged_source_ids = list(set(new_source_ids) | set(existing_source_ids))
+        description = (
+            await self._handle_entity_relation_summary(entity_name, merge_description)
+            if self.config.enable_entity_description
+            else ""
+        )
 
-        # Create node_data with merged source_ids and entity_name
-        source_id = GRAPH_FIELD_SEP.join(merged_source_ids)
-        node_data = dict(source_id=source_id, entity_name=entity_name)
-
+        node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
+                         description=description)
         # Upsert the node with the merged data
         await self.er_graph.upsert_node(entity_name, node_data=node_data)
-        return node_data
 
     async def _merge_edges_then_upsert(self, src_id: str, tgt_id: str, edges_data: List[Relationship]) -> None:
         # Check if the edge exists and fetch existing data
-        if await self.er_graph.has_edge(src_id, tgt_id):
-            existing_edge_data = await self.er_graph.get_edge(src_id, tgt_id)
-        else:
-            existing_edge_data = {}
+        merge_edge_data = {}
 
-        # Calculate the new weight by summing weights from edges_data and existing edge
-        new_weight = sum(dp.weight for dp in edges_data)
-        total_weight = new_weight + existing_edge_data.get("weight", 0)
+        existing_edge_data = await self.er_graph.get_edge(src_id, tgt_id) if await self.er_graph.has_edge(src_id,
+                                                                                                          tgt_id) else None
 
-        # Merge source_ids from edges_data and existing edge data
-        existing_source_ids = split_string_by_multi_markers(existing_edge_data.get("source_id", ""), [GRAPH_FIELD_SEP])
-        new_edge_source_ids = [dp.source_id for dp in edges_data]
-        merged_source_ids = list(set(new_edge_source_ids) | set(existing_source_ids))
+        # Groups node properties by their keys for upsert operation.
+        upsert_edge_data = defaultdict(list)
+        for edge in edges_data:
+            for edge_key, edge_value in edge.as_dict.items():
+                upsert_edge_data[edge_key].append(edge_value)
+        source_id, total_weight, merge_description, keywords, relation_name = upsert_edge_data["source_id"], \
+        upsert_edge_data[
+            "weight"], upsert_edge_data["description"], upsert_edge_data["keywords"], upsert_edge_data["relation_name"]
+        if existing_edge_data:
+            merge_edge_data.update({
+                "source_id": split_string_by_multi_markers(existing_edge_data["source_id"], [GRAPH_FIELD_SEP]),
+                "weight": existing_edge_data["weight"]
+            })
+            if self.config.enable_edge_description:
+                merge_edge_data.update({"description": existing_edge_data["description"]})
+            if self.config.enable_keywords:
+                merge_edge_data.update({"keywords": existing_edge_data["keywords"]})
+            if self.config.enable_edge_name:
+                merge_edge_data.update({"relation_name": existing_edge_data["relation_name"]})
+            source_id, total_weight, merge_description, keywords, relation_name = await MergeRelationship.merge_info(
+                upsert_edge_data,
+                merge_edge_data)
 
-        # Merge relation_names from edges_data and existing edge data
-        existing_relation_name = existing_edge_data.get("relation_name", "")
-        existing_relation_names = split_string_by_multi_markers(existing_relation_name, [GRAPH_FIELD_SEP])
-        new_relation_names = [dp.relation_name for dp in edges_data]
-        merged_relation_names = sorted(list(set(new_relation_names) | set(existing_relation_names)))
-        relation_name = GRAPH_FIELD_SEP.join(merged_relation_names)
-        keywords = None
-
-        # If keywords is used
-        if self.config.use_keywords:
-            keywords = GRAPH_FIELD_SEP.join(
-                sorted(set([dp.keywords for dp in edges_data] + split_string_by_multi_markers(
-                    existing_edge_data.get("keywords", ""), [GRAPH_FIELD_SEP])
-                           )))
+        description = (
+            await self._handle_entity_relation_summary((src_id, tgt_id), merge_description)
+            if self.config.enable_edge_description
+            else ""
+        )
 
         # Ensure src_id and tgt_id nodes exist
         for node_id in (src_id, tgt_id):
@@ -137,12 +148,11 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
                 # Upsert node with source_id and entity_name
                 await self.er_graph.upsert_node(
                     node_id,
-                    node_data=dict(source_id=merged_source_ids, entity_name=node_id)
+                    node_data=dict(source_id=source_id, entity_name=node_id)
                 )
-
         # Create edge_data with merged data
-        edge_data = dict(weight=total_weight, source_id=GRAPH_FIELD_SEP.join(merged_source_ids),
-                         relation_name=relation_name, keywords=keywords)
+        edge_data = dict(weight=total_weight, source_id=GRAPH_FIELD_SEP.join(source_id),
+                         relation_name=relation_name, keywords=keywords, description=description)
 
         # Upsert the edge with the merged data
         await self.er_graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
@@ -208,3 +218,28 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
             maybe_edges_aug[tuple(sorted(k))].extend(v)
 
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
+
+    async def __graph__(self, elements: list):
+        maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
+        for m_nodes, m_edges in elements:
+            for k, v in m_nodes.items():
+                maybe_nodes[k].extend(v)
+            for k, v in m_edges.items():
+                maybe_edges[tuple(sorted(k))].extend(v)
+
+        await asyncio.gather(*[self._merge_nodes_then_upsert(k, v) for k, v in maybe_nodes.items()])
+        await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
+
+    async def _handle_entity_relation_summary(self, entity_or_relation_name: str, description: str) -> str:
+        tokens = self.ENCODER.encode(description)
+        if len(tokens) < self.config.summary_max_tokens:
+            return description
+
+        use_description = self.ENCODER.decode(tokens[:self.llm.get_maxtokens()])
+        context_base = dict(
+            entity_name=entity_or_relation_name,
+            description_list=use_description.split(GRAPH_FIELD_SEP)
+        )
+        use_prompt = GraphPrompt.SUMMARIZE_ENTITY_DESCRIPTIONS.format(**context_base)
+        logger.debug(f"Trigger summary: {entity_or_relation_name}")
+        return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)

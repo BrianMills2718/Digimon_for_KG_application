@@ -52,10 +52,14 @@ class Config(CLIParams, YamlModel):
     chunk_method: str = "chunking_by_token_size"
 
     # enable LightRAG
-    use_keywords: bool = True
+    enable_keywords: bool = True
 
     # Building graph
     max_gleaning: int = 1
+    enable_entity_description: bool = True
+    enable_entity_type: bool = True
+    enable_edge_description: bool = True
+    enable_edge_name:bool = True
 
     # Graph clustering
     use_community: bool = True

@@ -8,10 +8,11 @@ import numpy as np
 from dataclasses import dataclass
 from Core.Common.Logger import logger
 from Core.Storage.BaseGraphStorage import BaseGraphStorage
-from Core.Schema.EntityRelation import Relationship, Entity
+
+
 @dataclass
 class NetworkXStorage(BaseGraphStorage):
-    
+
     @staticmethod
     def load_nx_graph(file_name) -> nx.Graph:
         if os.path.exists(file_name):
@@ -24,8 +25,6 @@ class NetworkXStorage(BaseGraphStorage):
             f"Writing graph with {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
         )
         nx.write_graphml(graph, file_name)
-
-    
 
     @staticmethod
     def _stabilize_graph(graph: nx.Graph) -> nx.Graph:
@@ -61,7 +60,7 @@ class NetworkXStorage(BaseGraphStorage):
         return fixed_graph
 
     def __post_init__(self):
-        #TODO: Support the loading xml from the file; 
+        # TODO: Support the loading xml from the file;
         # self._graphml_xml_file = os.path.join(
         #     self.global_config["working_dir"], f"graph_{self.namespace}.graphml"
         # )
@@ -75,7 +74,7 @@ class NetworkXStorage(BaseGraphStorage):
         self._node_embed_algorithms = {
             "node2vec": self._node2vec_embed,
         }
-        
+
     @property
     def graph(self):
         return self._graph
@@ -100,13 +99,15 @@ class NetworkXStorage(BaseGraphStorage):
         return (self._graph.degree(src_id) if self._graph.has_node(src_id) else 0) + (
             self._graph.degree(tgt_id) if self._graph.has_node(tgt_id) else 0
         )
+
     async def get_edge_weight(
-        self, source_node_id: str, target_node_id: str
+            self, source_node_id: str, target_node_id: str
     ) -> Union[float, None]:
-        edge_data =  self._graph.edges.get((source_node_id, target_node_id))
+        edge_data = self._graph.edges.get((source_node_id, target_node_id))
         return edge_data.get("weight") if edge_data is not None else None
+
     async def get_edge(
-        self, source_node_id: str, target_node_id: str
+            self, source_node_id: str, target_node_id: str
     ) -> Union[dict, None]:
         return self._graph.edges.get((source_node_id, target_node_id))
 
@@ -115,25 +116,19 @@ class NetworkXStorage(BaseGraphStorage):
             return list(self._graph.edges(source_node_id))
         return None
 
-    async def upsert_node(self, node_id: str, node_data: Entity):
+    async def upsert_node(self, node_id: str, node_data: dict):
         self._graph.add_node(node_id, **node_data)
 
-    #TODO: not use dict for edge_data 
+    # TODO: not use dict for edge_data
     async def upsert_edge(
-        self, source_node_id: str, target_node_id: str, edge_data: Relationship
+            self, source_node_id: str, target_node_id: str, edge_data: dict
     ):
         self._graph.add_edge(source_node_id, target_node_id, **edge_data)
-
-
-
-
-
 
     def _cluster_data_to_subgraphs(self, cluster_data: dict[str, list[dict[str, str]]]):
         for node_id, clusters in cluster_data.items():
             self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
 
-   
     async def embed_nodes(self, algorithm: str) -> tuple[np.ndarray, list[str]]:
         if algorithm not in self._node_embed_algorithms:
             raise ValueError(f"Node embedding algorithm {algorithm} not supported")
@@ -149,8 +144,6 @@ class NetworkXStorage(BaseGraphStorage):
 
         nodes_ids = [self._graph.nodes[node_id]["id"] for node_id in nodes]
         return embeddings, nodes_ids
-    
-
 
     def stable_largest_connected_component(graph: nx.Graph) -> nx.Graph:
         """Refer to https://github.com/microsoft/graphrag/index/graph/utils/stable_lcc.py
@@ -162,4 +155,4 @@ class NetworkXStorage(BaseGraphStorage):
         graph = cast(nx.Graph, largest_connected_component(graph))
         node_mapping = {node: html.unescape(node.upper().strip()) for node in graph.nodes()}  # type: ignore
         graph = nx.relabel_nodes(graph, node_mapping)
-        return NetworkXStorage._stabilize_graph(graph)     
+        return NetworkXStorage._stabilize_graph(graph)
