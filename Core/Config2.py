@@ -77,7 +77,7 @@ class Config(CLIParams, YamlModel):
     prompt_schema: Literal["json", "markdown", "raw"] = "json"
 
 
-    # Query Parameters
+    # Retrieval Parameters
     enable_local: bool = False
     enable_naive_rag: bool = False
     node_specificity: bool = True

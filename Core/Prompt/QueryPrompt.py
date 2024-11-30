@@ -167,7 +167,7 @@ Given the query, list both high-level and low-level keywords. High-level keyword
 ######################
 Example 1:
 
-Query: "How does international trade influence global economic stability?"
+Retrieval: "How does international trade influence global economic stability?"
 ################
 Output:
 {{
@@ -177,7 +177,7 @@ Output:
 #############################
 Example 2:
 
-Query: "What are the environmental consequences of deforestation on biodiversity?"
+Retrieval: "What are the environmental consequences of deforestation on biodiversity?"
 ################
 Output:
 {{
@@ -187,7 +187,7 @@ Output:
 #############################
 Example 3:
 
-Query: "What is the role of education in reducing poverty?"
+Retrieval: "What is the role of education in reducing poverty?"
 ################
 Output:
 {{
@@ -197,7 +197,7 @@ Output:
 #############################
 -Real Data-
 ######################
-Query: {query}
+Retrieval: {query}
 ######################
 Output:
 

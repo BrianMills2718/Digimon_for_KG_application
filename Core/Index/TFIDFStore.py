@@ -59,7 +59,7 @@ class TFIDFIndex(BaseIndex[IndexDict]):
 
     def query(self, query_str: str, top_k: int = 10):
         """
-        Query the Tf-Idf
+        Retrieval the Tf-Idf
 
         Returns: list of search results.
         """

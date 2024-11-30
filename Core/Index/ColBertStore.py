@@ -129,7 +129,7 @@ class ColbertIndex(BaseIndex[IndexDict]):
 
     def query(self, query_str: str, top_k: int = 10):
         """
-        Query the Colbert v2.
+        Retrieval the Colbert v2.
 
         Returns: list of search results.
         """
