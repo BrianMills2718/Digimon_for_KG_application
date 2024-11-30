@@ -55,8 +55,8 @@ class ERGraph(BaseGraph):
     chunk_key_to_idx: dict = defaultdict(int)
     @model_validator(mode="after")
     def _init_vectordb(cls, data):
-        # index_config = FAISSIndexConfig(persist_path="./storage", embed_model = get_rag_embedding())
-        index_config = ColBertIndexConfig(persist_path="./storage/colbert_index", index_name="nbits_2", model_name=cls.config.colbert_checkpoint_path, nbits=2)
+        index_config = FAISSIndexConfig(persist_path="./storage", embed_model = get_rag_embedding())
+        # index_config = ColBertIndexConfig(persist_path="./storage/colbert_index", index_name="nbits_2", model_name=cls.config.colbert_checkpoint_path, nbits=2)
         cls.entity_vdb = VectorIndex(index_config)
       
 
