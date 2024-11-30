@@ -78,3 +78,12 @@ MESSAGE_ROUTE_CAUSE_BY = "cause_by"
 MESSAGE_META_ROLE = "role"
 MESSAGE_ROUTE_TO_ALL = "<all>"
 MESSAGE_ROUTE_TO_NONE = "<none>"
+
+
+# Used for Medical-Graph-RAG like
+
+NODE_PATTERN = r"Node\(id='(.*?)', type='(.*?)'\)"
+REL_PATTERN = (
+    r"Relationship\(subj=Node\(id='(.*?)', type='(.*?)'\), "
+    r"obj=Node\(id='(.*?)', type='(.*?)'\), type='(.*?)'\)"
+)
