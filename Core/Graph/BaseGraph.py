@@ -11,26 +11,22 @@ from Core.Common.Memory import Memory
 
 class BaseGraph(ABC, ContextMixin, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    chunks: Optional[str] =  None
+    chunks: Optional[str] = None
     # context: str  # all the context, including all necessary info
     llm_name_or_type: Optional[str] = None
     # working memory for constructing the graph
     working_memory: Memory = Memory()
 
-
-
-
     @model_validator(mode="after")
     def _update_context(
-        cls: Type["BaseGraph"], data: "BaseGraph"
+            cls: Type["BaseGraph"], data: "BaseGraph"
     ) -> "BaseGraph":
 
         cls.config = data.context.config
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
         return data
-    
 
-    async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked : bool = False) -> dict[str, dict[str, str]]:
+    async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
         """Chunk the given documents into smaller chunks.
 
         Args:
@@ -41,7 +37,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         """
         if isinstance(docs, str):
             docs = [docs]
-    
+
         if isinstance(docs[0], dict):
             new_docs = {doc['id']: {"content": doc['content'].strip()} for doc in docs}
         else:
@@ -50,36 +46,49 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         self.chunks = chunks
         return chunks
 
-    async def build_graph(self, docs, emb_model_config_name = None):
+    async def build_graph(self, chunks):
+        """
+        Builds or loads a graph based on the input chunks.
 
-  
-        
-        
-        self._exist_graph()
-        self._extract_node()
-        self._extract_relationship()
-        self._construct_graph()
-        pass
+        Args:
+            chunks: The input data chunks used to build the graph.
 
-    
-  
-      
-      
-    
-    @abstractmethod
+        Returns:
+            The graph if it already exists, otherwise builds and returns the graph.
+        """
+        # If the graph already exists, load it
+        if self._exist_graph():
+            return self._load_graph()
+
+        # Build the graph based on the input chunks
+        self._build_graph(chunks)
+
     def _exist_graph(self):
+        """
+        Checks if the graph already exists.
+
+        Returns:
+            bool: True if the graph exists, False otherwise.
+        """
         pass
 
     @abstractmethod
-    def _extract_node(self):
+    def _extract_node_relationship(self):
+        """
+        Abstract method to extract relationships between nodes in the graph.
+
+        This method should be implemented by subclasses to define how node relationships are extracted.
+        """
         pass
 
     @abstractmethod
-    def _construct_graph(self):
+    def _build_graph(self, chunks):
+        """
+        Abstract method to build the graph based on the input chunks.
+
+        Args:
+            chunks: The input data chunks used to build the graph.
+
+        This method should be implemented by subclasses to define how the graph is built from the input chunks.
+        """
         pass
-
-    @abstractmethod
-    def _extract_relationship(self):
-        pass
-
-
