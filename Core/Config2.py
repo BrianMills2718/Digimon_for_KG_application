@@ -53,6 +53,7 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
+    graph_type: str = "rkg"
     max_gleaning: int = 1
     enable_entity_description: bool = False
     enable_entity_type: bool = False

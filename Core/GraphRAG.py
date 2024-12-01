@@ -8,6 +8,7 @@ from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.GraphFactory import get_graph
 
+
 class GraphRAG(BaseModel, ContextMixin):
     """A class representing a Graph-based Retrieval-Augmented Generation system."""
 
@@ -21,9 +22,13 @@ class GraphRAG(BaseModel, ContextMixin):
         return data
 
     @model_validator(mode="after")
-    def __register_graph(cls, data):
+    def _register_graph(cls, data):
         cls.graph = get_graph(data.config, data.llm, data.ENCODER)
+        return data
 
+    @model_validator(mode="after")
+    def _init_storage(cls, data):
+        cls.graph_storage_path  =
     async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
         """Chunk the given documents into smaller chunks.
 
@@ -65,9 +70,10 @@ class GraphRAG(BaseModel, ContextMixin):
         ####################################################################################################
         # 2. Building Graph Stage
         ####################################################################################################
-        logger.info
+        logger.info(f"Starting build graph for the given documents")
         await self.graph.build_graph(chunks)
         await self.graph.persist_graph()
+
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
