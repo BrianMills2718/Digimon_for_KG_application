@@ -20,62 +20,6 @@ from Core.Common.Constants import (
 )
 
 
-async def _build_graph_by_regular_matching(content: str, chunk_key):
-    maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
-
-    # Extract nodes
-    for match in re.finditer(NODE_PATTERN, content):
-        entity_name, entity_type = match.groups()
-        entity_name = clean_str(entity_name)
-        if entity_name not in maybe_nodes:
-            entity = Entity(entity_name=entity_name, entity_type=entity_type, source_id=chunk_key)
-            maybe_nodes[entity_name].append(entity)
-
-    # Extract relationships
-    for match in re.finditer(REL_PATTERN, content):
-        src_id, _, tgt_id, _, rel_type = match.groups()
-        if src_id in maybe_nodes and tgt_id in maybe_nodes:
-            relationship = Relationship(
-                src_id=clean_str(src_id), tgt_id=clean_str(tgt_id), source_id=chunk_key,
-                relation_type=clean_str(rel_type)
-            )
-            maybe_edges[(src_id, tgt_id)].append(relationship)
-    return maybe_nodes, maybe_edges
-
-
-async def _build_graph_from_tuples(entities, triples, chunk_key):
-    """
-       Build a graph structure from entities and triples.
-
-       This function takes a list of entities and triples, and constructs a graph's nodes and edges
-       based on this data. Each entity and triple is cleaned and processed before being added to
-       the corresponding node or edge.
-
-       Args:
-           entities (List[str]): A list of entity strings.
-           triples (List[Tuple[str, str, str]]): A list of triples, where each triple contains three strings (source entity, relation, target entity).
-           chunk_key (str): A key used to identify the data chunk.
-       """
-    maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
-
-    for _entity in entities:
-        entity_name = clean_str(_entity)
-        entity = Entity(entity_name=entity_name, source_id=chunk_key)
-        maybe_nodes[entity_name].append(entity)
-
-        for triple in triples:
-            if len(triple) != 3:
-                logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
-                continue
-            relationship = Relationship(src_id=clean_str(triple[0]),
-                                        tgt_id=clean_str(triple[2]),
-                                        weight=1.0, source_id=chunk_key,
-                                        relation_name=clean_str(triple[1]))
-            maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
-
-    return dict(maybe_nodes), dict(maybe_edges)
-
-
 class ERGraph(BaseGraph):
 
     async def _named_entity_recognition(self, passage: str):
@@ -111,12 +55,12 @@ class ERGraph(BaseGraph):
             # Refer to: https://github.com/OSU-NLP-Group/HippoRAG/blob/main/src/
             entities = await self._named_entity_recognition(chunk_info)
             triples = await self._openie_post_ner_extract(chunk_info, entities)
-            return await _build_graph_from_tuples(entities, triples, chunk_key)
+            return await self._build_graph_from_tuples(entities, triples, chunk_key)
         else:
             # Use KGAgent from camel for one-step entity and relationship extraction (used in MedicalRAG)
             # Refer to: https://github.com/SuperMedIntel/Medical-Graph-RAG
             graph_element = await self._kg_agent(chunk_info)
-            return await _build_graph_by_regular_matching(graph_element, chunk_key)
+            return await self._build_graph_by_regular_matching(graph_element, chunk_key)
 
     async def _kg_agent(self, chunk_info):
         knowledge_graph_prompt = TextPrompt(GraphPrompt.KG_AGNET)
@@ -140,3 +84,59 @@ class ERGraph(BaseGraph):
             logger.exception(f"Error building graph: {e}")
         finally:
             logger.info("Constructing graph finished")
+
+    @staticmethod
+    async def _build_graph_by_regular_matching(content: str, chunk_key):
+        maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
+
+        # Extract nodes
+        for match in re.finditer(NODE_PATTERN, content):
+            entity_name, entity_type = match.groups()
+            entity_name = clean_str(entity_name)
+            if entity_name not in maybe_nodes:
+                entity = Entity(entity_name=entity_name, entity_type=entity_type, source_id=chunk_key)
+                maybe_nodes[entity_name].append(entity)
+
+        # Extract relationships
+        for match in re.finditer(REL_PATTERN, content):
+            src_id, _, tgt_id, _, rel_type = match.groups()
+            if src_id in maybe_nodes and tgt_id in maybe_nodes:
+                relationship = Relationship(
+                    src_id=clean_str(src_id), tgt_id=clean_str(tgt_id), source_id=chunk_key,
+                    relation_type=clean_str(rel_type)
+                )
+                maybe_edges[(src_id, tgt_id)].append(relationship)
+        return maybe_nodes, maybe_edges
+
+    @staticmethod
+    async def _build_graph_from_tuples(entities, triples, chunk_key):
+        """
+           Build a graph structure from entities and triples.
+
+           This function takes a list of entities and triples, and constructs a graph's nodes and edges
+           based on this data. Each entity and triple is cleaned and processed before being added to
+           the corresponding node or edge.
+
+           Args:
+               entities (List[str]): A list of entity strings.
+               triples (List[Tuple[str, str, str]]): A list of triples, where each triple contains three strings (source entity, relation, target entity).
+               chunk_key (str): A key used to identify the data chunk.
+           """
+        maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
+
+        for _entity in entities:
+            entity_name = clean_str(_entity)
+            entity = Entity(entity_name=entity_name, source_id=chunk_key)
+            maybe_nodes[entity_name].append(entity)
+
+            for triple in triples:
+                if len(triple) != 3:
+                    logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
+                    continue
+                relationship = Relationship(src_id=clean_str(triple[0]),
+                                            tgt_id=clean_str(triple[2]),
+                                            weight=1.0, source_id=chunk_key,
+                                            relation_name=clean_str(triple[1]))
+                maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
+
+        return dict(maybe_nodes), dict(maybe_edges)

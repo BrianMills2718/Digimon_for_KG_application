@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 from Core.Common.Logger import logger
-from typing import Any, Optional, Union, Type, Dict, List
+from typing import Optional, List
 from Core.Common.ContextMixin import ContextMixin
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -49,7 +49,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
             return self._load_graph()
 
         # Build the graph based on the input chunks
-        self._build_graph(chunks)
+        await self._build_graph(chunks)
 
     def _exist_graph(self):
         """
@@ -58,7 +58,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         Returns:
             bool: True if the graph exists, False otherwise.
         """
-        pass
+        return False
 
     def _load_graph(self):
         """
@@ -67,7 +67,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         pass
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
-        existing_node = await self.er_graph.get_node(entity_name)
+        existing_node = await self._graph.get_node(entity_name)
         merge_nodes_data = {}
         # Groups node properties by their keys for upsert operation.
         upsert_nodes_data = defaultdict(list)
@@ -101,13 +101,13 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
         # Upsert the node with the merged data
-        await self.er_graph.upsert_node(entity_name, node_data=node_data)
+        await self._graph.upsert_node(entity_name, node_data=node_data)
 
     async def _merge_edges_then_upsert(self, src_id: str, tgt_id: str, edges_data: List[Relationship]) -> None:
         # Check if the edge exists and fetch existing data
         merge_edge_data = {}
 
-        existing_edge_data = await self.er_graph.get_edge(src_id, tgt_id) if await self.er_graph.has_edge(src_id,
+        existing_edge_data = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
                                                                                                           tgt_id) else None
 
         # Groups node properties by their keys for upsert operation.
@@ -142,9 +142,9 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
 
         # Ensure src_id and tgt_id nodes exist
         for node_id in (src_id, tgt_id):
-            if not await self.er_graph.has_node(node_id):
+            if not await self._graph.has_node(node_id):
                 # Upsert node with source_id and entity_name
-                await self.er_graph.upsert_node(
+                await self._graph.upsert_node(
                     node_id,
                     node_data=dict(source_id=source_id, entity_name=node_id)
                 )
@@ -153,7 +153,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
                          relation_name=relation_name, keywords=keywords, description=description)
 
         # Upsert the edge with the merged data
-        await self.er_graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
+        await self._graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
 
     @abstractmethod
     def _extract_node_relationship(self, chunk_key_pair: tuple[str, TextChunk]):

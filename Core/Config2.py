@@ -56,11 +56,11 @@ class Config(CLIParams, YamlModel):
 
     # Building graph
     max_gleaning: int = 1
-    enable_entity_description: bool = True
-    enable_entity_type: bool = True
-    enable_edge_description: bool = True
-    enable_edge_name:bool = True
-
+    enable_entity_description: bool = False
+    enable_entity_type: bool = False
+    enable_edge_description: bool = False
+    enable_edge_name:bool = False
+    prior_prob: float = 0.8
     # Graph clustering
     use_community: bool = True
     graph_cluster_algorithm: str = "leiden"

@@ -22,12 +22,11 @@ class WATAnnotation:
         self.wiki_id = id  # wiki_id
         self.wiki_title = title  # wiki_title
 
-    @model_validator(mode="after")
-    def __update_prior_prob(cls, data):
-        if cls.explanation is not None:
-            cls.prior_prob = cls.explanation['prior_explanation'][
-                'entity_mention_probability']  # spot-entity probability
-        return data
+        # spot-entity probability
+        if self.explanation is not None:
+            self.prior_prob = self.explanation['prior_explanation'][
+                'entity_mention_probability']
+
 
     @property
     def as_dict(self):

@@ -1,3 +1,5 @@
+from Core.Prompt import KGP_QUERY_PROMPT
+
 async def retrieve(self, question):
     corpus = dict({id: (await self.kgp_graph.get_node(id))['chunk'] for id in list(self.kgp_graph.graph.nodes)})
     candidates_idx = list(id for id in list(self.kgp_graph.graph.nodes))

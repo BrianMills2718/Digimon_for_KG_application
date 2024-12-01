@@ -1,13 +1,12 @@
-from collections import defaultdict
-
-import tiktoken
-from pydantic import BaseModel
 from typing import Any
 from Core.Common.Utils import mdhash_id
+from collections import defaultdict
+
+from Core.Schema.ChunkSchema import TextChunk
 
 
-class ChunkingFactory(BaseModel):
-    chunk_methods: dict = defaultdict
+class ChunkingFactory:
+    chunk_methods: dict = defaultdict(Any)
 
     def register_chunking_method(
             self,
@@ -49,9 +48,6 @@ def register_chunking_method(method_name):
     return decorator
 
 
-
-
-
 def create_chunk_method(method_name):
     chunking_method = CHUNKING_REGISTY.get_method(method_name)
     return chunking_method
@@ -69,12 +65,12 @@ async def get_chunks(new_docs, chunk_method_name, token_model, is_chunked: bool 
     if is_chunked:
         for idx, doc in enumerate(docs):
             kv_chunks.update(
-                {mdhash_id(doc.strip(), prefix="chunk-"): {
+                {mdhash_id(doc.strip(), prefix="chunk-"): TextChunk(**{
                     "tokens": tokens[idx],
                     "content": doc.strip(),
                     "chunk_order_index": idx,
-                    "full_doc_id": doc_keys[idx],
-                }}
+                    "doc_id": doc_keys[idx],
+                })}
             )
         return kv_chunks
 
@@ -86,7 +82,7 @@ async def get_chunks(new_docs, chunk_method_name, token_model, is_chunked: bool 
 
     for chunk in chunks:
         kv_chunks.update(
-            {mdhash_id(chunk["content"], prefix="chunk-"): chunk}
+            {mdhash_id(chunk["content"], prefix="chunk-"): TextChunk(**chunk)}
         )
 
     return kv_chunks
