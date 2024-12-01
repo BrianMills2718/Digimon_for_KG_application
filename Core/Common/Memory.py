@@ -81,17 +81,3 @@ class Memory(BaseModel):
             news.append(i)
         return news
 
-    def get_by_action(self, action) -> list[Message]:
-        """Return all messages triggered by a specified Action"""
-        index = any_to_str(action)
-        return self.index[index]
-
-    def get_by_actions(self, actions: Set) -> list[Message]:
-        """Return all messages triggered by specified Actions"""
-        rsp = []
-        indices = any_to_str_set(actions)
-        for action in indices:
-            if action not in self.index:
-                continue
-            rsp += self.index[action]
-        return rsp

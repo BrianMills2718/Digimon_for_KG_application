@@ -12,7 +12,6 @@ from llama_index.core.vector_stores.types import BasePydanticVectorStore
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.vector_stores.milvus import MilvusVectorStore
 from Core.Index.ColBertStore import ColbertIndex
-# from llama_index.legacy.indices.managed.colbert_index.base import ColbertIndex
 from pathlib import Path
 
 from Core.Index.BaseFactory import ConfigBasedFactory

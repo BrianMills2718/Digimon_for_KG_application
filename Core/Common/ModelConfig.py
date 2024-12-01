@@ -17,9 +17,9 @@ from typing import Dict, List, Optional
 
 from pydantic import Field, field_validator
 
-from Core.config2 import merge_dict
+from Core.Config2 import merge_dict
 from Core.Common.LLMConfig import LLMConfig
-from Core.Common.Constant import CONFIG_ROOT, METAGPT_ROOT
+from Core.Common.Constants import CONFIG_ROOT, GRAPHRAG_ROOT
 from Core.Utils.YamlModel import YamlModel
 
 
@@ -83,8 +83,8 @@ class ModelsConfig(YamlModel):
             ModelsConfig: Default ModelsConfig object.
         """
         default_config_paths: List[Path] = [
-            METAGPT_ROOT / "config/config2.yaml",
-            CONFIG_ROOT / "config2.yaml",
+            GRAPHRAG_ROOT / "Config/Config2.yaml",
+            CONFIG_ROOT / "Config2.yaml",
         ]
 
         dicts = [ModelsConfig.read_yaml(path) for path in default_config_paths]

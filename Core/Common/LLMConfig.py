@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-@Time    : 2024/11/04 15:39
-@Author  : Yingli
-@File    : llm_config.py
-"""
+
 
 from enum import Enum
 from typing import Optional

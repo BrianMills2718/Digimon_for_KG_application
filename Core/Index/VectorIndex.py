@@ -10,7 +10,7 @@ Here is the vector index for our GraphRAG
 """
 from Core.Common.Logger import logger
 import os
-from typing import Any
+from typing import Any, List
 from llama_index.core.retrievers import BaseRetriever
 from llama_index.core.schema import (
     BaseNode,
