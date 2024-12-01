@@ -1,6 +1,9 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
+
+from lazy_object_proxy.utils import await_
+
 from Core.Common.Logger import logger
 from typing import List
 from Core.Common.Constants import GRAPH_FIELD_SEP
@@ -16,10 +19,10 @@ from Core.Utils.MergeER import MergeEntity, MergeRelationship
 class BaseGraph(ABC):
 
     def __init__(self, config, llm, encoder):
-        self.working_memory: Memory = Memory()
-        self.config = config
-        self.llm = llm
-        self.ENCODER = encoder
+        self.working_memory: Memory = Memory()  # Working memory
+        self.config = config  # Build graph config
+        self.llm = llm  # LLM instance
+        self.ENCODER = encoder  # Encoder
         self._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
 
     async def build_graph(self, chunks):
@@ -34,9 +37,7 @@ class BaseGraph(ABC):
         """
 
         # If the graph already exists, load it
-        if self._exist_graph():
-            logger.info("Graph already exists")
-            return self._load_graph()
+        await self._load_graph()
 
         # Build the graph based on the input chunks
         await self._build_graph(chunks)
@@ -45,20 +46,11 @@ class BaseGraph(ABC):
 
         await self._persist_graph()
 
-    def _exist_graph(self):
+    async def _load_graph(self):
         """
-        Checks if the graph already exists.
-
-        Returns:
-            bool: True if the graph exists, False otherwise.
+        Try to load the graph from the file
         """
-        return False
-
-    def _load_graph(self):
-        """
-        Loads the graph from the file
-        """
-        pass
+        await self._graph.init_graph()
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
@@ -269,4 +261,4 @@ class BaseGraph(ABC):
         return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
 
     async def _persist_graph(self):
-        pass
+        await self._graph.persist()

@@ -4,7 +4,7 @@ from typing import TypedDict, Union
 
 
 
-class BaseGraphStorage():
+class BaseGraphStorage:
     async def has_node(self, node_id: str) -> bool:
         raise NotImplementedError
 

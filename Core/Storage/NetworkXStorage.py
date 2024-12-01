@@ -1,7 +1,6 @@
 import html
 import json
 import os
-from collections import defaultdict
 from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
@@ -13,11 +12,18 @@ from Core.Storage.BaseGraphStorage import BaseGraphStorage
 @dataclass
 class NetworkXStorage(BaseGraphStorage):
 
+    def __init__(self):
+        self._graph: nx.Graph = Filed
+
+        self._node_embed_algorithms = {
+            "node2vec": self._node2vec_embed,
+        }
+
     @staticmethod
     def load_nx_graph(file_name) -> nx.Graph:
         if os.path.exists(file_name):
             return nx.read_graphml(file_name)
-        return None
+        return nx.Graph()
 
     @staticmethod
     def write_nx_graph(graph: nx.Graph, file_name):
@@ -59,27 +65,14 @@ class NetworkXStorage(BaseGraphStorage):
         fixed_graph.add_edges_from(edges)
         return fixed_graph
 
-    def __post_init__(self):
-        # TODO: Support the loading xml from the file;
-        # self._graphml_xml_file = os.path.join(
-        #     self.global_config["working_dir"], f"graph_{self.namespace}.graphml"
-        # )
-        # preloaded_graph = NetworkXStorage.load_nx_graph(self._graphml_xml_file)
-        # if preloaded_graph is not None:
-        #     logger.info(
-        #         f"Loaded graph from {self._graphml_xml_file} with {preloaded_graph.number_of_nodes()} nodes, {preloaded_graph.number_of_edges()} edges"
-        #     )
-        preloaded_graph = None
-        self._graph = preloaded_graph or nx.Graph()
-        self._node_embed_algorithms = {
-            "node2vec": self._node2vec_embed,
-        }
+    async def init_graph(self):
+        self._graph = NetworkXStorage.load_nx_graph(self._graphml_xml_file)
 
     @property
     def graph(self):
         return self._graph
 
-    async def index_done_callback(self):
+    async def _persist(self):
         NetworkXStorage.write_nx_graph(self._graph, self._graphml_xml_file)
 
     async def has_node(self, node_id: str) -> bool:
@@ -156,3 +149,6 @@ class NetworkXStorage(BaseGraphStorage):
         node_mapping = {node: html.unescape(node.upper().strip()) for node in graph.nodes()}  # type: ignore
         graph = nx.relabel_nodes(graph, node_mapping)
         return NetworkXStorage._stabilize_graph(graph)
+
+    async def persist(self):
+        await self._persist()

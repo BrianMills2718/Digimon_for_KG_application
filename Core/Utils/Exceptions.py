@@ -12,6 +12,12 @@ from Core.Common.Logger import logger
 
 ReturnType = TypeVar("ReturnType")
 
+class InvalidStorageError(Exception):
+    """Exception raised for errors in the storage operations."""
+
+    def __init__(self, message: str = "Invalid storage operation"):
+        self.message = message
+        super().__init__(self.message)
 
 def handle_exception(
     _func: Callable[..., ReturnType] = None,
