@@ -51,7 +51,7 @@ def get_root():
 
 GRAPHRAG_ROOT = get_root()
 
-CONFIG_ROOT = Path.home() / "Config"
+CONFIG_ROOT = Path.home() / "Option"
 
 
 # Timeout

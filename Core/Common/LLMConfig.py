@@ -40,7 +40,7 @@ class LLMType(Enum):
 
 
 class LLMConfig(YamlModel):
-    """Config for LLM
+    """Option for LLM
 
     OpenAI: https://github.com/openai/openai-python/blob/main/src/openai/resources/chat/completions.py#L681
     Optional Fields in pydantic: https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields
@@ -100,7 +100,7 @@ class LLMConfig(YamlModel):
     @classmethod
     def check_llm_key(cls, v):
         if v in ["", None, "YOUR_API_KEY"]:
-            repo_config_path = GRAPHRAG_ROOT / "Config/Config2.yaml"
+            repo_config_path = GRAPHRAG_ROOT / "Option/Config2.yaml"
             root_config_path = CONFIG_ROOT / "Config2.yaml"
             if root_config_path.exists():
                 raise ValueError(

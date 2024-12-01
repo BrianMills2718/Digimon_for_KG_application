@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-"""
 import os
 from pathlib import Path
 from typing import Dict, Iterable, List, Literal, Optional
@@ -82,7 +80,7 @@ class Config(CLIParams, YamlModel):
     enable_naive_rag: bool = False
     node_specificity: bool = True
     damping: float = 0.1
-    # ColBert Config 
+    # ColBert Option
     use_colbert: bool = True
     colbert_checkpoint_path: str = "./Tools/Index/colbertv2.0"
     index_name: str = "nbits_2"
@@ -91,7 +89,6 @@ class Config(CLIParams, YamlModel):
     enable_graph_augmentation: bool = True
     @classmethod
     def from_home(cls, path):
-        """Load config from ~/.metagpt/config2.yaml"""
         pathname = CONFIG_ROOT / path
         if not pathname.exists():
             return None
@@ -104,7 +101,7 @@ class Config(CLIParams, YamlModel):
         - Inside default_config_paths, the latter one overwrites the former one
         """
         default_config_paths: List[Path] = [
-            GRAPHRAG_ROOT / "Config/Config2.yaml",
+            GRAPHRAG_ROOT / "Option/Config2.yaml",
             CONFIG_ROOT / "Config2.yaml",
         ]
 
@@ -119,7 +116,7 @@ class Config(CLIParams, YamlModel):
         """user config llm
         example:
         llm_config = {"api_type": "xxx", "api_key": "xxx", "model": "xxx"}
-        gpt4 = Config.from_llm_config(llm_config)
+        gpt4 = Option.from_llm_config(llm_config)
         A = Role(name="A", profile="Democratic candidate", goal="Win the election", actions=[a1], watch=[a2], config=gpt4)
         """
    
@@ -129,38 +126,8 @@ class Config(CLIParams, YamlModel):
         final = merge_dict(dicts)
         return Config(**final)
 
-    def update_via_cli(self, project_path, project_name, inc, reqa_file, max_auto_summarize_code):
-        """update config via cli"""
 
-        # Use in the PrepareDocuments action according to Section 2.2.3.5.1 of RFC 135.
-        if project_path:
-            inc = True
-            project_name = project_name or Path(project_path).name
-        self.project_path = project_path
-        self.project_name = project_name
-        self.inc = inc
-        self.reqa_file = reqa_file
-        self.max_auto_summarize_code = max_auto_summarize_code
 
-    @property
-    def extra(self):
-        return self._extra
-
-    @extra.setter
-    def extra(self, value: dict):
-        self._extra = value
-
-    def get_openai_llm(self) -> Optional[LLMConfig]:
-        """Get OpenAI LLMConfig by name. If no OpenAI, raise Exception"""
-        if self.llm.api_type == LLMType.OPENAI:
-            return self.llm
-        return None
-
-    def get_azure_llm(self) -> Optional[LLMConfig]:
-        """Get Azure LLMConfig by name. If no Azure, raise Exception"""
-        if self.llm.api_type == LLMType.AZURE:
-            return self.llm
-        return None
 
 
 def merge_dict(dicts: Iterable[Dict]) -> Dict:

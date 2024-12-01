@@ -18,19 +18,19 @@ class BaseIndexConfig(BaseModel):
 
 
 class VectorIndexConfig(BaseIndexConfig):
-    """Config for vector-based index."""
+    """Option for vector-based index."""
 
     embed_model: BaseEmbedding = Field(default=None, description="Embed model.")
 
 
 class FAISSIndexConfig(VectorIndexConfig):
-    """Config for faiss-based index."""
+    """Option for faiss-based index."""
 
 
 
 
 class MilvusIndexConfig(VectorIndexConfig):
-    """Config for milvus-based index."""
+    """Option for milvus-based index."""
 
     collection_name: str = Field(default="metagpt", description="The name of the collection.")
     uri: str = Field(default="./milvus_local.db", description="The uri of the index.")
@@ -39,14 +39,14 @@ class MilvusIndexConfig(VectorIndexConfig):
 
 
 class BM25IndexConfig(BaseIndexConfig):
-    """Config for bm25-based index."""
+    """Option for bm25-based index."""
 
     _no_embedding: bool = PrivateAttr(default=True)
 
 
 
 class ColBertIndexConfig(BaseIndexConfig):
-    """Config for colbert-based index."""
+    """Option for colbert-based index."""
     index_name: str = Field(default="", description="The name of the index.")
     model_name: str = Field(default="colbert-ir/colbertv2.0", description="The name of the ColBERT model.")
     nbits: int = Field(default=2, description="Number of bits for quantization.")

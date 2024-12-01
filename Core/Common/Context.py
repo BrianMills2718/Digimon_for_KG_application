@@ -52,7 +52,7 @@ class AttrDict(BaseModel):
 
 
 class Context(BaseModel):
-    """Env context for MetaGPT"""
+
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

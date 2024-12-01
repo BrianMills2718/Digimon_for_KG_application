@@ -16,7 +16,7 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from Core.Config2 import config
 from Core.Common.EmbConfig import EmbeddingType
 from Core.Common.LLMConfig import LLMType
-from Core.Index.BaseFactory import GenericFactory
+from Core.Common.BaseFactory import GenericFactory
 
 
 class RAGEmbeddingFactory(GenericFactory):

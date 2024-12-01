@@ -1,13 +1,9 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
-
 from Core.Common.Logger import logger
-from typing import Optional, List
-from Core.Common.ContextMixin import ContextMixin
+from typing import List
 from Core.Common.Constants import GRAPH_FIELD_SEP
-from pydantic import BaseModel, ConfigDict, model_validator
-import tiktoken
 from Core.Common.Memory import Memory
 from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
@@ -17,21 +13,14 @@ from Core.Common.Utils import (split_string_by_multi_markers, clean_str)
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 
-class BaseGraph(ABC, ContextMixin, BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    chunks: Optional[str] = None
-    # context: str  # all the context, including all necessary info
-    llm_name_or_type: Optional[str] = None
-    # working memory for constructing the graph
-    working_memory: Memory = Memory()
+class BaseGraph(ABC):
 
-    @model_validator(mode="after")
-    def _update_context(cls, data):
-        cls.config = data.context.config
-        cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
-        cls._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
-
-        return data
+    def __init__(self, config, llm, encoder):
+        self.working_memory: Memory = Memory()
+        self.config = config
+        self.llm = llm
+        self.ENCODER = encoder
+        self._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
 
     async def build_graph(self, chunks):
         """
@@ -43,6 +32,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         Returns:
             The graph if it already exists, otherwise builds and returns the graph.
         """
+
         # If the graph already exists, load it
         if self._exist_graph():
             logger.info("Graph already exists")
@@ -50,6 +40,10 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
 
         # Build the graph based on the input chunks
         await self._build_graph(chunks)
+
+        # Persist the graph into file
+
+        await self._persist_graph()
 
     def _exist_graph(self):
         """
@@ -108,7 +102,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
         merge_edge_data = {}
 
         existing_edge_data = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
-                                                                                                          tgt_id) else None
+                                                                                                      tgt_id) else None
 
         # Groups node properties by their keys for upsert operation.
         upsert_edge_data = defaultdict(list)
@@ -273,3 +267,6 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
 
         # Asynchronously generate the summary using the language model
         return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
+
+    async def _persist_graph(self):
+        pass

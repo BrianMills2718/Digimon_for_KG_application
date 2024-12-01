@@ -1,47 +1,35 @@
 """
-RAG Index Factory.
-@Reference: https://github.com/geekan/MetaGPT/blob/main/metagpt/rag/factories/index.py
-@Provide: BM25, FaissVectorStore, and MilvusVectorStore
+Graph Factory.
 """
-import faiss
 import os
-from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage
-from llama_index.core.embeddings import BaseEmbedding
-from llama_index.core.indices.base import BaseIndex
-from llama_index.core.vector_stores.types import BasePydanticVectorStore
-from llama_index.vector_stores.faiss import FaissVectorStore
-from llama_index.vector_stores.milvus import MilvusVectorStore
-from Core.Index.ColBertStore import ColbertIndex
+from Core.Graph.BaseGraph import BaseGraph
+from Core.Graph.ERGraph import ERGraph
+from Core.Graph.PassageGraph import PassageGraph
+from Core.Graph.TreeGraph import TreeGraph
+from Core.Graph.RKGraph import RKGraph
 from pathlib import Path
 
 from Core.Common.BaseFactory import ConfigBasedFactory
-from Core.Index.Schema import (
-    BaseIndexConfig,
-    BM25IndexConfig,
-    FAISSIndexConfig,
-    MilvusIndexConfig,
-    ColBertIndexConfig
-)
 
 
 
-class RAGIndexFactory(ConfigBasedFactory):
+class GraphFactory(ConfigBasedFactory):
     def __init__(self):
         creators = {
-            FAISSIndexConfig: self._create_faiss,
-            BM25IndexConfig: self._create_bm25,
-            MilvusIndexConfig: self._create_milvus,
-            ColBertIndexConfig: self._crease_colbert
+            "er_graph": self._create_er_graph,
+            "rkg_graph": self._create_rkg_graph,
+            "tree_graph": self._create_tree_graph,
+            "passage_graph": self._crease_passage_graph
         }
         super().__init__(creators)
 
-    def get_index(self, config: BaseIndexConfig, **kwargs) -> BaseIndex:
+    def get_graph(self, config, **kwargs) -> BaseGraph:
         """Key is PersistType."""
         return super().get_instance(config, **kwargs)
 
-    def _create_faiss(self, config: FAISSIndexConfig, **kwargs) -> VectorStoreIndex:
+    def _create_ergraph(self, config: FAISSIndexConfig, **kwargs) -> VectorStoreIndex:
         if os.path.exists(config.persist_path):
-       
+
             vector_store = FaissVectorStore.from_persist_dir(str(config.persist_path))
             storage_context = StorageContext.from_defaults(vector_store=vector_store, persist_dir=config.persist_path)
             return self._index_from_storage(storage_context=storage_context, config=config, **kwargs)
@@ -50,12 +38,11 @@ class RAGIndexFactory(ConfigBasedFactory):
             vector_store = FaissVectorStore(faiss_index=faiss.IndexFlatL2(config.embed_model.dimensions))
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-            return  VectorStoreIndex(
-            nodes = [],
-            storage_context=storage_context,
-            embed_model= config.embed_model,
-        )
-
+            return VectorStoreIndex(
+                nodes=[],
+                storage_context=storage_context,
+                embed_model=config.embed_model,
+            )
 
     def _create_bm25(self, config: BM25IndexConfig, **kwargs) -> VectorStoreIndex:
         storage_context = StorageContext.from_defaults(persist_dir=config.persist_path)
@@ -67,26 +54,25 @@ class RAGIndexFactory(ConfigBasedFactory):
 
         return self._index_from_vector_store(vector_store=vector_store, config=config, **kwargs)
 
-
     def _crease_colbert(self, config: ColBertIndexConfig, **kwargs) -> VectorStoreIndex:
-    #     import pdb
-    #     # pdb.set_trace()
+        #     import pdb
+        #     # pdb.set_trace()
         index_path = (Path(config.persist_path) / config.index_name)
         if os.path.exists(index_path):
             return ColbertIndex.load_from_disk(config.persist_path, config.index_name)
         else:
-           
+
             return ColbertIndex(**config.model_dump())
-   
+
     def _index_from_storage(
-        self, storage_context: StorageContext, config: BaseIndexConfig, **kwargs
+            self, storage_context: StorageContext, config: BaseIndexConfig, **kwargs
     ) -> VectorStoreIndex:
         embed_model = self._extract_embed_model(config, **kwargs)
 
         return load_index_from_storage(storage_context=storage_context, embed_model=embed_model)
 
     def _index_from_vector_store(
-        self, vector_store: BasePydanticVectorStore, config: BaseIndexConfig, **kwargs
+            self, vector_store: BasePydanticVectorStore, config: BaseIndexConfig, **kwargs
     ) -> VectorStoreIndex:
         embed_model = self._extract_embed_model(config, **kwargs)
 
@@ -99,4 +85,4 @@ class RAGIndexFactory(ConfigBasedFactory):
         return self._val_from_config_or_kwargs("embed_model", config, **kwargs)
 
 
-get_index = RAGIndexFactory().get_index
+get_graph = GraphFactory().get_graph

@@ -14,7 +14,7 @@ class EmbeddingType(Enum):
 
 
 class EmbeddingConfig(YamlModel):
-    """Config for Embedding.
+    """Option for Embedding.
 
     Examples:
     ---------
