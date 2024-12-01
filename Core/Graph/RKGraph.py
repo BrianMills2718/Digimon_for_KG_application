@@ -7,8 +7,7 @@ from Core.Common.Logger import logger
 from Core.Common.Utils import (
     clean_str,
     split_string_by_multi_markers,
-    is_float_regex,
-    mdhash_id
+    is_float_regex
 )
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Schema.Message import Message
@@ -126,8 +125,8 @@ class RKGraph(BaseGraph):
             return None
 
         return Relationship(
-            src_id=clean_str(record_attributes[1].upper()),
-            tgt_id=clean_str(record_attributes[2].upper()),
+            src_id=clean_str(record_attributes[1]),
+            tgt_id=clean_str(record_attributes[2]),
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
