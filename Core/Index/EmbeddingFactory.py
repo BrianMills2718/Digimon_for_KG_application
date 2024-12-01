@@ -9,11 +9,9 @@ from __future__ import annotations
 from typing import Any
 
 from llama_index.core.embeddings import BaseEmbedding
-# from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 
-from Core.Config2 import config
 from Core.Common.EmbConfig import EmbeddingType
 from Core.Common.LLMConfig import LLMType
 from Core.Common.BaseFactory import GenericFactory
@@ -48,7 +46,7 @@ class RAGEmbeddingFactory(GenericFactory):
 
         raise TypeError("To use RAG, please set your embedding in config2.yaml.")
 
-    def _create_openai(self) -> OpenAIEmbedding:
+    def _create_openai(self, config) -> OpenAIEmbedding:
         params = dict(
             api_key = config.embedding.api_key or config.llm.api_key,
             api_base = config.embedding.base_url or config.llm.base_url,
@@ -59,7 +57,7 @@ class RAGEmbeddingFactory(GenericFactory):
         return OpenAIEmbedding(**params)
 
  
-    def _create_ollama(self) -> OllamaEmbedding:
+    def _create_ollama(self, config) -> OllamaEmbedding:
         params = dict(
             base_url=config.embedding.base_url,
         )

@@ -1,15 +1,14 @@
-from Core.Graph.RKGraph import ERGraph
+
+from Core.GraphRAG import GraphRAG
 
 import asyncio
 if __name__ == "__main__":
     
     with open("./book.txt") as f:
         doc = f.read()
-    graph = ERGraph()
+    graph_rag = GraphRAG(working_dir = "./test_book")
 
-    chunks = asyncio.run(graph.chunk_documents(doc))
 
-    asyncio.run(graph._construct_graph(chunks))
 
     
     # asyncio.run(graph.query("who are you"))

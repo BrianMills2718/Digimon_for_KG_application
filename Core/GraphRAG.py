@@ -1,12 +1,16 @@
-from typing import Union, Any
+from typing import Union, Any, Optional
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import mdhash_id
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic import BaseModel, Field, model_validator
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.GraphFactory import get_graph
+from Core.Index.VectorIndex import VectorIndex
+from  Core.Index.IndexConfigFactory import get_index_config
+from Core.Storage.JsonKVStorage import JsonKVStorage
+from Core.Storage.NameSpace import Workspace
 
 
 class GraphRAG(BaseModel, ContextMixin):
@@ -14,6 +18,14 @@ class GraphRAG(BaseModel, ContextMixin):
 
     working_dir: str = Field(default=None, exclude=True)
     graph: BaseGraph = Field(default=None, exclude=True)
+    chunks_storage: Optional[JsonKVStorage] = Field(default=None, exclude=True)
+    entities_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
+    relations_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
+
+    # The following two matrices are utilized for mapping entities to their corresponding chunks through the specified link-path:
+    # Entity Matrix: Represents the entities in the datase  t.
+    # Chunk Matrix: Represents the chunks associated with the entities.
+    # These matrices facilitate the entity -> relationship -> chunk linkage, which is integral to the HippoRAG and FastGraphRAG models.
 
     @model_validator(mode="after")
     def _update_context(cls, data):
@@ -26,9 +38,37 @@ class GraphRAG(BaseModel, ContextMixin):
         cls.graph = get_graph(data.config, data.llm, data.ENCODER)
         return data
 
+    @model_validator(mode="before")
+    def _validate_working_dir(cls, data):
+        assert data.working_dir is not None, "working_dir must be provided."
+        cls.workspace = Workspace(data.working_dir, data.config.exp_name)
+        return data
+
     @model_validator(mode="after")
-    def _init_storage(cls, data):
-        cls.graph_storage_path  =
+    def _init_storage_namespace(cls, data):
+        cls.graph.namespace = data.workspace.make_for("graph_storage")
+        if data.config.use_entities_vdb:
+            cls.entities_vdb_namespace = data.workspace.make_for("entities_vdb")
+        if data.config.use_relations_vdb:
+            cls.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
+        cls.chunks = data.workspace.make_for("chunks")
+        return data
+
+    @model_validator(mode="after")
+    def _register_vdbs(cls, data):
+        if data.config.use_entities_vdb:
+            cls.entities_vdb = VectorIndex(get_index_config(data.config, namesapce = data.entities_vdb_namespace))
+        if data.config.use_relations_vdb:
+            cls.relations_vdb = VectorIndex(get_index_config(data.config, namesapce = data.relations_vdb_namespace))
+        return data
+
+    @model_validator(mode="after")
+    def _register_e2r_r2c_matrix(cls, data):
+        if data.config.use_entity_link_chunk:
+            pass
+        return data
+
+
     async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
         """Chunk the given documents into smaller chunks.
 
@@ -73,6 +113,7 @@ class GraphRAG(BaseModel, ContextMixin):
         logger.info(f"Starting build graph for the given documents")
         await self.graph.build_graph(chunks)
         await self.graph.persist_graph()
+        logger.info(f"Finished building graph for the given documents")
 
         ####################################################################################################
         # 3. Index building Stage

@@ -262,3 +262,6 @@ class BaseGraph(ABC):
 
     async def _persist_graph(self):
         await self._graph.persist()
+
+    async def persist_graph(self):
+        await self._graph.persist()

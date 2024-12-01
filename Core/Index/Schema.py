@@ -27,22 +27,18 @@ class FAISSIndexConfig(VectorIndexConfig):
     """Option for faiss-based index."""
 
 
-
-
 class MilvusIndexConfig(VectorIndexConfig):
     """Option for milvus-based index."""
 
-    collection_name: str = Field(default="metagpt", description="The name of the collection.")
+    collection_name: str = Field(default="graphrag", description="The name of the collection.")
     uri: str = Field(default="./milvus_local.db", description="The uri of the index.")
     token: Optional[str] = Field(default=None, description="The token of the index.")
-  
 
 
 class BM25IndexConfig(BaseIndexConfig):
     """Option for bm25-based index."""
 
     _no_embedding: bool = PrivateAttr(default=True)
-
 
 
 class ColBertIndexConfig(BaseIndexConfig):
@@ -55,13 +51,3 @@ class ColBertIndexConfig(BaseIndexConfig):
     doc_maxlen: int = Field(default=120, description="Maximum length of documents.")
     query_maxlen: int = Field(default=60, description="Maximum length of queries.")
     kmeans_niters: int = Field(default=4, description="Number of iterations for K-means clustering.")
-class ParseResultType(str, Enum):
-    """The result type for the parser."""
-
-    TXT = "text"
-    MD = "markdown"
-    JSON = "json"
-
-
-
-

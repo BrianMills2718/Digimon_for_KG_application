@@ -22,7 +22,7 @@ from Core.Common.Utils import mdhash_id
 from Core.Index.Schema import ColBertIndexConfig
 
 
-class VectorIndex():
+class VectorIndex:
     """VectorIndex is designed to be simple and straightforward.
 
     It is a lightweight and easy-to-use vector database for ANN search.
@@ -30,8 +30,7 @@ class VectorIndex():
 
     def __init__(
             self, config
-    ) -> None:
-        self._index = None
+    ):
         self.config = config
         self._index = get_index(self.config)
 
@@ -94,7 +93,7 @@ class VectorIndex():
                 return []
 
     def _get_retrieve_top_k(self):
-        return self.retriever_configs.top_k
+        return self.config.retrieve_top_k
 
     def _storage_index(self):
         self._index.storage_context.persist(persist_dir=self.config.persist_path)

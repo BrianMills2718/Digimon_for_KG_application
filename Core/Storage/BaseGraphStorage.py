@@ -1,10 +1,10 @@
-
 import numpy as np
 from typing import TypedDict, Union
 
+from Core.Storage.BaseStorage import BaseStorage
 
 
-class BaseGraphStorage:
+class BaseGraphStorage(BaseStorage):
     async def has_node(self, node_id: str) -> bool:
         raise NotImplementedError
 
@@ -21,12 +21,12 @@ class BaseGraphStorage:
         raise NotImplementedError
 
     async def get_edge(
-        self, source_node_id: str, target_node_id: str
+            self, source_node_id: str, target_node_id: str
     ) -> Union[dict, None]:
         raise NotImplementedError
 
     async def get_node_edges(
-        self, source_node_id: str
+            self, source_node_id: str
     ) -> Union[list[tuple[str, str]], None]:
         raise NotImplementedError
 
@@ -34,18 +34,17 @@ class BaseGraphStorage:
         raise NotImplementedError
 
     async def upsert_edge(
-        self, source_node_id: str, target_node_id: str, edge_data: dict[str, str]
+            self, source_node_id: str, target_node_id: str, edge_data: dict[str, str]
     ):
         raise NotImplementedError
 
     async def clustering(self, algorithm: str):
         raise NotImplementedError
 
-    #TODO: Support more community schema
+    # TODO: Support more community schema
 
     async def embed_nodes(self, algorithm: str) -> tuple[np.ndarray, list[str]]:
         raise NotImplementedError("Node embedding is not used in nano-graphrag.")
-    
+
     async def persist(self):
-        
         raise NotImplementedError

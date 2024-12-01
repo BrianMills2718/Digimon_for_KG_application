@@ -24,7 +24,6 @@ class CLIParams(BaseModel):
 
     @model_validator(mode="after")
     def check_project_path(self):
-
         """Check project_path and project_name"""
         if self.project_path:
             self.inc = True
@@ -41,8 +40,10 @@ class Config(CLIParams, YamlModel):
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
-    # omniparse
-
+    # Basic Config
+    use_entities_vdb: bool = True
+    use_relations_vdb: bool = True  # Only set True for LightRAG
+    vdb_type: str = "faiss"  # faiss/colbert/milvus
     # Chunking
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
@@ -58,7 +59,7 @@ class Config(CLIParams, YamlModel):
     enable_entity_description: bool = False
     enable_entity_type: bool = False
     enable_edge_description: bool = False
-    enable_edge_name:bool = False
+    enable_edge_name: bool = False
     prior_prob: float = 0.8
     # Graph clustering
     use_community: bool = True
@@ -67,14 +68,12 @@ class Config(CLIParams, YamlModel):
     graph_cluster_seed: int = 0xDEADBEEF
     summary_max_tokens: int = 500
 
-
     # Commuity report
     enforce_sub_communities: bool = False
-    
+
     # Misc Parameters
     repair_llm_output: bool = False
     prompt_schema: Literal["json", "markdown", "raw"] = "json"
-
 
     # Retrieval Parameters
     enable_local: bool = False
@@ -88,6 +87,7 @@ class Config(CLIParams, YamlModel):
     similarity_max: float = 1.0
     # Graph Augmentation
     enable_graph_augmentation: bool = True
+
     @classmethod
     def from_home(cls, path):
         pathname = CONFIG_ROOT / path
@@ -108,7 +108,7 @@ class Config(CLIParams, YamlModel):
 
         dicts = [dict(os.environ)]
         dicts += [Config.read_yaml(path) for path in default_config_paths]
-    
+
         final = merge_dict(dicts)
         return Config(**final)
 
@@ -120,15 +120,12 @@ class Config(CLIParams, YamlModel):
         gpt4 = Option.from_llm_config(llm_config)
         A = Role(name="A", profile="Democratic candidate", goal="Win the election", actions=[a1], watch=[a2], config=gpt4)
         """
-   
+
         llm_config = LLMConfig.model_validate(llm_config)
         dicts = [dict(os.environ)]
         dicts += [{"llm": llm_config}]
         final = merge_dict(dicts)
         return Config(**final)
-
-
-
 
 
 def merge_dict(dicts: Iterable[Dict]) -> Dict:

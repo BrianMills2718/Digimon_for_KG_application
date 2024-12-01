@@ -4,26 +4,20 @@ import os
 from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
-from dataclasses import dataclass
+from pydantic import model_validator
+
 from Core.Common.Logger import logger
 from Core.Storage.BaseGraphStorage import BaseGraphStorage
 
 
-@dataclass
 class NetworkXStorage(BaseGraphStorage):
-
-    def __init__(self):
-        self._graph: nx.Graph = Filed
-
-        self._node_embed_algorithms = {
-            "node2vec": self._node2vec_embed,
-        }
+    name = "nx_data.graphml"  # The valid file name for NetworkX
+    _graph: nx.Graph = nx.Graph()
 
     @staticmethod
-    def load_nx_graph(file_name) -> nx.Graph:
-        if os.path.exists(file_name):
-            return nx.read_graphml(file_name)
-        return nx.Graph()
+    def load_nx_graph(self):
+        if os.path.exists(self._graphml_xml_file):
+            self._graph = nx.read_graphml(self._graphml_xml_file)
 
     @staticmethod
     def write_nx_graph(graph: nx.Graph, file_name):
@@ -31,6 +25,18 @@ class NetworkXStorage(BaseGraphStorage):
             f"Writing graph with {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
         )
         nx.write_graphml(graph, file_name)
+
+    @model_validator(mode="after")
+    def _register_node2emb(cls, data):
+        cls._node_embed_algorithms = {
+            "node2vec": data._node2vec_embed,
+        }
+        return data
+
+    @model_validator(mode="after")
+    def _setter_graph_file(cls, data):
+        cls._graphml_xml_file = data.namespace.get_save_path(data.name)
+        return data
 
     @staticmethod
     def _stabilize_graph(graph: nx.Graph) -> nx.Graph:
@@ -66,13 +72,15 @@ class NetworkXStorage(BaseGraphStorage):
         return fixed_graph
 
     async def init_graph(self):
-        self._graph = NetworkXStorage.load_nx_graph(self._graphml_xml_file)
+        self.load_nx_graph()
 
     @property
     def graph(self):
         return self._graph
 
     async def _persist(self):
+        if os.path.exists(self._graphml_xml_file):
+            return
         NetworkXStorage.write_nx_graph(self._graph, self._graphml_xml_file)
 
     async def has_node(self, node_id: str) -> bool:
