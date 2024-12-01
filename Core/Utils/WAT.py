@@ -1,28 +1,34 @@
 from dataclasses import dataclass, asdict
 
+from pydantic import model_validator
+
+
 @dataclass
 class WATAnnotation:
     # An entity annotated by WAT
 
-    def __init__(self, d):
+    def __init__(self, start, end, rho, explanation, spot, id, title):
+        self.start = start  # char offset (included)
 
-        # char offset (included)
-        self.start = d['start']
-        # char offset (not included)
-        self.end = d['end']
+        self.end = end  # char offset (not included)
 
-        # annotation accuracy
-        self.rho = d['rho']
-        # spot-entity probability
-        self.prior_prob = d['explanation']['prior_explanation']['entity_mention_probability']
+        self.rho = rho  # annotation accuracy
 
-        # annotated text
-        self.spot = d['spot']
+        self.explanation = explanation
 
-        # Wikpedia entity info
-        self.wiki_id = d['id']
-        self.wiki_title = d['title']
+        self.spot = spot  # annotated text
 
+        # Wikipedia entity info
+        self.wiki_id = id  # wiki_id
+        self.wiki_title = title  # wiki_title
 
+    @model_validator(mode="after")
+    def __update_prior_prob(cls, data):
+        if cls.explanation is not None:
+            cls.prior_prob = cls.explanation['prior_explanation'][
+                'entity_mention_probability']  # spot-entity probability
+        return data
+
+    @property
     def as_dict(self):
         return asdict(self)

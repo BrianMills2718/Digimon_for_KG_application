@@ -11,19 +11,24 @@ from multiprocessing import Pool
 from itertools import chain
 import concurrent.futures
 import requests
+from Core.Common.Constants import GCUBE_TOKEN
 
-MY_GCUBE_TOKEN = '07e1bd33-c0f5-41b0-979b-4c9a859eec3f-843339462'
+from Core.Utils.WAT import WATAnnotation
 
 
-class KGPGraph(BaseGraph):
-    kgp_graph: NetworkXStorage = NetworkXStorage()
+class PassageGraph(BaseGraph):
+    """
+    The Passage of Graph, where each node denotes a passage (chunk) in the document, which is used for KGP
+    1. Please refer to the code link: https://github.com/YuWVandy/KG-LLM-MDQA
+    2. You can see the paper: https://arxiv.org/abs/2308.11730
+    """
     k: int = 30
     k_nei: int = 3
 
-    def wat_entity_linking(self, text):
+    def _wat_entity_linking(self, text):
         # Main method, text annotation with WAT entity linking system
         wat_url = 'https://wat.d4science.org/wat/tag/tag'
-        payload = [("gcube-token", MY_GCUBE_TOKEN),
+        payload = [("gcube-token", GCUBE_TOKEN),
                    ("text", text),
                    ("lang", 'en'),
                    ("tokenizer", "nlp4j"),
@@ -33,12 +38,12 @@ class KGPGraph(BaseGraph):
 
         response = requests.get(wat_url, params=payload)
 
-        return [WATAnnotation(a) for a in response.json()['annotations']]
+        return [WATAnnotation(**annotation) for annotation in response.json()['annotations']]
 
     def wiki_kw_extract_chunk(self, chunk, prior_prob=0.8):
 
-        wat_annotations = self.wat_entity_linking(chunk)
-        json_list = [w.json_dict() for w in wat_annotations]
+        wat_annotations = self._wat_entity_linking(chunk)
+        json_list = [wat.as_dict for wat in wat_annotations]
         kw2chunk = defaultdict(set)
         chunk2kw = defaultdict(set)
 
@@ -81,4 +86,3 @@ class KGPGraph(BaseGraph):
                     # logger.info("{src_id} ---{kw}---> {tgt_id}".format(src_id = chunk2id[chunk_list[i]], tgt_id = chunk2id[chunk_list[j]], kw = kw))
                     await self.kgp_graph.upsert_edge(source_node_id=chunk2id[chunk_list[i]],
                                                      target_node_id=chunk2id[chunk_list[j]], edge_data=dict(kw=kw))
-

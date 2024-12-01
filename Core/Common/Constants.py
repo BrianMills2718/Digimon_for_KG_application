@@ -87,3 +87,6 @@ REL_PATTERN = (
     r"Relationship\(subj=Node\(id='(.*?)', type='(.*?)'\), "
     r"obj=Node\(id='(.*?)', type='(.*?)'\), type='(.*?)'\)"
 )
+
+# For wiki-link
+GCUBE_TOKEN = '07e1bd33-c0f5-41b0-979b-4c9a859eec3f-843339462'

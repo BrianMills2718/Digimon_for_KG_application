@@ -26,10 +26,7 @@ class BaseGraph(ABC, ContextMixin, BaseModel):
     working_memory: Memory = Memory()
 
     @model_validator(mode="after")
-    def _update_context(
-            cls: Type["BaseGraph"], data: "BaseGraph"
-    ) -> "BaseGraph":
-
+    def _update_context(cls, data):
         cls.config = data.context.config
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
         cls._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
