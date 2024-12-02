@@ -2,7 +2,6 @@ import os
 from typing import Optional
 
 
-
 class Workspace:
     @staticmethod
     def new(working_dir: str, exp_name: str = None) -> "Workspace":
@@ -41,16 +40,21 @@ class Workspace:
 
 
 class Namespace:
-    namespace: Optional[str] = None
-    workspace: Workspace = None
+    def __init__(self, workspace: Workspace, namespace: Optional[str] = None):
+        self.namespace = namespace
+        self.workspace = workspace
 
-    def get_load_path(self, resource_name: str) -> Optional[str]:
+    def get_load_path(self, resource_name: Optional[str] = None) -> Optional[str]:
         assert self.namespace is not None, "Namespace must be set to get resource load path."
         load_path = self.workspace.get_load_path()
         if load_path is None:
             return None
-        return os.path.join(load_path, f"{self.namespace}_{resource_name}")
+        if resource_name:
+            return os.path.join(load_path, f"{self.namespace}_{resource_name}")
+        return os.path.join(load_path, self.namespace)
 
-    def get_save_path(self, resource_name: str) -> str:
+    def get_save_path(self, resource_name: Optional[str] = None) -> str:
         assert self.namespace is not None, "Namespace must be set to get resource save path."
-        return os.path.join(self.workspace.get_save_path(), f"{self.namespace}_{resource_name}")
+        if resource_name:
+            return os.path.join(self.workspace.get_save_path(), f"{self.namespace}_{resource_name}")
+        return os.path.join(self.workspace.get_save_path(), self.namespace)

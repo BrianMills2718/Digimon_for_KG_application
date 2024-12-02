@@ -3,20 +3,21 @@ from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import mdhash_id
-from pydantic import BaseModel, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.GraphFactory import get_graph
 from Core.Index.VectorIndex import VectorIndex
-from  Core.Index.IndexConfigFactory import get_index_config
+from Core.Index.IndexConfigFactory import get_index_config
 from Core.Storage.JsonKVStorage import JsonKVStorage
 from Core.Storage.NameSpace import Workspace
 
 
 class GraphRAG(ContextMixin, BaseModel):
     """A class representing a Graph-based Retrieval-Augmented Generation system."""
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
-    working_dir: str = Field(default="", exclude=False)
+    working_dir: str = Field(default="", exclude=True)
     graph: BaseGraph = Field(default=None, exclude=True)
     chunks_storage: Optional[JsonKVStorage] = Field(default=None, exclude=True)
     entities_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
@@ -29,10 +30,11 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @field_validator("working_dir", mode="before")
     @classmethod
-    def check_working_dir(cls, value: str) :
+    def check_working_dir(cls, value: str):
         if value == "":
             logger.error("Working directory cannot be empty")
         return value
+
     @model_validator(mode="after")
     def _update_context(cls, data):
         cls.config = data.context.config
@@ -42,10 +44,8 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @model_validator(mode="after")
     def _register_graph(cls, data):
-        cls.graph = get_graph(data.config, llm = data.llm, encoder =  data.ENCODER)
+        cls.graph = get_graph(data.config, llm=data.llm, encoder=data.ENCODER)
         return data
-
-
 
     @model_validator(mode="after")
     def _init_storage_namespace(cls, data):
@@ -60,9 +60,11 @@ class GraphRAG(ContextMixin, BaseModel):
     @model_validator(mode="after")
     def _register_vdbs(cls, data):
         if data.config.use_entities_vdb:
-            cls.entities_vdb = VectorIndex(get_index_config(data.config, namesapce = data.entities_vdb_namespace))
+            cls.entities_vdb = VectorIndex(
+                get_index_config(data.config, persist_path=data.entities_vdb_namespace.get_save_path()))
         if data.config.use_relations_vdb:
-            cls.relations_vdb = VectorIndex(get_index_config(data.config, namesapce = data.relations_vdb_namespace))
+            cls.relations_vdb = VectorIndex(
+                get_index_config(data.config, persist_path=data.relations_vdb_namespace.get_save_path()))
         return data
 
     @model_validator(mode="after")
@@ -70,7 +72,6 @@ class GraphRAG(ContextMixin, BaseModel):
         if data.config.use_entity_link_chunk:
             pass
         return data
-
 
     async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
         """Chunk the given documents into smaller chunks.
@@ -121,7 +122,6 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
-
 
         ####################################################################################################
         # 4. Graph Augmentation Stage (Optional)

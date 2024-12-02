@@ -8,22 +8,21 @@ from Core.Graph.PassageGraph import PassageGraph
 # from Core.Graph.TreeGraph import TreeGraph
 from Core.Graph.RKGraph import RKGraph
 
-from Core.Common.BaseFactory import ConfigBasedFactory
 
 
-class GraphFactory(ConfigBasedFactory):
+class GraphFactory():
     def __init__(self):
-        creators = {
+        self.creators = {
             "er_graph": self._create_er_graph,
             "rkg_graph": self._create_rkg_graph,
             "tree_graph": self._create_tree_graph,
             "passage_graph": self._crease_passage_graph
         }
-        super().__init__(creators)
+
 
     def get_graph(self, config, **kwargs) -> BaseGraph:
         """Key is PersistType."""
-        return super().get_instance(config.graph_type, **kwargs)
+        return self.creators[config.graph_type](config, **kwargs)
 
     @staticmethod
     def _create_er_graph(config, **kwargs):
@@ -37,7 +36,7 @@ class GraphFactory(ConfigBasedFactory):
 
     @staticmethod
     def _create_tree_graph(config, **kwargs):
-        #TODO: waiting for syr
+        # TODO: waiting for syr
         pass
         # return TreeGraph(config, **kwargs)
 

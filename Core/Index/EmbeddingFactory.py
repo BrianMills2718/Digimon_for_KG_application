@@ -29,7 +29,7 @@ class RAGEmbeddingFactory(GenericFactory):
 
     def get_rag_embedding(self, key: EmbeddingType = None, config: Config = None) -> BaseEmbedding:
         """Key is EmbeddingType."""
-        return super().get_instance(key or self._resolve_embedding_type(config))
+        return super().get_instance(key or self._resolve_embedding_type(config), config = config)
 
     def _resolve_embedding_type(self, config) -> EmbeddingType | LLMType:
         """Resolves the embedding type.
@@ -44,7 +44,7 @@ class RAGEmbeddingFactory(GenericFactory):
         if config.llm.api_type in [LLMType.OPENAI, LLMType.AZURE]:
             return config.llm.api_type
 
-        raise TypeError("To use RAG, please set your embedding in config2.yaml.")
+        raise TypeError("To use RAG, please set your embedding in Config2.yaml.")
 
     def _create_openai(self, config) -> OpenAIEmbedding:
         params = dict(
@@ -52,7 +52,7 @@ class RAGEmbeddingFactory(GenericFactory):
             api_base = config.embedding.base_url or config.llm.base_url,
         )
 
-        self._try_set_model_and_batch_size(params)
+        self._try_set_model_and_batch_size(params, config)
 
         return OpenAIEmbedding(**params)
 
@@ -66,7 +66,7 @@ class RAGEmbeddingFactory(GenericFactory):
 
         return OllamaEmbedding(**params)
 
-    def _try_set_model_and_batch_size(self, params: dict):
+    def _try_set_model_and_batch_size(self, params: dict, config):
   
         """Set the model_name and embed_batch_size only when they are specified."""
         if config.embedding.model:
