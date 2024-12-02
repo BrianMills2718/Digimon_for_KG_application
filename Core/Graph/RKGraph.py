@@ -132,6 +132,7 @@ class RKGraph(BaseGraph):
             source_id=chunk_key,
             keywords=clean_str(record_attributes[4]) if self.config.use_keywords else None
         )
+
     @classmethod
     def _build_context_for_entity_extraction(self, content: str) -> dict:
         return dict(

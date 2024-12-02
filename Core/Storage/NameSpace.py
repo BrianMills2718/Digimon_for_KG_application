@@ -1,7 +1,6 @@
 import os
 from typing import Optional
 
-from pydantic import BaseModel, Field
 
 
 class Workspace:
@@ -25,7 +24,7 @@ class Workspace:
         return Namespace(self, namespace)
 
     def get_load_path(self) -> Optional[str]:
-        load_path = self.get_path(self.working_dir, self.current_load_checkpoint)
+        load_path = self.get_path(self.working_dir, self.exp_name)
         if load_path == self.working_dir and len([x for x in os.scandir(load_path) if x.is_file()]) == 0:
             return None
         return load_path
@@ -41,7 +40,7 @@ class Workspace:
         return os.path.join(save_path)
 
 
-class Namespace(BaseModel):
+class Namespace:
     namespace: Optional[str] = None
     workspace: Workspace = None
 

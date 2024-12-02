@@ -15,7 +15,7 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from Core.Common.EmbConfig import EmbeddingType
 from Core.Common.LLMConfig import LLMType
 from Core.Common.BaseFactory import GenericFactory
-
+from Core.Config2 import Config
 
 class RAGEmbeddingFactory(GenericFactory):
     """Create LlamaIndex Embedding with MetaGPT's embedding config."""
@@ -27,11 +27,11 @@ class RAGEmbeddingFactory(GenericFactory):
         }
         super().__init__(creators)
 
-    def get_rag_embedding(self, key: EmbeddingType = None) -> BaseEmbedding:
+    def get_rag_embedding(self, key: EmbeddingType = None, config: Config = None) -> BaseEmbedding:
         """Key is EmbeddingType."""
-        return super().get_instance(key or self._resolve_embedding_type())
+        return super().get_instance(key or self._resolve_embedding_type(config))
 
-    def _resolve_embedding_type(self) -> EmbeddingType | LLMType:
+    def _resolve_embedding_type(self, config) -> EmbeddingType | LLMType:
         """Resolves the embedding type.
 
         If the embedding type is not specified, for backward compatibility, it checks if the LLM API type is either OPENAI or AZURE.

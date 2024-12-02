@@ -11,12 +11,12 @@ from Core.Storage.BaseGraphStorage import BaseGraphStorage
 
 
 class NetworkXStorage(BaseGraphStorage):
-    name = "nx_data.graphml"  # The valid file name for NetworkX
+    name: str = "nx_data.graphml"  # The valid file name for NetworkX
     _graph: nx.Graph = nx.Graph()
 
     @staticmethod
     def load_nx_graph(self):
-        if os.path.exists(self._graphml_xml_file):
+        if os.path.exists(self.graphml_xml_path):
             self._graph = nx.read_graphml(self._graphml_xml_file)
 
     @staticmethod
@@ -33,10 +33,9 @@ class NetworkXStorage(BaseGraphStorage):
         }
         return data
 
-    @model_validator(mode="after")
-    def _setter_graph_file(cls, data):
-        cls._graphml_xml_file = data.namespace.get_save_path(data.name)
-        return data
+    @property
+    def graphml_xml_file(self):
+        return self.namespace.get_save_path(self.name)
 
     @staticmethod
     def _stabilize_graph(graph: nx.Graph) -> nx.Graph:
@@ -79,9 +78,9 @@ class NetworkXStorage(BaseGraphStorage):
         return self._graph
 
     async def _persist(self):
-        if os.path.exists(self._graphml_xml_file):
+        if os.path.exists(self.graphml_xml_path):
             return
-        NetworkXStorage.write_nx_graph(self._graph, self._graphml_xml_file)
+        NetworkXStorage.write_nx_graph(self._graph, self.graphml_xml_path)
 
     async def has_node(self, node_id: str) -> bool:
         return self._graph.has_node(node_id)

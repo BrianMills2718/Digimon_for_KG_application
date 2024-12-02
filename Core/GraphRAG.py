@@ -3,7 +3,7 @@ from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import mdhash_id
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.GraphFactory import get_graph
@@ -13,44 +13,47 @@ from Core.Storage.JsonKVStorage import JsonKVStorage
 from Core.Storage.NameSpace import Workspace
 
 
-class GraphRAG(BaseModel, ContextMixin):
+class GraphRAG(ContextMixin, BaseModel):
     """A class representing a Graph-based Retrieval-Augmented Generation system."""
 
-    working_dir: str = Field(default=None, exclude=True)
+    working_dir: str = Field(default="", exclude=False)
     graph: BaseGraph = Field(default=None, exclude=True)
     chunks_storage: Optional[JsonKVStorage] = Field(default=None, exclude=True)
     entities_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
     relations_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
 
     # The following two matrices are utilized for mapping entities to their corresponding chunks through the specified link-path:
-    # Entity Matrix: Represents the entities in the datase  t.
+    # Entity Matrix: Represents the entities in the dataset.
     # Chunk Matrix: Represents the chunks associated with the entities.
     # These matrices facilitate the entity -> relationship -> chunk linkage, which is integral to the HippoRAG and FastGraphRAG models.
 
+    @field_validator("working_dir", mode="before")
+    @classmethod
+    def check_working_dir(cls, value: str) :
+        if value == "":
+            logger.error("Working directory cannot be empty")
+        return value
     @model_validator(mode="after")
     def _update_context(cls, data):
         cls.config = data.context.config
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
+        cls.workspace = Workspace(data.working_dir, cls.config.exp_name)
         return data
 
     @model_validator(mode="after")
     def _register_graph(cls, data):
-        cls.graph = get_graph(data.config, data.llm, data.ENCODER)
+        cls.graph = get_graph(data.config, llm = data.llm, encoder =  data.ENCODER)
         return data
 
-    @model_validator(mode="before")
-    def _validate_working_dir(cls, data):
-        assert data.working_dir is not None, "working_dir must be provided."
-        cls.workspace = Workspace(data.working_dir, data.config.exp_name)
-        return data
+
 
     @model_validator(mode="after")
     def _init_storage_namespace(cls, data):
-        cls.graph.namespace = data.workspace.make_for("graph_storage")
+        cls.graph.namespace = cls.workspace.make_for("graph_storage")
         if data.config.use_entities_vdb:
-            cls.entities_vdb_namespace = data.workspace.make_for("entities_vdb")
+            cls.entities_vdb_namespace = cls.workspace.make_for("entities_vdb")
         if data.config.use_relations_vdb:
-            cls.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
+            cls.relations_vdb_namespace = cls.workspace.make_for("relations_vdb")
         cls.chunks = data.workspace.make_for("chunks")
         return data
 
@@ -118,6 +121,7 @@ class GraphRAG(BaseModel, ContextMixin):
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
+
 
         ####################################################################################################
         # 4. Graph Augmentation Stage (Optional)

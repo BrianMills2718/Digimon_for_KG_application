@@ -36,7 +36,7 @@ class Config(CLIParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-
+    exp_name: str = "debug"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
