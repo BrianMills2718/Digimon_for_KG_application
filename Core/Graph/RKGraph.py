@@ -26,20 +26,21 @@ class RKGraph(BaseGraph):
     @classmethod
     async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> Union[
         Entity, None]:
+ 
         if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
             return None
 
-        entity_name = clean_str(record_attributes[1].upper())
+        entity_name = clean_str(record_attributes[1])
         if not entity_name.strip():
             return None
 
-        return Entity(
+        entity =  Entity(
             entity_name=entity_name,
-            entity_type=clean_str(record_attributes[2].upper()),
+            entity_type=clean_str(record_attributes[2]),
             description=clean_str(record_attributes[3]),
             source_id=chunk_key
         )
-
+        return entity
     async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
         chunk_key, chunk_info = chunk_key_pair
         records = await self._extract_records_from_chunk(chunk_info)
@@ -64,11 +65,7 @@ class RKGraph(BaseGraph):
         2. https://github.com/HKUDS/LightRAG/tree/main
         """
         context = self._build_context_for_entity_extraction(chunk_info.content)
-        prompt_template = None
-        if self.config.use_keywords:
-            prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD
-        else:
-            prompt_template = GraphPrompt.ENTITY_EXTRACTION
+        prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD if self.config.enable_keywords else GraphPrompt.ENTITY_EXTRACTION
         prompt = prompt_template.format(**context)
 
         working_memory = Memory()
@@ -130,7 +127,7 @@ class RKGraph(BaseGraph):
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
-            keywords=clean_str(record_attributes[4]) if self.config.use_keywords else None
+            keywords=clean_str(record_attributes[4]) if self.config.enable_keywords else None
         )
 
     @classmethod

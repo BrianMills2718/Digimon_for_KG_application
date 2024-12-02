@@ -22,7 +22,7 @@ class BaseGraph(ABC):
         self.ENCODER = encoder  # Encoder
         self._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
 
-    async def build_graph(self, chunks):
+    async def build_graph(self, chunks, force: bool = False):
         """
         Builds or loads a graph based on the input chunks.
 
@@ -34,14 +34,15 @@ class BaseGraph(ABC):
         """
 
         # If the graph already exists, load it
-        await self._load_graph()
+        if not force:
+            await self._load_graph()
 
         # Build the graph based on the input chunks
         await self._build_graph(chunks)
 
         # Persist the graph into file
 
-        await self._persist_graph()
+        await self._persist_graph(force)
 
     async def _load_graph(self):
         """
@@ -93,6 +94,7 @@ class BaseGraph(ABC):
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
+        logger.debug(f"node data: {node_data}")
         # Upsert the node with the merged data
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
@@ -141,10 +143,11 @@ class BaseGraph(ABC):
                     node_id,
                     node_data=dict(source_id=source_id, entity_name=node_id)
                 )
+
         # Create edge_data with merged data
         edge_data = dict(weight=total_weight, source_id=GRAPH_FIELD_SEP.join(source_id),
                          relation_name=relation_name, keywords=keywords, description=description)
-
+        logger.debug(f"edge data: {edge_data}")
         # Upsert the edge with the merged data
         await self._graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
 
@@ -267,8 +270,8 @@ class BaseGraph(ABC):
         # Asynchronously generate the summary using the language model
         return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
 
-    async def _persist_graph(self):
-        await self._graph.persist()
+    async def _persist_graph(self, force):
+        await self._graph.persist(force)
 
-    async def persist_graph(self):
-        await self._graph.persist()
+    async def persist_graph(self, force):
+        await self._graph.persist(force)

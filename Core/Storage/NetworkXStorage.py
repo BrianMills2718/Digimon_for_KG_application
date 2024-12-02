@@ -82,10 +82,11 @@ class NetworkXStorage(BaseGraphStorage):
     def graph(self):
         return self._graph
 
-    async def _persist(self):
-        if os.path.exists(self.graphml_xml_path):
+    async def _persist(self, force):
+        if os.path.exists(self.graphml_xml_file) and not force:
             return
-        NetworkXStorage.write_nx_graph(self._graph, self.graphml_xml_path)
+        logger.info(f"Writing graph into {self.graphml_xml_file}")
+        NetworkXStorage.write_nx_graph(self.graph, self.graphml_xml_file)
 
     async def has_node(self, node_id: str) -> bool:
         return self._graph.has_node(node_id)
@@ -162,5 +163,5 @@ class NetworkXStorage(BaseGraphStorage):
         graph = nx.relabel_nodes(graph, node_mapping)
         return NetworkXStorage._stabilize_graph(graph)
 
-    async def persist(self):
-        await self._persist()
+    async def persist(self, force):
+        await self._persist(force)
