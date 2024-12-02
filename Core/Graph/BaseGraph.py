@@ -9,7 +9,7 @@ from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Schema.EntityRelation import Entity, Relationship
-from Core.Common.Utils import (split_string_by_multi_markers, clean_str)
+from Core.Common.Utils import (clean_str, build_data_for_merge)
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 
@@ -28,28 +28,24 @@ class BaseGraph(ABC):
 
         Args:
             chunks: The input data chunks used to build the graph.
-
+            force: Whether to re-build the graph
         Returns:
             The graph if it already exists, otherwise builds and returns the graph.
         """
 
-        # If the graph already exists, load it
-        if not force:
-            await self._load_graph()
+        # Try to load the graph
+        is_exist = await self._load_graph(force)
+        if force or not is_exist:
+            # Build the graph based on the input chunks
+            await self._build_graph(chunks)
+            # Persist the graph into file
+            await self._persist_graph(force)
 
-        # Build the graph based on the input chunks
-        await self._build_graph(chunks)
-
-        # Persist the graph into file
-
-        await self._persist_graph(force)
-
-    async def _load_graph(self):
+    async def _load_graph(self, force: bool = False):
         """
         Try to load the graph from the file
         """
-        logger.info("Initializing graph")
-        await self._graph.init_graph()
+        await self._graph.load_graph(force)
 
     @property
     def namespace(self):
@@ -62,69 +58,54 @@ class BaseGraph(ABC):
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
-        merge_nodes_data = defaultdict(list)
+        existing_data = build_data_for_merge(existing_node) if existing_node else defaultdict(list)
         # Groups node properties by their keys for upsert operation.
         upsert_nodes_data = defaultdict(list)
         for node in nodes_data:
             for node_key, node_value in node.as_dict.items():
-                upsert_nodes_data[node_key].extend(node_value)
-        if existing_node:
-            merge_nodes_data.update({
-                "source_id": existing_node["source_id"].split(GRAPH_FIELD_SEP),
-            })
-            if self.config.enable_entity_description:
-                merge_nodes_data.update({
-                    "description": existing_node["description"].split(GRAPH_FIELD_SEP),
-                })
-            if self.config.enable_entity_type:
-                merge_nodes_data.update({
-                    "entity_type": existing_node["entity_type"].split(GRAPH_FIELD_SEP),
-                })
+                upsert_nodes_data[node_key].append(node_value)
 
-        source_id, new_entity_type, merge_description = await MergeEntity.merge_info(upsert_nodes_data,
-                                                                                     merge_nodes_data)
-
+        merge_description = (MergeEntity.merge_descriptions(existing_data["description"],
+                                                            upsert_nodes_data[
+                                                                "description"]) if self.config.enable_entity_description else None)
         description = (
             await self._handle_entity_relation_summary(entity_name, merge_description)
-            if self.config.enable_entity_description
+            if merge_description
             else ""
         )
+        source_id = (MergeEntity.merge_source_ids(existing_data["source_id"],
+                                                  upsert_nodes_data["source_id"]))
+
+        new_entity_type = (MergeEntity.merge_types(existing_data["entity_type"], upsert_nodes_data[
+            "entity_type"]) if self.config.enable_entity_type else "")
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
+
         # Upsert the node with the merged data
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
     async def _merge_edges_then_upsert(self, src_id: str, tgt_id: str, edges_data: List[Relationship]) -> None:
         # Check if the edge exists and fetch existing data
-        merge_edge_data = defaultdict(list)
+        existing_edge = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
+                                                                                                 tgt_id) else None
 
-        existing_edge_data = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
-                                                                                                      tgt_id) else None
+        existing_edge_data = build_data_for_merge(existing_edge) if existing_edge else defaultdict(list)
 
         # Groups node properties by their keys for upsert operation.
         upsert_edge_data = defaultdict(list)
         for edge in edges_data:
             for edge_key, edge_value in edge.as_dict.items():
                 upsert_edge_data[edge_key].append(edge_value)
-        source_id, total_weight, merge_description, keywords, relation_name = upsert_edge_data["source_id"], \
-            upsert_edge_data[
-                "weight"], upsert_edge_data["description"], upsert_edge_data["keywords"], upsert_edge_data[
-            "relation_name"]
-        if existing_edge_data:
-            merge_edge_data.update({
-                "source_id": split_string_by_multi_markers(existing_edge_data["source_id"], [GRAPH_FIELD_SEP]),
-                "weight": existing_edge_data["weight"]
-            })
-            if self.config.enable_edge_description:
-                merge_edge_data.update({"description": existing_edge_data["description"]})
-            if self.config.enable_keywords:
-                merge_edge_data.update({"keywords": existing_edge_data["keywords"]})
-            if self.config.enable_edge_name:
-                merge_edge_data.update({"relation_name": existing_edge_data["relation_name"]})
-        source_id, total_weight, merge_description, keywords, relation_name = await MergeRelationship.merge_info(
-            upsert_edge_data,
-            merge_edge_data)
+
+        source_id = (MergeRelationship.merge_source_ids(existing_edge_data["source_id"],
+                                                        upsert_edge_data["source_id"]))
+
+        total_weight = (MergeRelationship.merge_weight(existing_edge_data["weight"],
+                                                       upsert_edge_data["weight"]))
+        merge_description = (MergeRelationship.merge_descriptions(existing_edge_data["description"],
+                                                                  upsert_edge_data[
+                                                                      "description"]) if self.config.enable_edge_name else "")
 
         description = (
             await self._handle_entity_relation_summary((src_id, tgt_id), merge_description)
@@ -132,13 +113,20 @@ class BaseGraph(ABC):
             else ""
         )
 
+        keywords = (MergeRelationship.merge_keywords(existing_edge_data["keywords"],
+                                                     upsert_edge_data[
+                                                         "keywords"]) if self.config.enable_edge_description else "")
+           
+        relation_name = (MergeRelationship.merge_relation_name(existing_edge_data["relation_name"],
+                                                          upsert_edge_data[
+                                                              "relation_name"]) if self.config.enable_edge_name else "")
         # Ensure src_id and tgt_id nodes exist
         for node_id in (src_id, tgt_id):
             if not await self._graph.has_node(node_id):
                 # Upsert node with source_id and entity_name
                 await self._graph.upsert_node(
                     node_id,
-                    node_data=dict(source_id=source_id, entity_name=node_id)
+                    node_data=dict(source_id=source_id, entity_name=node_id, entity_type = "", description = "")
                 )
 
         # Create edge_data with merged data

@@ -76,7 +76,7 @@ class LLMConfig(YamlModel):
     frequency_penalty: float = 0.0
     best_of: Optional[int] = None
     n: Optional[int] = None
-    stream: bool = True
+    stream: bool = False # Default True
     seed: Optional[int] = None
     # https://cookbook.openai.com/examples/using_logprobs
     logprobs: Optional[bool] = None

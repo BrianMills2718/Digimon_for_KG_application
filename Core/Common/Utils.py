@@ -7,7 +7,7 @@ from Core.Common.Logger import logger
 import tiktoken
 from tenacity import RetryCallState
 import numpy as np
-
+from Core.Common.Constants import GRAPH_FIELD_SEP
 
 def singleton(cls):
     instances = {}
@@ -32,7 +32,7 @@ def clean_str(input: Any) -> str:
 
     result = html.unescape(input.strip())
     # https://stackoverflow.com/questions/4324790/removing-control-characters-from-a-string-in-python
-    result =  re.sub(r"[\x00-\x1f\x7f-\x9f]", "", result)
+    result = re.sub(r"[\x00-\x1f\x7f-\x9f]", "", result)
 
     # Remove non-alphanumeric characters and convert to lowercase
     return re.sub('[^A-Za-z0-9 ]', ' ', result.lower()).strip()
@@ -235,10 +235,6 @@ def truncate_list_by_token_size(list_data: list, key: callable, max_token_size: 
     return result
 
 
-
-
-
-
 def min_max_normalize(x):
     """
     Min-max normalization of a list of values.
@@ -291,4 +287,24 @@ def any_to_str_set(val) -> set:
     else:
         res.add(any_to_str(val))
 
+    return res
+
+
+def build_data_for_merge(data: dict) -> dict:
+    """
+    Build data for merge.
+
+    Args:
+        data (dict): A dictionary containing data to be merged.
+
+    Returns:
+        A dictionary containing data to be merged.
+    """
+  
+    res = {}
+    for k, v in data.items():
+        if isinstance(v, str):
+            res[k] = split_string_by_multi_markers(v, [GRAPH_FIELD_SEP])
+        elif isinstance(v, float):
+            res[k] = [v]
     return res

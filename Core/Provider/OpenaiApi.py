@@ -143,8 +143,8 @@ class OpenAILLM(BaseLLM):
             kwargs.update(extra_kwargs)
         return kwargs
 
-    async def _achat_completion(self, messages: list[dict], timeout=USE_CONFIG_TIMEOUT) -> ChatCompletion:
-        kwargs = self._cons_kwargs(messages, timeout=self.get_timeout(timeout))
+    async def _achat_completion(self, messages: list[dict], timeout=USE_CONFIG_TIMEOUT, max_tokens = None) -> ChatCompletion:
+        kwargs = self._cons_kwargs(messages, timeout=self.get_timeout(timeout), max_tokens=max_tokens)
 
         rsp: ChatCompletion = await self.aclient.chat.completions.create(**kwargs)
         self._update_costs(rsp.usage)

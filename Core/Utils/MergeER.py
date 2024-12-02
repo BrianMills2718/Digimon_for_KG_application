@@ -4,7 +4,7 @@ from Core.Common.Constants import GRAPH_FIELD_SEP
 
 
 class MergeEntity:
-    merge_keys = ["source_id", "entity_type", "description"]
+
     merge_function = None
 
     @staticmethod
@@ -28,7 +28,7 @@ class MergeEntity:
         return description
 
     @classmethod
-    async def merge_info(cls, nodes_data, merge_dict):
+    async def merge_info(cls, merge_keys, nodes_data, merge_dict):
         """
         Merge entity information for a specific entity name, including source IDs, entity types, and descriptions.
         If an existing key is present in the data, merge the information; otherwise, use the new insert data.
@@ -44,9 +44,10 @@ class MergeEntity:
             }
 
         for merge_key in cls.merge_keys:
-            if merge_key in nodes_data:
+            if merge_key in merge_dict:
                 result.append(cls.merge_function[merge_key](nodes_data[merge_key], merge_dict[merge_key]))
-
+        if len(result) < len(cls.merge_keys):
+            result.extend("" * (len(cls.merge_keys) - len(result)))
         return tuple(result)
 
 
@@ -59,7 +60,7 @@ class MergeRelationship:
         return sum(new_weight + merge_weight)
 
     @staticmethod
-    def merge_description(entity_relationships, new_descriptions):
+    def merge_descriptions(entity_relationships, new_descriptions):
         return GRAPH_FIELD_SEP.join(
             sorted(set(new_descriptions + entity_relationships))
         )
@@ -101,7 +102,7 @@ class MergeRelationship:
             }
 
         for merge_key in cls.merge_keys:
-            if merge_key in edges_data:
+            if merge_key in merge_dict:
                 result.append(cls.merge_function[merge_key](edges_data[merge_key], merge_dict[merge_key]))
 
         return tuple(result)

@@ -127,7 +127,7 @@ class RKGraph(BaseGraph):
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
-            keywords=clean_str(record_attributes[4]) if self.config.enable_keywords else None
+            keywords=clean_str(record_attributes[4]) if self.config.enable_keywords else ""
         )
 
     @classmethod

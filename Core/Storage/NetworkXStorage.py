@@ -14,14 +14,23 @@ class NetworkXStorage(BaseGraphStorage):
     name: str = "nx_data.graphml"  # The valid file name for NetworkX
     _graph: nx.Graph = nx.Graph()
 
-    def load_nx_graph(self):
+    def load_nx_graph(self) -> bool:
         # Attempting to load the graph from the specified GraphML file
         logger.info(f"Attempting to load the graph from: {self.graphml_xml_file}")
         if os.path.exists(self.graphml_xml_file):
-            self._graph = nx.read_graphml(self.graphml_xml_file)
+            try:
+                self._graph = nx.read_graphml(self.graphml_xml_file)
+                logger.info(
+                    f"Successfully loaded graph from: {self.graphml_xml_file} with {self._graph.number_of_nodes()} nodes and {self._graph.number_of_edges()} edges")
+                return True
+            except Exception as e:
+                logger.error(
+                    f"Failed to load graph from: {self.graphml_xml_file} with {e}! Need to re-build the graph.")
+                return False
         else:
             # GraphML file doesn't exist; need to construct the graph from scratch
             logger.info("GraphML file does not exist! Need to build the graph from scratch.")
+            return False
 
     @staticmethod
     def write_nx_graph(graph: nx.Graph, file_name):
@@ -75,8 +84,12 @@ class NetworkXStorage(BaseGraphStorage):
         fixed_graph.add_edges_from(edges)
         return fixed_graph
 
-    async def init_graph(self):
-        self.load_nx_graph()
+    async def load_graph(self, force: bool = False) -> bool:
+        # if force:
+        #     logger.info("Force rebuilding the graph")
+        #     return False
+        # else:
+        return self.load_nx_graph()
 
     @property
     def graph(self):
@@ -164,4 +177,5 @@ class NetworkXStorage(BaseGraphStorage):
         return NetworkXStorage._stabilize_graph(graph)
 
     async def persist(self, force):
-        await self._persist(force)
+        return await self._persist(force)
+

@@ -57,10 +57,10 @@ class Config(CLIParams, YamlModel):
     # Building graph
     graph_type: str = "rkg_graph"
     max_gleaning: int = 1
-    enable_entity_description: bool = False
-    enable_entity_type: bool = False
-    enable_edge_description: bool = False
-    enable_edge_name: bool = False
+    enable_entity_description: bool = True
+    enable_entity_type: bool = True
+    enable_edge_description: bool = True
+    enable_edge_name: bool = True
     prior_prob: float = 0.8
     # Graph clustering
     use_community: bool = True
