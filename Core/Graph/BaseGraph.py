@@ -47,7 +47,17 @@ class BaseGraph(ABC):
         """
         Try to load the graph from the file
         """
+        logger.info("Initializing graph")
         await self._graph.init_graph()
+
+    @property
+    def namespace(self):
+        return None
+
+    # TODO: Try to rewrite here, not now
+    @namespace.setter
+    def namespace(self, namespace):
+        self._graph.namespace = namespace
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
@@ -199,7 +209,6 @@ class BaseGraph(ABC):
             maybe_edges_aug[tuple(sorted(k))].extend(v)
 
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
-
 
     async def __graph__(self, elements: list):
         """

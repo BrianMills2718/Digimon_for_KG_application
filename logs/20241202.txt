@@ -1,0 +1,158 @@
+2024-12-02 15:57:21.941 | INFO     | Core.GraphRAG:insert:111 - Starting chunk the given documents
+2024-12-02 15:57:21.962 | INFO     | Core.GraphRAG:insert:113 - ✅ Finished the chunking stage
+2024-12-02 15:57:21.962 | INFO     | Core.GraphRAG:insert:117 - Starting build graph for the given documents
+2024-12-02 15:59:22.989 | INFO     | Core.GraphRAG:insert:111 - Starting chunk the given documents
+2024-12-02 15:59:23.009 | INFO     | Core.GraphRAG:insert:113 - ✅ Finished the chunking stage
+2024-12-02 15:59:23.010 | INFO     | Core.GraphRAG:insert:117 - Starting build graph for the given documents
+2024-12-02 16:31:00.105 | INFO     | Core.GraphRAG:insert:101 - Starting chunk the given documents
+2024-12-02 16:31:00.125 | INFO     | Core.GraphRAG:insert:103 - ✅ Finished the chunking stage
+2024-12-02 16:31:00.125 | INFO     | Core.GraphRAG:insert:107 - Starting build graph for the given documents
+2024-12-02 16:35:27.015 | INFO     | Core.GraphRAG:insert:98 - Starting chunk the given documents
+2024-12-02 16:35:27.033 | INFO     | Core.GraphRAG:insert:100 - ✅ Finished the chunking stage
+2024-12-02 16:35:27.033 | INFO     | Core.GraphRAG:insert:104 - Starting build graph for the given documents
+2024-12-02 16:36:17.933 | INFO     | Core.GraphRAG:insert:97 - Starting chunk the given documents
+2024-12-02 16:36:17.953 | INFO     | Core.GraphRAG:insert:99 - ✅ Finished the chunking stage
+2024-12-02 16:36:17.953 | INFO     | Core.GraphRAG:insert:103 - Starting build graph for the given documents
+2024-12-02 16:37:02.058 | INFO     | Core.GraphRAG:insert:97 - Starting chunk the given documents
+2024-12-02 16:37:02.078 | INFO     | Core.GraphRAG:insert:99 - ✅ Finished the chunking stage
+2024-12-02 16:37:02.078 | INFO     | Core.GraphRAG:insert:103 - Starting build graph for the given documents
+2024-12-02 16:49:16.295 | INFO     | Core.GraphRAG:insert:97 - Starting chunk the given documents
+2024-12-02 16:49:16.315 | INFO     | Core.GraphRAG:insert:99 - ✅ Finished the chunking stage
+2024-12-02 16:49:16.315 | INFO     | Core.GraphRAG:insert:103 - Starting build graph for the given documents
+2024-12-02 16:49:16.315 | INFO     | Core.Graph.BaseGraph:_load_graph:50 - Initializing graph
+2024-12-02 16:50:09.181 | INFO     | Core.GraphRAG:insert:97 - Starting chunk the given documents
+2024-12-02 16:50:09.200 | INFO     | Core.GraphRAG:insert:99 - ✅ Finished the chunking stage
+2024-12-02 16:50:09.201 | INFO     | Core.GraphRAG:insert:103 - Starting build graph for the given documents
+2024-12-02 16:50:09.201 | INFO     | Core.Graph.BaseGraph:_load_graph:50 - Initializing graph
+2024-12-02 16:50:59.414 | INFO     | Core.GraphRAG:insert:97 - Starting chunk the given documents
+2024-12-02 16:50:59.435 | INFO     | Core.GraphRAG:insert:99 - ✅ Finished the chunking stage
+2024-12-02 16:50:59.435 | INFO     | Core.GraphRAG:insert:103 - Starting build graph for the given documents
+2024-12-02 16:50:59.436 | INFO     | Core.Graph.BaseGraph:_load_graph:50 - Initializing graph
+2024-12-02 16:57:43.062 | INFO     | Core.GraphRAG:insert:106 - Starting chunk the given documents
+2024-12-02 16:57:43.082 | INFO     | Core.GraphRAG:insert:108 - ✅ Finished the chunking stage
+2024-12-02 16:57:43.082 | INFO     | Core.GraphRAG:insert:112 - Starting build graph for the given documents
+2024-12-02 16:57:43.082 | INFO     | Core.Graph.BaseGraph:_load_graph:50 - Initializing graph
+2024-12-02 16:57:43.083 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:19 - Attempting to load the graph from: ./test_book/debug/graph_storage_nx_data.graphml
+2024-12-02 16:57:43.083 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:24 - GraphML file does not exist! Need to build the graph from scratch.
+2024-12-02 16:57:43.084 | ERROR    | Core.Graph.RKGraph:_build_graph:55 - Error building graph: too many values to unpack (expected 2)
+Traceback (most recent call last):
+
+  File "/home/yingli/.pycharm_helpers/pydev/pydevd.py", line 2270, in <module>
+    main()
+    └ <function main at 0x76b9fbdac7c0>
+
+  File "/home/yingli/.pycharm_helpers/pydev/pydevd.py", line 2252, in main
+    globals = debugger.run(setup['file'], None, None, is_module)
+              │        │   │                          └ False
+              │        │   └ {'port': 29781, 'vm_type': None, 'client': None, 'server': False, 'DEBUG_RECORD_SOCKET_READS': False, 'multiproc': False, 'mu...
+              │        └ <function PyDB.run at 0x76b9fbda7420>
+              └ <__main__.PyDB object at 0x76ba8e59e650>
+
+  File "/home/yingli/.pycharm_helpers/pydev/pydevd.py", line 1563, in run
+    return self._exec(is_module, entry_point_fn, module_name, file, globals, locals)
+           │    │     │          │               │            │     │        └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+           │    │     │          │               │            │     └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+           │    │     │          │               │            └ '/home/yingli/GraphRAG/test.py'
+           │    │     │          │               └ None
+           │    │     │          └ ''
+           │    │     └ False
+           │    └ <function PyDB._exec at 0x76b9fbda74c0>
+           └ <__main__.PyDB object at 0x76ba8e59e650>
+
+  File "/home/yingli/.pycharm_helpers/pydev/pydevd.py", line 1570, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+    │             │        │     │        └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+    │             │        │     └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+    │             │        └ '/home/yingli/GraphRAG/test.py'
+    │             └ <function execfile at 0x76ba32f26340>
+    └ <module '_pydev_bundle.pydev_imports' from '/home/yingli/.pycharm_helpers/pydev/_pydev_bundle/pydev_imports.py'>
+
+  File "/home/yingli/.pycharm_helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+                 │              │              │     └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+                 │              │              └ {'__name__': '__main__', '__doc__': None, '__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader objec...
+                 │              └ '/home/yingli/GraphRAG/test.py'
+                 └ 'from lazy_object_proxy.utils import await_\n\nfrom Core.GraphRAG import GraphRAG\n\nimport asyncio\nif __name__ == "__main__...
+
+  File "/home/yingli/GraphRAG/test.py", line 11, in <module>
+    asyncio.run(graph_rag.insert([doc]))
+    │       │   │         │       └ 'The Project Gutenberg eBook of A Christmas Carol\n    \nThis ebook is for the use of anyone anywhere in the United States an...
+    │       │   │         └ <function GraphRAG.insert at 0x76b8e53f04a0>
+    │       │   └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x76b8303f1790>,...
+    │       └ <function _patch_asyncio.<locals>.run at 0x76b9fbdd2c00>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/.pycharm_helpers/pydevd_asyncio/pydevd_nest_asyncio.py", line 138, in run
+    return loop.run_until_complete(task)
+           │    │                  └ <Task pending name='Task-1' coro=<GraphRAG.insert() running at /home/yingli/GraphRAG/Core/GraphRAG.py:113>>
+           │    └ <function _patch_loop.<locals>.run_until_complete at 0x76b9fbdd31a0>
+           └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/home/yingli/.pycharm_helpers/pydevd_asyncio/pydevd_nest_asyncio.py", line 234, in run_until_complete
+    self._run_once()
+    │    └ <function _patch_loop.<locals>._run_once at 0x76b9fbdd3240>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/home/yingli/.pycharm_helpers/pydevd_asyncio/pydevd_nest_asyncio.py", line 286, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x76ba1d575800>
+    └ <Handle Task.__wakeup(<_GatheringFu...expected 2)')>)>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.__wakeup(<_GatheringFu...expected 2)')>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.__wakeup(<_GatheringFu...expected 2)')>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.__wakeup(<_GatheringFu...expected 2)')>)>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/tasks.py", line 352, in __wakeup
+    self.__step(exc)
+    │           └ ValueError('too many values to unpack (expected 2)')
+    └ <Task pending name='Task-1' coro=<GraphRAG.insert() running at /home/yingli/GraphRAG/Core/GraphRAG.py:113>>
+
+  File "/home/yingli/.pycharm_helpers/pydevd_asyncio/pydevd_nest_asyncio.py", line 394, in step
+    step_orig(task, exc)
+    │         │     └ ValueError('too many values to unpack (expected 2)')
+    │         └ <Task pending name='Task-1' coro=<GraphRAG.insert() running at /home/yingli/GraphRAG/Core/GraphRAG.py:113>>
+    └ <function Task.__step at 0x76ba1d5c1bc0>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/tasks.py", line 279, in __step
+    result = coro.throw(exc)
+             │    │     └ ValueError('too many values to unpack (expected 2)')
+             │    └ <method 'throw' of 'coroutine' objects>
+             └ <coroutine object GraphRAG.insert at 0x76b82ef78d60>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 113, in insert
+    await self.graph.build_graph(chunks)
+          │    │     │           └ {'chunk-d5cb63c91e4bea751bf090388c7859e9': TextChunk(), 'chunk-83b453141113eb22d088292ab927dab5': TextChunk(), 'chunk-3f91b71...
+          │    │     └ <function BaseGraph.build_graph at 0x76b9d75f8180>
+          │    └ <Core.Graph.RKGraph.RKGraph object at 0x76b83c160390>
+          └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x76b8303f1790>,...
+
+  File "/home/yingli/GraphRAG/Core/Graph/BaseGraph.py", line 40, in build_graph
+    await self._build_graph(chunks)
+          │    │            └ {'chunk-d5cb63c91e4bea751bf090388c7859e9': TextChunk(), 'chunk-83b453141113eb22d088292ab927dab5': TextChunk(), 'chunk-3f91b71...
+          │    └ <function RKGraph._build_graph at 0x76b9d1b57a60>
+          └ <Core.Graph.RKGraph.RKGraph object at 0x76b83c160390>
+
+> File "/home/yingli/GraphRAG/Core/Graph/RKGraph.py", line 50, in _build_graph
+    elements = await asyncio.gather(
+                     │       └ <function gather at 0x76ba1d5c2480>
+                     └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/tasks.py", line 349, in __wakeup
+    future.result()
+    │      └ <method 'result' of '_asyncio.Future' objects>
+    └ <_GatheringFuture finished exception=ValueError('too many values to unpack (expected 2)')>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/tasks.py", line 277, in __step
+    result = coro.send(None)
+             │    └ <method 'send' of 'coroutine' objects>
+             └ <coroutine object RKGraph._extract_entity_relationship at 0x76b82f1f3c40>
+
+  File "/home/yingli/GraphRAG/Core/Graph/RKGraph.py", line 44, in _extract_entity_relationship
+    chunk_key, chunk_info = chunk_key_pair
+                            └ 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+
+ValueError: too many values to unpack (expected 2)
+2024-12-02 16:57:43.107 | INFO     | Core.Graph.RKGraph:_build_graph:57 - Constructing graph finished

@@ -14,10 +14,14 @@ class NetworkXStorage(BaseGraphStorage):
     name: str = "nx_data.graphml"  # The valid file name for NetworkX
     _graph: nx.Graph = nx.Graph()
 
-    @staticmethod
     def load_nx_graph(self):
-        if os.path.exists(self.graphml_xml_path):
-            self._graph = nx.read_graphml(self._graphml_xml_file)
+        # Attempting to load the graph from the specified GraphML file
+        logger.info(f"Attempting to load the graph from: {self.graphml_xml_file}")
+        if os.path.exists(self.graphml_xml_file):
+            self._graph = nx.read_graphml(self.graphml_xml_file)
+        else:
+            # GraphML file doesn't exist; need to construct the graph from scratch
+            logger.info("GraphML file does not exist! Need to build the graph from scratch.")
 
     @staticmethod
     def write_nx_graph(graph: nx.Graph, file_name):
@@ -35,6 +39,7 @@ class NetworkXStorage(BaseGraphStorage):
 
     @property
     def graphml_xml_file(self):
+        assert self.namespace is not None
         return self.namespace.get_save_path(self.name)
 
     @staticmethod

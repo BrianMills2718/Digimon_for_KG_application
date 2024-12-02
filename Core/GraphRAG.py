@@ -1,11 +1,10 @@
-from typing import Union, Any, Optional
+from typing import Union, Any
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import mdhash_id
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
-from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.GraphFactory import get_graph
 from Core.Index.VectorIndex import VectorIndex
 from Core.Index.IndexConfigFactory import get_index_config
@@ -18,10 +17,6 @@ class GraphRAG(ContextMixin, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     working_dir: str = Field(default="", exclude=True)
-    graph: BaseGraph = Field(default=None, exclude=True)
-    chunks_storage: Optional[JsonKVStorage] = Field(default=None, exclude=True)
-    entities_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
-    relations_vdb: Optional[VectorIndex] = Field(default=None, exclude=True)
 
     # The following two matrices are utilized for mapping entities to their corresponding chunks through the specified link-path:
     # Entity Matrix: Represents the entities in the dataset.
@@ -39,26 +34,26 @@ class GraphRAG(ContextMixin, BaseModel):
     def _update_context(cls, data):
         cls.config = data.context.config
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
-        cls.workspace = Workspace(data.working_dir, cls.config.exp_name)
+        cls.workspace = Workspace(data.working_dir, cls.config.exp_name)  # register workspace
+        cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
+        data = cls._init_storage_namespace(data)
+        data = cls._register_vdbs(data)
+        data = cls._register_e2r_r2c_matrix(data)
         return data
 
-    @model_validator(mode="after")
-    def _register_graph(cls, data):
-        cls.graph = get_graph(data.config, llm=data.llm, encoder=data.ENCODER)
-        return data
-
-    @model_validator(mode="after")
+    @classmethod
     def _init_storage_namespace(cls, data):
-        cls.graph.namespace = cls.workspace.make_for("graph_storage")
+        data.graph.namespace = data.workspace.make_for("graph_storage")
         if data.config.use_entities_vdb:
-            cls.entities_vdb_namespace = cls.workspace.make_for("entities_vdb")
+            data.entities_vdb_namespace = data.workspace.make_for("entities_vdb")
         if data.config.use_relations_vdb:
-            cls.relations_vdb_namespace = cls.workspace.make_for("relations_vdb")
+            data.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
         cls.chunks = data.workspace.make_for("chunks")
         return data
 
-    @model_validator(mode="after")
+    @classmethod
     def _register_vdbs(cls, data):
+        # If vector database is needed, register them into the class
         if data.config.use_entities_vdb:
             cls.entities_vdb = VectorIndex(
                 get_index_config(data.config, persist_path=data.entities_vdb_namespace.get_save_path()))
@@ -67,33 +62,38 @@ class GraphRAG(ContextMixin, BaseModel):
                 get_index_config(data.config, persist_path=data.relations_vdb_namespace.get_save_path()))
         return data
 
-    @model_validator(mode="after")
+    @classmethod
     def _register_e2r_r2c_matrix(cls, data):
         if data.config.use_entity_link_chunk:
             pass
         return data
 
-    async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
+    async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False):
         """Chunk the given documents into smaller chunks.
 
-        Args:
-        docs (Union[str, list[str]]): The documents to chunk, either as a single string or a list of strings.
+          This method takes a document or a list of documents and breaks them down into smaller, more manageable chunks.
+          The chunks are then processed and returned in a specific format.
 
-        Returns:
-        dict[str, dict[str, str]]: A dictionary where the keys are the MD5 hashes of the chunks, and the values are dictionaries containing the chunk content.
-        """
+          Args:
+              docs (Union[str, list[str]]): The documents to chunk, either as a single string or a list of strings.
+              is_chunked (bool, optional): A flag indicating whether the documents are already chunked. Defaults to False.
+
+          Returns:
+              list: A list of tuples where each tuple contains a chunk identifier and the corresponding chunk content.
+          """
         if isinstance(docs, str):
             docs = [docs]
-
-        if isinstance(docs[0], dict):
-            new_docs = {doc.get("id"): {"content": doc['content'].strip()} for doc in docs}
-        else:
-            new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
-        #TODO: config the chunk parameters, **WE ONLY CONFIG CHUNK-METHOD NOW**
+        # TODO: Now we only support the str, list[str], Maybe for more types.
+        new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
+        # TODO: config the chunk parameters, **WE ONLY CONFIG CHUNK-METHOD NOW**
         chunks = await get_chunks(new_docs, self.config.chunk_method, self.ENCODER, is_chunked=is_chunked)
-        return chunks
 
-    async def insert(self, docs: Union[str, list[[Any]]]):
+        inserting_chunks = {key: value for key, value in chunks.items() if key in chunks}
+        # TODO: filter the already solved chunks maybe
+        ordered_chunks = list(inserting_chunks.items())
+        return ordered_chunks
+
+    async def insert(self, docs: Union[str, list[Any]]):
 
         """
         The main function that orchestrates the first step in the Graph RAG pipeline.
@@ -110,15 +110,16 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 1. Chunking Stage
         ####################################################################################################
+        logger.info("Starting chunk the given documents")
         chunks = await self._chunk_documents(docs)
-
+        logger.info("✅ Finished the chunking stage")
         ####################################################################################################
         # 2. Building Graph Stage
         ####################################################################################################
-        logger.info(f"Starting build graph for the given documents")
+        logger.info("Starting build graph for the given documents")
         await self.graph.build_graph(chunks)
         await self.graph.persist_graph()
-        logger.info(f"Finished building graph for the given documents")
+        logger.info("✅ Finished building graph for the given documents")
 
         ####################################################################################################
         # 3. Index building Stage
