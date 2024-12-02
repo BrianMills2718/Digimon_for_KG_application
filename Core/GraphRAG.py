@@ -73,7 +73,7 @@ class GraphRAG(ContextMixin, BaseModel):
             pass
         return data
 
-    async def chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
+    async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False) -> dict[str, dict[str, str]]:
         """Chunk the given documents into smaller chunks.
 
         Args:
@@ -86,13 +86,14 @@ class GraphRAG(ContextMixin, BaseModel):
             docs = [docs]
 
         if isinstance(docs[0], dict):
-            new_docs = {doc['id']: {"content": doc['content'].strip()} for doc in docs}
+            new_docs = {doc.get("id"): {"content": doc['content'].strip()} for doc in docs}
         else:
             new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
-        chunks = await get_chunks(new_docs, self.config, self.ENCODER, is_chunked=is_chunked)
+        #TODO: config the chunk parameters, **WE ONLY CONFIG CHUNK-METHOD NOW**
+        chunks = await get_chunks(new_docs, self.config.chunk_method, self.ENCODER, is_chunked=is_chunked)
         return chunks
 
-    async def insert(self, docs):
+    async def insert(self, docs: Union[str, list[[Any]]]):
 
         """
         The main function that orchestrates the first step in the Graph RAG pipeline.
@@ -103,13 +104,13 @@ class GraphRAG(ContextMixin, BaseModel):
         For detailed information on the configuration and usage, please refer to the README.md.
 
         Args:
-            docs (list): A list of documents to be processed and inserted into the Graph RAG pipeline.
+            docs (Union[str, list[[Any]]): A list of documents to be processed and inserted into the Graph RAG pipeline.
         """
 
         ####################################################################################################
         # 1. Chunking Stage
         ####################################################################################################
-        chunks = await self.chunk_documents(docs)
+        chunks = await self._chunk_documents(docs)
 
         ####################################################################################################
         # 2. Building Graph Stage
