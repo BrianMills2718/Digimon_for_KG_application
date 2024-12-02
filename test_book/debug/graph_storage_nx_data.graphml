@@ -1,0 +1,736 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d6" for="edge" attr.name="relation_name" attr.type="string"/>
+<key id="d5" for="edge" attr.name="source_id" attr.type="string"/>
+<key id="d4" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d3" for="node" attr.name="description" attr.type="string"/>
+<key id="d2" for="node" attr.name="entity_type" attr.type="string"/>
+<key id="d1" for="node" attr.name="entity_name" attr.type="string"/>
+<key id="d0" for="node" attr.name="source_id" attr.type="string"/>
+<graph edgedefault="undirected"><node id="project gutenberg">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">project gutenberg</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="a christmas carol">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">a christmas carol</data>
+  <data key="d2">e</data>
+  <data key="d3"></data>
+</node>
+<node id="charles dickens">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">charles dickens</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="arthur rackham">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">arthur rackham</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="philadelphia">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">philadelphia</data>
+  <data key="d2">g</data>
+  <data key="d3"></data>
+</node>
+<node id="new york">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">new york</data>
+  <data key="d2">g</data>
+  <data key="d3"></data>
+</node>
+<node id="j  b  lippincott company">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">j  b  lippincott company</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="suzanne shell">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">suzanne shell</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="janet blenkinship">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">janet blenkinship</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="online distributed proofreading team">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">online distributed proofreading team</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">scrooge</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="bob cratchit">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">bob cratchit</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="old fezziwig">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">old fezziwig</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="mrs  fezziwig">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">mrs  fezziwig</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="joe">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">joe</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="fred">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">fred</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="marley">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">marley</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="washington">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">washington</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the team">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the team</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="operation  dulce">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">operation  dulce</data>
+  <data key="d2">i</data>
+  <data key="d3"></data>
+</node>
+<node id="marley s ghost">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">marley s ghost</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="tim">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">tim</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the clergyman">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">the clergyman</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the clerk">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the clerk</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the undertaker">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">the undertaker</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the chief mourner">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">the chief mourner</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="old marley">
+  <data key="d0">n&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">old marley</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="hamlet s father">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">hamlet s father</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge and marley">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">scrooge and marley</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge s nephew">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">scrooge s nephew</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="christmas">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">christmas</data>
+  <data key="d2">e</data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge s clerk">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">scrooge s clerk</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="city clocks">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">city clocks</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the fog">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">the fog</data>
+  <data key="d2">g</data>
+  <data key="d3"></data>
+</node>
+<node id="the neighbouring offices">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9</data>
+  <data key="d1">the neighbouring offices</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the nephew">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the nephew</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the gentlemen">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the gentlemen</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="mr  marley">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">mr  marley</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the visiting gentlemen">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the visiting gentlemen</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="mr  scrooge">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">mr  scrooge</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the gentleman">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">the gentleman</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the union workhouses">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">the union workhouses</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the treadmill">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">the treadmill</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the poor law">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">the poor law</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="want">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">want</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="abundance">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">abundance</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="surplus population">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">surplus population</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="misanthropic ice">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">misanthropic ice</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="lord mayor">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">lord mayor</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="st  dunstan">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">st  dunstan</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="evil spirit">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">evil spirit</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="christmas spirit">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;f</data>
+  <data key="d1">christmas spirit</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="camden town">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">camden town</data>
+  <data key="d2">g</data>
+  <data key="d3"></data>
+</node>
+<node id="christmas eve">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">christmas eve</data>
+  <data key="d2">e</data>
+  <data key="d3"></data>
+</node>
+<node id="fog">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">fog</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="cold">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">cold</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="genius of the weather">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;5&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;7&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">genius of the weather</data>
+  <data key="d2">c</data>
+  <data key="d3"></data>
+</node>
+<node id="the city of london">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the city of london</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="marley s face">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">marley s face</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the knocker">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the knocker</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the yard">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the yard</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the house">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the house</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="the stairs">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;1&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the stairs</data>
+  <data key="d2">o</data>
+  <data key="d3"></data>
+</node>
+<node id="dutch merchant">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">dutch merchant</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="cain">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">cain</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="abel">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">abel</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="pharaoh s daughters">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">pharaoh s daughters</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="queens of sheba">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">queens of sheba</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="angelic messengers">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">angelic messengers</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="abrahams">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">abrahams</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="belshazzars">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">belshazzars</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="apostles">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">apostles</data>
+  <data key="d2">p</data>
+  <data key="d3"></data>
+</node>
+<node id="the fireplace">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">the fireplace</data>
+  <data key="d2">g</data>
+  <data key="d3"></data>
+</node>
+<node id="dressing gown">
+  <data key="d0">n&lt;SEP&gt;6&lt;SEP&gt;b&lt;SEP&gt;0&lt;SEP&gt;5&lt;SEP&gt;e&lt;SEP&gt;8&lt;SEP&gt;c&lt;SEP&gt;2&lt;SEP&gt;d&lt;SEP&gt;h&lt;SEP&gt;k&lt;SEP&gt;4&lt;SEP&gt;a&lt;SEP&gt;3&lt;SEP&gt;u&lt;SEP&gt;-&lt;SEP&gt;9&lt;SEP&gt;f</data>
+  <data key="d1">dressing gown</data>
+  <data key="d2">e</data>
+  <data key="d3"></data>
+</node>
+<node id="woman">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">woman</data>
+</node>
+<node id="protagonist">
+  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d1">protagonist</data>
+</node>
+<edge source="a christmas carol" target="charles dickens">
+  <data key="d4">9.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">authorship  literary creation</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="arthur rackham">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">artistic contribution  illustration</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="philadelphia">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">publication location  geographical connection</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="new york">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">publication location  geographical link</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="j  b  lippincott company">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">publishing  original publication</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="suzanne shell">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">production  involvement</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="janet blenkinship">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">production  involvement</data>
+  <data key="d8"></data>
+</edge>
+<edge source="a christmas carol" target="online distributed proofreading team">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7">proofreading  contribution</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="marley s ghost">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">supernatural encounter  narrative catalyst</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="bob cratchit">
+  <data key="d4">13.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">festive spirit  observation&lt;SEP&gt;work dynamics  holiday spirit</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="fred">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">family ties  reconciliation</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="marley">
+  <data key="d4">33.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">supernatural sighting  mysterious presence&lt;SEP&gt;partnership  influence&lt;SEP&gt;supernatural encounter  emotional impact</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="scrooge and marley">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7">business association  historical connection</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="scrooge s nephew">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d6"></data>
+  <data key="d7">festive traditions  contrasting perspectives</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="the nephew">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d6"></data>
+  <data key="d7">reconciliation  positive sentiments</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="the gentlemen">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d6"></data>
+  <data key="d7">charitable interaction  giving back</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="camden town">
+  <data key="d4">5.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7">residence  living area</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="christmas eve">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7">festive spirit  holiday traditions</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="genius of the weather">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7">personification  atmospheric influence</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="washington">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7">supernatural occurrences  external influence</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="marley s face">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7">haunting gaze  recognition</data>
+  <data key="d8"></data>
+</edge>
+<edge source="scrooge" target="the house">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7">echoes  eerie atmosphere</data>
+  <data key="d8"></data>
+</edge>
+<edge source="old fezziwig" target="mrs  fezziwig">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">festive celebration  joviality</data>
+  <data key="d8"></data>
+</edge>
+<edge source="joe" target="woman">
+  <data key="d4">5.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">humorous exchange  banter</data>
+  <data key="d8"></data>
+</edge>
+<edge source="marley" target="protagonist">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7">haunting presence  psychological impact</data>
+  <data key="d8"></data>
+</edge>
+<edge source="washington" target="the team">
+  <data key="d4">14.0</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">decision making  external influence</data>
+  <data key="d8"></data>
+</edge>
+<edge source="the team" target="operation  dulce">
+  <data key="d4">18.0</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">mission evolution  active participation</data>
+  <data key="d8"></data>
+</edge>
+<edge source="the clerk" target="the nephew">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d6"></data>
+  <data key="d7">positive reaction  support</data>
+  <data key="d8"></data>
+</edge>
+<edge source="mr  scrooge" target="the gentleman">
+  <data key="d4">5.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7">charitable giving  empathy</data>
+  <data key="d8"></data>
+</edge>
+<edge source="the gentleman" target="the union workhouses">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7">social welfare  assistance</data>
+  <data key="d8"></data>
+</edge>
+<edge source="the gentleman" target="the treadmill">
+  <data key="d4">4.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7">physical labor  destitution</data>
+  <data key="d8"></data>
+</edge>
+<edge source="the gentleman" target="the poor law">
+  <data key="d4">5.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7">legal framework  social welfare</data>
+  <data key="d8"></data>
+</edge>
+<edge source="st  dunstan" target="evil spirit">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7">weather manipulation  supernatural beings</data>
+  <data key="d8"></data>
+</edge>
+<edge source="fog" target="cold">
+  <data key="d4">8.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7">weather conditions  atmosphere</data>
+  <data key="d8"></data>
+</edge>
+<edge source="marley s face" target="the knocker">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7">supernatural transformation  eerie atmosphere</data>
+  <data key="d8"></data>
+</edge>
+<edge source="dutch merchant" target="the fireplace">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7">historical builder  architectural influence</data>
+  <data key="d8"></data>
+</edge>
+<edge source="cain" target="abel">
+  <data key="d4">7.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7">biblical figures  sibling rivalry</data>
+  <data key="d8"></data>
+</edge>
+<edge source="pharaoh s daughters" target="queens of sheba">
+  <data key="d4">5.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7">historical depictions  royal figures</data>
+  <data key="d8"></data>
+</edge>
+<edge source="angelic messengers" target="apostles">
+  <data key="d4">6.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7">divine beings  religious symbolism</data>
+  <data key="d8"></data>
+</edge>
+</graph></graphml>

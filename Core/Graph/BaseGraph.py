@@ -62,15 +62,12 @@ class BaseGraph(ABC):
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
-        merge_nodes_data = {}
+        merge_nodes_data = defaultdict(list)
         # Groups node properties by their keys for upsert operation.
         upsert_nodes_data = defaultdict(list)
         for node in nodes_data:
             for node_key, node_value in node.as_dict.items():
-                upsert_nodes_data[node_key].append(node_value)
-        source_id, new_entity_type, merge_description = upsert_nodes_data["source_id"], upsert_nodes_data[
-            "entity_type"], upsert_nodes_data["description"]
-
+                upsert_nodes_data[node_key].extend(node_value)
         if existing_node:
             merge_nodes_data.update({
                 "source_id": existing_node["source_id"].split(GRAPH_FIELD_SEP),
@@ -83,8 +80,9 @@ class BaseGraph(ABC):
                 merge_nodes_data.update({
                     "entity_type": existing_node["entity_type"].split(GRAPH_FIELD_SEP),
                 })
-            source_id, new_entity_type, merge_description = await MergeEntity.merge_info(upsert_nodes_data,
-                                                                                         merge_nodes_data)
+
+        source_id, new_entity_type, merge_description = await MergeEntity.merge_info(upsert_nodes_data,
+                                                                                     merge_nodes_data)
 
         description = (
             await self._handle_entity_relation_summary(entity_name, merge_description)
@@ -100,7 +98,7 @@ class BaseGraph(ABC):
 
     async def _merge_edges_then_upsert(self, src_id: str, tgt_id: str, edges_data: List[Relationship]) -> None:
         # Check if the edge exists and fetch existing data
-        merge_edge_data = {}
+        merge_edge_data = defaultdict(list)
 
         existing_edge_data = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
                                                                                                       tgt_id) else None
@@ -125,9 +123,9 @@ class BaseGraph(ABC):
                 merge_edge_data.update({"keywords": existing_edge_data["keywords"]})
             if self.config.enable_edge_name:
                 merge_edge_data.update({"relation_name": existing_edge_data["relation_name"]})
-            source_id, total_weight, merge_description, keywords, relation_name = await MergeRelationship.merge_info(
-                upsert_edge_data,
-                merge_edge_data)
+        source_id, total_weight, merge_description, keywords, relation_name = await MergeRelationship.merge_info(
+            upsert_edge_data,
+            merge_edge_data)
 
         description = (
             await self._handle_entity_relation_summary((src_id, tgt_id), merge_description)
@@ -145,7 +143,7 @@ class BaseGraph(ABC):
                 )
 
         # Create edge_data with merged data
-        edge_data = dict(weight=total_weight, source_id=GRAPH_FIELD_SEP.join(source_id),
+        edge_data = dict(weight=total_weight, source_id=source_id,
                          relation_name=relation_name, keywords=keywords, description=description)
         logger.debug(f"edge data: {edge_data}")
         # Upsert the edge with the merged data
