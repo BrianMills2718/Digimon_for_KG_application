@@ -92,7 +92,6 @@ class BaseGraph(ABC):
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
-        logger.debug(f"node data: {node_data}")
         # Upsert the node with the merged data
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
@@ -145,7 +144,6 @@ class BaseGraph(ABC):
         # Create edge_data with merged data
         edge_data = dict(weight=total_weight, source_id=source_id,
                          relation_name=relation_name, keywords=keywords, description=description)
-        logger.debug(f"edge data: {edge_data}")
         # Upsert the edge with the merged data
         await self._graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
 
