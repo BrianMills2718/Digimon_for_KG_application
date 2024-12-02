@@ -1,6 +1,8 @@
 import os
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 
 class Workspace:
     @staticmethod
@@ -39,10 +41,9 @@ class Workspace:
         return os.path.join(save_path)
 
 
-class Namespace:
-    def __init__(self, workspace: Workspace, namespace: Optional[str] = None):
-        self.namespace = namespace
-        self.workspace = workspace
+class Namespace(BaseModel):
+    namespace: Optional[str] = None
+    workspace: Workspace = None
 
     def get_load_path(self, resource_name: str) -> Optional[str]:
         assert self.namespace is not None, "Namespace must be set to get resource load path."

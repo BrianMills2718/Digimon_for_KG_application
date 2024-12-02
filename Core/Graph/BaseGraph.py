@@ -1,9 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
-
-from lazy_object_proxy.utils import await_
-
 from Core.Common.Logger import logger
 from typing import List
 from Core.Common.Constants import GRAPH_FIELD_SEP
@@ -142,9 +139,9 @@ class BaseGraph(ABC):
         await self._graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
 
     @abstractmethod
-    def _extract_node_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
+    def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
         """
-        Abstract method to extract relationships between nodes in the graph.
+        Abstract method to extract entities and the relationships between their in the graph.
 
         This method should be implemented by subclasses to define how node relationships are extracted.
         """
@@ -202,6 +199,7 @@ class BaseGraph(ABC):
             maybe_edges_aug[tuple(sorted(k))].extend(v)
 
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
+
 
     async def __graph__(self, elements: list):
         """

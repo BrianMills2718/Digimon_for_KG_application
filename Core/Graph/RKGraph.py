@@ -1,6 +1,6 @@
 import re
 import asyncio
-from collections import defaultdict, Counter
+from collections import defaultdict
 from typing import Union, List, Any
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Common.Logger import logger
@@ -16,31 +16,31 @@ from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Constants import (
     DEFAULT_RECORD_DELIMITER,
     DEFAULT_COMPLETION_DELIMITER,
-    DEFAULT_TUPLE_DELIMITER
+    DEFAULT_TUPLE_DELIMITER,
+    DEFAULT_ENTITY_TYPES
 )
 from Core.Common.Memory import Memory
 
 
-async def _handle_single_entity_extraction(record_attributes: list[str], chunk_key: str) -> Union[
-    Entity, None]:
-    if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
-        return None
-
-    entity_name = clean_str(record_attributes[1].upper())
-    if not entity_name.strip():
-        return None
-
-    return Entity(
-        entity_name=entity_name,
-        entity_type=clean_str(record_attributes[2].upper()),
-        description=clean_str(record_attributes[3]),
-        source_id=chunk_key
-    )
-
-
 class RKGraph(BaseGraph):
+    @classmethod
+    async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> Union[
+        Entity, None]:
+        if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
+            return None
 
-    async def _extract_node_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
+        entity_name = clean_str(record_attributes[1].upper())
+        if not entity_name.strip():
+            return None
+
+        return Entity(
+            entity_name=entity_name,
+            entity_type=clean_str(record_attributes[2].upper()),
+            description=clean_str(record_attributes[3]),
+            source_id=chunk_key
+        )
+
+    async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
         chunk_key, chunk_info = chunk_key_pair
         records = await self._extract_records_from_chunk(chunk_info)
         return await self._build_graph_from_records(records, chunk_key)
@@ -48,7 +48,7 @@ class RKGraph(BaseGraph):
     async def _build_graph(self, chunk_list: List[Any]):
         try:
             elements = await asyncio.gather(
-                *[self._extract_node_relationship(chunk) for chunk in chunk_list])
+                *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the extracted entities and triples
             await self.__graph__(elements)
         except Exception as e:
@@ -97,7 +97,7 @@ class RKGraph(BaseGraph):
             DEFAULT_RECORD_DELIMITER, DEFAULT_COMPLETION_DELIMITER
         ])
 
-    async def _organize_records(self, records: list[str], chunk_key: str):
+    async def _build_graph_from_records(self, records: list[str], chunk_key: str):
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 
         for record in records:
@@ -106,7 +106,7 @@ class RKGraph(BaseGraph):
                 continue
 
             record_attributes = split_string_by_multi_markers(match.group(1), [DEFAULT_TUPLE_DELIMITER])
-            entity = await _handle_single_entity_extraction(record_attributes, chunk_key)
+            entity = await self._handle_single_entity_extraction(record_attributes, chunk_key)
 
             if entity is not None:
                 maybe_nodes[entity.entity_name].append(entity)
@@ -132,6 +132,12 @@ class RKGraph(BaseGraph):
             source_id=chunk_key,
             keywords=clean_str(record_attributes[4]) if self.config.use_keywords else None
         )
-
-
-
+    @classmethod
+    def _build_context_for_entity_extraction(self, content: str) -> dict:
+        return dict(
+            tuple_delimiter=DEFAULT_TUPLE_DELIMITER,
+            record_delimiter=DEFAULT_RECORD_DELIMITER,
+            completion_delimiter=DEFAULT_COMPLETION_DELIMITER,
+            entity_types=",".join(DEFAULT_ENTITY_TYPES),
+            input_text=content
+        )

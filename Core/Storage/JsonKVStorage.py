@@ -1,5 +1,3 @@
-import os
-from dataclasses import dataclass
 
 from Core.Common.Utils import load_json, write_json
 from Core.Common.Logger import logger
@@ -9,7 +7,7 @@ from Core.Storage.BaseKVStorage import (
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class JsonKVStorage(BaseKVStorage, BaseModel):
+class JsonKVStorage(BaseKVStorage):
     # def __post_init__(self):
     # #     working_dir = self.global_config["working_dir"]
     # #     self._file_name = os.path.join(working_dir, f"kv_store_{self.namespace}.json")

@@ -52,7 +52,7 @@ class PassageGraph(BaseGraph):
                     logger.error("All retry attempts failed. Exiting.")
             return []
 
-    async def _extract_node_relationship(self, chunk_key_pair: tuple[str, TextChunk]) -> Any:
+    async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]) -> Any:
         chunk_key, chunk_info = chunk_key_pair  # Unpack the chunk key and information
         chunk_info = chunk_info.content
 
@@ -64,7 +64,7 @@ class PassageGraph(BaseGraph):
     async def _build_graph(self, chunk_list: List[Any]):
         try:
             results = await asyncio.gather(
-                *[self._extract_node_relationship(chunk) for chunk in chunk_list])
+                *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the relationship of chunks
             await self.__passage_graph__(results, chunk_list)
         except Exception as e:

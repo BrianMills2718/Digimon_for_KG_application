@@ -47,7 +47,7 @@ class ERGraph(BaseGraph):
 
         return triples
 
-    async def _extract_node_relationship(self, chunk_key_pair: tuple[str, TextChunk]) -> Any:
+    async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]) -> Any:
         chunk_key, chunk_info = chunk_key_pair  # Unpack the chunk key and information
         chunk_info = chunk_info.content
         if self.config.extract_two_step:
@@ -77,7 +77,7 @@ class ERGraph(BaseGraph):
     async def _build_graph(self, chunk_list: List[Any]):
         try:
             results = await asyncio.gather(
-                *[self._extract_node_relationship(chunk) for chunk in chunk_list])
+                *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the extracted entities and triples
             await self.__graph__(results)
         except Exception as e:
@@ -98,6 +98,7 @@ class ERGraph(BaseGraph):
                 maybe_nodes[entity_name].append(entity)
 
         # Extract relationships
+
         for match in re.finditer(REL_PATTERN, content):
             src_id, _, tgt_id, _, rel_type = match.groups()
             if src_id in maybe_nodes and tgt_id in maybe_nodes:
