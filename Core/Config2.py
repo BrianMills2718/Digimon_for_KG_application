@@ -43,7 +43,7 @@ class Config(CLIParams, YamlModel):
     # Basic Config
     use_entities_vdb: bool = True
     use_relations_vdb: bool = True  # Only set True for LightRAG
-    vdb_type: str = "faiss"  # faiss/colbert/milvus
+    vdb_type: str = "vector"  # vector/colbert
     # Chunking
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
@@ -55,7 +55,7 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "tree_graph"
+    graph_type: str = "rkg_graph"
     max_gleaning: int = 1
     enable_entity_description: bool = True
     enable_entity_type: bool = True
