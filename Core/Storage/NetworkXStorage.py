@@ -200,6 +200,7 @@ class NetworkXStorage(BaseGraphStorage):
         edges = []
         for edge_id in edge_list:
             edge_data = await self.get_edge(edge_id[0], edge_id[1])
+            print(edge_data)
             if edge_data.get("description", "") == "":
                 edge_data["content"] = edge_data["relation_name"]
             elif edge_data.get("keywords", "") != "":

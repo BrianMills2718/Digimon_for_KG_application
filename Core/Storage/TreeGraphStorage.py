@@ -2,10 +2,11 @@ from Core.Storage.BaseGraphStorage import BaseGraphStorage
 from Core.Schema.TreeSchema import TreeNode, TreeSchema
 from Core.Common.Logger import logger
 
-from typing import Dict, List, Set, Tuple, Optional, Any
+from typing import Dict, Any
 
 import os
 import pickle
+
 
 class TreeGraphStorage(BaseGraphStorage):
     name: str = "tree_data.pkl"
@@ -40,7 +41,6 @@ class TreeGraphStorage(BaseGraphStorage):
             logger.info("Pkl file does not exist! Need to build the tree from scratch.")
             return False
 
-
     @property
     def tree(self):
         return self._tree
@@ -53,7 +53,7 @@ class TreeGraphStorage(BaseGraphStorage):
     @property
     def root_nodes(self):
         return self.tree.root_nodes
-    
+
     @property
     def leaf_nodes(self):
         return self.tree.leaf_nodes
@@ -71,17 +71,17 @@ class TreeGraphStorage(BaseGraphStorage):
             self._tree.layer_to_nodes = []
             self._tree.all_nodes = []
         self._tree.layer_to_nodes.append([])
-    
+
     def get_layer(self, layer: int):
         return self._tree.layer_to_nodes[layer]
 
     def upsert_node(self, node_id: int, node_data: Dict[str, Any]):
-        node = TreeNode(index = node_id, text = node_data['text'], children = node_data['children'], embedding = node_data['embedding'])
+        node = TreeNode(index=node_id, text=node_data['text'], children=node_data['children'],
+                        embedding=node_data['embedding'])
         layer = node_data['layer']
         self._tree.layer_to_nodes[layer].append(node)
         self._tree.all_nodes.append(node)
         return
-
 
     async def load_graph(self, force: bool = False) -> bool:
         return await self.load_tree_graph(force)

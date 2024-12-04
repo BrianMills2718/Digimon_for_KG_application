@@ -129,7 +129,8 @@ class BaseGraph(ABC):
 
         # Create edge_data with merged data
         edge_data = dict(weight=total_weight, source_id=source_id,
-                         relation_name=relation_name, keywords=keywords, description=description)
+                         relation_name=relation_name, keywords=keywords, description=description, src_id=src_id,
+                         tgt_id=tgt_id)
         # Upsert the edge with the merged data
         await self._graph.upsert_edge(src_id, tgt_id, edge_data=edge_data)
 

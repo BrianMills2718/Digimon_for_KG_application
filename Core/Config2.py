@@ -69,6 +69,16 @@ class Config(CLIParams, YamlModel):
     graph_cluster_seed: int = 0xDEADBEEF
     summary_max_tokens: int = 500
 
+
+    # Tree Config
+    reduction_dimension: Optional[int] = 5
+    summarization_length: Optional[int] = 100
+    num_layers: Optional[int] = 10
+    top_k: Optional[int] = 5
+    start_layer: Optional[int] = 5
+    graph_cluster_params: Optional[dict] = None
+    selection_mode: Optional[str] = "top_k"
+
     # Commuity report
     enforce_sub_communities: bool = False
 
@@ -139,11 +149,4 @@ def merge_dict(dicts: Iterable[Dict]) -> Dict:
 
 config = Config.default()
 
-class TreeGraphConfig():
-    reduction_dimension: Optional[int] = 5
-    summarization_length: Optional[int] = 100
-    num_layers: Optional[int] = 10
-    top_k: Optional[int] = 5
-    start_layer: Optional[int] = 5
-    graph_cluster_params: Optional[dict] = {}
-    selection_mode: Optional[str] = "top_k"
+
