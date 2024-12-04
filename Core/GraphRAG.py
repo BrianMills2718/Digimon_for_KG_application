@@ -132,12 +132,16 @@ class GraphRAG(ContextMixin, BaseModel):
             # entity_metadata = {"entity_name": node["entity_name"] for node in await self.graph.nodes()}
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
             await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
+            logger.info("✅ Finished starting insert entities of the given graph into vector database")
+
             if self.config.use_relations_vdb:
                 logger.info("Starting insert relations of the given graph into vector database")
                 relation_metadata = None
                 for edge in await self.graph.edges():
                     relation_metadata = {"src_id": edge["src_id"], "tgt_id": edge["tgt_id"]}
                 await self.relations_vdb.build_index(await self.graph.edges(), relation_metadata, force=False)
+                logger.info("✅ Finished starting insert relations of the given graph into vector database")
+
             if self.config.use_community:
                 logger.info("Starting build community of the given graph")
 
