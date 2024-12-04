@@ -9,8 +9,6 @@ from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_s
 from llama_index.core.embeddings import BaseEmbedding
 from llama_index.core.indices.base import BaseIndex
 from llama_index.core.vector_stores.types import BasePydanticVectorStore
-from llama_index.vector_stores.faiss import FaissVectorStore
-from Core.Index.ColBertStore import ColbertIndex
 from pathlib import Path
 
 from Core.Common.BaseFactory import ConfigBasedFactory

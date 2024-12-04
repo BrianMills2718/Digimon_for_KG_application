@@ -19,7 +19,8 @@ class VectorIndex(BaseIndex):
     async def retrieval_batch(self, queries, top_k):
         pass
 
-    async def _update_index(self, elements: List[Any]):
+    async def _update_index(self, datas, meta_data):
+
         pass
 
     async def _load_index(self) -> bool:
@@ -31,9 +32,9 @@ class VectorIndex(BaseIndex):
             logger.error("Loading index error: {}".format(e))
             return False
 
-    async def upsert(self, data: dict[Any]):
-        elif isinstance(data[0], str):
-        documents = [Document(text=t, key=mdhash_id(t)) for t in data]
+    async def upsert(self, data: dict[str: Any]):
+
+        documents = [Document(text=data["content"], key=mdhash_id(t)) for t in data]
         await self._update_index_from_documents(documents)
 
     else:
