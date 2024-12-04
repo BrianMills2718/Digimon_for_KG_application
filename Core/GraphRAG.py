@@ -134,16 +134,16 @@ class GraphRAG(ContextMixin, BaseModel):
             await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
-            if self.config.use_relations_vdb:
-                logger.info("Starting insert relations of the given graph into vector database")
-                relation_metadata = None
-                for edge in await self.graph.edges():
-                    relation_metadata = {"src_id": edge["src_id"], "tgt_id": edge["tgt_id"]}
-                await self.relations_vdb.build_index(await self.graph.edges(), relation_metadata, force=False)
-                logger.info("✅ Finished starting insert relations of the given graph into vector database")
+        if self.config.use_relations_vdb:
+            logger.info("Starting insert relations of the given graph into vector database")
+            relation_metadata = None
+            for edge in await self.graph.edges():
+                relation_metadata = {"src_id": edge["src_id"], "tgt_id": edge["tgt_id"]}
+            await self.relations_vdb.build_index(await self.graph.edges(), relation_metadata, force=False)
+            logger.info("✅ Finished starting insert relations of the given graph into vector database")
 
-            if self.config.use_community:
-                logger.info("Starting build community of the given graph")
+        if self.config.use_community:
+            logger.info("Starting build community of the given graph")
 
             ####################################################################################################
             # 4. Graph Augmentation Stage (Optional)
@@ -152,17 +152,22 @@ class GraphRAG(ContextMixin, BaseModel):
             # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
             # These edges represent similarity types and are leveraged in subsequent processes.
 
-        async def query(self, query):
+    async def query(self, query):
+        """
+            Executes the query by extracting the relevant content, and then generating a response.
+            Args:
+                query: The query to be processed.
+            Returns:
             """
-              Executes the query by extracting the relevant context, and then generating a response.
-              Args:
-                  query: The query to be processed.
-              Returns:
-              """
-            ####################################################################################################
-            # 1. Building query relevant context (subgraph) Stage
-            ####################################################################################################
+        ####################################################################################################
+        # 1. Building query relevant content (subgraph) Stage
+        ####################################################################################################
+        retrieve_conext = None # which is used to retrieve the query-based relevant content from the graph.
 
-            ####################################################################################################
-            # 2. Generation Stage
-            ####################################################################################################
+        _find_relevant_nodes = None # which is used to find the relevant nodes in the graph.
+        _find_relevant_edges = None # which is used to find the relevant edges in the graph.
+        
+        relevant_context = None 
+        ####################################################################################################
+        # 2. Generation Stage
+        ####################################################################################################
