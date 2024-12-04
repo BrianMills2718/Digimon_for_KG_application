@@ -4,6 +4,7 @@ import os
 from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
+from lazy_object_proxy.utils import await_
 from pydantic import model_validator
 
 from Core.Common.Logger import logger
@@ -85,11 +86,11 @@ class NetworkXStorage(BaseGraphStorage):
         return fixed_graph
 
     async def load_graph(self, force: bool = False) -> bool:
-        # if force:
-        #     logger.info("Force rebuilding the graph")
-        #     return False
-        # else:
-        return self.load_nx_graph()
+        if force:
+            logger.info("Force rebuilding the graph")
+            return False
+        else:
+            return self.load_nx_graph()
 
     @property
     def graph(self):
@@ -180,7 +181,30 @@ class NetworkXStorage(BaseGraphStorage):
         return await self._persist(force)
 
     async def get_nodes(self):
-        return self._graph.nodes()
+        node_list = list(self._graph.nodes())
+        nodes = []
+        for node_id in node_list:
+
+            node_data = await self.get_node(node_id)
+            if node_data.get("description", "") == "":
+                node_data["content"] = node_data["entity_name"]
+            else:
+                node_data["content"] = "{entity}: {description}".format(entity=node_data["entity_name"],
+                                                                        description=node_data["description"])
+            nodes.append(node_data)
+
+        return nodes
 
     async def get_edges(self):
-        return self._graph.edges()
+        edge_list = list(self._graph.edges())
+        edges = []
+        for edge_id in edge_list:
+            edge_data = await self.get_edge(edge_id[0], edge_id[1])
+            if edge_data.get("description", "") == "":
+                edge_data["content"] = edge_data["relation_name"]
+            elif edge_data.get("keywords", "") != "":
+                edge_data["content"] = "{keywords} {src_id} {tgt_id} {description}".format(
+                    keywords=edge_data["keywords"], src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
+                    description=edge_data["description"])
+            edges.append(edge_data)
+        return edges

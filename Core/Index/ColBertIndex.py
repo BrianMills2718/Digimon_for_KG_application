@@ -7,7 +7,7 @@ from pathlib import Path
 
 from Core.Common.Logger import logger
 import os
-from typing import Any, List
+from typing import Any
 from colbert.data import Queries
 from Core.Index.BaseIndex import BaseIndex
 
@@ -17,6 +17,9 @@ class ColBertIndex(BaseIndex):
 
     It is a lightweight and easy-to-use vector database for ANN search.
     """
+
+    def __init__(self, config):
+        super().__init__(config)
 
     async def _update_index(self, elements, meta_data):
 
@@ -67,3 +70,7 @@ class ColBertIndex(BaseIndex):
     def _storage_index(self):
         # Stores the index for Colbert-index upon its creation.
         pass
+
+
+    def _get_index(self):
+        return ColBertIndex(self.config)

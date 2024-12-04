@@ -8,7 +8,6 @@ from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
 from Core.Index.VectorIndex import VectorIndex
 from Core.Index.IndexConfigFactory import get_index_config
-from Core.Storage.JsonKVStorage import JsonKVStorage
 from Core.Storage.NameSpace import Workspace
 
 
@@ -129,15 +128,14 @@ class GraphRAG(ContextMixin, BaseModel):
         # NOTE: ** Ensure the graph is successfully loaded before proceeding to load the index from storage, as it represents a one-to-one mapping. **
         if self.config.use_entities_vdb:
             logger.info("Starting insert entities of the given graph into vector database")
-            insert_entities = [{"id": mdhash_id(node["entity_name"], prefix="ent-"),
-                                "content": node["entity_name"] + node["description"], "embedding": node.get("embedding", None)} for node in
-                               self.graph.nodes()]
-            entity_metadata = [{"entity_name": node["entity_name"]} for node in
-                               self.graph.nodes()]
-            await self.entities_vdb.build_index(insert_entities, entity_metadata, force=True)
+
+            entity_metadata = {"entity_name": node["entity_name"] for node in await self.graph.nodes()}
+            await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
             if self.config.use_relations_vdb:
                 logger.info("Starting insert relations of the given graph into vector database")
-                await self.relations_vdb.build_index(element=self.graph.edges(), metadata=None, force=True)
+                relation_metadata = {{"src_id": edge["src_id"], "tgt_id": edge["tgt_id"]} for edge in
+                                     await self.graph.edges()}
+                await self.relations_vdb.build_index(await self.graph.edges(), relation_metadata, force=True)
             if self.config.use_community:
                 logger.info("Starting build community of the given graph")
 

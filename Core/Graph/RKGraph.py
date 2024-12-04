@@ -20,13 +20,19 @@ from Core.Common.Constants import (
     DEFAULT_ENTITY_TYPES
 )
 from Core.Common.Memory import Memory
+from Core.Storage.NetworkXStorage import NetworkXStorage
 
 
 class RKGraph(BaseGraph):
+
+    def __init__(self, config, llm, encoder):
+        super().__init__(config, llm, encoder)
+        self._graph = NetworkXStorage()
+
     @classmethod
     async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> Union[
         Entity, None]:
- 
+
         if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
             return None
 
@@ -34,13 +40,15 @@ class RKGraph(BaseGraph):
         if not entity_name.strip():
             return None
 
-        entity =  Entity(
+        entity = Entity(
             entity_name=entity_name,
             entity_type=clean_str(record_attributes[2]),
             description=clean_str(record_attributes[3]),
             source_id=chunk_key
         )
+
         return entity
+
     async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
         chunk_key, chunk_info = chunk_key_pair
         records = await self._extract_records_from_chunk(chunk_info)

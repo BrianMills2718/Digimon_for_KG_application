@@ -7,7 +7,6 @@ from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Memory import Memory
 from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
-from Core.Storage.BaseGraphStorage import BaseGraphStorage
 from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Utils import (clean_str, build_data_for_merge)
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
@@ -20,7 +19,7 @@ class BaseGraph(ABC):
         self.config = config  # Build graph config
         self.llm = llm  # LLM instance
         self.ENCODER = encoder  # Encoder
-        self._graph: BaseGraphStorage = None  # Store the graph
+        self._graph = None
 
     async def build_graph(self, chunks, force: bool = False):
         """
@@ -32,7 +31,6 @@ class BaseGraph(ABC):
         Returns:
             The graph if it already exists, otherwise builds and returns the graph.
         """
-
         # Try to load the graph
         is_exist = await self._load_graph(force)
         if force or not is_exist:
@@ -45,7 +43,7 @@ class BaseGraph(ABC):
         """
         Try to load the graph from the file
         """
-        await self._graph.load_graph(force)
+        return await self._graph.load_graph(force)
 
     @property
     def namespace(self):
@@ -118,15 +116,15 @@ class BaseGraph(ABC):
                                                          "keywords"]) if self.config.enable_edge_description else "")
 
         relation_name = (MergeRelationship.merge_relation_name(existing_edge_data["relation_name"],
-                                                          upsert_edge_data[
-                                                              "relation_name"]) if self.config.enable_edge_name else "")
+                                                               upsert_edge_data[
+                                                                   "relation_name"]) if self.config.enable_edge_name else "")
         # Ensure src_id and tgt_id nodes exist
         for node_id in (src_id, tgt_id):
             if not await self._graph.has_node(node_id):
                 # Upsert node with source_id and entity_name
                 await self._graph.upsert_node(
                     node_id,
-                    node_data=dict(source_id=source_id, entity_name=node_id, entity_type = "", description = "")
+                    node_data=dict(source_id=source_id, entity_name=node_id, entity_type="", description="")
                 )
 
         # Create edge_data with merged data
@@ -201,7 +199,6 @@ class BaseGraph(ABC):
         """
         Build the graph based on the input elements.
         """
-        self.llm.aask()
         # Initialize dictionaries to hold aggregated node and edge information
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 

@@ -18,9 +18,14 @@ from Core.Common.Constants import (
     NODE_PATTERN,
     REL_PATTERN
 )
+from Core.Storage.NetworkXStorage import NetworkXStorage
 
 
 class ERGraph(BaseGraph):
+
+    def __init__(self, config, llm, encoder):
+        super().__init__(config, llm, encoder)
+        self._graph = NetworkXStorage()
 
     async def _named_entity_recognition(self, passage: str):
         ner_messages = GraphPrompt.NER.format(user_input=passage)

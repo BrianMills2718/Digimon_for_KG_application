@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d7" for="edge" attr.name="description" attr.type="string"/>
-<key id="d6" for="edge" attr.name="keywords" attr.type="string"/>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d6" for="edge" attr.name="relation_name" attr.type="string"/>
 <key id="d5" for="edge" attr.name="source_id" attr.type="string"/>
 <key id="d4" for="edge" attr.name="weight" attr.type="double"/>
 <key id="d3" for="node" attr.name="description" attr.type="string"/>
@@ -50,7 +51,7 @@
   <data key="d3">online distributed proofreading team is a group of volunteers who proofread and produce e books</data>
 </node>
 <node id="bob cratchit">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">bob cratchit</data>
   <data key="d2">person</data>
   <data key="d3">bob cratchit is a character in the e book  a christmas carol   a clerk to ebenezer scrooge&lt;SEP&gt;bob cratchit is a character who is mentioned as being a humble and hardworking individual  celebrating christmas with his family&lt;SEP&gt;bob cratchit is a character who is scrooge s employee and is shown to be cheerful and festive  despite his poverty</data>
@@ -86,13 +87,13 @@
   <data key="d3">ghost of christmas past is a spirit that appears to ebenezer scrooge in the e book  a christmas carol</data>
 </node>
 <node id="scrooge">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d1">scrooge</data>
   <data key="d2">person</data>
   <data key="d3">scrooge is a character who experiences a supernatural encounter with marley s ghost and is portrayed as a miserly and skeptical individual&lt;SEP&gt;scrooge is a character who is described as being tight fisted  cold  and solitary  with a reputation for being unfriendly and unapproachable&lt;SEP&gt;scrooge is a character who is portrayed as a miserly and bitter person  with a negative view of christmas and its traditions&lt;SEP&gt;scrooge is a character who is portrayed as being miserly and unwilling to help the poor during the christmas season&lt;SEP&gt;scrooge is a character who is portrayed as miserly and disapproving of christmas  with a focus on his financial concerns&lt;SEP&gt;scrooge is a character who is portrayed as miserly and grumpy  with a focus on his business and a lack of festive spirit&lt;SEP&gt;scrooge is a main character who is portrayed as being cold and caustic  with a significant role in the story</data>
 </node>
 <node id="marley">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d1">marley</data>
   <data key="d2">person</data>
   <data key="d3">marley is a character who appears as a ghost to scrooge  with a face that is described as having a dismal light and a livid color&lt;SEP&gt;marley is a character who is described as being dead  with scrooge being his sole executor  administrator  and assign&lt;SEP&gt;marley is a character who is mentioned as having been scrooge s business partner and has been dead for seven years&lt;SEP&gt;marley is a deceased character who is mentioned as being a partner and friend of scrooge s&lt;SEP&gt;marley is a person who has been dead for seven years  but his face appears to the narrator  influencing his thoughts</data>
@@ -134,7 +135,7 @@
   <data key="d3">clergyman is a character who is mentioned as being involved in marley s burial</data>
 </node>
 <node id="clerk">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">clerk</data>
   <data key="d2">organization</data>
   <data key="d3">clerk is a character who is mentioned as being involved in marley s burial&lt;SEP&gt;the clerk is a person who works for scrooge  copying letters in a small cell</data>
@@ -332,7 +333,7 @@
   <data key="d3">the mansion house is the stronghold of the lord mayor  where he gives orders to his cooks and butlers to keep christmas</data>
 </node>
 <node id="st  dunstan">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d1">st  dunstan</data>
   <data key="d2">person</data>
   <data key="d3">st  dunstan is a historical figure mentioned as a saint who might have used weather to combat evil&lt;SEP&gt;st  dunstan is a historical figure mentioned in the text as having the ability to nip the evil spirit s nose</data>
@@ -574,261 +575,307 @@
 <node id="a christmas carol">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d1">a christmas carol</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
 </node>
 <node id="the poor">
   <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d1">the poor</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
 </node>
 <edge source="charles dickens" target="a christmas carol">
   <data key="d4">9.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">authorship  literary work</data>
-  <data key="d7">charles dickens wrote the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">authorship  literary work</data>
+  <data key="d8">charles dickens wrote the e book  a christmas carol</data>
 </edge>
 <edge source="arthur rackham" target="a christmas carol">
   <data key="d4">8.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">illustration  artistic work</data>
-  <data key="d7">arthur rackham illustrated the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">illustration  artistic work</data>
+  <data key="d8">arthur rackham illustrated the e book  a christmas carol</data>
 </edge>
 <edge source="j  b  lippincott company" target="a christmas carol">
   <data key="d4">7.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">publishing  literary work</data>
-  <data key="d7">j  b  lippincott company published the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">publishing  literary work</data>
+  <data key="d8">j  b  lippincott company published the e book  a christmas carol</data>
 </edge>
 <edge source="suzanne shell" target="a christmas carol">
   <data key="d4">6.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">production  literary work</data>
-  <data key="d7">suzanne shell produced the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">production  literary work</data>
+  <data key="d8">suzanne shell produced the e book  a christmas carol</data>
 </edge>
 <edge source="janet blenkinship" target="a christmas carol">
   <data key="d4">6.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">production  literary work</data>
-  <data key="d7">janet blenkinship produced the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">production  literary work</data>
+  <data key="d8">janet blenkinship produced the e book  a christmas carol</data>
 </edge>
 <edge source="online distributed proofreading team" target="a christmas carol">
   <data key="d4">6.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6">production  literary work</data>
-  <data key="d7">online distributed proofreading team produced the e book  a christmas carol</data>
+  <data key="d6"></data>
+  <data key="d7">production  literary work</data>
+  <data key="d8">online distributed proofreading team produced the e book  a christmas carol</data>
 </edge>
 <edge source="bob cratchit" target="scrooge">
   <data key="d4">6.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6">employment  contrast</data>
-  <data key="d7">scrooge is the employer of bob cratchit  who is shown to be cheerful and festive  despite his poverty</data>
+  <data key="d6"></data>
+  <data key="d7">employment  contrast</data>
+  <data key="d8">scrooge is the employer of bob cratchit  who is shown to be cheerful and festive  despite his poverty</data>
 </edge>
 <edge source="fred" target="scrooge">
   <data key="d4">7.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6">family  invitation</data>
-  <data key="d7">scrooge is invited to dinner by his nephew fred  indicating a familial relationship</data>
+  <data key="d6"></data>
+  <data key="d7">family  invitation</data>
+  <data key="d8">scrooge is invited to dinner by his nephew fred  indicating a familial relationship</data>
 </edge>
 <edge source="scrooge" target="marley">
   <data key="d4">35.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6">supernatural encounter  transformation&lt;SEP&gt;executorship  administration&lt;SEP&gt;partnership  friendship&lt;SEP&gt;haunting  redemption</data>
-  <data key="d7">scrooge and marley were partners and friends  with scrooge being marley s sole executor and administrator&lt;SEP&gt;scrooge is confronted by marley s ghost  which is a supernatural encounter that has a profound impact on scrooge&lt;SEP&gt;scrooge is haunted by the ghost of his former business partner  marley  who is trying to warn him of the error of his ways&lt;SEP&gt;scrooge is the executor  administrator  and assign of marley s estate  indicating a close relationship between the two characters</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7">executorship  administration&lt;SEP&gt;haunting  redemption&lt;SEP&gt;partnership  friendship&lt;SEP&gt;supernatural encounter  transformation</data>
+  <data key="d8">scrooge and marley were partners and friends  with scrooge being marley s sole executor and administrator&lt;SEP&gt;scrooge is confronted by marley s ghost  which is a supernatural encounter that has a profound impact on scrooge&lt;SEP&gt;scrooge is haunted by the ghost of his former business partner  marley  who is trying to warn him of the error of his ways&lt;SEP&gt;scrooge is the executor  administrator  and assign of marley s estate  indicating a close relationship between the two characters</data>
 </edge>
 <edge source="scrooge" target="joe">
   <data key="d4">6.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6">friendship  conversation</data>
-  <data key="d7">scrooge has a conversation with joe  indicating a friendly relationship</data>
+  <data key="d6"></data>
+  <data key="d7">friendship  conversation</data>
+  <data key="d8">scrooge has a conversation with joe  indicating a friendly relationship</data>
 </edge>
 <edge source="scrooge" target="woman">
   <data key="d4">6.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6">friendship  conversation</data>
-  <data key="d7">scrooge has a conversation with a woman  indicating a friendly relationship</data>
+  <data key="d6"></data>
+  <data key="d7">friendship  conversation</data>
+  <data key="d8">scrooge has a conversation with a woman  indicating a friendly relationship</data>
 </edge>
 <edge source="scrooge" target="scrooge and marley">
   <data key="d4">8.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6">partnership  business</data>
-  <data key="d7">scrooge is a partner in the firm of scrooge and marley  indicating a professional relationship</data>
+  <data key="d6"></data>
+  <data key="d7">partnership  business</data>
+  <data key="d8">scrooge is a partner in the firm of scrooge and marley  indicating a professional relationship</data>
 </edge>
 <edge source="scrooge" target="christmas eve">
   <data key="d4">17.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6">transformation  significance&lt;SEP&gt;contrast  festive spirit</data>
-  <data key="d7">scrooge is portrayed as being grumpy and unfestive on christmas eve  contrasting with the cheerful atmosphere of the event&lt;SEP&gt;scrooge s life is changed on christmas eve  indicating a significant relationship between the two entities</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7">contrast  festive spirit&lt;SEP&gt;transformation  significance</data>
+  <data key="d8">scrooge is portrayed as being grumpy and unfestive on christmas eve  contrasting with the cheerful atmosphere of the event&lt;SEP&gt;scrooge s life is changed on christmas eve  indicating a significant relationship between the two entities</data>
 </edge>
 <edge source="scrooge" target="city clocks">
   <data key="d4">7.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6">timekeeping  awareness</data>
-  <data key="d7">scrooge is aware of the time as told by the city clocks  indicating a relationship between the two entities</data>
+  <data key="d6"></data>
+  <data key="d7">timekeeping  awareness</data>
+  <data key="d8">scrooge is aware of the time as told by the city clocks  indicating a relationship between the two entities</data>
 </edge>
 <edge source="scrooge" target="court">
   <data key="d4">6.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6">awareness  observation</data>
-  <data key="d7">scrooge is aware of the people going about their daily business in the court outside his counting house  indicating a relationship between the two entities</data>
+  <data key="d6"></data>
+  <data key="d7">awareness  observation</data>
+  <data key="d8">scrooge is aware of the people going about their daily business in the court outside his counting house  indicating a relationship between the two entities</data>
 </edge>
 <edge source="scrooge" target="counting house">
   <data key="d4">8.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6">work  business</data>
-  <data key="d7">scrooge works and conducts his business in his counting house  indicating a relationship between the two entities</data>
+  <data key="d6"></data>
+  <data key="d7">work  business</data>
+  <data key="d8">scrooge works and conducts his business in his counting house  indicating a relationship between the two entities</data>
 </edge>
 <edge source="scrooge" target="christmas">
   <data key="d4">16.0</data>
   <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6">opposition  financial concerns</data>
-  <data key="d7">scrooge is opposed to christmas  viewing it as a time for financial burdens and not a time for joy and celebration</data>
+  <data key="d6"></data>
+  <data key="d7">opposition  financial concerns</data>
+  <data key="d8">scrooge is opposed to christmas  viewing it as a time for financial burdens and not a time for joy and celebration</data>
 </edge>
 <edge source="scrooge" target="scrooge s nephew">
   <data key="d4">25.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6">attempts to bring joy  resistance&lt;SEP&gt;family dynamics  resistance to change&lt;SEP&gt;connection  unwillingness</data>
-  <data key="d7">scrooge and his nephew have a strained relationship  with scrooge being resistant to his nephew s attempts to bring joy and festive spirit to him&lt;SEP&gt;scrooge s nephew is trying to connect with scrooge and bring him into the holiday spirit  but scrooge is unwilling to reciprocate&lt;SEP&gt;scrooge s nephew tries to bring joy and festive spirit to scrooge  but is met with resistance and disapproval</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d6"></data>
+  <data key="d7">family dynamics  resistance to change&lt;SEP&gt;connection  unwillingness&lt;SEP&gt;attempts to bring joy  resistance</data>
+  <data key="d8">scrooge and his nephew have a strained relationship  with scrooge being resistant to his nephew s attempts to bring joy and festive spirit to him&lt;SEP&gt;scrooge s nephew is trying to connect with scrooge and bring him into the holiday spirit  but scrooge is unwilling to reciprocate&lt;SEP&gt;scrooge s nephew tries to bring joy and festive spirit to scrooge  but is met with resistance and disapproval</data>
 </edge>
 <edge source="scrooge" target="clerk">
   <data key="d4">5.0</data>
   <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6">master servant relationship</data>
-  <data key="d7">scrooge is the master of the clerk  who is working for him in the counting house</data>
+  <data key="d6"></data>
+  <data key="d7">master servant relationship</data>
+  <data key="d8">scrooge is the master of the clerk  who is working for him in the counting house</data>
 </edge>
 <edge source="scrooge" target="the clerk">
   <data key="d4">7.0</data>
   <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6">workplace dynamics  power imbalance</data>
-  <data key="d7">scrooge is shown to be a demanding and harsh employer  with the clerk being more sympathetic and kind hearted</data>
+  <data key="d6"></data>
+  <data key="d7">workplace dynamics  power imbalance</data>
+  <data key="d8">scrooge is shown to be a demanding and harsh employer  with the clerk being more sympathetic and kind hearted</data>
 </edge>
 <edge source="scrooge" target="ghost of marley">
   <data key="d4">8.0</data>
   <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6">haunting  redemption</data>
-  <data key="d7">the ghost of marley appears to scrooge to warn him of the error of his ways and to encourage him to change his behavior</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  redemption</data>
+  <data key="d8">the ghost of marley appears to scrooge to warn him of the error of his ways and to encourage him to change his behavior</data>
 </edge>
 <edge source="scrooge" target="portly gentlemen">
   <data key="d4">7.0</data>
   <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6">charitable giving  persuasion</data>
-  <data key="d7">the portly gentlemen visit scrooge s office to discuss charitable donations and to encourage him to be more generous</data>
+  <data key="d6"></data>
+  <data key="d7">charitable giving  persuasion</data>
+  <data key="d8">the portly gentlemen visit scrooge s office to discuss charitable donations and to encourage him to be more generous</data>
 </edge>
 <edge source="scrooge" target="poor and destitute">
   <data key="d4">5.0</data>
   <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6">compassion  lack thereof</data>
-  <data key="d7">scrooge is shown to be callous and uncaring towards the poor and destitute  highlighting his miserly nature</data>
+  <data key="d6"></data>
+  <data key="d7">compassion  lack thereof</data>
+  <data key="d8">scrooge is shown to be callous and uncaring towards the poor and destitute  highlighting his miserly nature</data>
 </edge>
 <edge source="scrooge" target="the gentleman">
   <data key="d4">6.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">refusal to help  miserliness</data>
-  <data key="d7">scrooge is unwilling to help the poor during the christmas season  as shown by his conversation with the gentleman</data>
+  <data key="d6"></data>
+  <data key="d7">refusal to help  miserliness</data>
+  <data key="d8">scrooge is unwilling to help the poor during the christmas season  as shown by his conversation with the gentleman</data>
 </edge>
 <edge source="scrooge" target="the lord mayor">
   <data key="d4">7.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">contrast  christmas spirit</data>
-  <data key="d7">scrooge is contrasted with the lord mayor  who is giving orders to keep christmas as a lord mayor s household should</data>
+  <data key="d6"></data>
+  <data key="d7">contrast  christmas spirit</data>
+  <data key="d8">scrooge is contrasted with the lord mayor  who is giving orders to keep christmas as a lord mayor s household should</data>
 </edge>
 <edge source="scrooge" target="the ancient tower of a church">
   <data key="d4">7.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">influence  atmosphere</data>
-  <data key="d7">scrooge is affected by the gruff old bell of the ancient tower of a church  as mentioned in the text</data>
+  <data key="d6"></data>
+  <data key="d7">influence  atmosphere</data>
+  <data key="d8">scrooge is affected by the gruff old bell of the ancient tower of a church  as mentioned in the text</data>
 </edge>
 <edge source="scrooge" target="marley s face">
   <data key="d4">8.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6">remembrance  connection to the past</data>
-  <data key="d7">scrooge sees marley s face in the knocker  which serves as a reminder of his deceased partner and the importance of remembering the past</data>
+  <data key="d6"></data>
+  <data key="d7">remembrance  connection to the past</data>
+  <data key="d8">scrooge sees marley s face in the knocker  which serves as a reminder of his deceased partner and the importance of remembering the past</data>
 </edge>
 <edge source="scrooge" target="city of london">
   <data key="d4">7.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d6">residence  reputation</data>
-  <data key="d7">scrooge resides in the city of london  where he has a business and is known as a miserly individual</data>
+  <data key="d6"></data>
+  <data key="d7">residence  reputation</data>
+  <data key="d8">scrooge resides in the city of london  where he has a business and is known as a miserly individual</data>
 </edge>
 <edge source="marley" target="the narrator">
   <data key="d4">8.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  psychological impact</data>
-  <data key="d7">the narrator is haunted by the face of marley  which appears to him and influences his thoughts</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  psychological impact</data>
+  <data key="d8">the narrator is haunted by the face of marley  which appears to him and influences his thoughts</data>
 </edge>
 <edge source="marley" target="cain">
   <data key="d4">14.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and cain is a biblical figure mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and cain is a biblical figure mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="abel">
   <data key="d4">14.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and abel is a biblical figure mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and abel is a biblical figure mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="pharaoh s daughters">
   <data key="d4">14.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and pharaoh s daughters are biblical figures mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and pharaoh s daughters are biblical figures mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="queen of sheba">
   <data key="d4">7.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and queen of sheba is a biblical figure mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and queen of sheba is a biblical figure mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="angelic messengers">
   <data key="d4">7.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and angelic messengers are biblical figures mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and angelic messengers are biblical figures mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="belshazzar">
   <data key="d4">7.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and belshazzar is a biblical figure mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and belshazzar is a biblical figure mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="apostles">
   <data key="d4">7.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and apostles are biblical figures mentioned on the dutch tiles in the fireplace</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and apostles are biblical figures mentioned on the dutch tiles in the fireplace</data>
 </edge>
 <edge source="marley" target="butter boats">
   <data key="d4">7.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">haunting  biblical connection</data>
-  <data key="d7">marley s face appears to the narrator  and butter boats are a type of boat mentioned in the biblical scene on the dutch tiles</data>
+  <data key="d6"></data>
+  <data key="d7">haunting  biblical connection</data>
+  <data key="d8">marley s face appears to the narrator  and butter boats are a type of boat mentioned in the biblical scene on the dutch tiles</data>
 </edge>
 <edge source="the gentleman" target="the poor">
   <data key="d4">8.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">charity  poverty</data>
-  <data key="d7">the gentleman is trying to raise a fund to buy the poor some meat and drink  and means of warmth during the christmas season</data>
+  <data key="d6"></data>
+  <data key="d7">charity  poverty</data>
+  <data key="d8">the gentleman is trying to raise a fund to buy the poor some meat and drink  and means of warmth during the christmas season</data>
 </edge>
 <edge source="st  dunstan" target="the evil spirit">
   <data key="d4">8.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">power  spirituality</data>
-  <data key="d7">st  dunstan has the ability to nip the evil spirit s nose  as mentioned in the text</data>
+  <data key="d6"></data>
+  <data key="d7">power  spirituality</data>
+  <data key="d8">st  dunstan has the ability to nip the evil spirit s nose  as mentioned in the text</data>
 </edge>
 <edge source="the ancient tower of a church" target="the church">
   <data key="d4">6.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6">location  architecture</data>
-  <data key="d7">the ancient tower of a church is a part of the church  as mentioned in the text</data>
+  <data key="d6"></data>
+  <data key="d7">location  architecture</data>
+  <data key="d8">the ancient tower of a church is a part of the church  as mentioned in the text</data>
 </edge>
 <edge source="fogg" target="st  dunstan s nose">
   <data key="d4">6.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6">weather  power</data>
-  <data key="d7">fogg is affected by st  dunstan s nose  which is a symbol of the power of weather to combat evil</data>
+  <data key="d6"></data>
+  <data key="d7">weather  power</data>
+  <data key="d8">fogg is affected by st  dunstan s nose  which is a symbol of the power of weather to combat evil</data>
 </edge>
 <edge source="the narrator" target="the fireplace">
   <data key="d4">6.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6">location  atmosphere</data>
-  <data key="d7">the narrator sits by the fireplace  trying to warm himself up  and is surrounded by the dutch tiles with biblical scenes</data>
+  <data key="d6"></data>
+  <data key="d7">location  atmosphere</data>
+  <data key="d8">the narrator sits by the fireplace  trying to warm himself up  and is surrounded by the dutch tiles with biblical scenes</data>
 </edge>
 </graph></graphml>
