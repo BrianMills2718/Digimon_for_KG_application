@@ -22,16 +22,7 @@ RANDOM_SEED = 224
 random.seed(RANDOM_SEED)
 
 
-class TreeNode:
-    """
-    Represents a node in the hierarchical tree structure.
-    """
-
-    def __init__(self, text: str, index: int, children: Set[int], embeddings) -> None:
-        self.text = text
-        self.index = index
-        self.children = children
-        self.embeddings = embeddings
+from Core.Schema.TreeSchema import TreeNode
 
 def global_cluster_embeddings(
     embeddings: np.ndarray,
@@ -141,10 +132,19 @@ Embedding = List[float]
 
 @register_community(name = "raptor")
 class RaptorClustering(BaseCommunity, ABC):
+    def clustering(self,
+        nodes: List[TreeNode],
+        max_length_in_cluster: int = 3500,
+        tokenizer=tiktoken.get_encoding("cl100k_base"),
+        reduction_dimension: int = 10,
+        threshold: float = 0.1,
+        verbose: bool = False,
+    ):
+        return self._clustering_(nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose)
+
     def _clustering_(
         self,
         nodes: List[TreeNode],
-        embedding_model_name: str,
         max_length_in_cluster: int = 3500,
         tokenizer=tiktoken.get_encoding("cl100k_base"),
         reduction_dimension: int = 10,
@@ -152,7 +152,7 @@ class RaptorClustering(BaseCommunity, ABC):
         verbose: bool = False,
     ) -> List[List[TreeNode]]:
         # Get the embeddings from the nodes
-        embeddings = np.array([node.embeddings[embedding_model_name] for node in nodes])
+        embeddings = np.array([node.embedding for node in nodes])
 
         # Perform the clustering
         clusters = perform_clustering(

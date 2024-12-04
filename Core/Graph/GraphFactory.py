@@ -5,7 +5,7 @@ import os
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.ERGraph import ERGraph
 from Core.Graph.PassageGraph import PassageGraph
-# from Core.Graph.TreeGraph import TreeGraph
+from Core.Graph.TreeGraph import TreeGraph
 from Core.Graph.RKGraph import RKGraph
 
 
@@ -36,9 +36,7 @@ class GraphFactory():
 
     @staticmethod
     def _create_tree_graph(config, **kwargs):
-        # TODO: waiting for syr
-        pass
-        # return TreeGraph(config, **kwargs)
+        return TreeGraph(config, **kwargs)
 
     @staticmethod
     def _crease_passage_graph(config, **kwargs):

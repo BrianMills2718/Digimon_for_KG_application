@@ -55,7 +55,7 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "rkg_graph"
+    graph_type: str = "tree_graph"
     max_gleaning: int = 1
     enable_entity_description: bool = True
     enable_entity_type: bool = True
@@ -138,3 +138,12 @@ def merge_dict(dicts: Iterable[Dict]) -> Dict:
 
 
 config = Config.default()
+
+class TreeGraphConfig():
+    reduction_dimension: Optional[int] = 5
+    summarization_length: Optional[int] = 100
+    num_layers: Optional[int] = 10
+    top_k: Optional[int] = 5
+    start_layer: Optional[int] = 5
+    graph_cluster_params: Optional[dict] = {}
+    selection_mode: Optional[str] = "top_k"
