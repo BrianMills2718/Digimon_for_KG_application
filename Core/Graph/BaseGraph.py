@@ -7,7 +7,7 @@ from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Memory import Memory
 from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
-from Core.Storage.NetworkXStorage import NetworkXStorage
+from Core.Storage.BaseGraphStorage import BaseGraphStorage
 from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Utils import (clean_str, build_data_for_merge)
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
@@ -20,7 +20,7 @@ class BaseGraph(ABC):
         self.config = config  # Build graph config
         self.llm = llm  # LLM instance
         self.ENCODER = encoder  # Encoder
-        self._graph: NetworkXStorage = NetworkXStorage()  # Store the graph
+        self._graph: BaseGraphStorage = None  # Store the graph
 
     async def build_graph(self, chunks, force: bool = False):
         """
@@ -116,7 +116,7 @@ class BaseGraph(ABC):
         keywords = (MergeRelationship.merge_keywords(existing_edge_data["keywords"],
                                                      upsert_edge_data[
                                                          "keywords"]) if self.config.enable_edge_description else "")
-           
+
         relation_name = (MergeRelationship.merge_relation_name(existing_edge_data["relation_name"],
                                                           upsert_edge_data[
                                                               "relation_name"]) if self.config.enable_edge_name else "")
@@ -201,7 +201,7 @@ class BaseGraph(ABC):
         """
         Build the graph based on the input elements.
         """
-
+        self.llm.aask()
         # Initialize dictionaries to hold aggregated node and edge information
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 
@@ -259,3 +259,9 @@ class BaseGraph(ABC):
 
     async def persist_graph(self, force):
         await self._graph.persist(force)
+
+    async def nodes(self):
+        return await self._graph.get_nodes()
+
+    async def edges(self):
+        return await self._graph.get_edges()

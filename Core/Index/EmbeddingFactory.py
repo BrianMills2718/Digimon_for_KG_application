@@ -31,7 +31,8 @@ class RAGEmbeddingFactory(GenericFactory):
         """Key is EmbeddingType."""
         return super().get_instance(key or self._resolve_embedding_type(config), config = config)
 
-    def _resolve_embedding_type(self, config) -> EmbeddingType | LLMType:
+    @staticmethod
+    def _resolve_embedding_type(config) -> EmbeddingType | LLMType:
         """Resolves the embedding type.
 
         If the embedding type is not specified, for backward compatibility, it checks if the LLM API type is either OPENAI or AZURE.
@@ -66,7 +67,8 @@ class RAGEmbeddingFactory(GenericFactory):
 
         return OllamaEmbedding(**params)
 
-    def _try_set_model_and_batch_size(self, params: dict, config):
+    @staticmethod
+    def _try_set_model_and_batch_size(params: dict, config):
   
         """Set the model_name and embed_batch_size only when they are specified."""
         if config.embedding.model:

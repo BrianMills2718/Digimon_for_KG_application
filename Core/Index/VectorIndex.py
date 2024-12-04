@@ -29,7 +29,7 @@ class VectorIndex:
     """
 
     def __init__(
-            self, config
+            self, config, embedding_model
     ):
         self.config = config
         self._index = get_index(self.config)
@@ -114,3 +114,6 @@ class VectorIndex:
         # Only used for Colbert
         self._index._build_index_from_list(docs_list)
         logger.info("insert to index is {}".format(len(docs_list)))
+
+    async def build_from_elements(self, element, metadata, force):
+        pass

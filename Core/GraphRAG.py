@@ -113,20 +113,35 @@ class GraphRAG(ContextMixin, BaseModel):
         logger.info("Starting chunk the given documents")
         chunks = await self._chunk_documents(docs)
         logger.info("✅ Finished the chunking stage")
+
         ####################################################################################################
         # 2. Building Graph Stage
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
-        await self.graph.build_graph(chunks, force=True)
+        await self.graph.build_graph(chunks, force=False)
         logger.info("✅ Finished building graph for the given documents")
 
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
+        # Data-driven content should be pre-built offline to ensure efficient online query performance.
+
+        # NOTE: ** Ensure the graph is successfully loaded before proceeding to load the index from storage, as it represents a one-to-one mapping. **
+        if self.config.use_entities_vdb:
+            logger.info("Starting insert entities of the given graph into vector database")
+            await self.entities_vdb.build_index(element=self.graph.nodes(), metadata=None, force=True)
+        if self.config.use_relations_vdb:
+            logger.info("Starting insert relations of the given graph into vector database")
+            await self.relations_vdb.build_index(element=self.graph.edges(), metadata=None, force=True)
+        if self.config.use_community:
+            logger.info("Starting build community of the given graph")
 
         ####################################################################################################
         # 4. Graph Augmentation Stage (Optional)
         ####################################################################################################
+
+        # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
+        # These edges represent similarity types and are leveraged in subsequent processes.
 
     async def query(self, query):
         """

@@ -23,22 +23,9 @@ class VectorIndexConfig(BaseIndexConfig):
     embed_model: BaseEmbedding = Field(default=None, description="Embed model.")
 
 
-class FAISSIndexConfig(VectorIndexConfig):
-    """Option for faiss-based index."""
 
 
-class MilvusIndexConfig(VectorIndexConfig):
-    """Option for milvus-based index."""
 
-    collection_name: str = Field(default="graphrag", description="The name of the collection.")
-    uri: str = Field(default="./milvus_local.db", description="The uri of the index.")
-    token: Optional[str] = Field(default=None, description="The token of the index.")
-
-
-class BM25IndexConfig(BaseIndexConfig):
-    """Option for bm25-based index."""
-
-    _no_embedding: bool = PrivateAttr(default=True)
 
 
 class ColBertIndexConfig(BaseIndexConfig):

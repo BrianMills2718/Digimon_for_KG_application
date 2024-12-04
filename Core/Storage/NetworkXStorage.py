@@ -179,3 +179,8 @@ class NetworkXStorage(BaseGraphStorage):
     async def persist(self, force):
         return await self._persist(force)
 
+    async def get_nodes(self):
+        return self._graph.nodes()
+
+    async def get_edges(self):
+        return self._graph.edges()

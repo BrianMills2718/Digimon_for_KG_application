@@ -3,9 +3,8 @@ Index Config Factory.
 """
 from Core.Index import get_rag_embedding
 from Core.Index.Schema import (
-    FAISSIndexConfig,
+    VectorIndexConfig,
     ColBertIndexConfig,
-    MilvusIndexConfig
 )
 
 
@@ -13,7 +12,6 @@ class IndexConfigFactory:
     def __init__(self):
         self.creators = {
             "faiss": self._create_faiss_config,
-            "milvus": self._create_milvus_config,
             "colbert": self._create_colbert_config,
         }
 
@@ -23,14 +21,10 @@ class IndexConfigFactory:
 
     @staticmethod
     def _create_faiss_config(config, persist_path):
-        return FAISSIndexConfig(
+        return VectorIndexConfig(
             persist_path=persist_path,
             embed_model=get_rag_embedding(config.embedding.api_type, config)
         )
-
-    @staticmethod
-    def _create_milvus_config(config, persist_path):
-        return MilvusIndexConfig(persist_path=persist_path, embed_model=get_rag_embedding(config))
 
     @staticmethod
     def _create_colbert_config(config, persist_path):

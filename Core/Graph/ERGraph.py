@@ -130,14 +130,14 @@ class ERGraph(BaseGraph):
             entity = Entity(entity_name=entity_name, source_id=chunk_key)
             maybe_nodes[entity_name].append(entity)
 
-            for triple in triples:
-                if len(triple) != 3:
-                    logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
-                    continue
-                relationship = Relationship(src_id=clean_str(triple[0]),
-                                            tgt_id=clean_str(triple[2]),
-                                            weight=1.0, source_id=chunk_key,
-                                            relation_name=clean_str(triple[1]))
-                maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
+        for triple in triples:
+            if len(triple) != 3:
+                logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
+                continue
+            relationship = Relationship(src_id=clean_str(triple[0]),
+                                        tgt_id=clean_str(triple[2]),
+                                        weight=1.0, source_id=chunk_key,
+                                        relation_name=clean_str(triple[1]))
+            maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)
