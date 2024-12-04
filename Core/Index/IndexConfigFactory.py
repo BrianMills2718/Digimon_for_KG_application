@@ -11,7 +11,7 @@ from Core.Index.Schema import (
 class IndexConfigFactory:
     def __init__(self):
         self.creators = {
-            "faiss": self._create_faiss_config,
+            "vector": self._create_vector_config,
             "colbert": self._create_colbert_config,
         }
 
@@ -20,7 +20,7 @@ class IndexConfigFactory:
         return self.creators[config.vdb_type](config, persist_path)
 
     @staticmethod
-    def _create_faiss_config(config, persist_path):
+    def _create_vector_config(config, persist_path):
         return VectorIndexConfig(
             persist_path=persist_path,
             embed_model=get_rag_embedding(config.embedding.api_type, config)

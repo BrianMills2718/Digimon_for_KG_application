@@ -16,7 +16,7 @@ from pathlib import Path
 from Core.Common.BaseFactory import ConfigBasedFactory
 from Core.Index.Schema import (
     BaseIndexConfig,
-    FAISSIndexConfig,
+    VectorIndexConfig,
     ColBertIndexConfig
 )
 
@@ -33,7 +33,7 @@ class RAGIndexFactory(ConfigBasedFactory):
         """Key is IndexType."""
         return super().get_instance(config, **kwargs)
 
-    def _create_vector_index(self, config: FAISSIndexConfig, **kwargs) -> VectorStoreIndex:
+    def _create_vector_index(self, config: VectorIndexConfig, **kwargs) -> VectorStoreIndex:
         if os.path.exists(config.persist_path):
 
             vector_store = FaissVectorStore.from_persist_dir(str(config.persist_path))
