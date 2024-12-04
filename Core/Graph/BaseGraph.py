@@ -263,3 +263,6 @@ class BaseGraph(ABC):
 
     async def edges(self):
         return await self._graph.get_edges()
+
+    async def node_metadata(self):
+        return await self._graph.get_node_metadata()

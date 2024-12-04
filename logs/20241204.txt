@@ -1315,3 +1315,26 @@
 2024-12-04 21:56:09.481 | INFO     | Core.GraphRAG:insert:130 - Starting insert entities of the given graph into vector database
 2024-12-04 21:56:09.483 | INFO     | Core.Index.BaseIndex:build_index:15 - Loading index from the file ./test_book/debug/entities_vdb
 2024-12-04 21:56:10.712 | INFO     | Core.GraphRAG:insert:135 - Starting insert relations of the given graph into vector database
+2024-12-04 22:30:30.299 | INFO     | Core.GraphRAG:insert:112 - Starting chunk the given documents
+2024-12-04 22:30:30.316 | INFO     | Core.GraphRAG:insert:114 - ✅ Finished the chunking stage
+2024-12-04 22:30:30.317 | INFO     | Core.GraphRAG:insert:119 - Starting build graph for the given documents
+2024-12-04 22:30:30.317 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:27 - Attempting to load the tree from: ./test_book/debug/graph_storage_tree_data.pkl
+2024-12-04 22:30:30.318 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:32 - Successfully loaded tree from: ./test_book/debug/graph_storage_tree_data.pkl with 14 nodes and 2 layers
+2024-12-04 22:30:30.318 | INFO     | Core.GraphRAG:insert:121 - ✅ Finished building graph for the given documents
+2024-12-04 22:30:30.318 | INFO     | Core.GraphRAG:insert:130 - Starting insert entities of the given graph into vector database
+2024-12-04 22:31:13.449 | INFO     | Core.GraphRAG:insert:112 - Starting chunk the given documents
+2024-12-04 22:31:13.461 | INFO     | Core.GraphRAG:insert:114 - ✅ Finished the chunking stage
+2024-12-04 22:31:13.462 | INFO     | Core.GraphRAG:insert:119 - Starting build graph for the given documents
+2024-12-04 22:31:13.462 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:27 - Attempting to load the tree from: ./test_book/debug/graph_storage_tree_data.pkl
+2024-12-04 22:31:13.462 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:32 - Successfully loaded tree from: ./test_book/debug/graph_storage_tree_data.pkl with 14 nodes and 2 layers
+2024-12-04 22:31:13.463 | INFO     | Core.GraphRAG:insert:121 - ✅ Finished building graph for the given documents
+2024-12-04 22:31:13.463 | INFO     | Core.GraphRAG:insert:130 - Starting insert entities of the given graph into vector database
+2024-12-04 22:31:13.463 | INFO     | Core.Index.BaseIndex:build_index:15 - Loading index from the file ./test_book/debug/entities_vdb
+2024-12-04 22:31:56.513 | INFO     | Core.GraphRAG:insert:112 - Starting chunk the given documents
+2024-12-04 22:31:56.527 | INFO     | Core.GraphRAG:insert:114 - ✅ Finished the chunking stage
+2024-12-04 22:31:56.527 | INFO     | Core.GraphRAG:insert:119 - Starting build graph for the given documents
+2024-12-04 22:31:56.527 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:27 - Attempting to load the tree from: ./test_book/debug/graph_storage_tree_data.pkl
+2024-12-04 22:31:56.527 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:32 - Successfully loaded tree from: ./test_book/debug/graph_storage_tree_data.pkl with 14 nodes and 2 layers
+2024-12-04 22:31:56.528 | INFO     | Core.GraphRAG:insert:121 - ✅ Finished building graph for the given documents
+2024-12-04 22:31:56.528 | INFO     | Core.GraphRAG:insert:130 - Starting insert entities of the given graph into vector database
+2024-12-04 22:31:56.528 | INFO     | Core.Index.BaseIndex:build_index:15 - Loading index from the file ./test_book/debug/entities_vdb

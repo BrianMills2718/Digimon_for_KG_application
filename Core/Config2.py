@@ -42,7 +42,7 @@ class Config(CLIParams, YamlModel):
 
     # Basic Config
     use_entities_vdb: bool = True
-    use_relations_vdb: bool = True  # Only set True for LightRAG
+    use_relations_vdb: bool = False  # Only set True for LightRAG
     vdb_type: str = "vector"  # vector/colbert
     # Chunking
     chunk_token_size: int = 1200
@@ -55,7 +55,7 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "rkg_graph"
+    graph_type: str = "tree_graph"
     max_gleaning: int = 1
     enable_entity_description: bool = True
     enable_entity_type: bool = True
@@ -63,7 +63,7 @@ class Config(CLIParams, YamlModel):
     enable_edge_name: bool = True
     prior_prob: float = 0.8
     # Graph clustering
-    use_community: bool = True
+    use_community: bool = False
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
