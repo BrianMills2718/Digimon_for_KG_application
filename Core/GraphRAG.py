@@ -129,31 +129,36 @@ class GraphRAG(ContextMixin, BaseModel):
         # NOTE: ** Ensure the graph is successfully loaded before proceeding to load the index from storage, as it represents a one-to-one mapping. **
         if self.config.use_entities_vdb:
             logger.info("Starting insert entities of the given graph into vector database")
-            await self.entities_vdb.build_index(element=self.graph.nodes(), metadata=None, force=True)
-        if self.config.use_relations_vdb:
-            logger.info("Starting insert relations of the given graph into vector database")
-            await self.relations_vdb.build_index(element=self.graph.edges(), metadata=None, force=True)
-        if self.config.use_community:
-            logger.info("Starting build community of the given graph")
+            insert_entities = [{"id": mdhash_id(node["entity_name"], prefix="ent-"),
+                                "content": node["entity_name"] + node["description"], "embedding": node.get("embedding", None)} for node in
+                               self.graph.nodes()]
+            entity_metadata = [{"entity_name": node["entity_name"]} for node in
+                               self.graph.nodes()]
+            await self.entities_vdb.build_index(insert_entities, entity_metadata, force=True)
+            if self.config.use_relations_vdb:
+                logger.info("Starting insert relations of the given graph into vector database")
+                await self.relations_vdb.build_index(element=self.graph.edges(), metadata=None, force=True)
+            if self.config.use_community:
+                logger.info("Starting build community of the given graph")
 
-        ####################################################################################################
-        # 4. Graph Augmentation Stage (Optional)
-        ####################################################################################################
+            ####################################################################################################
+            # 4. Graph Augmentation Stage (Optional)
+            ####################################################################################################
 
-        # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
-        # These edges represent similarity types and are leveraged in subsequent processes.
+            # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
+            # These edges represent similarity types and are leveraged in subsequent processes.
 
-    async def query(self, query):
-        """
-          Executes the query by extracting the relevant context, and then generating a response.
-          Args:
-              query: The query to be processed.
-          Returns:
-          """
-        ####################################################################################################
-        # 1. Building query relevant context (subgraph) Stage
-        ####################################################################################################
+        async def query(self, query):
+            """
+              Executes the query by extracting the relevant context, and then generating a response.
+              Args:
+                  query: The query to be processed.
+              Returns:
+              """
+            ####################################################################################################
+            # 1. Building query relevant context (subgraph) Stage
+            ####################################################################################################
 
-        ####################################################################################################
-        # 2. Generation Stage
-        ####################################################################################################
+            ####################################################################################################
+            # 2. Generation Stage
+            ####################################################################################################

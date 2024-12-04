@@ -34,21 +34,9 @@ class RAGIndexFactory(ConfigBasedFactory):
         return super().get_instance(config, **kwargs)
 
     def _create_vector_index(self, config: VectorIndexConfig, **kwargs) -> VectorStoreIndex:
-        if os.path.exists(config.persist_path):
-
-            vector_store = FaissVectorStore.from_persist_dir(str(config.persist_path))
-            storage_context = StorageContext.from_defaults(vector_store=vector_store, persist_dir=config.persist_path)
-            return self._index_from_storage(storage_context=storage_context, config=config, **kwargs)
-
-        else:
-            vector_store = FaissVectorStore(faiss_index=faiss.IndexPQ(config.embed_model.dimensions))
-            storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-            return VectorStoreIndex(
-                nodes=[],
-                storage_context=storage_context,
-                embed_model=config.embed_model,
-            )
+        return VectorStoreIndex(
+            nodes=[],
+        )
 
     def _create_colbert(self, config: ColBertIndexConfig, **kwargs):
         index_path = (Path(config.persist_path) / config.index_name)

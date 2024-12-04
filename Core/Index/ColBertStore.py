@@ -87,21 +87,6 @@ class ColbertIndex(BaseIndex[IndexDict]):
 
      
 
-        with Run().context(
-            RunConfig(index_root=self.index_path, nranks=self.ranks)
-        ):
-            config = ColBERTConfig(
-                doc_maxlen=self.doc_maxlen,
-                query_maxlen=self.query_maxlen,
-                nbits=self.nbits,
-                kmeans_niters=self.kmeans_niters,
-            )
-            indexer = Indexer(checkpoint=self.model_name, config=config)
-            indexer.index(name=self.index_name, collection=docs_list, overwrite=True)
-            self.store = Searcher(
-                index=self.index_name, collection=docs_list, checkpoint=self.model_name
-            )
-
 
 
     def persist(self, persist_dir: str) -> None:
