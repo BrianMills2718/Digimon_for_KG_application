@@ -53,7 +53,7 @@
   <data key="d3">online distributed proofreading team is a group of volunteers who proofread and produce e books</data>
 </node>
 <node id="bob cratchit">
-  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-d5cb63c91e4bea751bf090388c7859e9&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">bob cratchit</data>
   <data key="d2">person</data>
   <data key="d3">bob cratchit is a character in the e book  a christmas carol   a clerk to ebenezer scrooge&lt;SEP&gt;bob cratchit is a character who is mentioned as being a humble and hardworking individual  celebrating christmas with his family&lt;SEP&gt;bob cratchit is a character who is scrooge s employee and is shown to be cheerful and festive  despite his poverty</data>
@@ -89,13 +89,13 @@
   <data key="d3">ghost of christmas past is a spirit that appears to ebenezer scrooge in the e book  a christmas carol</data>
 </node>
 <node id="scrooge">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
   <data key="d1">scrooge</data>
   <data key="d2">person</data>
   <data key="d3">scrooge is a character who experiences a supernatural encounter with marley s ghost and is portrayed as a miserly and skeptical individual&lt;SEP&gt;scrooge is a character who is described as being tight fisted  cold  and solitary  with a reputation for being unfriendly and unapproachable&lt;SEP&gt;scrooge is a character who is portrayed as a miserly and bitter person  with a negative view of christmas and its traditions&lt;SEP&gt;scrooge is a character who is portrayed as being miserly and unwilling to help the poor during the christmas season&lt;SEP&gt;scrooge is a character who is portrayed as miserly and disapproving of christmas  with a focus on his financial concerns&lt;SEP&gt;scrooge is a character who is portrayed as miserly and grumpy  with a focus on his business and a lack of festive spirit&lt;SEP&gt;scrooge is a main character who is portrayed as being cold and caustic  with a significant role in the story</data>
 </node>
 <node id="marley">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
   <data key="d1">marley</data>
   <data key="d2">person</data>
   <data key="d3">marley is a character who appears as a ghost to scrooge  with a face that is described as having a dismal light and a livid color&lt;SEP&gt;marley is a character who is described as being dead  with scrooge being his sole executor  administrator  and assign&lt;SEP&gt;marley is a character who is mentioned as having been scrooge s business partner and has been dead for seven years&lt;SEP&gt;marley is a deceased character who is mentioned as being a partner and friend of scrooge s&lt;SEP&gt;marley is a person who has been dead for seven years  but his face appears to the narrator  influencing his thoughts</data>
@@ -137,7 +137,7 @@
   <data key="d3">clergyman is a character who is mentioned as being involved in marley s burial</data>
 </node>
 <node id="clerk">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">clerk</data>
   <data key="d2">organization</data>
   <data key="d3">clerk is a character who is mentioned as being involved in marley s burial&lt;SEP&gt;the clerk is a person who works for scrooge  copying letters in a small cell</data>
@@ -179,7 +179,7 @@
   <data key="d3">scrooge and marley is a firm that is known for being tight fisted and unfriendly</data>
 </node>
 <node id="christmas eve">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d1">christmas eve</data>
   <data key="d2">event</data>
   <data key="d3">christmas eve is a significant event in the story  marked by festive activities and celebrations&lt;SEP&gt;christmas eve is a significant event in the story  marking a turning point in scrooge s life</data>
@@ -239,13 +239,13 @@
   <data key="d3">wind is a weather condition that is mentioned in the story</data>
 </node>
 <node id="scrooge s nephew">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
   <data key="d1">scrooge s nephew</data>
   <data key="d2">person</data>
   <data key="d3">scrooge s nephew is a character who is cheerful and optimistic  trying to bring joy and festive spirit to scrooge&lt;SEP&gt;scrooge s nephew is a character who is trying to bring some joy and festive spirit to scrooge  but is met with resistance and disdain</data>
 </node>
 <node id="christmas">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
   <data key="d1">christmas</data>
   <data key="d2">event</data>
   <data key="d3">christmas is a holiday celebrated on december 25th  associated with joy  giving  and family&lt;SEP&gt;christmas is a holiday that is being celebrated and is a central theme in the story</data>
@@ -335,7 +335,7 @@
   <data key="d3">the mansion house is the stronghold of the lord mayor  where he gives orders to his cooks and butlers to keep christmas</data>
 </node>
 <node id="st  dunstan">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d1">st  dunstan</data>
   <data key="d2">person</data>
   <data key="d3">st  dunstan is a historical figure mentioned as a saint who might have used weather to combat evil&lt;SEP&gt;st  dunstan is a historical figure mentioned in the text as having the ability to nip the evil spirit s nose</data>
@@ -660,9 +660,9 @@
 </edge>
 <edge source="scrooge" target="marley">
   <data key="d4">35.0</data>
-  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d6"></data>
-  <data key="d7">executorship  administration&lt;SEP&gt;haunting  redemption&lt;SEP&gt;partnership  friendship&lt;SEP&gt;supernatural encounter  transformation</data>
+  <data key="d7">supernatural encounter  transformation&lt;SEP&gt;haunting  redemption&lt;SEP&gt;executorship  administration&lt;SEP&gt;partnership  friendship</data>
   <data key="d8">scrooge and marley were partners and friends  with scrooge being marley s sole executor and administrator&lt;SEP&gt;scrooge is confronted by marley s ghost  which is a supernatural encounter that has a profound impact on scrooge&lt;SEP&gt;scrooge is haunted by the ghost of his former business partner  marley  who is trying to warn him of the error of his ways&lt;SEP&gt;scrooge is the executor  administrator  and assign of marley s estate  indicating a close relationship between the two characters</data>
   <data key="d9">marley</data>
   <data key="d10">scrooge</data>
@@ -696,9 +696,9 @@
 </edge>
 <edge source="scrooge" target="christmas eve">
   <data key="d4">17.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
-  <data key="d7">contrast  festive spirit&lt;SEP&gt;transformation  significance</data>
+  <data key="d7">transformation  significance&lt;SEP&gt;contrast  festive spirit</data>
   <data key="d8">scrooge is portrayed as being grumpy and unfestive on christmas eve  contrasting with the cheerful atmosphere of the event&lt;SEP&gt;scrooge s life is changed on christmas eve  indicating a significant relationship between the two entities</data>
   <data key="d9">christmas eve</data>
   <data key="d10">scrooge</data>
@@ -741,9 +741,9 @@
 </edge>
 <edge source="scrooge" target="scrooge s nephew">
   <data key="d4">25.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
   <data key="d6"></data>
-  <data key="d7">connection  unwillingness&lt;SEP&gt;attempts to bring joy  resistance&lt;SEP&gt;family dynamics  resistance to change</data>
+  <data key="d7">attempts to bring joy  resistance&lt;SEP&gt;connection  unwillingness&lt;SEP&gt;family dynamics  resistance to change</data>
   <data key="d8">scrooge and his nephew have a strained relationship  with scrooge being resistant to his nephew s attempts to bring joy and festive spirit to him&lt;SEP&gt;scrooge s nephew is trying to connect with scrooge and bring him into the holiday spirit  but scrooge is unwilling to reciprocate&lt;SEP&gt;scrooge s nephew tries to bring joy and festive spirit to scrooge  but is met with resistance and disapproval</data>
   <data key="d9">scrooge</data>
   <data key="d10">scrooge s nephew</data>
