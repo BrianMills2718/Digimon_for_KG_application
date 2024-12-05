@@ -1248,3 +1248,471 @@ AttributeError: 'Config' object has no attribute 'extract_two_step'
 2024-12-05 20:54:32.231 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
 2024-12-05 20:54:32.232 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
 2024-12-05 20:54:51.452 | INFO     | Core.Index.BaseIndex:build_index:23 - Building index for input elements
+2024-12-05 21:00:17.598 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:00:17.611 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:00:17.611 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:00:17.611 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:00:17.620 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:00:17.620 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:00:17.620 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:00:32.995 | INFO     | Core.Index.BaseIndex:build_index:23 - Building index for input elements
+2024-12-05 21:03:53.116 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:03:53.129 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:03:53.129 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:03:53.129 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:03:53.138 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:03:53.138 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:03:53.138 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:04:00.745 | INFO     | Core.Index.BaseIndex:build_index:23 - Building index for input elements
+2024-12-05 21:07:00.042 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:07:00.055 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:07:00.056 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:07:00.056 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:07:00.065 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:07:00.065 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:07:00.065 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:07:21.637 | INFO     | Core.Index.BaseIndex:build_index:23 - Building index for input elements
+2024-12-05 21:10:26.150 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:10:26.162 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:10:26.162 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:10:26.163 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:10:26.171 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:10:26.172 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:10:26.172 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:10:26.172 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:12:41.064 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:12:41.075 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:12:41.076 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:12:41.076 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:12:41.084 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:12:41.085 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:12:41.085 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:12:41.085 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:15:52.437 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:15:52.449 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:15:52.450 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:15:52.450 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:15:52.459 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:15:52.459 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:15:52.459 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:15:52.459 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:16:51.685 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:16:51.698 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:16:51.698 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:16:51.698 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:16:51.707 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:16:51.707 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:16:51.708 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:16:51.708 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:19:06.028 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:19:06.040 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:19:06.040 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:19:06.041 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:19:06.049 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:19:06.050 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:19:06.050 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:19:06.050 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:21:59.855 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:21:59.868 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:21:59.868 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:21:59.869 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:21:59.877 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:21:59.877 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:21:59.878 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:21:59.878 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:28:47.355 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:28:47.366 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:28:47.366 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:28:47.367 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:28:47.376 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:28:47.376 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:28:47.376 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:28:47.376 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:34:15.535 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:34:15.549 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:34:15.549 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:34:15.549 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:34:15.558 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:34:15.559 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:34:15.559 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:34:15.559 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:36:38.885 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:36:38.898 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:36:38.898 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:36:38.898 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:36:38.906 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:36:38.907 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:36:38.907 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:36:38.907 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:54:41.919 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:54:41.931 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:54:41.931 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:54:41.931 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:54:41.941 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:54:41.941 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:54:41.942 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:54:41.942 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 21:56:28.093 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 21:56:28.106 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 21:56:28.106 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 21:56:28.106 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 21:56:28.115 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 21:56:28.115 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 21:56:28.115 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 21:56:28.116 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 23:19:58.759 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:19:58.771 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:19:58.771 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:19:58.771 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:19:58.780 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:19:58.780 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:19:58.780 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:19:58.780 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 23:23:20.929 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:23:20.941 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:23:20.941 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:23:20.942 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:23:20.950 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:23:20.950 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:23:20.950 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:23:20.951 | INFO     | Core.Index.BaseIndex:build_index:22 - Building index for input elements
+2024-12-05 23:24:11.833 | INFO     | Core.Index.BaseIndex:build_index:25 - Index successfully built and stored.
+2024-12-05 23:24:11.833 | INFO     | Core.GraphRAG:insert:214 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-05 23:24:12.580 | ERROR    | Core.GraphRAG:_find_relevant_entities_vdb:284 - Failed to find relevant entities_vdb: object tuple can't be used in 'await' expression
+Traceback (most recent call last):
+
+  File "/home/yingli/GraphRAG/test.py", line 12, in <module>
+    asyncio.run(graph_rag.query("who are you"))
+    │       │   │         └ <function GraphRAG.query at 0x71c387cd2200>
+    │       │   └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x71c4d6990a90>,...
+    │       └ <function run at 0x71c5da525580>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object GraphRAG.query at 0x71c387c9d6c0>
+           │      └ <function Runner.run at 0x71c5da52d760>
+           └ <asyncio.runners.Runner object at 0x71c387d7d110>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-4' coro=<GraphRAG.query() running at /home/yingli/GraphRAG/Core/GraphRAG.py:252> cb=[_run_until_comp...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x71c5da527380>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x71c387d7d110>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x71c5da5272e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x71c5da52d120>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x71c5daadede0>
+    └ <Handle <TaskStepMethWrapper object at 0x71c387618130>()>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x71c387618130>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x71c387618130>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x71c387618130>()>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 252, in query
+    entities = await self._find_relevant_entities_vdb(query)
+                     │    │                           └ 'who are you'
+                     │    └ <function GraphRAG._find_relevant_entities_vdb at 0x71c387cd22a0>
+                     └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x71c4d6990a90>,...
+
+> File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 265, in _find_relevant_entities_vdb
+    results = await self.entities_vdb.retrieval(query, top_k=top_k)
+                    │    │            │         │            └ 5
+                    │    │            │         └ 'who are you'
+                    │    │            └ <function ColBertIndex.retrieval at 0x71c3b1722160>
+                    │    └ <Core.Index.ColBertIndex.ColBertIndex object at 0x71c387cad2d0>
+                    └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x71c4d6990a90>,...
+
+  File "/home/yingli/GraphRAG/Core/Index/ColBertIndex.py", line 63, in retrieval
+    return await self._index.search(query, k=top_k)
+                 │    │      │      │        └ 5
+                 │    │      │      └ 'who are you'
+                 │    │      └ <function Searcher.search at 0x71c3b1720ae0>
+                 │    └ <colbert.searcher.Searcher object at 0x71c38880aa50>
+                 └ <Core.Index.ColBertIndex.ColBertIndex object at 0x71c387cad2d0>
+
+TypeError: object tuple can't be used in 'await' expression
+2024-12-05 23:25:14.524 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:25:14.537 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:25:14.538 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:25:14.538 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:25:14.546 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:25:14.546 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:25:14.546 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:25:14.547 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:26:05.966 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:26:05.978 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:26:05.978 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:26:05.978 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:26:05.987 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:26:05.987 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:26:05.987 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:26:05.987 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:26:49.379 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:26:49.391 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:26:49.391 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:26:49.392 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:26:49.400 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:26:49.400 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:26:49.400 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:26:49.401 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:28:23.204 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:28:23.216 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:28:23.216 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:28:23.216 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:28:23.225 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:28:23.225 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:28:23.225 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:28:23.226 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:30:23.708 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:30:23.721 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:30:23.721 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:30:23.722 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:30:23.730 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:30:23.730 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:30:23.730 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:30:23.731 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:31:31.757 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:31:31.768 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:31:31.769 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:31:31.769 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:31:31.777 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:31:31.777 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:31:31.777 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:31:31.778 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:34:58.148 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:34:58.161 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:34:58.161 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:34:58.161 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:34:58.170 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:34:58.170 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:34:58.170 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:34:58.170 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:34:59.150 | INFO     | Core.GraphRAG:insert:214 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-05 23:40:13.170 | ERROR    | Core.GraphRAG:_find_relevant_entities_vdb:286 - Failed to find relevant entities_vdb: 
+Traceback (most recent call last):
+
+  File "/home/yingli/GraphRAG/test.py", line 12, in <module>
+    asyncio.run(graph_rag.query("who are you"))
+    │       │   │         └ <function GraphRAG.query at 0x729a8e0d2340>
+    │       │   └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x729a8e0a5910>,...
+    │       └ <function run at 0x729cc7a25620>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object GraphRAG.query at 0x729a8f7a93f0>
+           │      └ <function Runner.run at 0x729cc7a2d800>
+           └ <asyncio.runners.Runner object at 0x729a8ec38e50>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-4' coro=<GraphRAG.query() running at /home/yingli/GraphRAG/Core/GraphRAG.py:252> cb=[_run_until_comp...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x729cc7a27420>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x729a8ec38e50>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x729cc7a27380>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x729cc7a2d1c0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x729cc7b6ae80>
+    └ <Handle <TaskStepMethWrapper object at 0x729aa0408940>()>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x729aa0408940>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x729aa0408940>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x729aa0408940>()>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 252, in query
+    entities = await self._find_relevant_entities_vdb(query)
+                     │    │                           └ 'who are you'
+                     │    └ <function GraphRAG._find_relevant_entities_vdb at 0x729a8e0d23e0>
+                     └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x729a8e0a5910>,...
+
+> File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 267, in _find_relevant_entities_vdb
+    results = await self.entities_vdb.retrieval(query, top_k=top_k)
+                    │    │            │         │            └ 5
+                    │    │            │         └ 'who are you'
+                    │    │            └ <function ColBertIndex.retrieval at 0x729aa2c222a0>
+                    │    └ <Core.Index.ColBertIndex.ColBertIndex object at 0x729a8e080550>
+                    └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x729a8e0a5910>,...
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+           │    │             └ <frame at 0x729aa0370140, file '/home/yingli/GraphRAG/Core/GraphRAG.py', line 286, code _find_relevant_entities_vdb>
+           │    └ <function Bdb.dispatch_line at 0x729ba91af420>
+           └ <pdb.Pdb object at 0x729a8f65a450>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+       │    │               └ <class 'bdb.BdbQuit'>
+       │    └ True
+       └ <pdb.Pdb object at 0x729a8f65a450>
+
+bdb.BdbQuit
+2024-12-05 23:40:39.842 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:40:39.854 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:40:39.854 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:40:39.854 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:40:39.864 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:40:39.864 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:40:39.864 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:40:39.865 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:40:40.910 | INFO     | Core.GraphRAG:insert:214 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-05 23:42:55.925 | ERROR    | Core.GraphRAG:_find_relevant_entities_vdb:286 - Failed to find relevant entities_vdb: 
+Traceback (most recent call last):
+
+  File "/home/yingli/GraphRAG/test.py", line 12, in <module>
+    asyncio.run(graph_rag.query("who are you"))
+    │       │   │         └ <function GraphRAG.query at 0x74037fed6480>
+    │       │   └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x7404a553add0>,...
+    │       └ <function run at 0x7405b9721800>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object GraphRAG.query at 0x7403915a93f0>
+           │      └ <function Runner.run at 0x7405b972d9e0>
+           └ <asyncio.runners.Runner object at 0x740390c39510>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-4' coro=<GraphRAG.query() running at /home/yingli/GraphRAG/Core/GraphRAG.py:252> cb=[_run_until_comp...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7405b9723600>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x740390c39510>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7405b9723560>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7405b972d3a0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7405b9d53060>
+    └ <Handle <TaskStepMethWrapper object at 0x74037f8183d0>()>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x74037f8183d0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x74037f8183d0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x74037f8183d0>()>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 252, in query
+    entities = await self._find_relevant_entities_vdb(query)
+                     │    │                           └ 'who are you'
+                     │    └ <function GraphRAG._find_relevant_entities_vdb at 0x74037fed6520>
+                     └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x7404a553add0>,...
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 286, in _find_relevant_entities_vdb
+    logger.exception(f"Failed to find relevant entities_vdb: {e}")
+    │      └ <function Logger.exception at 0x7405b94e7c40>
+    └ <loguru.logger handlers=[(id=1, level=20, sink=<stderr>), (id=2, level=10, sink='logs/20241205.txt')]>
+
+> File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 96, in trace_dispatch
+    return self.dispatch_exception(frame, arg)
+           │    │                  │      └ (<class 'AttributeError'>, AttributeError("'NoneType' object has no attribute 'search'"), <traceback object at 0x740391409a00>)
+           │    │                  └ <frame at 0x740391a8f640, file '/home/yingli/GraphRAG/Core/GraphRAG.py', line 286, code _find_relevant_entities_vdb>
+           │    └ <function Bdb.dispatch_exception at 0x74049e1ab740>
+           └ <pdb.Pdb object at 0x74039141f990>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 176, in dispatch_exception
+    if self.quitting: raise BdbQuit
+       │    │               └ <class 'bdb.BdbQuit'>
+       │    └ True
+       └ <pdb.Pdb object at 0x74039141f990>
+
+bdb.BdbQuit
+2024-12-05 23:43:10.423 | INFO     | Core.GraphRAG:insert:191 - Starting chunk the given documents
+2024-12-05 23:43:10.435 | INFO     | Core.GraphRAG:insert:193 - ✅ Finished the chunking stage
+2024-12-05 23:43:10.435 | INFO     | Core.GraphRAG:insert:198 - Starting build graph for the given documents
+2024-12-05 23:43:10.435 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-05 23:43:10.443 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-05 23:43:10.444 | INFO     | Core.GraphRAG:insert:200 - ✅ Finished building graph for the given documents
+2024-12-05 23:43:10.444 | INFO     | Core.GraphRAG:insert:209 - Starting insert entities of the given graph into vector database
+2024-12-05 23:43:10.444 | INFO     | Core.Index.BaseIndex:build_index:16 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-05 23:43:11.442 | INFO     | Core.GraphRAG:insert:214 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-06 00:28:21.884 | ERROR    | Core.GraphRAG:_find_relevant_entities_vdb:286 - Failed to find relevant entities_vdb: 
+Traceback (most recent call last):
+
+  File "/home/yingli/GraphRAG/test.py", line 12, in <module>
+    asyncio.run(graph_rag.query("who are you"))
+    │       │   │         └ <function GraphRAG.query at 0x792727de22a0>
+    │       │   └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x79297b180f10>,...
+    │       └ <function run at 0x79297a625620>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object GraphRAG.query at 0x7927294ad3f0>
+           │      └ <function Runner.run at 0x79297a62d800>
+           └ <asyncio.runners.Runner object at 0x792727d7ff90>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-4' coro=<GraphRAG.query() running at /home/yingli/GraphRAG/Core/GraphRAG.py:252> cb=[_run_until_comp...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x79297a627420>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x792727d7ff90>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x79297a627380>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x79297a62d1c0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x79297a76ae80>
+    └ <Handle <TaskStepMethWrapper object at 0x792728c65210>()>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x792728c65210>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x792728c65210>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x792728c65210>()>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 252, in query
+    entities = await self._find_relevant_entities_vdb(query)
+                     │    │                           └ 'who are you'
+                     │    └ <function GraphRAG._find_relevant_entities_vdb at 0x792727de2340>
+                     └ GraphRAG(private_context=None, private_config=None, private_llm=<Core.Provider.OpenaiApi.OpenAILLM object at 0x79297b180f10>,...
+
+> File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 269, in _find_relevant_entities_vdb
+    if not len(results):
+               └ ([69, 70, 68, 156, 106], [1, 2, 3, 4, 5], [43.625, 40.03125, 35.1875, 34.5, 30.390625])
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+           │    │             └ <frame at 0x792727d6be40, file '/home/yingli/GraphRAG/Core/GraphRAG.py', line 286, code _find_relevant_entities_vdb>
+           │    └ <function Bdb.dispatch_line at 0x792859db72e0>
+           └ <pdb.Pdb object at 0x792729357910>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+       │    │               └ <class 'bdb.BdbQuit'>
+       │    └ True
+       └ <pdb.Pdb object at 0x792729357910>
+
+bdb.BdbQuit

@@ -299,3 +299,7 @@ class BaseGraph(ABC):
 
     async def get_node_edges(self, source_node_id: str):
         return await self._graph.get_node_edges(source_node_id)
+
+    @property
+    def node_num(self):
+        return self._graph.get_node_num()

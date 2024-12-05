@@ -11,8 +11,6 @@ class BaseIndex(ABC):
 
     async def build_index(self, elements, meta_data, force):
         from_load = False
-        import pdb
-        pdb.set_trace()
         if self.exist_index() and not force:
             logger.info("Loading index from the file {}".format(self.config.persist_path))
             from_load = await self._load_index()
@@ -55,3 +53,15 @@ class BaseIndex(ABC):
     @abstractmethod
     async def _load_index(self) -> bool:
         pass
+
+    async def similarity_score(self, object_q, object_d):
+        return await self._similarity_score(object_q, object_d)
+
+    @abstractmethod
+    async def _similarity_score(self, object_q, object_d):
+        pass
+
+    @abstractmethod
+    async def get_max_score(self, query):
+        pass
+

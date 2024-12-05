@@ -14,6 +14,7 @@ class BaseIndexConfig(BaseModel):
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config['protected_namespaces'] = ()
     persist_path: Union[str, Path] = Field(description="The directory of saved data.")
 
 
@@ -21,11 +22,6 @@ class VectorIndexConfig(BaseIndexConfig):
     """Option for vector-based index."""
 
     embed_model: BaseEmbedding = Field(default=None, description="Embed model.")
-
-
-
-
-
 
 
 class ColBertIndexConfig(BaseIndexConfig):

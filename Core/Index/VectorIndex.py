@@ -73,3 +73,7 @@ class VectorIndex(BaseIndex):
     def _get_index(self):
         Settings.embed_model = self.config.embed_model
         return VectorStoreIndex([])
+
+    async def _similarity_score(self, object_q, object_d):
+        # For llama_index based vector database, we do not need it now!
+        pass

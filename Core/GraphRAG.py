@@ -2,6 +2,8 @@ import asyncio
 from collections import defaultdict
 from typing import Union, Any
 
+import numpy as np
+
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
 import tiktoken
@@ -210,7 +212,7 @@ class GraphRAG(ContextMixin, BaseModel):
 
             #
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
-            await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=True)
+            await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
         if self.config.use_relations_vdb:
@@ -249,6 +251,8 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
+        query_entities = await self._extract_query_entities(query)
+        await self.link_node_by_colbertv2(query_entities)
         entities = await self._find_relevant_entities_vdb(query)
         await self._find_most_relevant_chunks_from_entities(entities)
         keywords = await self._extract_query_keywords(query)
@@ -259,7 +263,43 @@ class GraphRAG(ContextMixin, BaseModel):
         # 2. Generation Stage
         ####################################################################################################
 
+    # def get_colbert_max_score(self, query):
+
+    async def link_node_by_colbertv2(self, query_entities):
+
+        entity_ids = []
+        max_scores = []
+
+        for query_entity in query_entities:
+            max_score = await self.entities_vdb.get_max_score([query_entity])
+            ranking = await self.entities_vdb.retrieval_batch(query_entity, top_k=1)
+            import pdb
+            pdb.set_trace()
+            for entity_id, rank, score in ranking.data[0]:
+                entity = self.id_to_entity[entity_id]
+                real_score = await self.entities_vdb.similarity_score([query_entity], [entity])
+                entity_ids.append(entity_id)
+                max_scores.append(real_score / max_score)
+
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+        top_phrase_vec = np.zeros(self.graph.node_num)
+        import  pdb
+        pdb.set_trace()
+        # Set the weight of the retrieved documents based on the number of documents they appear in
+        for entity_id in entity_ids:
+            if self.config.node_specificity:
+                if self.entity_doc_count[entity_id] == 0:
+                    weight = 1
+                else:
+                    weight = 1 / self.entity_doc_count[entity_id]
+                top_phrase_vec[entity_id] = weight
+            else:
+                top_phrase_vec[entity_id] = 1.0
+        return top_phrase_vec, {(query, self.id_to_entity[entity_id]): max_score for entity_id, max_score, query in
+                                zip(entity_ids, max_scores, query_entities)}
+
     async def _find_relevant_entities_vdb(self, query, top_k=5):
+        # ✅
         try:
             assert self.config.use_entities_vdb
             results = await self.entities_vdb.retrieval(query, top_k=top_k)
@@ -284,6 +324,7 @@ class GraphRAG(ContextMixin, BaseModel):
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
 
     async def _find_relevant_relations_vdb(self, query, top_k=5):
+        # ✅
         try:
             if query is None: return None
             assert self.config.use_relations_vdb
@@ -319,6 +360,7 @@ class GraphRAG(ContextMixin, BaseModel):
             logger.exception(f"Failed to find relevant relationships: {e}")
 
     async def _find_relevant_chunks_from_entities(self, node_datas: list[dict]):
+        # ✅
         text_units = [
             split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
             for dp in node_datas
@@ -374,6 +416,7 @@ class GraphRAG(ContextMixin, BaseModel):
         return all_text_units
 
     async def _find_relevant_edges_from_entities(self, node_datas: list[dict]):
+        # ✅
         all_related_edges = await asyncio.gather(
             *[self.er_graph.get_node_edges(dp["entity_name"]) for dp in node_datas]
         )

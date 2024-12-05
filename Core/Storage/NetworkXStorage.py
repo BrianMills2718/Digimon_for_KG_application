@@ -271,3 +271,6 @@ class NetworkXStorage(BaseGraphStorage):
     async def get_node_metadata(self):
 
         return {"entity_name": node["entity_name"] for node in await self.get_nodes()}
+
+    async def get_node_num(self):
+        return self._graph.number_of_nodes()
