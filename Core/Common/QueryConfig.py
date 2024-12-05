@@ -29,4 +29,3 @@ class QueryConfig(YamlModel):
 
     # For IR-COT
     max_ir_steps: int = 2
-query_config = QueryConfig()

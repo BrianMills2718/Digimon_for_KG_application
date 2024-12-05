@@ -1,16 +1,19 @@
 import asyncio
 from collections import defaultdict
 from typing import Union, Any
+
+from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
-from Core.Common.Utils import mdhash_id, prase_json_from_response, clean_str
+from Core.Common.Utils import mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
+    split_string_by_multi_markers
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
-from Core.Index.VectorIndex import VectorIndex
+from Core.Index import get_index
 from Core.Index.IndexConfigFactory import get_index_config
-from Core.Prompt import GraphPrompt
+from Core.Prompt import GraphPrompt, QueryPrompt
 from Core.Storage.NameSpace import Workspace
 from Core.Community.ClusterFactory import get_community
 
@@ -63,10 +66,10 @@ class GraphRAG(ContextMixin, BaseModel):
     def _register_vdbs(cls, data):
         # If vector database is needed, register them into the class
         if data.config.use_entities_vdb:
-            cls.entities_vdb = VectorIndex(
+            cls.entities_vdb = get_index(
                 get_index_config(data.config, persist_path=data.entities_vdb_namespace.get_save_path()))
         if data.config.use_relations_vdb:
-            cls.relations_vdb = VectorIndex(
+            cls.relations_vdb = get_index(
                 get_index_config(data.config, persist_path=data.relations_vdb_namespace.get_save_path()))
         return data
 
@@ -115,6 +118,15 @@ class GraphRAG(ContextMixin, BaseModel):
             logger.error('Error in Retrieval NER: {}'.format(e))
 
         return entities
+
+    async def _extract_query_keywords(self, query):
+        kw_prompt = QueryPrompt.KEYWORDS_EXTRACTION.format(query=query)
+        result = await self.llm.aask(kw_prompt)
+
+        keywords_data = prase_json_from_response(result)
+        keywords = keywords_data.get("high_level_keywords", [])
+        keywords = ", ".join(keywords)
+        return keywords
 
     async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False):
         """Chunk the given documents into smaller chunks.
@@ -198,7 +210,7 @@ class GraphRAG(ContextMixin, BaseModel):
 
             #
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
-            await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
+            await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=True)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
         if self.config.use_relations_vdb:
@@ -213,10 +225,10 @@ class GraphRAG(ContextMixin, BaseModel):
             logger.info("Starting build community of the given graph")
             logger.start("Clustering nodes")
             await self.community.cluster(largest_cc=await self.graph.stable_largest_cc(),
-                                                            max_cluster_size=self.config.max_graph_cluster_size,
-                                                            random_seed=self.config.graph_cluster_seed)
+                                         max_cluster_size=self.config.max_graph_cluster_size,
+                                         random_seed=self.config.graph_cluster_seed)
 
-            await self.community.generate_community_report(self.graph, True)
+            await self.community.generate_community_report(self.graph, False)
             logger.info("✅ [Community Report]  Finished")
             ####################################################################################################
             # 4. Graph Augmentation Stage (Optional)
@@ -237,112 +249,155 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
-        entities = await self._find_relevant_entities(query)
-        print(entities)
-        # relevant_content = await self._retriever.execute(mode="sequence")
+        entities = await self._find_relevant_entities_vdb(query)
+        await self._find_most_relevant_chunks_from_entities(entities)
+        keywords = await self._extract_query_keywords(query)
+        relationships = await self._find_relevant_relations_vdb(query)
+        print(relationships)
 
-        # context = await self._build_local_query_context(
-        #     query,
-        #     community_instance.community_reports
-        # )
-        # if self.config.only_need_context:
-        #     return context
-        # if context is None:
-        #     return QueryPrompt.FAIL_RESPONSE
-        # sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
-        # sys_prompt = sys_prompt_temp.format(
-        #     context_data=context, response_type=self.query_config.response_type
-        # )
-        # response = await self.llm.aask(
-        #     query,
-        #     system_msgs=[sys_prompt]
-        # )
-        # return response
         ####################################################################################################
         # 2. Generation Stage
         ####################################################################################################
 
-    async def _find_relevant_entities(self, query, top_k=5):
-        assert self.config.use_entities_vdb
-        results = await self.entities_vdb.retrieval(query, top_k=top_k)
+    async def _find_relevant_entities_vdb(self, query, top_k=5):
+        try:
+            assert self.config.use_entities_vdb
+            results = await self.entities_vdb.retrieval(query, top_k=top_k)
 
-        if not len(results):
-            return None
-        node_datas = await asyncio.gather(
-            *[self.graph.get_node(r.metadata["entity_name"]) for r in results]
-        )
-        if not all([n is not None for n in node_datas]):
-            logger.warning("Some nodes are missing, maybe the storage is damaged")
-        node_degrees = await asyncio.gather(
-            *[self.graph.node_degree(r.metadata["entity_name"]) for r in results]
-        )
-        node_datas = [
-            {**n, "entity_name": k.metadata["entity_name"], "rank": d}
-            for k, n, d in zip(results, node_datas, node_degrees)
-            if n is not None
+            if not len(results):
+                return None
+            node_datas = await asyncio.gather(
+                *[self.graph.get_node(r.metadata["entity_name"]) for r in results]
+            )
+            if not all([n is not None for n in node_datas]):
+                logger.warning("Some nodes are missing, maybe the storage is damaged")
+            node_degrees = await asyncio.gather(
+                *[self.graph.node_degree(r.metadata["entity_name"]) for r in results]
+            )
+            node_datas = [
+                {**n, "entity_name": k.metadata["entity_name"], "rank": d}
+                for k, n, d in zip(results, node_datas, node_degrees)
+                if n is not None
+            ]
+            return node_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant entities_vdb: {e}")
+
+    async def _find_relevant_relations_vdb(self, query, top_k=5):
+        try:
+            if query is None: return None
+            assert self.config.use_relations_vdb
+            results = await self.relations_vdb.retrieval(query, top_k=top_k)
+
+            if not len(results):
+                return None
+
+            edge_datas = await asyncio.gather(
+                *[self.graph.get_edge(r.metadata["src_id"], r.metadata["tgt_id"]) for r in results]
+            )
+
+            if not all([n is not None for n in edge_datas]):
+                logger.warning("Some edges are missing, maybe the storage is damaged")
+            edge_degree = await asyncio.gather(
+                *[self.graph.edge_degree(r.metadata["src_id"], r.metadata["tgt_id"]) for r in results]
+            )
+            edge_datas = [
+                {"src_id": k.metadata["src_id"], "tgt_id": k.metadata["tgt_id"], "rank": d, **v}
+                for k, v, d in zip(results, edge_datas, edge_degree)
+                if v is not None
+            ]
+            edge_datas = sorted(
+                edge_datas, key=lambda x: (x["rank"], x["weight"]), reverse=True
+            )
+            edge_datas = truncate_list_by_token_size(
+                edge_datas,
+                key=lambda x: x["description"],
+                max_token_size=self.config.max_token_for_global_context,
+            )
+            return edge_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant relationships: {e}")
+
+    async def _find_relevant_chunks_from_entities(self, node_datas: list[dict]):
+        text_units = [
+            split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
+            for dp in node_datas
         ]
-        return node_datas
-    # async def _build_local_query_context(self, query,  community_reports):
+        edges = await asyncio.gather(
+            *[self.graph.get_node_edges(dp["entity_name"]) for dp in node_datas]
+        )
+        all_one_hop_nodes = set()
+        for this_edges in edges:
+            if not this_edges:
+                continue
+            all_one_hop_nodes.update([e[1] for e in this_edges])
+        all_one_hop_nodes = list(all_one_hop_nodes)
+        all_one_hop_nodes_data = await asyncio.gather(
+            *[self.graph.get_node(e) for e in all_one_hop_nodes]
+        )
+        all_one_hop_text_units_lookup = {
+            k: set(split_string_by_multi_markers(v["source_id"], [GRAPH_FIELD_SEP]))
+            for k, v in zip(all_one_hop_nodes, all_one_hop_nodes_data)
+            if v is not None
+        }
+        all_text_units_lookup = {}
+        for index, (this_text_units, this_edges) in enumerate(zip(text_units, edges)):
+            for c_id in this_text_units:
+                if c_id in all_text_units_lookup:
+                    continue
+                relation_counts = 0
+                for e in this_edges:
+                    if (
+                            e[1] in all_one_hop_text_units_lookup
+                            and c_id in all_one_hop_text_units_lookup[e[1]]
+                    ):
+                        relation_counts += 1
+                all_text_units_lookup[c_id] = {
+                    "data": await self.text_chunks.get_by_id(c_id),
+                    "order": index,
+                    "relation_counts": relation_counts,
+                }
+        if any([v is None for v in all_text_units_lookup.values()]):
+            logger.warning("Text chunks are missing, maybe the storage is damaged")
+        all_text_units = [
+            {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
+        ]
+        all_text_units = sorted(
+            all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
+        )
+        all_text_units = truncate_list_by_token_size(
+            all_text_units,
+            key=lambda x: x["data"]["content"],
+            max_token_size=self.config.local_max_token_for_text_unit,
+        )
+        all_text_units = [t["data"] for t in all_text_units]
+        return all_text_units
 
-    # use_communities = await self._find_most_related_community_from_entities(node_datas, community_reports)
-    # use_text_units = await self._find_most_related_text_unit_from_entities(node_datas)
-    # use_relations = await self._find_most_related_edges_from_entities(node_datas)
-    # logger.info(
-    #     f"Using {len(node_datas)} entites, {len(use_communities)} communities, {len(use_relations)} relations, {len(use_text_units)} text units"
-    # )
-    # entites_section_list = [["id", "entity", "type", "description", "rank"]]
-    # for i, n in enumerate(node_datas):
-    #     entites_section_list.append(
-    #         [
-    #             i,
-    #             n["entity_name"],
-    #             n.get("entity_type", "UNKNOWN"),
-    #             n.get("description", "UNKNOWN"),
-    #             n["rank"],
-    #         ]
-    #     )
-    # entities_context = list_to_quoted_csv_string(entites_section_list)
-    #
-    # relations_section_list = [
-    #     ["id", "source", "target", "description", "weight", "rank"]
-    # ]
-    # for i, e in enumerate(use_relations):
-    #     relations_section_list.append(
-    #         [
-    #             i,
-    #             e["src_tgt"][0],
-    #             e["src_tgt"][1],
-    #             e["description"],
-    #             e["weight"],
-    #             e["rank"],
-    #         ]
-    #     )
-    # relations_context = list_to_quoted_csv_string(relations_section_list)
-    #
-    # communities_section_list = [["id", "content"]]
-    # for i, c in enumerate(use_communities):
-    #     communities_section_list.append([i, c["report_string"]])
-    # communities_context = list_to_quoted_csv_string(communities_section_list)
-    #
-    # text_units_section_list = [["id", "content"]]
-    # for i, t in enumerate(use_text_units):
-    #     text_units_section_list.append([i, t["content"]])
-    # text_units_context = list_to_quoted_csv_string(text_units_section_list)
-    # return f"""
-    #     -----Reports-----
-    #     ```csv
-    #     {communities_context}
-    #     ```
-    #     -----Entities-----
-    #     ```csv
-    #     {entities_context}
-    #     ```
-    #     -----Relationships-----
-    #     ```csv
-    #     {relations_context}
-    #     ```
-    #     -----Sources-----
-    #     ```csv
-    #     {text_units_context}
-    #     ```
-    #     """
+    async def _find_relevant_edges_from_entities(self, node_datas: list[dict]):
+        all_related_edges = await asyncio.gather(
+            *[self.er_graph.get_node_edges(dp["entity_name"]) for dp in node_datas]
+        )
+        all_edges = set()
+        for this_edges in all_related_edges:
+            all_edges.update([tuple(sorted(e)) for e in this_edges])
+        all_edges = list(all_edges)
+        all_edges_pack = await asyncio.gather(
+            *[self.er_graph.get_edge(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_degree = await asyncio.gather(
+            *[self.er_graph.edge_degree(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_data = [
+            {"src_tgt": k, "rank": d, **v}
+            for k, v, d in zip(all_edges, all_edges_pack, all_edges_degree)
+            if v is not None
+        ]
+        all_edges_data = sorted(
+            all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
+        )
+        all_edges_data = truncate_list_by_token_size(
+            all_edges_data,
+            key=lambda x: x["description"],
+            max_token_size=self.config.max_token_for_local_context,
+        )
+        return all_edges_data

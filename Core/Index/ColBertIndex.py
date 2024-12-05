@@ -24,11 +24,14 @@ class ColBertIndex(BaseIndex):
     async def _update_index(self, elements, meta_data):
 
         with Run().context(
-                RunConfig(index_root=self.config.index_path, nranks=self.config.ranks)
+                RunConfig(index_root=self.config.index_name, nranks=self.config.ranks)
         ):
-            indexer = Indexer(checkpoint=self.config.model_name, config=self.config)
+
+            indexer = Indexer(checkpoint=self.config.model_name, config=self.config.model_dump())
             # Store the index
             indexer.index(name=self.config.index_name, collection=elements, overwrite=True)
+            import pdb
+            pdb.set_trace()
             self._index = Searcher(
                 index=self.config.index_name, collection=elements, checkpoint=self.config.model_name
             )

@@ -11,6 +11,8 @@ class BaseIndex(ABC):
 
     async def build_index(self, elements, meta_data, force):
         from_load = False
+        import pdb
+        pdb.set_trace()
         if self.exist_index() and not force:
             logger.info("Loading index from the file {}".format(self.config.persist_path))
             from_load = await self._load_index()

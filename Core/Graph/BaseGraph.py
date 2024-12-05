@@ -296,3 +296,6 @@ class BaseGraph(ABC):
 
     async def edge_degree(self, src_id: str, tgt_id: str):
         return await self._graph.edge_degree(src_id, tgt_id)
+
+    async def get_node_edges(self, source_node_id: str):
+        return await self._graph.get_node_edges(source_node_id)

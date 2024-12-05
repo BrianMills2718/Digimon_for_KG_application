@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from dataclasses import field
 from pathlib import Path
 from typing import Dict, Iterable, List, Literal, Optional
 
@@ -36,14 +37,14 @@ class Config(CLIParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug"
+    exp_name: str = "debug_ppr"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
     # Basic Config
     use_entities_vdb: bool = True
     use_relations_vdb: bool = False  # Only set True for LightRAG
-    vdb_type: str = "vector"  # vector/colbert
+    vdb_type: str = "colbert"  # vector/colbert
     # Chunking
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
@@ -55,15 +56,16 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "rkg_graph"
+    graph_type: str = "er_graph" # rkg_graph/er_graph/tree_graph
+    extract_two_step: bool = True
     max_gleaning: int = 1
-    enable_entity_description: bool = True
-    enable_entity_type: bool = True
-    enable_edge_description: bool = True
-    enable_edge_name: bool = True
+    enable_entity_description: bool = False
+    enable_entity_type: bool = False
+    enable_edge_description: bool = False
+    enable_edge_name: bool = False
     prior_prob: float = 0.8
     # Graph clustering
-    use_community: bool = True
+    use_community: bool = False
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
@@ -92,11 +94,35 @@ class Config(CLIParams, YamlModel):
     damping: float = 0.1
     # ColBert Option
     use_colbert: bool = True
-    colbert_checkpoint_path: str = "./Tools/Index/colbertv2.0"
+    colbert_checkpoint_path: str = "/home/yingli/HippoRAG/exp/colbertv2.0"
     index_name: str = "nbits_2"
     similarity_max: float = 1.0
     # Graph Augmentation
     enable_graph_augmentation: bool = True
+
+    # Query config 
+    only_need_context: bool = False
+    response_type: str = "Multiple Paragraphs"
+    level: int = 2
+    retrieve_top_k: int = 20
+    # naive search
+    naive_max_token_for_text_unit: int = 12000
+    # local search
+    local_max_token_for_text_unit: int = 4000  # 12000 * 0.33
+    max_token_for_local_context: int = 4800  # 12000 * 0.4
+    local_max_token_for_community_report: int = 3200  # 12000 * 0.27
+    local_community_single_one: bool = False
+    # global search
+    global_min_community_rating: float = 0
+    global_max_consider_community: float = 512
+    global_max_token_for_community_report: int = 16384
+    max_token_for_global_context: int = 4000
+    global_special_community_map_llm_kwargs: dict = field(
+        default_factory=lambda: {"response_format": {"type": "json_object"}}
+    )
+
+    # For IR-COT
+    max_ir_steps: int = 2
 
     @classmethod
     def from_home(cls, path):
