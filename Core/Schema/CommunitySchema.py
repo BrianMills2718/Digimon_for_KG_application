@@ -1,6 +1,5 @@
-from dataclasses import dataclass, asdict, field, Field
+from dataclasses import dataclass, field
 from typing import Set, List
-from pydantic import Field
 
 
 class CommunityReportsResult:
