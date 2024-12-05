@@ -55,7 +55,7 @@ class Config(CLIParams, YamlModel):
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "tree_graph"
+    graph_type: str = "rkg_graph"
     max_gleaning: int = 1
     enable_entity_description: bool = True
     enable_entity_type: bool = True
@@ -63,12 +63,11 @@ class Config(CLIParams, YamlModel):
     enable_edge_name: bool = True
     prior_prob: float = 0.8
     # Graph clustering
-    use_community: bool = False
+    use_community: bool = True
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
     summary_max_tokens: int = 500
-
 
     # Tree Config
     reduction_dimension: Optional[int] = 5
@@ -138,6 +137,39 @@ class Config(CLIParams, YamlModel):
         final = merge_dict(dicts)
         return Config(**final)
 
+    def update_via_cli(self, project_path, project_name, inc, reqa_file, max_auto_summarize_code):
+        """update config via cli"""
+
+        # Use in the PrepareDocuments action according to Section 2.2.3.5.1 of RFC 135.
+        if project_path:
+            inc = True
+            project_name = project_name or Path(project_path).name
+        self.project_path = project_path
+        self.project_name = project_name
+        self.inc = inc
+        self.reqa_file = reqa_file
+        self.max_auto_summarize_code = max_auto_summarize_code
+
+    @property
+    def extra(self):
+        return self._extra
+
+    @extra.setter
+    def extra(self, value: dict):
+        self._extra = value
+
+    def get_openai_llm(self) -> Optional[LLMConfig]:
+        """Get OpenAI LLMConfig by name. If no OpenAI, raise Exception"""
+        if self.llm.api_type == LLMType.OPENAI:
+            return self.llm
+        return None
+
+    def get_azure_llm(self) -> Optional[LLMConfig]:
+        """Get Azure LLMConfig by name. If no Azure, raise Exception"""
+        if self.llm.api_type == LLMType.AZURE:
+            return self.llm
+        return None
+
 
 def merge_dict(dicts: Iterable[Dict]) -> Dict:
     """Merge multiple dicts into one, with the latter dict overwriting the former"""
@@ -148,5 +180,3 @@ def merge_dict(dicts: Iterable[Dict]) -> Dict:
 
 
 config = Config.default()
-
-

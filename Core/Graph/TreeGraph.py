@@ -3,7 +3,7 @@ from Core.Schema.ChunkSchema import TextChunk
 from Core.Common.Logger import logger
 from Core.Index.EmbeddingFactory import get_rag_embedding
 from Core.Prompt.RaptorPrompt import SUMMARIZE
-from Core.Community.ClusterFactory import get_community_instance
+from Core.Community.ClusterFactory import get_community
 from Core.Storage.TreeGraphStorage import TreeGraphStorage
 from Core.Schema.TreeSchema import TreeNode
 
@@ -18,7 +18,7 @@ class TreeGraph(BaseGraph):
         super().__init__(config, llm, encoder)
         self._graph: TreeGraphStorage = TreeGraphStorage()  # Tree index
         self.embedding_model = get_rag_embedding(config.embedding.api_type, config)  # Embedding model
-        self.graph_cluster_algorithm = get_community_instance("raptor")  # Clustering algorithm
+        self.graph_cluster_algorithm = get_community("raptor")  # Clustering algorithm
 
     def _embed_text(self, text: str):
         return self.embedding_model._get_text_embedding(text)

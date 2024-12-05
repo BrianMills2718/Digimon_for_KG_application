@@ -1,19 +1,23 @@
 import html
 import json
 import os
+from collections import defaultdict
 from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
 from lazy_object_proxy.utils import await_
 from pydantic import model_validator
 
+from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
+from Core.Schema.CommunitySchema import LeidenInfo
 from Core.Storage.BaseGraphStorage import BaseGraphStorage
 
 
 class NetworkXStorage(BaseGraphStorage):
     def __init__(self):
         super().__init__()
+
     name: str = "nx_data.graphml"  # The valid file name for NetworkX
     _graph: nx.Graph = nx.Graph()
 
@@ -210,3 +214,60 @@ class NetworkXStorage(BaseGraphStorage):
                     description=edge_data["description"])
             edges.append(edge_data)
         return edges
+
+    async def get_stable_largest_cc(self):
+        return NetworkXStorage.stable_largest_connected_component(self._graph)
+
+    def cluster_data_to_subgraphs(self, cluster_data):
+        for node_id, clusters in cluster_data.items():
+            self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
+
+    async def get_community_schema(self):
+        max_num_ids = 0
+        levels = defaultdict(set)
+        _schemas: dict[str, LeidenInfo] = defaultdict(LeidenInfo)
+        for node_id, node_data in self._graph.nodes(data=True):
+            if "clusters" not in node_data:
+                continue
+            clusters = json.loads(node_data["clusters"])
+            this_node_edges = self._graph.edges(node_id)
+
+            for cluster in clusters:
+                level = cluster["level"]
+                cluster_key = str(cluster["cluster"])
+                levels[level].add(cluster_key)
+                _schemas[cluster_key].level = level
+                _schemas[cluster_key].title = f"Cluster {cluster_key}"
+                _schemas[cluster_key].nodes.add(node_id)
+                _schemas[cluster_key].edges.update(
+                    [tuple(sorted(e)) for e in this_node_edges]
+                )
+                _schemas[cluster_key].chunk_ids.update(
+                    node_data["source_id"].split(GRAPH_FIELD_SEP)
+                )
+                max_num_ids = max(max_num_ids, len(_schemas[cluster_key].chunk_ids))
+
+        ordered_levels = sorted(levels.keys())
+        for i, curr_level in enumerate(ordered_levels[:-1]):
+            next_level = ordered_levels[i + 1]
+            this_level_comms = levels[curr_level]
+            next_level_comms = levels[next_level]
+            # compute the sub-communities by nodes intersection
+            for comm in this_level_comms:
+                _schemas[comm].sub_communities = [
+                    c
+                    for c in next_level_comms
+                    if _schemas[c].nodes.issubset(_schemas[comm].nodes)
+                ]
+
+        for _, v in _schemas.items():
+            v.edges = list(v.edges)
+            v.edges = [list(e) for e in v.edges]
+            v.nodes = list(v.nodes)
+            v.chunk_ids = list(v.chunk_ids)
+            v.occurrence = len(v.chunk_ids) / max_num_ids
+        return _schemas
+
+    async def get_node_metadata(self):
+
+        return {"entity_name": node["entity_name"] for node in await self.get_nodes()}

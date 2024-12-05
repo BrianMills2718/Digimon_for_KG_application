@@ -1,6 +1,9 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
+
+from lazy_object_proxy.utils import await_
+
 from Core.Common.Logger import logger
 from typing import List
 from Core.Common.Constants import GRAPH_FIELD_SEP
@@ -9,6 +12,7 @@ from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Schema.EntityRelation import Entity, Relationship
 from Core.Common.Utils import (clean_str, build_data_for_merge)
+from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 
@@ -266,3 +270,32 @@ class BaseGraph(ABC):
 
     async def node_metadata(self):
         return await self._graph.get_node_metadata()
+
+    async def stable_largest_cc(self):
+        if isinstance(self._graph, NetworkXStorage):
+            return await self._graph.get_stable_largest_cc()
+        else:
+            logger.exception("**Only NETWORKX is supported for finding the largest connected component.** ")
+            return None
+
+    async def cluster_data_to_subgraphs(self, cluster_data: dict):
+        if isinstance(self._graph, NetworkXStorage):
+            self._graph.cluster_data_to_subgraphs(cluster_data)
+        else:
+            logger.exception("**Only NETWORKX is supported for constructing the cluster <-> node mapping.** ")
+            return None
+
+    async def community_schema(self):
+        return await self._graph.get_community_schema()
+
+    async def get_node(self, node_id):
+        return await self._graph.get_node(node_id)
+
+    async def get_edge(self, src, tgt):
+        return await self._graph.get_edge(src, tgt)
+
+    async def node_degree(self, node_id):
+        return await self._graph.node_degree(node_id)
+
+    async def edge_degree(self, src_id: str, tgt_id: str):
+        return await self._graph.edge_degree(src_id, tgt_id)

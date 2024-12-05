@@ -131,7 +131,7 @@ Embedding = List[float]
 
 
 @register_community(name = "raptor")
-class RaptorClustering(BaseCommunity, ABC):
+class RaptorClustering(BaseCommunity):
     def clustering(self,
         nodes: List[TreeNode],
         max_length_in_cluster: int = 3500,

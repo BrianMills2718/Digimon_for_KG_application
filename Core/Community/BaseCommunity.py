@@ -3,23 +3,19 @@ from pydantic import BaseModel, Field, ConfigDict
 from Core.Provider.BaseLLM import BaseLLM
 from typing import Optional
 
-class BaseCommunity(ABC, BaseModel): 
+
+class BaseCommunity(ABC):
     """Base community class definition."""
-    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
-    enforce_sub_communities: bool = False
-    llm: Optional[BaseLLM] = Field(default=None, exclude=True)
-
+    def __init__(self, llm, enforce_sub_communities):
+        self.llm = llm
+        self.enforce_sub_communities = enforce_sub_communities
 
     @abstractmethod
-    async def _clustering_(self):
+    async def generate_community_report(self, graph, cluster_node_map):
         pass
 
-    @abstractmethod
-    async def _generate_community_report_(self):
-        pass
-    
 
     @abstractmethod
-    async def _community_schema_(self):
+    async def cluster(self, **kwargs):
         pass

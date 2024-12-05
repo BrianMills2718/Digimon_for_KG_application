@@ -1,14 +1,17 @@
+from collections import defaultdict
 from typing import Union, Any
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
-from Core.Common.Utils import mdhash_id
+from Core.Common.Utils import mdhash_id, prase_json_from_response, clean_str
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
 from Core.Index.VectorIndex import VectorIndex
 from Core.Index.IndexConfigFactory import get_index_config
+from Core.Prompt import GraphPrompt
 from Core.Storage.NameSpace import Workspace
+from Core.Community.ClusterFactory import get_community
 
 
 class GraphRAG(ContextMixin, BaseModel):
@@ -37,7 +40,9 @@ class GraphRAG(ContextMixin, BaseModel):
         cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
         data = cls._init_storage_namespace(data)
         data = cls._register_vdbs(data)
+        data = cls._register_community(data)
         data = cls._register_e2r_r2c_matrix(data)
+        data = cls._register_retriever_context(data)
         return data
 
     @classmethod
@@ -62,10 +67,48 @@ class GraphRAG(ContextMixin, BaseModel):
         return data
 
     @classmethod
+    def _register_community(cls, data):
+        if data.config.use_entities_vdb:
+            cls.community = get_community(data.config.graph_cluster_algorithm,
+                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm)
+        return data
+
+    @classmethod
     def _register_e2r_r2c_matrix(cls, data):
         if data.config.use_entity_link_chunk:
             pass
         return data
+
+    @classmethod
+    def _register_retriever_context(cls, data):
+        # register the retriever context
+        cls._retriever = None
+        cls._retriever_context = defaultdict
+        cls._retriever_context.update({"graph": True})
+        cls._retriever_context.update({"chunks": True})
+        cls._retriever_context.update({"entities_vdb": data.config.use_entities_vdb})
+        cls._retriever_context.update({"relations_vdb": data.config.use_relations_vdb})
+        cls._retriever_context.update({"community": data.config.use_community})
+        cls._retriever_context.update({"community": data.config.use_entity_link_chunk})
+
+    async def _extract_query_entities(self, query):
+        entities = []
+        try:
+            ner_messages = GraphPrompt.NER.format(user_input=query)
+
+            response_content = await self.llm.aask(ner_messages)
+            entities = prase_json_from_response(response_content)
+
+            if 'named_entities' not in entities:
+                entities = []
+            else:
+                entities = entities['named_entities']
+
+            entities = [clean_str(p) for p in entities]
+        except Exception as e:
+            logger.error('Error in Retrieval NER: {}'.format(e))
+
+        return entities
 
     async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False):
         """Chunk the given documents into smaller chunks.
@@ -91,6 +134,24 @@ class GraphRAG(ContextMixin, BaseModel):
         # TODO: filter the already solved chunks maybe
         ordered_chunks = list(inserting_chunks.items())
         return ordered_chunks
+
+    async def _build_retriever_context(self, query):
+        """Build the retriever context for the given query."""
+        logger.info("Building retriever context for the given query: {query}".format(query=query))
+
+        self._retriever.register_context("graph", self.graph)
+        self._retriever.register_context("query", query)
+        for context_name, use_context in self._retriever_context.items():
+            if use_context:
+                self._retriever.register_context(context_name, getattr(self, context_name))
+
+        if self.config.use_query_entity:
+            try:
+                query_entities = await self._extract_query_entities(query)
+                self._retriever.register_context("query_entity", query_entities)
+            except Exception as e:
+                logger.error(f"Failed to extract query entities: {e}")
+                raise
 
     async def insert(self, docs: Union[str, list[Any]]):
 
@@ -129,7 +190,7 @@ class GraphRAG(ContextMixin, BaseModel):
         if self.config.use_entities_vdb:
             logger.info("Starting insert entities of the given graph into vector database")
 
-            # entity_metadata = {"entity_name": node["entity_name"] for node in await self.graph.nodes()}
+            #
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
             await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
@@ -144,7 +205,14 @@ class GraphRAG(ContextMixin, BaseModel):
 
         if self.config.use_community:
             logger.info("Starting build community of the given graph")
+            logger.start("Clustering nodes")
+            cluster_node_map = await self.community.cluster(largest_cc=await self.graph.stable_largest_cc(),
+                                                            max_cluster_size=self.config.max_graph_cluster_size,
+                                                            random_seed=self.config.graph_cluster_seed)
 
+
+            await self.community.generate_community_report(self.graph, cluster_node_map)
+            logger.info("✅ [Community Report]  Finished")
             ####################################################################################################
             # 4. Graph Augmentation Stage (Optional)
             ####################################################################################################
@@ -162,12 +230,13 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 1. Building query relevant content (subgraph) Stage
         ####################################################################################################
-        retrieve_conext = None # which is used to retrieve the query-based relevant content from the graph.
+        await self._build_retriever_context(query)
+        await self._build_retriever_operator()
 
-        _find_relevant_nodes = None # which is used to find the relevant nodes in the graph.
-        _find_relevant_edges = None # which is used to find the relevant edges in the graph.
-        
-        relevant_context = None 
+        relevant_content = await self._retriever.execute(mode="sequence")
+
         ####################################################################################################
         # 2. Generation Stage
         ####################################################################################################
+
+    #
