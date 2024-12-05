@@ -6,14 +6,18 @@ from Core.Storage.BaseKVStorage import (
 
 
 class JsonKVStorage(BaseKVStorage):
-    def __init__(self, namespace):
+    def __init__(self, namespace, name):
         super().__init__()
         self._data = {}
-        self.name: str = "community_report.json"  # The valid file name for NetworkX
+        self.name: str = "{name}.json".format(name=name)
         self.namespace = namespace
 
     async def all_keys(self) -> list[str]:
         return list(self._data.keys())
+
+    @property
+    def json_data(self):
+        return self._data
 
     @property
     def _file_name(self):
@@ -22,11 +26,11 @@ class JsonKVStorage(BaseKVStorage):
 
     async def persist(self):
         write_json(self._data, self._file_name)
-        logger.info(f"Write KV {self.namespace} with {len(self._data)} data")
+        logger.info(f"Write KV {self._file_name} with {len(self._data)} data")
 
     async def load(self):
         self._data = load_json(self._file_name) or {}
-        logger.info(f"Load KV {self.namespace} with {len(self._data)} data")
+        logger.info(f"Load KV {self._file_name} with {len(self._data)} data")
 
     async def get_by_id(self, id):
         return self._data.get(id, None)

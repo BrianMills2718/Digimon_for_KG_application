@@ -212,11 +212,11 @@ class GraphRAG(ContextMixin, BaseModel):
         if self.config.use_community:
             logger.info("Starting build community of the given graph")
             logger.start("Clustering nodes")
-            cluster_node_map = await self.community.cluster(largest_cc=await self.graph.stable_largest_cc(),
+            await self.community.cluster(largest_cc=await self.graph.stable_largest_cc(),
                                                             max_cluster_size=self.config.max_graph_cluster_size,
                                                             random_seed=self.config.graph_cluster_seed)
 
-            await self.community.generate_community_report(self.graph, cluster_node_map, force=True)
+            await self.community.generate_community_report(self.graph, True)
             logger.info("✅ [Community Report]  Finished")
             ####################################################################################################
             # 4. Graph Augmentation Stage (Optional)
@@ -238,7 +238,7 @@ class GraphRAG(ContextMixin, BaseModel):
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
         entities = await self._find_relevant_entities(query)
-
+        print(entities)
         # relevant_content = await self._retriever.execute(mode="sequence")
 
         # context = await self._build_local_query_context(
@@ -262,22 +262,22 @@ class GraphRAG(ContextMixin, BaseModel):
         # 2. Generation Stage
         ####################################################################################################
 
-    async def _find_relevant_entities(self, query):
+    async def _find_relevant_entities(self, query, top_k=5):
         assert self.config.use_entities_vdb
-        results = await self.entities_vdb.retrieval(query, top_k=self.query_config.top_k)
+        results = await self.entities_vdb.retrieval(query, top_k=top_k)
 
         if not len(results):
             return None
         node_datas = await asyncio.gather(
-            *[self.er_graph.get_node(r.metadata["entity_name"]) for r in results]
+            *[self.graph.get_node(r.metadata["entity_name"]) for r in results]
         )
         if not all([n is not None for n in node_datas]):
             logger.warning("Some nodes are missing, maybe the storage is damaged")
         node_degrees = await asyncio.gather(
-            *[self.er_graph.node_degree(r.metadata["entity_name"]) for r in results]
+            *[self.graph.node_degree(r.metadata["entity_name"]) for r in results]
         )
         node_datas = [
-            {**n, "entity_name": k["entity_name"], "rank": d}
+            {**n, "entity_name": k.metadata["entity_name"], "rank": d}
             for k, n, d in zip(results, node_datas, node_degrees)
             if n is not None
         ]

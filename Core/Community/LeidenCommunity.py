@@ -1,10 +1,6 @@
 """
 Please refer to the Nano-GraphRAG: https://github.com/gusye1234/nano-graphrag/blob/main/nano_graphrag/_op.py
 """
-import os.path
-
-from lazy_object_proxy.utils import await_
-
 from Core.Community.BaseCommunity import BaseCommunity
 from collections import defaultdict
 from graspologic.partition import hierarchical_leiden
@@ -30,7 +26,8 @@ class LeidenCommunity(BaseCommunity):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self._community_reports: JsonKVStorage = JsonKVStorage(self.namespace)
+        self._community_reports: JsonKVStorage = JsonKVStorage(self.namespace, "community_report")
+        self._community_node_map: JsonKVStorage = JsonKVStorage(self.namespace, "community_node_map")
         self.communities_schema: dict[str, LeidenInfo] = defaultdict(LeidenInfo)
 
     @property
@@ -38,19 +35,18 @@ class LeidenCommunity(BaseCommunity):
         """Getter method for community_reports."""
         return self._community_reports
 
-    async def cluster(self, largest_cc, max_cluster_size, random_seed):
+    async def clustering(self, largest_cc, max_cluster_size, random_seed):
         return await self._clustering(largest_cc, max_cluster_size, random_seed)
 
-    @staticmethod
-    async def _clustering(largest_cc, max_cluster_size, random_seed):
+    async def _clustering(self, largest_cc, max_cluster_size, random_seed):
 
         community_mapping = hierarchical_leiden(
             largest_cc,
             max_cluster_size=max_cluster_size,
             random_seed=random_seed,
         )
-
         node_communities: dict[str, list[dict[str, str]]] = defaultdict(list)
+
         __levels = defaultdict(set)
         for partition in community_mapping:
             level_key = partition.level
@@ -62,17 +58,16 @@ class LeidenCommunity(BaseCommunity):
         node_communities = dict(node_communities)
         __levels = {k: len(v) for k, v in __levels.items()}
         logger.info(f"Each level has communities: {dict(__levels)}")
+        await self._community_node_map.upsert(node_communities)
         return node_communities
-
-    # async def _community_schema_(self, graph: nx.Graph):
 
     @property
     def community_schema(self):
         return self.communities_schema
 
-    async def _generate_community_report(self, er_graph, cluster_node_map):
+    async def _generate_community_report(self, er_graph):
         # Construct the cluster <-> node mapping
-        await er_graph.cluster_data_to_subgraphs(cluster_node_map)
+        await er_graph.cluster_data_to_subgraphs(self._community_node_map.json_data)
         # Fetch community schema
         self.communities_schema = await er_graph.community_schema()
 
@@ -250,8 +245,11 @@ class LeidenCommunity(BaseCommunity):
             {edges_describe}
         ```"""
 
-    async def _load_community_report(self) -> bool:
+    async def _load_community_report(self, force) -> bool:
 
+        if force:
+            logger.info("☠️ Force to regenerate the community report.")
+            return True
         await self._community_reports.load()
         if await self._community_reports.is_empty():
             logger.error("Failed to load community report.")
@@ -264,4 +262,19 @@ class LeidenCommunity(BaseCommunity):
         try:
             await self._community_reports.persist()
         except Exception as e:
-            logger.exception("Failed to persist community report: {error}.".format(error=e))
+            logger.exception("❌ Failed to persist community report: {error}.".format(error=e))
+
+    async def _load_cluster_map(self):
+        await self._community_node_map.load()
+        if await self._community_node_map.is_empty():
+            logger.error("❌ Failed to load community <-> node map.")
+            return False
+        else:
+            logger.info("✅ Successfully loaded community <-> node map.")
+            return True
+
+    async def _persist_cluster_map(self):
+        try:
+            await self._community_node_map.persist()
+        except Exception as e:
+            logger.exception("❌ Failed to persist community <-> node map: {error}.".format(error=e))
