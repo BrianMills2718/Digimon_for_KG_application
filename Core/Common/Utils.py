@@ -1,13 +1,17 @@
 from hashlib import md5
 import html
-from typing import Any, List
+from typing import Any, List, Union, Tuple
 import re
 import numbers
+
+from scipy.sparse import csr_matrix
+
 from Core.Common.Logger import logger
 import tiktoken
 from tenacity import RetryCallState
 import numpy as np
 from Core.Common.Constants import GRAPH_FIELD_SEP
+
 
 def singleton(cls):
     instances = {}
@@ -300,7 +304,7 @@ def build_data_for_merge(data: dict) -> dict:
     Returns:
         A dictionary containing data to be merged.
     """
-  
+
     res = {}
     for k, v in data.items():
         if isinstance(v, str):
@@ -308,3 +312,18 @@ def build_data_for_merge(data: dict) -> dict:
         elif isinstance(v, float):
             res[k] = [v]
     return res
+
+
+def csr_from_indices_list(data: List[List[Union[int, int]]], shape: Tuple[int, int]) -> csr_matrix:
+    """Create a CSR matrix from a list of lists."""
+    num_rows = len(data)
+
+    # Flatten the list of lists and create corresponding row indices
+    row_indices = np.repeat(np.arange(num_rows), [len(row) for row in data])
+    col_indices = np.concatenate(data) if num_rows > 0 else np.array([], dtype=np.int64)
+
+    # Data values (all ones in this case)
+    values = np.broadcast_to(1, len(row_indices))
+
+    # Create the CSR matrix
+    return csr_matrix((values, (row_indices, col_indices)), shape=shape)

@@ -1,4 +1,4 @@
-from pydantic import  Field
+from dataclasses import dataclass, field
 from typing import (
     Any,
     Optional
@@ -7,6 +7,7 @@ from typing import (
 from Core.Storage.NameSpace import Namespace
 
 
+@dataclass
 class BaseStorage:
-    config: Optional[Any] = Field(default=None, exclude=True)
-    namespace: Optional[Namespace] = Field(default=None, exclude=True)
+    config: Optional[Any] = field(default=None)
+    namespace: Optional[Namespace] = field(default=None)

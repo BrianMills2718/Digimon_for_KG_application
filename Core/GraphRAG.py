@@ -1,15 +1,14 @@
 import asyncio
 from collections import defaultdict
 from typing import Union, Any
-
+from scipy.sparse import csr_matrix
 import numpy as np
-
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
-from Core.Common.Utils import mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
-    split_string_by_multi_markers
+from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
+                               split_string_by_multi_markers, csr_from_indices_list)
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
@@ -18,6 +17,7 @@ from Core.Index.IndexConfigFactory import get_index_config
 from Core.Prompt import GraphPrompt, QueryPrompt
 from Core.Storage.NameSpace import Workspace
 from Core.Community.ClusterFactory import get_community
+from Core.Storage.PickleBlobStorage import PickleBlobStorage
 
 
 class GraphRAG(ContextMixin, BaseModel):
@@ -60,6 +60,9 @@ class GraphRAG(ContextMixin, BaseModel):
             data.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
         if data.config.use_community:
             data.community_namespace = data.workspace.make_for("community_storage")
+        if data.config.use_e2r_r2c_matrix:
+            data.e2r_namespace = data.workspace.make_for("map_e2r")
+            data.r2c_namespace = data.workspace.make_for("map_r2c")
 
         cls.chunks = data.workspace.make_for("chunks")
         return data
@@ -87,7 +90,12 @@ class GraphRAG(ContextMixin, BaseModel):
     @classmethod
     def _register_e2r_r2c_matrix(cls, data):
         if data.config.use_entity_link_chunk:
-            pass
+            cls._entities_to_relationships = PickleBlobStorage(
+                namespace=data.e2r_namespace, config=None
+            )
+            cls._relationships_to_chunks = PickleBlobStorage(
+                namespace=data.r2c_namespace, config=None
+            )
         return data
 
     @classmethod
@@ -173,6 +181,23 @@ class GraphRAG(ContextMixin, BaseModel):
                 logger.error(f"Failed to extract query entities: {e}")
                 raise
 
+    async def build_e2r_r2c_maps(self):
+        # TODO:
+        await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
+
+        # TODO:
+        raw_relationships_to_chunks = await self.graph.get_relationships_attrs(key="chunks")
+        # Map Chunk IDs to indices
+        raw_relationships_to_chunks = [
+            [i for i in await self.chunk_storage.get_index(chunk_ids) if i is not None]
+            for chunk_ids in raw_relationships_to_chunks
+        ]
+        await self._relationships_to_chunks.set(
+            csr_from_indices_list(
+                raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await self.chunk_storage.size())
+            )
+        )
+
     async def insert(self, docs: Union[str, list[Any]]):
 
         """
@@ -200,7 +225,8 @@ class GraphRAG(ContextMixin, BaseModel):
         logger.info("Starting build graph for the given documents")
         await self.graph.build_graph(chunks, force=False)
         logger.info("✅ Finished building graph for the given documents")
-
+        if self.config.use_entity_link_chunk:
+            await self.build_e2r_r2c_maps()
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
@@ -273,8 +299,6 @@ class GraphRAG(ContextMixin, BaseModel):
         for query_entity in query_entities:
             max_score = await self.entities_vdb.get_max_score([query_entity])
             ranking = await self.entities_vdb.retrieval_batch(query_entity, top_k=1)
-            import pdb
-            pdb.set_trace()
             for entity_id, rank, score in ranking.data[0]:
                 entity = self.id_to_entity[entity_id]
                 real_score = await self.entities_vdb.similarity_score([query_entity], [entity])
@@ -283,7 +307,7 @@ class GraphRAG(ContextMixin, BaseModel):
 
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
         top_phrase_vec = np.zeros(self.graph.node_num)
-        import  pdb
+        import pdb
         pdb.set_trace()
         # Set the weight of the retrieved documents based on the number of documents they appear in
         for entity_id in entity_ids:
@@ -418,17 +442,17 @@ class GraphRAG(ContextMixin, BaseModel):
     async def _find_relevant_edges_from_entities(self, node_datas: list[dict]):
         # ✅
         all_related_edges = await asyncio.gather(
-            *[self.er_graph.get_node_edges(dp["entity_name"]) for dp in node_datas]
+            *[self.graph.get_node_edges(node["entity_name"]) for node in node_datas]
         )
         all_edges = set()
         for this_edges in all_related_edges:
             all_edges.update([tuple(sorted(e)) for e in this_edges])
         all_edges = list(all_edges)
         all_edges_pack = await asyncio.gather(
-            *[self.er_graph.get_edge(e[0], e[1]) for e in all_edges]
+            *[self.graph.get_edge(e[0], e[1]) for e in all_edges]
         )
         all_edges_degree = await asyncio.gather(
-            *[self.er_graph.edge_degree(e[0], e[1]) for e in all_edges]
+            *[self.graph.edge_degree(e[0], e[1]) for e in all_edges]
         )
         all_edges_data = [
             {"src_tgt": k, "rank": d, **v}

@@ -303,3 +303,4 @@ class BaseGraph(ABC):
     @property
     def node_num(self):
         return self._graph.get_node_num()
+
