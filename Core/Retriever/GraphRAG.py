@@ -1,3 +1,5 @@
+import asyncio
+
 from Core.Community.ClusterFactory import get_community_instance
 from Core.Common.QueryConfig import QueryConfig
 from Core.Prompt import QueryPrompt

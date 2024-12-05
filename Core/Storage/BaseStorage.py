@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import  Field
 from typing import (
     Any,
     Optional
@@ -7,7 +7,6 @@ from typing import (
 from Core.Storage.NameSpace import Namespace
 
 
-class BaseStorage(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
+class BaseStorage:
     config: Optional[Any] = Field(default=None, exclude=True)
     namespace: Optional[Namespace] = Field(default=None, exclude=True)

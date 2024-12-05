@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Set, List
 
 
@@ -17,3 +17,6 @@ class LeidenInfo:
     occurrence: float = field(default=0.0)
     sub_communities: List[str] = field(default_factory=list)
 
+    @property
+    def as_dict(self):
+        return asdict(self)

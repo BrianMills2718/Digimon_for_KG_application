@@ -1,10 +1,12 @@
 from typing import TypedDict, Union, Literal, Generic, TypeVar
 from dataclasses import dataclass, field
 
+from Core.Storage.BaseStorage import BaseStorage
+
 T = TypeVar("T")
 
 
-class BaseKVStorage(Generic[T]):
+class BaseKVStorage(Generic[T], BaseStorage):
     async def all_keys(self) -> list[str]:
         raise NotImplementedError
 

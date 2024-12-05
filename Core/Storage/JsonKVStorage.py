@@ -1,28 +1,32 @@
-
 from Core.Common.Utils import load_json, write_json
 from Core.Common.Logger import logger
 from Core.Storage.BaseKVStorage import (
     BaseKVStorage,
 )
-from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class JsonKVStorage(BaseKVStorage):
-    # def __post_init__(self):
-    # #     working_dir = self.global_config["working_dir"]
-    # #     self._file_name = os.path.join(working_dir, f"kv_store_{self.namespace}.json")
-    #     self._data = {}
-    # #     logger.info(f"Load KV {self.namespace} with {len(self._data)} data")
+    def __init__(self, namespace):
+        super().__init__()
+        self._data = {}
+        self.name: str = "community_report.json"  # The valid file name for NetworkX
+        self.namespace = namespace
 
-    @model_validator(mode="after")
-    def _load_from_file(cls, data):
-        cls._data = {}
-        return data
     async def all_keys(self) -> list[str]:
         return list(self._data.keys())
 
-    async def index_done_callback(self):
+    @property
+    def _file_name(self):
+        assert self.namespace is not None
+        return self.namespace.get_save_path(self.name)
+
+    async def persist(self):
         write_json(self._data, self._file_name)
+        logger.info(f"Write KV {self.namespace} with {len(self._data)} data")
+
+    async def load(self):
+        self._data = load_json(self._file_name) or {}
+        logger.info(f"Load KV {self.namespace} with {len(self._data)} data")
 
     async def get_by_id(self, id):
         return self._data.get(id, None)
@@ -47,3 +51,6 @@ class JsonKVStorage(BaseKVStorage):
 
     async def drop(self):
         self._data = {}
+
+    async def is_empty(self):
+        return len(self._data) == 0

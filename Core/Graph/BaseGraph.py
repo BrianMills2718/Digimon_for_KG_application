@@ -259,9 +259,6 @@ class BaseGraph(ABC):
     async def _persist_graph(self, force):
         await self._graph.persist(force)
 
-    async def persist_graph(self, force):
-        await self._graph.persist(force)
-
     async def nodes(self):
         return await self._graph.get_nodes()
 

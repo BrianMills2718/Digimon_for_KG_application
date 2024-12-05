@@ -1,3 +1,4 @@
+import asyncio
 from collections import defaultdict
 from typing import Union, Any
 from Core.Common.Logger import logger
@@ -52,6 +53,9 @@ class GraphRAG(ContextMixin, BaseModel):
             data.entities_vdb_namespace = data.workspace.make_for("entities_vdb")
         if data.config.use_relations_vdb:
             data.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
+        if data.config.use_community:
+            data.community_namespace = data.workspace.make_for("community_storage")
+
         cls.chunks = data.workspace.make_for("chunks")
         return data
 
@@ -68,9 +72,11 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @classmethod
     def _register_community(cls, data):
-        if data.config.use_entities_vdb:
+        if data.config.use_community:
             cls.community = get_community(data.config.graph_cluster_algorithm,
-                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm)
+                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm,
+                                          namespace=data.community_namespace)
+
         return data
 
     @classmethod
@@ -210,8 +216,7 @@ class GraphRAG(ContextMixin, BaseModel):
                                                             max_cluster_size=self.config.max_graph_cluster_size,
                                                             random_seed=self.config.graph_cluster_seed)
 
-
-            await self.community.generate_community_report(self.graph, cluster_node_map)
+            await self.community.generate_community_report(self.graph, cluster_node_map, force=True)
             logger.info("✅ [Community Report]  Finished")
             ####################################################################################################
             # 4. Graph Augmentation Stage (Optional)
@@ -230,13 +235,114 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 1. Building query relevant content (subgraph) Stage
         ####################################################################################################
-        await self._build_retriever_context(query)
-        await self._build_retriever_operator()
+        # await self._build_retriever_context(query)
+        # await self._build_retriever_operator()
+        entities = await self._find_relevant_entities(query)
 
-        relevant_content = await self._retriever.execute(mode="sequence")
+        # relevant_content = await self._retriever.execute(mode="sequence")
 
+        # context = await self._build_local_query_context(
+        #     query,
+        #     community_instance.community_reports
+        # )
+        # if self.config.only_need_context:
+        #     return context
+        # if context is None:
+        #     return QueryPrompt.FAIL_RESPONSE
+        # sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
+        # sys_prompt = sys_prompt_temp.format(
+        #     context_data=context, response_type=self.query_config.response_type
+        # )
+        # response = await self.llm.aask(
+        #     query,
+        #     system_msgs=[sys_prompt]
+        # )
+        # return response
         ####################################################################################################
         # 2. Generation Stage
         ####################################################################################################
 
+    async def _find_relevant_entities(self, query):
+        assert self.config.use_entities_vdb
+        results = await self.entities_vdb.retrieval(query, top_k=self.query_config.top_k)
+
+        if not len(results):
+            return None
+        node_datas = await asyncio.gather(
+            *[self.er_graph.get_node(r.metadata["entity_name"]) for r in results]
+        )
+        if not all([n is not None for n in node_datas]):
+            logger.warning("Some nodes are missing, maybe the storage is damaged")
+        node_degrees = await asyncio.gather(
+            *[self.er_graph.node_degree(r.metadata["entity_name"]) for r in results]
+        )
+        node_datas = [
+            {**n, "entity_name": k["entity_name"], "rank": d}
+            for k, n, d in zip(results, node_datas, node_degrees)
+            if n is not None
+        ]
+        return node_datas
+    # async def _build_local_query_context(self, query,  community_reports):
+
+    # use_communities = await self._find_most_related_community_from_entities(node_datas, community_reports)
+    # use_text_units = await self._find_most_related_text_unit_from_entities(node_datas)
+    # use_relations = await self._find_most_related_edges_from_entities(node_datas)
+    # logger.info(
+    #     f"Using {len(node_datas)} entites, {len(use_communities)} communities, {len(use_relations)} relations, {len(use_text_units)} text units"
+    # )
+    # entites_section_list = [["id", "entity", "type", "description", "rank"]]
+    # for i, n in enumerate(node_datas):
+    #     entites_section_list.append(
+    #         [
+    #             i,
+    #             n["entity_name"],
+    #             n.get("entity_type", "UNKNOWN"),
+    #             n.get("description", "UNKNOWN"),
+    #             n["rank"],
+    #         ]
+    #     )
+    # entities_context = list_to_quoted_csv_string(entites_section_list)
     #
+    # relations_section_list = [
+    #     ["id", "source", "target", "description", "weight", "rank"]
+    # ]
+    # for i, e in enumerate(use_relations):
+    #     relations_section_list.append(
+    #         [
+    #             i,
+    #             e["src_tgt"][0],
+    #             e["src_tgt"][1],
+    #             e["description"],
+    #             e["weight"],
+    #             e["rank"],
+    #         ]
+    #     )
+    # relations_context = list_to_quoted_csv_string(relations_section_list)
+    #
+    # communities_section_list = [["id", "content"]]
+    # for i, c in enumerate(use_communities):
+    #     communities_section_list.append([i, c["report_string"]])
+    # communities_context = list_to_quoted_csv_string(communities_section_list)
+    #
+    # text_units_section_list = [["id", "content"]]
+    # for i, t in enumerate(use_text_units):
+    #     text_units_section_list.append([i, t["content"]])
+    # text_units_context = list_to_quoted_csv_string(text_units_section_list)
+    # return f"""
+    #     -----Reports-----
+    #     ```csv
+    #     {communities_context}
+    #     ```
+    #     -----Entities-----
+    #     ```csv
+    #     {entities_context}
+    #     ```
+    #     -----Relationships-----
+    #     ```csv
+    #     {relations_context}
+    #     ```
+    #     -----Sources-----
+    #     ```csv
+    #     {text_units_context}
+    #     ```
+    #     """

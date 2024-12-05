@@ -1,6 +1,10 @@
 """
 Please refer to the Nano-GraphRAG: https://github.com/gusye1234/nano-graphrag/blob/main/nano_graphrag/_op.py
 """
+import os.path
+
+from lazy_object_proxy.utils import await_
+
 from Core.Community.BaseCommunity import BaseCommunity
 from collections import defaultdict
 from graspologic.partition import hierarchical_leiden
@@ -9,8 +13,7 @@ from Core.Common.Utils import (
     list_to_quoted_csv_string,
     prase_json_from_response,
     encode_string_by_tiktoken,
-    truncate_list_by_token_size,
-    clean_str
+    truncate_list_by_token_size, clean_str
 )
 from Core.Common.Logger import logger
 import asyncio
@@ -27,7 +30,7 @@ class LeidenCommunity(BaseCommunity):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self._community_reports: JsonKVStorage = JsonKVStorage()
+        self._community_reports: JsonKVStorage = JsonKVStorage(self.namespace)
         self.communities_schema: dict[str, LeidenInfo] = defaultdict(LeidenInfo)
 
     @property
@@ -46,8 +49,7 @@ class LeidenCommunity(BaseCommunity):
             max_cluster_size=max_cluster_size,
             random_seed=random_seed,
         )
-        import pdb
-        pdb.set_trace()
+
         node_communities: dict[str, list[dict[str, str]]] = defaultdict(list)
         __levels = defaultdict(set)
         for partition in community_mapping:
@@ -68,7 +70,7 @@ class LeidenCommunity(BaseCommunity):
     def community_schema(self):
         return self.communities_schema
 
-    async def generate_community_report(self, er_graph, cluster_node_map):
+    async def _generate_community_report(self, er_graph, cluster_node_map):
         # Construct the cluster <-> node mapping
         await er_graph.cluster_data_to_subgraphs(cluster_node_map)
         # Fetch community schema
@@ -93,12 +95,13 @@ class LeidenCommunity(BaseCommunity):
                     k: {
                         "report_string": community_report_from_json(r),
                         "report_json": r,
-                        "community_info": v
+                        "community_info": v.as_dict
                     }
                     for k, r, v in
                     zip(this_level_community_keys, this_level_communities_reports, this_level_community_values)
                 }
             )
+
         await self._community_reports.upsert(community_datas)
 
     async def _form_single_community_report(self, er_graph, community,
@@ -246,3 +249,19 @@ class LeidenCommunity(BaseCommunity):
             ```csv
             {edges_describe}
         ```"""
+
+    async def _load_community_report(self) -> bool:
+
+        await self._community_reports.load()
+        if await self._community_reports.is_empty():
+            logger.error("Failed to load community report.")
+            return False
+        else:
+            logger.info("Successfully loaded community report.")
+            return True
+
+    async def _persist_community(self):
+        try:
+            await self._community_reports.persist()
+        except Exception as e:
+            logger.exception("Failed to persist community report: {error}.".format(error=e))
