@@ -42,7 +42,7 @@ class Config(CLIParams, YamlModel):
     embedding: EmbeddingConfig = EmbeddingConfig()
 
     # Basic Config
-    use_entities_vdb: bool = True
+    use_entities_vdb: bool = False
     use_relations_vdb: bool = False  # Only set True for LightRAG
     vdb_type: str = "colbert"  # vector/colbert
     # Chunking
@@ -50,13 +50,13 @@ class Config(CLIParams, YamlModel):
     chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
     chunk_method: str = "chunking_by_token_size"
-    use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
+    use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
     
     # enable LightRAG
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "er_graph" # rkg_graph/er_graph/tree_graph
+    graph_type: str = "tree_graph" # rkg_graph/er_graph/tree_graph
     extract_two_step: bool = True
     max_gleaning: int = 1
     enable_entity_description: bool = False
@@ -80,6 +80,11 @@ class Config(CLIParams, YamlModel):
     start_layer: Optional[int] = 5
     graph_cluster_params: Optional[dict] = None
     selection_mode: Optional[str] = "top_k"
+    max_length_in_cluster: int = 3500
+    threshold: float = 0.1
+    cluster_metric: str = "cosine"
+    verbose: bool = False
+    random_seed: int = 224
 
     # Commuity report
     enforce_sub_communities: bool = False

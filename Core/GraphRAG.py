@@ -355,7 +355,7 @@ class GraphRAG(ContextMixin, BaseModel):
         # 2. Building Graph Stage
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
-        await self.graph.build_graph(chunks, force=False)
+        await self.graph.build_graph(chunks, force=True)
         logger.info("✅ Finished building graph for the given documents")
         if self.config.use_entity_link_chunk:
             logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
