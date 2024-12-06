@@ -195,9 +195,3 @@ class RaptorClustering(BaseCommunity):
                 node_clusters.append(cluster_nodes)
 
         return node_clusters
-
-    async def _generate_community_report_(self):
-        pass
-    
-    async def _community_schema_(self):
-        pass

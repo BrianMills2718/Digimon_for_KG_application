@@ -9,8 +9,14 @@ import pickle
 
 
 class TreeGraphStorage(BaseGraphStorage):
+    def __init__(self):
+        super().__init__()
+
     name: str = "tree_data.pkl"
     _tree: TreeSchema = TreeSchema()
+
+    def clear(self):
+        self._tree = TreeSchema() 
 
     async def _persist(self, force):
         if (os.path.exists(self.tree_pkl_file) and not force):
