@@ -32,3 +32,521 @@
 2024-12-06 00:36:09.034 | INFO     | Core.GraphRAG:insert:216 - ✅ Finished starting insert entities of the given graph into vector database
 2024-12-06 00:36:09.037 | DEBUG    | Core.Provider.BaseLLM:aask:152 - [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Your task is to extract named entities from the given paragraph. \nRespond with a JSON list of entities.\n\nPlease reference the following example:\n\n[Example]\n \nParagraph:\n\nRadio City\nRadio City is India\'s first private FM radio station and was started on 3 July 2001.\nIt plays Hindi, English and regional songs.\nRadio City recently forayed into New Media in May 2008 with the launch of a music portal - PlanetRadiocity.com that offers music related news, videos, songs, and other music-related features.\n\nHere is the example entity list:\n\n{\n"named_entities": ["Radio City", "India", "3 July 2001", "Hindi", "English", "May 2008", "PlanetRadiocity.com"]\n}\n\nNow please respond with the entity list in JSON format.\n\nParagraph:```\nwho are you\n```\n'}]
 2024-12-06 00:36:09.738 | INFO     | Core.Common.CostManager:update_cost:107 - prompt_tokens: 195, completion_tokens: 22
+2024-12-06 10:44:34.251 | INFO     | Core.GraphRAG:welcome_message:43 - 欢迎使用我们的系统 yyyyyzzzz
+2024-12-06 10:45:45.482 | INFO     | Core.GraphRAG:welcome_message:43 - 欢迎使用我们的系统 yyyyyzzzz
+2024-12-06 10:45:45.545 | INFO     | Core.GraphRAG:insert:223 - Starting chunk the given documents
+2024-12-06 10:45:45.563 | INFO     | Core.GraphRAG:insert:225 - ✅ Finished the chunking stage
+2024-12-06 10:45:45.563 | INFO     | Core.GraphRAG:insert:230 - Starting build graph for the given documents
+2024-12-06 10:45:45.563 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 10:45:45.581 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 10:45:45.581 | INFO     | Core.GraphRAG:insert:232 - ✅ Finished building graph for the given documents
+2024-12-06 10:45:45.581 | INFO     | Core.GraphRAG:insert:244 - Starting insert entities of the given graph into vector database
+2024-12-06 10:45:45.582 | INFO     | Core.Index.BaseIndex:build_index:15 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-06 10:45:46.842 | INFO     | Core.GraphRAG:insert:249 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-06 10:45:46.844 | DEBUG    | Core.Provider.BaseLLM:aask:152 - [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Your task is to extract named entities from the given paragraph. \nRespond with a JSON list of entities.\n\nPlease reference the following example:\n\n[Example]\n \nParagraph:\n\nRadio City\nRadio City is India\'s first private FM radio station and was started on 3 July 2001.\nIt plays Hindi, English and regional songs.\nRadio City recently forayed into New Media in May 2008 with the launch of a music portal - PlanetRadiocity.com that offers music related news, videos, songs, and other music-related features.\n\nHere is the example entity list:\n\n{\n"named_entities": ["Radio City", "India", "3 July 2001", "Hindi", "English", "May 2008", "PlanetRadiocity.com"]\n}\n\nNow please respond with the entity list in JSON format.\n\nParagraph:```\nwho are you\n```\n'}]
+2024-12-06 10:45:48.319 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.475(s), this was the 1st time calling it.
+2024-12-06 10:45:49.789 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.945(s), this was the 2nd time calling it.
+2024-12-06 10:54:43.656 | INFO     | Core.GraphRAG:welcome_message:52 - 
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 10:54:43.656 | INFO     | Core.GraphRAG:welcome_message:53 - [32mWelcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+2024-12-06 10:54:43.656 | INFO     | Core.GraphRAG:welcome_message:55 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 11:48:31.028 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 11:48:31.029 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:21:24.616 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:21:24.616 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:21:24.646 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:21:24.659 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:21:24.659 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:21:24.659 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:21:24.669 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:21:24.669 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:21:24.669 | INFO     | Core.GraphRAG:insert:256 - Starting insert entities of the given graph into vector database
+2024-12-06 12:21:24.669 | INFO     | Core.Index.BaseIndex:build_index:15 - Loading index from the file ./test_book/debug_ppr/entities_vdb
+2024-12-06 12:21:25.726 | INFO     | Core.GraphRAG:insert:261 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-06 12:21:25.730 | DEBUG    | Core.Provider.BaseLLM:aask:152 - [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Your task is to extract named entities from the given paragraph. \nRespond with a JSON list of entities.\n\nPlease reference the following example:\n\n[Example]\n \nParagraph:\n\nRadio City\nRadio City is India\'s first private FM radio station and was started on 3 July 2001.\nIt plays Hindi, English and regional songs.\nRadio City recently forayed into New Media in May 2008 with the launch of a music portal - PlanetRadiocity.com that offers music related news, videos, songs, and other music-related features.\n\nHere is the example entity list:\n\n{\n"named_entities": ["Radio City", "India", "3 July 2001", "Hindi", "English", "May 2008", "PlanetRadiocity.com"]\n}\n\nNow please respond with the entity list in JSON format.\n\nParagraph:```\nwho are you\n```\n'}]
+2024-12-06 12:21:27.214 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.483(s), this was the 1st time calling it.
+2024-12-06 12:21:28.684 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.953(s), this was the 2nd time calling it.
+2024-12-06 12:21:30.803 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.073(s), this was the 3rd time calling it.
+2024-12-06 12:21:32.246 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.516(s), this was the 4th time calling it.
+2024-12-06 12:21:34.388 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.658(s), this was the 5th time calling it.
+2024-12-06 12:21:41.436 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.705(s), this was the 6th time calling it.
+2024-12-06 12:21:41.436 | ERROR    | Core.Common.Utils:log_and_reraise:269 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-06 12:21:41.436 | WARNING  | Core.Common.Utils:log_and_reraise:270 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-06 12:21:41.436 | ERROR    | Core.GraphRAG:_extract_query_entities:145 - Error in Retrieval NER: Connection error.
+2024-12-06 12:22:37.114 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:22:37.114 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:22:37.143 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:22:37.156 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:22:37.156 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:22:37.156 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:22:37.165 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:22:37.165 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:22:37.165 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:23:00.540 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:23:00.540 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:23:00.570 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:23:00.583 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:23:00.583 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:23:00.583 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:23:00.592 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:23:00.592 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:23:00.592 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:28:42.152 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:28:42.152 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:28:42.182 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:28:42.196 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:28:42.196 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:28:42.197 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:28:42.206 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:28:42.206 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:28:42.206 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:29:18.225 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:29:18.225 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:29:18.255 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:29:18.267 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:29:18.267 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:29:18.267 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:29:18.276 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:29:18.276 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:29:18.277 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:30:22.549 | INFO     | Core.GraphRAG:welcome_message:53 - 
+            [38;2;234;110;175m 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+           [36m _______   _______   _______   _______   _______   _______   _______
+           [36m|       | |       | |       | |       | |       | |       | |       |
+           [36m|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+           [36m|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+           
+2024-12-06 12:30:22.550 | INFO     | Core.GraphRAG:welcome_message:54 - [32mYou can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.
+2024-12-06 12:30:22.583 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:30:22.592 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:30:22.593 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:30:22.593 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:30:22.602 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:30:22.603 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:30:22.603 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:32:56.838 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:32:56.850 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:32:56.851 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:32:56.851 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:32:56.862 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:32:56.862 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:32:56.862 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 12:58:41.749 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 12:58:41.761 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 12:58:41.762 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 12:58:41.762 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 12:58:41.771 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 12:58:41.771 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 12:58:41.771 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:04:40.066 | INFO     | Core.GraphRAG:insert:235 - Starting chunk the given documents
+2024-12-06 13:04:40.078 | INFO     | Core.GraphRAG:insert:237 - ✅ Finished the chunking stage
+2024-12-06 13:04:40.078 | INFO     | Core.GraphRAG:insert:242 - Starting build graph for the given documents
+2024-12-06 13:04:40.078 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:26 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:04:40.087 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:30 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:04:40.087 | INFO     | Core.GraphRAG:insert:244 - ✅ Finished building graph for the given documents
+2024-12-06 13:04:40.087 | INFO     | Core.GraphRAG:insert:246 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:17:57.721 | INFO     | Core.GraphRAG:insert:236 - Starting chunk the given documents
+2024-12-06 13:17:57.732 | INFO     | Core.GraphRAG:insert:238 - ✅ Finished the chunking stage
+2024-12-06 13:17:57.732 | INFO     | Core.GraphRAG:insert:243 - Starting build graph for the given documents
+2024-12-06 13:17:57.732 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:17:57.742 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:17:57.742 | INFO     | Core.GraphRAG:insert:245 - ✅ Finished building graph for the given documents
+2024-12-06 13:17:57.742 | INFO     | Core.GraphRAG:insert:247 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:19:03.225 | INFO     | Core.GraphRAG:insert:236 - Starting chunk the given documents
+2024-12-06 13:19:03.241 | INFO     | Core.GraphRAG:insert:238 - ✅ Finished the chunking stage
+2024-12-06 13:19:03.241 | INFO     | Core.GraphRAG:insert:243 - Starting build graph for the given documents
+2024-12-06 13:19:03.241 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:19:03.251 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:19:03.251 | INFO     | Core.GraphRAG:insert:245 - ✅ Finished building graph for the given documents
+2024-12-06 13:19:03.251 | INFO     | Core.GraphRAG:insert:247 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:19:23.180 | INFO     | Core.GraphRAG:insert:236 - Starting chunk the given documents
+2024-12-06 13:19:23.192 | INFO     | Core.GraphRAG:insert:238 - ✅ Finished the chunking stage
+2024-12-06 13:19:23.192 | INFO     | Core.GraphRAG:insert:243 - Starting build graph for the given documents
+2024-12-06 13:19:23.192 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:19:23.201 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:19:23.201 | INFO     | Core.GraphRAG:insert:245 - ✅ Finished building graph for the given documents
+2024-12-06 13:19:23.202 | INFO     | Core.GraphRAG:insert:247 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:20:56.435 | INFO     | Core.GraphRAG:insert:236 - Starting chunk the given documents
+2024-12-06 13:20:56.448 | INFO     | Core.GraphRAG:insert:238 - ✅ Finished the chunking stage
+2024-12-06 13:20:56.448 | INFO     | Core.GraphRAG:insert:243 - Starting build graph for the given documents
+2024-12-06 13:20:56.448 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:20:56.457 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:20:56.457 | INFO     | Core.GraphRAG:insert:245 - ✅ Finished building graph for the given documents
+2024-12-06 13:20:56.457 | INFO     | Core.GraphRAG:insert:247 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:25:24.840 | INFO     | Core.GraphRAG:insert:246 - Starting chunk the given documents
+2024-12-06 13:25:24.856 | INFO     | Core.GraphRAG:insert:248 - ✅ Finished the chunking stage
+2024-12-06 13:25:24.856 | INFO     | Core.GraphRAG:insert:253 - Starting build graph for the given documents
+2024-12-06 13:25:24.857 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:25:24.866 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:25:24.866 | INFO     | Core.GraphRAG:insert:255 - ✅ Finished building graph for the given documents
+2024-12-06 13:25:24.867 | INFO     | Core.GraphRAG:insert:257 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:26:18.425 | INFO     | Core.GraphRAG:insert:250 - Starting chunk the given documents
+2024-12-06 13:26:18.439 | INFO     | Core.GraphRAG:insert:252 - ✅ Finished the chunking stage
+2024-12-06 13:26:18.439 | INFO     | Core.GraphRAG:insert:257 - Starting build graph for the given documents
+2024-12-06 13:26:18.439 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:26:18.455 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:26:18.455 | INFO     | Core.GraphRAG:insert:259 - ✅ Finished building graph for the given documents
+2024-12-06 13:26:18.455 | INFO     | Core.GraphRAG:insert:261 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:29:19.539 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 13:29:19.553 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 13:29:19.553 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 13:29:19.553 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:29:19.562 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:29:19.562 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 13:29:19.562 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:30:17.817 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 13:30:17.826 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 13:30:17.827 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 13:30:17.827 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:30:17.836 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:30:17.836 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 13:30:17.837 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:30:52.504 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 13:30:52.513 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 13:30:52.513 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 13:30:52.513 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:30:52.524 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:30:52.524 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 13:30:52.524 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 13:31:37.394 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 13:31:37.407 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 13:31:37.407 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 13:31:37.407 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 13:31:37.416 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 13:31:37.416 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 13:31:37.416 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:12:50.811 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:12:50.824 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:12:50.825 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:12:50.825 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:12:50.833 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:12:50.834 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:12:50.834 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:15:46.029 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:15:46.041 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:15:46.041 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:15:46.041 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:28 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:15:46.050 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:32 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:15:46.050 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:15:46.050 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:16:42.434 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:16:42.451 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:16:42.452 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:16:42.452 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:16:42.463 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:16:42.463 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:16:42.463 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:17:38.033 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:17:38.045 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:17:38.045 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:17:38.045 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:17:38.054 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:17:38.054 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:17:38.055 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:19:28.418 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:19:28.431 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:19:28.431 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:19:28.431 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:19:28.440 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:19:28.441 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:19:28.441 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:26:43.285 | INFO     | Core.GraphRAG:insert:275 - Starting chunk the given documents
+2024-12-06 14:26:43.298 | INFO     | Core.GraphRAG:insert:277 - ✅ Finished the chunking stage
+2024-12-06 14:26:43.298 | INFO     | Core.GraphRAG:insert:282 - Starting build graph for the given documents
+2024-12-06 14:26:43.298 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:26:43.307 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:26:43.308 | INFO     | Core.GraphRAG:insert:284 - ✅ Finished building graph for the given documents
+2024-12-06 14:26:43.308 | INFO     | Core.GraphRAG:insert:286 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:33:50.778 | INFO     | Core.GraphRAG:insert:350 - Starting chunk the given documents
+2024-12-06 14:33:50.788 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished the chunking stage
+2024-12-06 14:33:50.789 | INFO     | Core.GraphRAG:insert:357 - Starting build graph for the given documents
+2024-12-06 14:33:50.789 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:33:50.798 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:33:50.798 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
+2024-12-06 14:33:50.798 | INFO     | Core.GraphRAG:insert:361 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:34:34.693 | INFO     | Core.GraphRAG:insert:350 - Starting chunk the given documents
+2024-12-06 14:34:34.705 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished the chunking stage
+2024-12-06 14:34:34.705 | INFO     | Core.GraphRAG:insert:357 - Starting build graph for the given documents
+2024-12-06 14:34:34.705 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:34:34.715 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:34:34.715 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
+2024-12-06 14:34:34.715 | INFO     | Core.GraphRAG:insert:361 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:36:26.985 | INFO     | Core.GraphRAG:insert:350 - Starting chunk the given documents
+2024-12-06 14:36:26.998 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished the chunking stage
+2024-12-06 14:36:26.998 | INFO     | Core.GraphRAG:insert:357 - Starting build graph for the given documents
+2024-12-06 14:36:26.998 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:36:27.008 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:36:27.008 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
+2024-12-06 14:36:27.008 | INFO     | Core.GraphRAG:insert:361 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:40:24.369 | INFO     | Core.GraphRAG:insert:352 - Starting chunk the given documents
+2024-12-06 14:40:24.382 | INFO     | Core.GraphRAG:insert:354 - ✅ Finished the chunking stage
+2024-12-06 14:40:24.383 | INFO     | Core.GraphRAG:insert:359 - Starting build graph for the given documents
+2024-12-06 14:40:24.383 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:40:24.392 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:40:24.392 | INFO     | Core.GraphRAG:insert:361 - ✅ Finished building graph for the given documents
+2024-12-06 14:40:24.393 | INFO     | Core.GraphRAG:insert:363 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:44:25.451 | INFO     | Core.GraphRAG:insert:352 - Starting chunk the given documents
+2024-12-06 14:44:25.463 | INFO     | Core.GraphRAG:insert:354 - ✅ Finished the chunking stage
+2024-12-06 14:44:25.464 | INFO     | Core.GraphRAG:insert:359 - Starting build graph for the given documents
+2024-12-06 14:44:25.464 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:44:25.473 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:44:25.473 | INFO     | Core.GraphRAG:insert:361 - ✅ Finished building graph for the given documents
+2024-12-06 14:44:25.473 | INFO     | Core.GraphRAG:insert:363 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'charles dickens'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'arthur rackham'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'j  b  lippincott company'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'philadelphia'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'new york'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.477 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'united states'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'project gutenberg'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'www gutenberg org'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'pgdp net'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'bob cratchit'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'peter cratchit'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'tim cratchit'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'mr  fezziwig'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.478 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'fred'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'ghost of christmas past'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'ghost of christmas present'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'ghost of christmas yet to come'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'ghost of jacob marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'joe'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'ebenezer scrooge'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'mr  topper'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'dick wilkins'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.479 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'belle'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'caroline'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'mrs  cratchit'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'belinda'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'martha cratchit'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'mrs  dilber'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'fan'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('a christmas carol', 'mrs  fezziwig'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('bob cratchit', 'scrooge'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.480 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('bob cratchit', 'down a slide'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('bob cratchit', 'in honour of'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('bob cratchit', 'cornhill'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('bob cratchit', 'camden town'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fred', 'scrooge'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fred', 'how are you'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fred', 'will you let me in'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('joe', 'scrooge'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('joe', 'what'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('joe', 'you'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.481 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'uncle'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'partner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'executor'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'administrator'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'assign'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'residuary legatee'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'friend'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'mourner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.482 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'fezziwig'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'partner of marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'executor of marley s will'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'administrator of marley s estate'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'assign of marley s property'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'residuary legatee of marley s estate'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'friend of marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'mourner of marley s death'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'man of business'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.483 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'owner of scrooge and marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'tight fisted'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'cold'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'frosty'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'unaffected by weather'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'unaffected by human sympathy'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'known by his reputation'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'avoided by people'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'seen by blind men s dogs'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.484 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'on christmas eve'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in his counting house'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in the city'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in the foggy weather'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in the cold weather'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in the dark'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in the counting house on christmas eve'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'his counting house'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'his own room'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.485 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'scrooge s nephew'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'bah'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'humbug'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'what right have you to be merry'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'what reason have you to be merry'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'you re poor enough'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'you re rich enough'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'bah  again'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'humbug  again'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.486 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'if i could work my will'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'and buried with a stake of holly through his heart'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'nephew'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'keep christmas in your own way'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'and let me keep it in mine'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'christmas'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'kind  forgiving  charitable  pleasant time'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'fellow passengers to the grave'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.487 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'clerk'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'speaker'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'gentlemen'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'poor'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'prisons'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'union workhouses'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'christmas eve'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'christmas day'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'new year s eve'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.488 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'new year s day'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'gentleman'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'treadmill and poor law'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'i wish to be left alone'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'i don t make merry myself at christmas'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'i can t afford to make idle people merry'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'i help to support the establishments'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'if they would rather die  they had better do it'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'it s not my business'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.489 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'it s enough for a man to understand his own business'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'mine occupies me constantly'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'good afternoon  gentlemen'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'his labours'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'an improved opinion of himself'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'a more facetious temper'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'drunk and bloodthirsty in the streets'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'pudding in his garret'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'to buy the beef'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'with energy of action'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.490 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'his stool'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'to the expectant clerk'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'you ll want all day to morrow'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'it s not convenient'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'it s not fair'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'you don t think me ill used when i pay a day s wages for no work'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'to the chin'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'with a growl'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.491 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'in his usual melancholy tavern'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'chambers which had once belonged to his deceased partner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'its every stone'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'the knocker on the door'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'marley since his last mention of his seven years  dead partner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'marley s face'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'city of london'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'he had relinquished'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'and lighted his candle'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'first'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.492 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'with a bang'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'and walked across the hall'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'slowly'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'going on before him'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'to see that all was right'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge', 'to take his gruel'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fezziwig', 'out to dance'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fezziwig', 'with'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'dead'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.493 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'partner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'executor'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'administrator'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'assign'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'residuary legatee'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'friend'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'mourner'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'face'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'seven years dead'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.494 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley', 'old'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('tim', 'blood horse'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('tim', 'church'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'uncle'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'but you don t keep it'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'there are many things from which i might have derived good'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'by which i have not profited'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'i dare say'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'christmas among the rest'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.495 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'as a good time'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'a kind  forgiving  charitable  pleasant time'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'the only time i know of'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'when men and women seem by one consent to open their shut up hearts freely'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('scrooge s nephew', 'and to think of people below them as if they really were fellow passengers to the grave'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('st  dunstan', 'the evil spirit s nose'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('st  dunstan', 'his familiar weapons'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('lord mayor', 'orders to his fifty cooks and butlers'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('lord mayor', 'christmas as a lord mayor s household'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('camden town', 'in london'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.496 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('cornhill', 'in london'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('london', 'in england'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('cain', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('abel', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('queen of sheba', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('abraham', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('belshazzar', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('apostle', 'figure'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('church', 'invisible'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.497 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('church', 'the hours and quarters'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('firm', 'scrooge and marley'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('gentlemen', 'from scrooge'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fog', 'so'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('about with flaring links', 'people'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('labourers', 'repairing the gas pipes'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('labourers', 'lighted a great fire'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('and turned to misanthropic ice', 'water plug'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('little tailor', 'up to morrow s pudding'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.498 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley s face', 'like a bad lobster in a dark cellar'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('marley s face', 'with ghostly spectacles turned up on its ghostly forehead'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('dressing gown', 'he'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('he', 'slippers'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('he', 'nightcap'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('he', 'before the fire'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('he', 'gruel'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('old', 'fireplace'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('figures', 'pharaoh s daughters'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.499 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fireplace', 'built by dutch merchant'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.500 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('fireplace', 'paved with dutch tiles'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:44:25.500 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:297 - Unexpected error processing edge ('designed to illustrate the scriptures', 'dutch tiles'): 'GraphRAG' object has no attribute 'er_graph'
+2024-12-06 14:45:22.178 | INFO     | Core.GraphRAG:insert:350 - Starting chunk the given documents
+2024-12-06 14:45:22.191 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished the chunking stage
+2024-12-06 14:45:22.191 | INFO     | Core.GraphRAG:insert:357 - Starting build graph for the given documents
+2024-12-06 14:45:22.192 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:45:22.201 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:45:22.201 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
+2024-12-06 14:45:22.201 | INFO     | Core.GraphRAG:insert:361 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 

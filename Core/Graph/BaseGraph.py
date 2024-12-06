@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 from lazy_object_proxy.utils import await_
+from scipy.sparse import csr_matrix
 
 from Core.Common.Logger import logger
 from typing import List
@@ -11,7 +12,7 @@ from Core.Common.Memory import Memory
 from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Schema.EntityRelation import Entity, Relationship
-from Core.Common.Utils import (clean_str, build_data_for_merge)
+from Core.Common.Utils import (clean_str, build_data_for_merge, csr_from_indices_list)
 from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
@@ -259,11 +260,11 @@ class BaseGraph(ABC):
     async def _persist_graph(self, force):
         await self._graph.persist(force)
 
-    async def nodes(self):
-        return await self._graph.get_nodes()
+    async def nodes_data(self):
+        return await self._graph.get_nodes_data()
 
-    async def edges(self):
-        return await self._graph.get_edges()
+    async def edges_data(self):
+        return await self._graph.get_edges_data()
 
     async def node_metadata(self):
         return await self._graph.get_node_metadata()
@@ -291,6 +292,12 @@ class BaseGraph(ABC):
     async def get_edge(self, src, tgt):
         return await self._graph.get_edge(src, tgt)
 
+    async def nodes(self):
+        return await self._graph.nodes()
+
+    async def edges(self):
+        return await self._graph.edges()
+
     async def node_degree(self, node_id):
         return await self._graph.node_degree(node_id)
 
@@ -304,3 +311,29 @@ class BaseGraph(ABC):
     def node_num(self):
         return self._graph.get_node_num()
 
+    @property
+    def edge_num(self):
+        return self._graph.get_edge_num()
+
+    async def get_entities_to_relationships_map(self):
+        if self.node_num == 0:
+            return csr_matrix((0, 0))
+
+        node_neighbors = {node: list(await self._graph.neighbors(node)) for node in await self._graph.nodes()}
+
+        # Construct the row and column indices for the CSR matrix
+        data = []
+        for node, neighbors in node_neighbors.items():
+            for neighbor in neighbors:
+                # Get the edge index (assuming edge indices are unique)
+                edge_index = self._graph.get_edge_index(node, neighbor)
+                if edge_index == -1: continue
+                node_index = self._graph.get_node_index(node)
+                data.append([node_index, edge_index])
+
+        # Get the number of nodes and edges
+        node_count = self.node_num
+        edge_count = self.edge_num
+
+        # Construct the CSR matrix
+        return csr_from_indices_list(data, shape=(node_count, edge_count))

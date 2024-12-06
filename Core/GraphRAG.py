@@ -1,15 +1,19 @@
 import asyncio
 from collections import defaultdict
 from typing import Union, Any
-from scipy.sparse import csr_matrix
+
+from lazy_object_proxy.utils import await_
+from scipy.sparse import csr_matrix, csr_array
+from pyfiglet import Figlet
+
 import numpy as np
-from Core.Common.Constants import GRAPH_FIELD_SEP
+from Core.Common.Constants import GRAPH_FIELD_SEP, ANSI_COLOR
 from Core.Common.Logger import logger
 import tiktoken
 from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
                                split_string_by_multi_markers, csr_from_indices_list)
-from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict, root_validator
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
 from Core.Index import get_index
@@ -18,6 +22,9 @@ from Core.Prompt import GraphPrompt, QueryPrompt
 from Core.Storage.NameSpace import Workspace
 from Core.Community.ClusterFactory import get_community
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
+from colorama import Fore, Style, init
+
+init(autoreset=True)  # Initialize colorama and reset color after each print
 
 
 class GraphRAG(ContextMixin, BaseModel):
@@ -37,6 +44,57 @@ class GraphRAG(ContextMixin, BaseModel):
         if value == "":
             logger.error("Working directory cannot be empty")
         return value
+
+    @model_validator(mode="before")
+    def welcome_message(cls, values):
+        # logo = f"""
+        #     {ANSI_COLOR} 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
+        #    {Fore.CYAN} _______   _______   _______   _______   _______   _______   _______
+        #    {Fore.CYAN}|       | |       | |       | |       | |       | |       | |       |
+        #    {Fore.CYAN}|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
+        #    {Fore.CYAN}|_______| |_______| |_______| |_______| |_______| |_______| |_______|
+        #    """
+        # print(logo)
+        # Create a Figlet object with a larger font
+        f = Figlet(font='big')  # You can try other fonts like 'slant', '3-d', 'bubble', etc.
+
+        # Generate the large ASCII art text
+        logo = f.renderText('DIGIMON')
+        print(f"{Fore.GREEN}{'#' * 100}{Style.RESET_ALL}")
+        # Print the logo with color
+        print(f"{Fore.MAGENTA}{logo}{Style.RESET_ALL}")
+        # print(
+        #     f"{Fore.GREEN}You can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.")
+        # print(f"{Fore.GREEN}Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.")
+        # print(
+        #     f"{Fore.CYAN}Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.")
+        # print(f"{Fore.YELLOW}Start exploring the potential of graph-based RAG algorithms today!{Style.RESET_ALL}")
+        # Prepare the text lines for the box
+        text = [
+            "Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.",
+            "",
+            "Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.",
+            "",
+            "Start exploring the potential of graph-based RAG algorithms today!"
+        ]
+
+        # Function to print a boxed message
+        def print_box(text_lines, border_color=Fore.BLUE, text_color=Fore.CYAN):
+            max_length = max(len(line) for line in text_lines)
+            border = f"{border_color}╔{'═' * (max_length + 2)}╗{Style.RESET_ALL}"
+            print(border)
+            for line in text_lines:
+                print(
+                    f"{border_color}║{Style.RESET_ALL} {text_color}{line.ljust(max_length)} {border_color}║{Style.RESET_ALL}")
+            border = f"{border_color}╚{'═' * (max_length + 2)}╝{Style.RESET_ALL}"
+            print(border)
+
+        # Print the boxed welcome message
+        print_box(text)
+
+        # Add a decorative line for separation
+        print(f"{Fore.GREEN}{'#' * 100}{Style.RESET_ALL}")
+        return values
 
     @model_validator(mode="after")
     def _update_context(cls, data):
@@ -60,7 +118,7 @@ class GraphRAG(ContextMixin, BaseModel):
             data.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
         if data.config.use_community:
             data.community_namespace = data.workspace.make_for("community_storage")
-        if data.config.use_e2r_r2c_matrix:
+        if data.config.use_entity_link_chunk:
             data.e2r_namespace = data.workspace.make_for("map_e2r")
             data.r2c_namespace = data.workspace.make_for("map_r2c")
 
@@ -109,6 +167,7 @@ class GraphRAG(ContextMixin, BaseModel):
         cls._retriever_context.update({"relations_vdb": data.config.use_relations_vdb})
         cls._retriever_context.update({"community": data.config.use_community})
         cls._retriever_context.update({"community": data.config.use_entity_link_chunk})
+        return data
 
     async def _extract_query_entities(self, query):
         entities = []
@@ -181,11 +240,84 @@ class GraphRAG(ContextMixin, BaseModel):
                 logger.error(f"Failed to extract query entities: {e}")
                 raise
 
+    async def _build_ppr_context(self):
+        """
+        Build the context for the Personalized PageRank (PPR) query.
+
+        This function constructs two mappings:
+            1. chunk_to_edge: Maps chunks (document sources) to edge indices.
+            2. edge_to_entity: Maps edges to the entities (nodes) they connect.
+
+        The function iterates over all edges in the graph, retrieves relevant metadata for each edge,
+        and updates the mappings. These mappings are essential for executing PPR queries efficiently.
+        """
+        self.chunk_to_edge = defaultdict(int)
+        self.edge_to_entity = defaultdict(int)
+        self.id_to_entity = defaultdict(int)
+
+        nodes = list(await self.graph.nodes())
+        edges = list(await self.graph.edges())
+
+        async def _build_edge_chunk_mapping(edge) -> None:
+            """
+            Build mappings for the edges of a given graph.
+
+            Args:
+                edge (Tuple[str, str]): A tuple representing the edge (node1, node2).
+                edges (list): List of all edges in the graph.
+                nodes (list): List of all nodes in the graph.
+                docs_to_facts (Dict[Tuple[int, int], int]): Mapping of document indices to fact indices.
+                facts_to_phrases (Dict[Tuple[int, int], int]): Mapping of fact indices to phrase indices.
+            """
+            try:
+                # Fetch edge data asynchronously
+                edge_data = await self.graph.get_edge(edge[0], edge[1])
+                source_ids = edge_data['source_id'].split(GRAPH_FIELD_SEP)
+                for source_id in source_ids:
+                    # Map document to edge
+                    source_idx = self.chunk_key_to_idx[source_id]
+                    edge_idx = edges.index(edge)
+                    self.chunk_to_edge[(source_idx, edge_idx)] = 1
+
+                # Map fact to phrases for both nodes in the edge
+                node_idx_1 = nodes.index(edge[0])
+                node_idx_2 = nodes.index(edge[1])
+
+                self.edge_to_entity[(edge_idx, node_idx_1)] = 1
+                self.edge_to_entity[(edge_idx, node_idx_2)] = 1
+
+            except ValueError as ve:
+                # Handle specific errors, such as when edge or node is not found
+                logger.error(f"ValueError in edge {edge}: {ve}")
+            except KeyError as ke:
+                # Handle missing data in chunk_key_to_idx
+                logger.error(f"KeyError in edge {edge}: {ke}")
+            except Exception as e:
+                # Handle general exceptions gracefully
+                logger.error(f"Unexpected error processing edge {edge}: {e}")
+
+        # Process all nodes asynchronously
+        await asyncio.gather(*[_build_edge_chunk_mapping(edge) for edge in edges])
+
+        for node in nodes:
+            self.id_to_entity[nodes.index(node)] = node
+
+        self.chunk_to_edge_mat = csr_array(([int(v) for v in self.chunk_to_edge.values()], (
+            [int(e[0]) for e in self.chunk_to_edge.keys()], [int(e[1]) for e in self.chunk_to_edge.keys()])),
+                                           shape=(len(self.chunk_key_to_idx.keys()), len(edges)))
+
+        self.edge_to_entity_mat = csr_array(([int(v) for v in self.edge_to_entity.values()], (
+            [e[0] for e in self.edge_to_entity.keys()], [e[1] for e in self.edge_to_entity.keys()])),
+                                            shape=(len(edges), len(nodes)))
+
+        self.chunk_to_entity_mat = self.chunk_to_edge_mat.dot(self.edge_to_entity_mat)
+        self.chunk_to_entity_mat[self.chunk_to_entity_mat.nonzero()] = 1
+        self.entity_doc_count = self.chunk_to_entity_mat.sum(0).T
+
     async def build_e2r_r2c_maps(self):
-        # TODO:
+
         await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
 
-        # TODO:
         raw_relationships_to_chunks = await self.graph.get_relationships_attrs(key="chunks")
         # Map Chunk IDs to indices
         raw_relationships_to_chunks = [
@@ -226,7 +358,9 @@ class GraphRAG(ContextMixin, BaseModel):
         await self.graph.build_graph(chunks, force=False)
         logger.info("✅ Finished building graph for the given documents")
         if self.config.use_entity_link_chunk:
+            logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
             await self.build_e2r_r2c_maps()
+            logger.info("✅ Finished building the two maps ")
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
@@ -238,7 +372,8 @@ class GraphRAG(ContextMixin, BaseModel):
 
             #
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
-            await self.entities_vdb.build_index(await self.graph.nodes(), await self.graph.node_metadata(), force=False)
+            await self.entities_vdb.build_index(await self.graph.nodes_data(), await self.graph.node_metadata(),
+                                                force=False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
         if self.config.use_relations_vdb:
@@ -246,7 +381,7 @@ class GraphRAG(ContextMixin, BaseModel):
             relation_metadata = None
             for edge in await self.graph.edges():
                 relation_metadata = {"src_id": edge["src_id"], "tgt_id": edge["tgt_id"]}
-            await self.relations_vdb.build_index(await self.graph.edges(), relation_metadata, force=False)
+            await self.relations_vdb.build_index(await self.graph.edges_data(), relation_metadata, force=False)
             logger.info("✅ Finished starting insert relations of the given graph into vector database")
 
         if self.config.use_community:

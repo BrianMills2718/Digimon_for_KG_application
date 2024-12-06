@@ -90,3 +90,9 @@ REL_PATTERN = (
 
 # For wiki-link
 GCUBE_TOKEN = '07e1bd33-c0f5-41b0-979b-4c9a859eec3f-843339462'
+
+hex_color = "#ea6eaf"
+r = int(hex_color[1:3], 16)
+g = int(hex_color[3:5], 16)
+b = int(hex_color[5:7], 16)
+ANSI_COLOR = f"\033[38;2;{r};{g};{b}m"

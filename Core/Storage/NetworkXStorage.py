@@ -5,7 +5,6 @@ from collections import defaultdict
 from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
-from lazy_object_proxy.utils import await_
 from pydantic import model_validator
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
@@ -17,6 +16,8 @@ from Core.Storage.BaseGraphStorage import BaseGraphStorage
 class NetworkXStorage(BaseGraphStorage):
     def __init__(self):
         super().__init__()
+        self.edge_list = None
+        self.node_list = None
 
     name: str = "nx_data.graphml"  # The valid file name for NetworkX
     _graph: nx.Graph = nx.Graph()
@@ -161,15 +162,7 @@ class NetworkXStorage(BaseGraphStorage):
         return await self._node_embed_algorithms[algorithm]()
 
     async def _node2vec_embed(self):
-        from graspologic import embed
-
-        embeddings, nodes = embed.node2vec_embed(
-            self._graph,
-            **self.global_config["node2vec_params"],
-        )
-
-        nodes_ids = [self._graph.nodes[node_id]["id"] for node_id in nodes]
-        return embeddings, nodes_ids
+        pass
 
     def stable_largest_connected_component(graph: nx.Graph) -> nx.Graph:
         """Refer to https://github.com/microsoft/graphrag/index/graph/utils/stable_lcc.py
@@ -186,7 +179,7 @@ class NetworkXStorage(BaseGraphStorage):
     async def persist(self, force):
         return await self._persist(force)
 
-    async def get_nodes(self):
+    async def get_nodes_data(self):
         node_list = list(self._graph.nodes())
         nodes = []
         for node_id in node_list:
@@ -201,7 +194,7 @@ class NetworkXStorage(BaseGraphStorage):
 
         return nodes
 
-    async def get_edges(self):
+    async def get_edges_data(self):
         edge_list = list(self._graph.edges())
         edges = []
         for edge_id in edge_list:
@@ -270,7 +263,35 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def get_node_metadata(self):
 
-        return {"entity_name": node["entity_name"] for node in await self.get_nodes()}
+        return {"entity_name": node["entity_name"] for node in self._graph.nodes()}
 
-    async def get_node_num(self):
+    def get_node_num(self):
         return self._graph.number_of_nodes()
+
+    def get_edge_num(self):
+        return self._graph.number_of_edges()
+
+    async def nodes(self):
+        return self._graph.nodes()
+
+    async def edges(self):
+        return self._graph.edges()
+
+    async def neighbors(self, node_id):
+        return self._graph.neighbors(node_id)
+
+    def get_edge_index(self, src_id, tgt_id):
+        if self.edge_list is None:
+            self.edge_list = list(self._graph.edges())
+        try:
+            return self.edge_list.index((src_id, tgt_id))
+        except ValueError:
+            return -1
+
+    def get_node_index(self, node_id):
+        if self.node_list is None:
+            self.node_list = list(self._graph.nodes())
+        try:
+            return self.node_list.index(node_id)
+        except ValueError:
+            logger.error(f"Node {node_id} not in graph")

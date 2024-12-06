@@ -50,8 +50,8 @@ class Config(CLIParams, YamlModel):
     chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
     chunk_method: str = "chunking_by_token_size"
-    use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
-
+    use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
+    
     # enable LightRAG
     enable_keywords: bool = True
 
@@ -64,6 +64,7 @@ class Config(CLIParams, YamlModel):
     enable_edge_description: bool = False
     enable_edge_name: bool = False
     prior_prob: float = 0.8
+    
     # Graph clustering
     use_community: bool = False
     graph_cluster_algorithm: str = "leiden"

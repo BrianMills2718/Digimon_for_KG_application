@@ -139,10 +139,10 @@ def list_to_quoted_csv_string(data: List[List[Any]]) -> str:
 def parse_value_from_string(value: str):
     """
     Parse a value from a string, attempting to convert it into the appropriate type.
-    
+
     Args:
         value: The string value to parse.
-    
+
     Returns:
         The value converted to its appropriate type (e.g., int, float, bool, str).
     """
@@ -162,12 +162,12 @@ def parse_value_from_string(value: str):
 def prase_json_from_response(response: str) -> dict:
     """
     Extract JSON data from a string response.
-    
+
     This function attempts to extract the first complete JSON object from the response.
     If that fails, it tries to extract key-value pairs from a potentially malformed JSON string.
-    
+
     Args:
-        response: The string response containing JSON data.    
+        response: The string response containing JSON data.
     Returns:
         A dictionary containing the extracted JSON data.
     """
@@ -243,7 +243,7 @@ def min_max_normalize(x):
     """
     Min-max normalization of a list of values.
 
-    Args: 
+    Args:
         x (list): A list of values to normalize.
         Returns: A list of normalized values.
     """
@@ -314,16 +314,12 @@ def build_data_for_merge(data: dict) -> dict:
     return res
 
 
-def csr_from_indices_list(data: List[List[Union[int, int]]], shape: Tuple[int, int]) -> csr_matrix:
+def csr_from_indices_list(edges: List[List[int]], shape: Tuple[int, int]) -> csr_matrix:
     """Create a CSR matrix from a list of lists."""
-    num_rows = len(data)
+    # Extract row and column indices
+    row_indices = [edge[0] for edge in edges]
+    col_indices = [edge[1] for edge in edges]
 
-    # Flatten the list of lists and create corresponding row indices
-    row_indices = np.repeat(np.arange(num_rows), [len(row) for row in data])
-    col_indices = np.concatenate(data) if num_rows > 0 else np.array([], dtype=np.int64)
-
-    # Data values (all ones in this case)
-    values = np.broadcast_to(1, len(row_indices))
-
+    values = np.ones(len(edges))
     # Create the CSR matrix
     return csr_matrix((values, (row_indices, col_indices)), shape=shape)
