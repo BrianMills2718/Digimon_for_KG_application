@@ -12,7 +12,7 @@ from Core.Common.Memory import Memory
 from Core.Prompt import GraphPrompt
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Schema.EntityRelation import Entity, Relationship
-from Core.Common.Utils import (clean_str, build_data_for_merge, csr_from_indices_list)
+from Core.Common.Utils import (clean_str, build_data_for_merge, csr_from_indices, csr_from_indices_list)
 from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
@@ -263,8 +263,8 @@ class BaseGraph(ABC):
     async def nodes_data(self):
         return await self._graph.get_nodes_data()
 
-    async def edges_data(self):
-        return await self._graph.get_edges_data()
+    async def edges_data(self, need_content=True):
+        return await self._graph.get_edges_data(need_content)
 
     async def node_metadata(self):
         return await self._graph.get_node_metadata()
@@ -339,13 +339,27 @@ class BaseGraph(ABC):
         edge_count = self.edge_num * (1 if is_directed else 2)
 
         # Construct the CSR matrix
-        return csr_from_indices_list(data, shape=(node_count, edge_count))
+        return csr_from_indices(data, shape=(node_count, edge_count))
 
 
     async def get_relationships_attrs(self, key):
         if self.edge_num == 0:
             return []
         lists_of_attrs = []
-        for edge in await self._graph.edges():
+        for edge in await self.edges_data(False):
+     
             lists_of_attrs.append(edge[key])
         return lists_of_attrs
+    
+
+    async def get_relationships_to_chunks_map(self, doc_chunk):
+        raw_relationships_to_chunks = await self.get_relationships_attrs(key="source_id")
+        # Map Chunk IDs to indices
+
+        raw_relationships_to_chunks = [
+            [i for i in await doc_chunk.get_index_by_merge_key(chunk_ids) if i is not None]
+            for chunk_ids in raw_relationships_to_chunks
+        ]
+        return csr_from_indices_list(
+                raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await doc_chunk.size)
+            )

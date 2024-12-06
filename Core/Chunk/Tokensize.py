@@ -27,7 +27,7 @@ async def chunking_by_token_size(tokens_list: list[list[int]], doc_keys, tiktoke
                 {
                     "tokens": lengths[i],
                     "content": chunk.strip(),
-                    "chunk_order_index": i,
+                    "index": i,
                     "doc_id": doc_keys[index],
                 }
             )

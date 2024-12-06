@@ -50,13 +50,13 @@ class Config(CLIParams, YamlModel):
     chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
     chunk_method: str = "chunking_by_token_size"
-    use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
+    use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
     
     # enable LightRAG
     enable_keywords: bool = True
 
     # Building graph
-    graph_type: str = "tree_graph" # rkg_graph/er_graph/tree_graph
+    graph_type: str = "er_graph" # rkg_graph/er_graph/tree_graph
     extract_two_step: bool = True
     max_gleaning: int = 1
     enable_entity_description: bool = False

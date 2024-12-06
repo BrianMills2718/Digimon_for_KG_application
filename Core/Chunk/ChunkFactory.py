@@ -53,36 +53,3 @@ def create_chunk_method(method_name):
     return chunking_method
 
 
-async def get_chunks(new_docs, chunk_method_name, token_model, is_chunked: bool = False, **chunk_func_params):
-    kv_chunks = {}
-
-    new_docs_list = list(new_docs.items())
-    docs = [new_doc[1]["content"] for new_doc in new_docs_list]
-    doc_keys = [new_doc[0] for new_doc in new_docs_list]
-
-    tokens = token_model.encode_batch(docs, num_threads=16)
-
-    if is_chunked:
-        for idx, doc in enumerate(docs):
-            kv_chunks.update(
-                {mdhash_id(doc.strip(), prefix="chunk-"): TextChunk(**{
-                    "tokens": tokens[idx],
-                    "content": doc.strip(),
-                    "chunk_order_index": idx,
-                    "doc_id": doc_keys[idx],
-                })}
-            )
-        return kv_chunks
-
-    chunk_func = create_chunk_method(chunk_method_name)
-
-    chunks = await chunk_func(
-        tokens, doc_keys=doc_keys, tiktoken_model=token_model, **chunk_func_params
-    )
-
-    for chunk in chunks:
-        kv_chunks.update(
-            {mdhash_id(chunk["content"], prefix="chunk-"): TextChunk(**chunk)}
-        )
-
-    return kv_chunks

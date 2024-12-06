@@ -194,17 +194,18 @@ class NetworkXStorage(BaseGraphStorage):
 
         return nodes
 
-    async def get_edges_data(self):
+    async def get_edges_data(self, need_content = True):
         edge_list = list(self._graph.edges())
         edges = []
         for edge_id in edge_list:
             edge_data = await self.get_edge(edge_id[0], edge_id[1])
-            if edge_data.get("description", "") == "":
-                edge_data["content"] = edge_data["relation_name"]
-            elif edge_data.get("keywords", "") != "":
-                edge_data["content"] = "{keywords} {src_id} {tgt_id} {description}".format(
-                    keywords=edge_data["keywords"], src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
-                    description=edge_data["description"])
+            if need_content:
+                if edge_data.get("description", "") == "":
+                    edge_data["content"] = edge_data["relation_name"]
+                elif edge_data.get("keywords", "") != "":
+                    edge_data["content"] = "{keywords} {src_id} {tgt_id} {description}".format(
+                        keywords=edge_data["keywords"], src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
+                        description=edge_data["description"])
             edges.append(edge_data)
         return edges
 

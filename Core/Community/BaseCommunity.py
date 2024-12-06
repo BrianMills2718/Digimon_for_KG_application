@@ -4,11 +4,19 @@ from abc import ABC, abstractmethod
 class BaseCommunity(ABC):
     """Base community class definition."""
 
-    def __init__(self, llm, enforce_sub_communities, namespace):
+    def __init__(self, llm, enforce_sub_communities):
         self.llm = llm
         self.enforce_sub_communities = enforce_sub_communities
-        self.namespace = namespace
 
+    @property
+    def namespace(self):
+        return None
+
+    # TODO: Try to rewrite here, not now
+    @namespace.setter
+    def namespace(self, namespace):
+        self.namespace = namespace
+        
     async def generate_community_report(self, graph, force=False):
         """
             Generates a community report based on the provided graph.

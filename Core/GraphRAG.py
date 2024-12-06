@@ -5,15 +5,14 @@ from typing import Union, Any
 from lazy_object_proxy.utils import await_
 from scipy.sparse import csr_matrix, csr_array
 from pyfiglet import Figlet
-
+from Core.Chunk.DocChunk import DocChunk
 import numpy as np
 from Core.Common.Constants import GRAPH_FIELD_SEP, ANSI_COLOR
 from Core.Common.Logger import logger
 import tiktoken
-from Core.Chunk.ChunkFactory import get_chunks
 from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
-                               split_string_by_multi_markers, csr_from_indices_list)
-from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict, root_validator
+                               split_string_by_multi_markers)
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
 from Core.Index import get_index
@@ -86,6 +85,7 @@ class GraphRAG(ContextMixin, BaseModel):
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
         cls.workspace = Workspace(data.working_dir, cls.config.exp_name)  # register workspace
         cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
+        cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         data = cls._init_storage_namespace(data)
         data = cls._register_vdbs(data)
         data = cls._register_community(data)
@@ -106,7 +106,7 @@ class GraphRAG(ContextMixin, BaseModel):
             data.e2r_namespace = data.workspace.make_for("map_e2r")
             data.r2c_namespace = data.workspace.make_for("map_r2c")
 
-        cls.chunks = data.workspace.make_for("chunks")
+   
         return data
 
     @classmethod
@@ -125,7 +125,8 @@ class GraphRAG(ContextMixin, BaseModel):
         if data.config.use_community:
             cls.community = get_community(data.config.graph_cluster_algorithm,
                                           enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm,
-                                          namespace=data.community_namespace)
+                                         )
+            cls.community.namesapce = data.community_namespace
 
         return data
 
@@ -198,6 +199,8 @@ class GraphRAG(ContextMixin, BaseModel):
             docs = [docs]
         # TODO: Now we only support the str, list[str], Maybe for more types.
         new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
+        import pdb
+        pdb.set_trace() 
         # TODO: config the chunk parameters, **WE ONLY CONFIG CHUNK-METHOD NOW**
         chunks = await get_chunks(new_docs, self.config.chunk_method, self.ENCODER, is_chunked=is_chunked)
 
@@ -305,22 +308,16 @@ class GraphRAG(ContextMixin, BaseModel):
         self.chunk_to_entity_mat[self.chunk_to_entity_mat.nonzero()] = 1
         self.entity_doc_count = self.chunk_to_entity_mat.sum(0).T
 
-    async def build_e2r_r2c_maps(self):
-
-        await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
-    
-        raw_relationships_to_chunks = await self.graph.get_relationships_attrs(key="source_id")
-        # Map Chunk IDs to indices
-        raw_relationships_to_chunks = [
-            [i for i in await self.chunk_storage.get_index(chunk_ids) if i is not None]
-            for chunk_ids in raw_relationships_to_chunks
-        ]
-        await self._relationships_to_chunks.set(
-            csr_from_indices_list(
-                raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await self.chunk_storage.size())
-            )
-        )
-
+    async def build_e2r_r2c_maps(self, force = True):
+        logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
+        if not await self._entities_to_relationships.load(force):
+            await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
+            await self._entities_to_relationships.persist()
+        if not await self._relationships_to_chunks.load(force):
+            await self._relationships_to_chunks.set(await self.graph.get_relationships_to_chunks_map(self.doc_chunk))
+            await self._relationships_to_chunks.persist()
+        logger.info("✅ Finished building the two maps ")
+        
     async def insert(self, docs: Union[str, list[Any]]):
 
         """
@@ -339,19 +336,18 @@ class GraphRAG(ContextMixin, BaseModel):
         # 1. Chunking Stage
         ####################################################################################################
         logger.info("Starting chunk the given documents")
-        chunks = await self._chunk_documents(docs)
+        # chunks = await self._chunk_documents(docs)
+        await self.doc_chunk.build_chunks(docs)
         logger.info("✅ Finished the chunking stage")
 
         ####################################################################################################
         # 2. Building Graph Stage
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
-        await self.graph.build_graph(chunks, force=True)
+        await self.graph.build_graph(await self.doc_chunk.get_chunks())
         logger.info("✅ Finished building graph for the given documents")
         if self.config.use_entity_link_chunk:
-            logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
             await self.build_e2r_r2c_maps()
-            logger.info("✅ Finished building the two maps ")
         ####################################################################################################
         # 3. Index building Stage
         ####################################################################################################
@@ -406,7 +402,7 @@ class GraphRAG(ContextMixin, BaseModel):
         query_entities = await self._extract_query_entities(query)
         await self.link_node_by_colbertv2(query_entities)
         entities = await self._find_relevant_entities_vdb(query)
-        await self._find_most_relevant_chunks_from_entities(entities)
+        await self._find_relevant_chunks_from_entities(entities)
         keywords = await self._extract_query_keywords(query)
         relationships = await self._find_relevant_relations_vdb(query)
         print(relationships)
@@ -433,8 +429,7 @@ class GraphRAG(ContextMixin, BaseModel):
 
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
         top_phrase_vec = np.zeros(self.graph.node_num)
-        import pdb
-        pdb.set_trace()
+   
         # Set the weight of the retrieved documents based on the number of documents they appear in
         for entity_id in entity_ids:
             if self.config.node_specificity:

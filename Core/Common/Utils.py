@@ -314,12 +314,27 @@ def build_data_for_merge(data: dict) -> dict:
     return res
 
 
-def csr_from_indices_list(edges: List[List[int]], shape: Tuple[int, int]) -> csr_matrix:
+def csr_from_indices(edges: List[List[int]], shape: Tuple[int, int]) -> csr_matrix:
     """Create a CSR matrix from a list of lists."""
     # Extract row and column indices
     row_indices = [edge[0] for edge in edges]
     col_indices = [edge[1] for edge in edges]
 
     values = np.ones(len(edges))
+    # Create the CSR matrix
+    return csr_matrix((values, (row_indices, col_indices)), shape=shape)
+
+
+def csr_from_indices_list(data: List[List[int]], shape: Tuple[int, int]) -> csr_matrix:
+    """Create a CSR matrix from a list of lists."""
+    num_rows = len(data)
+
+    # Flatten the list of lists and create corresponding row indices
+    row_indices = np.repeat(np.arange(num_rows), [len(row) for row in data])
+    col_indices = np.concatenate(data) if num_rows > 0 else np.array([], dtype=np.int64)
+
+    # Data values (all ones in this case)
+    values = np.broadcast_to(1, len(row_indices))
+
     # Create the CSR matrix
     return csr_matrix((values, (row_indices, col_indices)), shape=shape)

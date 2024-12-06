@@ -1,7 +1,7 @@
 import pickle
 from dataclasses import dataclass, field
 from typing import Optional, Any
-
+from Core.Common.Logger import logger
 from Core.Storage.BaseBlobStorage import BaseBlobStorage
 
 
@@ -16,51 +16,41 @@ class PickleBlobStorage(BaseBlobStorage):
     async def set(self, blob) -> None:
         self._data = blob
 
-    async def _insert_start(self):
+    async def load(self, force):
+        if force:
+            logger.info(f"Forcing rebuild the mapping for: {self.namespace.get_load_path(self.RESOURCE_NAME)}.")
+            self._data = None
+            return False
         if self.namespace:
             data_file_name = self.namespace.get_load_path(self.RESOURCE_NAME)
             if data_file_name:
                 try:
                     with open(data_file_name, "rb") as f:
                         self._data = pickle.load(f)
+                    logger.info("Successfully loaded data file for blob storage {data_file_name}." )
+                    return True
                 except Exception as e:
-                    t = f"Error loading data file for blob storage {data_file_name}: {e}"
-                    logger.error(t)
-                    raise InvalidStorageError(t) from e
+                    logger.error(f"Error loading data file for blob storage {data_file_name}: {e}")   
+                    return False
             else:
                 logger.info(f"No data file found for blob storage {data_file_name}. Loading empty storage.")
                 self._data = None
+                return False
         else:
             self._data = None
-            logger.debug("Creating new volatile blob storage.")
+            logger.info("Creating new volatile blob storage.")
+            return False
 
-    async def _insert_done(self):
+    async def persist(self):
         if self.namespace:
             data_file_name = self.namespace.get_save_path(self.RESOURCE_NAME)
             try:
                 with open(data_file_name, "wb") as f:
                     pickle.dump(self._data, f)
-                logger.debug(
+                logger.info(
                     f"Saving blob storage '{data_file_name}'."
                 )
             except Exception as e:
                 logger.error(f"Error saving data file for blob storage {data_file_name}: {e}")
 
-    async def _query_start(self):
-        assert self.namespace, "Loading a blob storage requires a namespace."
-
-        data_file_name = self.namespace.get_load_path(self.RESOURCE_NAME)
-        if data_file_name:
-            try:
-                with open(data_file_name, "rb") as f:
-                    self._data = pickle.load(f)
-            except Exception as e:
-                t = f"Error loading data file for blob storage {data_file_name}: {e}"
-                logger.error(t)
-                raise InvalidStorageError(t) from e
-        else:
-            logger.warning(f"No data file found for blob storage {data_file_name}. Loading empty blob.")
-            self._data = None
-
-    async def _query_done(self):
-        pass
+   
