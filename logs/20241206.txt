@@ -550,6 +550,7 @@ See FAQ 5.8
 2024-12-06 14:45:22.201 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
 2024-12-06 14:45:22.201 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
 2024-12-06 14:45:22.201 | INFO     | Core.GraphRAG:insert:361 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+<<<<<<< Updated upstream
 2024-12-06 15:33:05.311 | INFO     | Core.GraphRAG:insert:350 - Starting chunk the given documents
 2024-12-06 15:33:05.324 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished the chunking stage
 2024-12-06 15:33:05.325 | INFO     | Core.GraphRAG:insert:357 - Starting build graph for the given documents
@@ -804,3 +805,513 @@ See FAQ 5.8
 2024-12-06 16:34:55.389 | INFO     | Core.GraphRAG:insert:359 - ✅ Finished building graph for the given documents
 2024-12-06 16:34:55.392 | DEBUG    | Core.Provider.BaseLLM:aask:152 - [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Your task is to extract named entities from the given paragraph. \nRespond with a JSON list of entities.\n\nPlease reference the following example:\n\n[Example]\n \nParagraph:\n\nRadio City\nRadio City is India\'s first private FM radio station and was started on 3 July 2001.\nIt plays Hindi, English and regional songs.\nRadio City recently forayed into New Media in May 2008 with the launch of a music portal - PlanetRadiocity.com that offers music related news, videos, songs, and other music-related features.\n\nHere is the example entity list:\n\n{\n"named_entities": ["Radio City", "India", "3 July 2001", "Hindi", "English", "May 2008", "PlanetRadiocity.com"]\n}\n\nNow please respond with the entity list in JSON format.\n\nParagraph:```\nwho are you\n```\n'}]
 2024-12-06 16:34:57.953 | INFO     | Core.Common.CostManager:update_cost:56 - Total running cost: $0.014 | Max budget: $10.000 | Current cost: $0.000, prompt_tokens: 191, completion_tokens: 7
+=======
+2024-12-06 14:56:02.552 | INFO     | Core.GraphRAG:insert:356 - Starting chunk the given documents
+2024-12-06 14:56:02.565 | INFO     | Core.GraphRAG:insert:358 - ✅ Finished the chunking stage
+2024-12-06 14:56:02.565 | INFO     | Core.GraphRAG:insert:363 - Starting build graph for the given documents
+2024-12-06 14:56:02.565 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:56:02.574 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:56:02.574 | INFO     | Core.GraphRAG:insert:365 - ✅ Finished building graph for the given documents
+2024-12-06 14:56:02.574 | INFO     | Core.GraphRAG:insert:367 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:57:54.750 | INFO     | Core.GraphRAG:insert:355 - Starting chunk the given documents
+2024-12-06 14:57:54.763 | INFO     | Core.GraphRAG:insert:357 - ✅ Finished the chunking stage
+2024-12-06 14:57:54.764 | INFO     | Core.GraphRAG:insert:362 - Starting build graph for the given documents
+2024-12-06 14:57:54.764 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 14:57:54.773 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 14:57:54.773 | INFO     | Core.GraphRAG:insert:364 - ✅ Finished building graph for the given documents
+2024-12-06 14:57:54.774 | INFO     | Core.GraphRAG:insert:366 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 14:57:54.777 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'charles dickens'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.777 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'arthur rackham'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'j  b  lippincott company'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'philadelphia'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'new york'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'united states'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'project gutenberg'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'www gutenberg org'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'pgdp net'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'bob cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'peter cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'tim cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mr  fezziwig'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'fred'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas past'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas present'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas yet to come'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.779 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of jacob marley'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'joe'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ebenezer scrooge'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mr  topper'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'dick wilkins'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'belle'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'caroline'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'belinda'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.780 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'martha cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  dilber'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'fan'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  fezziwig'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'down a slide'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'in honour of'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'cornhill'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.781 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'camden town'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'how are you'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'will you let me in'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'what'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'you'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'uncle'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'partner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.782 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'executor'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'administrator'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'assign'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'residuary legatee'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'friend'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mourner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'fezziwig'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'partner of marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'executor of marley s will'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.783 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'administrator of marley s estate'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'assign of marley s property'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'residuary legatee of marley s estate'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'friend of marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mourner of marley s death'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'man of business'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'owner of scrooge and marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'tight fisted'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'cold'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'frosty'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.784 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'unaffected by weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'unaffected by human sympathy'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'known by his reputation'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'avoided by people'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'seen by blind men s dogs'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'on christmas eve'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in his counting house'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the city'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the foggy weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.785 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the cold weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the dark'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the counting house on christmas eve'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his counting house'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his own room'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'scrooge s nephew'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'bah'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'humbug'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'what right have you to be merry'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'what reason have you to be merry'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.786 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you re poor enough'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you re rich enough'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'bah  again'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'humbug  again'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'if i could work my will'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and buried with a stake of holly through his heart'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'nephew'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'keep christmas in your own way'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.787 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and let me keep it in mine'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'kind  forgiving  charitable  pleasant time'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'fellow passengers to the grave'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'clerk'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'speaker'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'gentlemen'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'poor'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'prisons'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'union workhouses'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.788 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas eve'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas day'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'new year s eve'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'new year s day'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'gentleman'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'treadmill and poor law'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i wish to be left alone'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i don t make merry myself at christmas'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i can t afford to make idle people merry'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.789 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i help to support the establishments'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'if they would rather die  they had better do it'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not my business'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s enough for a man to understand his own business'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mine occupies me constantly'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'good afternoon  gentlemen'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his labours'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'an improved opinion of himself'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'a more facetious temper'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'drunk and bloodthirsty in the streets'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.790 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'pudding in his garret'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to buy the beef'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with energy of action'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his stool'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to the expectant clerk'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you ll want all day to morrow'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not convenient'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not fair'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you don t think me ill used when i pay a day s wages for no work'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.791 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to the chin'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with a growl'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in his usual melancholy tavern'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'chambers which had once belonged to his deceased partner'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'its every stone'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'the knocker on the door'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley since his last mention of his seven years  dead partner'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley s face'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'city of london'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.792 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'he had relinquished'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and lighted his candle'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'first'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with a bang'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and walked across the hall'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'slowly'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'going on before him'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to see that all was right'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to take his gruel'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fezziwig', 'out to dance'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.793 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fezziwig', 'with'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'dead'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'partner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'executor'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'administrator'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'assign'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'residuary legatee'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'friend'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'mourner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'face'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.794 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'seven years dead'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'old'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('tim', 'blood horse'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('tim', 'church'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'uncle'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'but you don t keep it'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'there are many things from which i might have derived good'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'by which i have not profited'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'i dare say'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.795 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'christmas among the rest'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'as a good time'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'a kind  forgiving  charitable  pleasant time'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'the only time i know of'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'when men and women seem by one consent to open their shut up hearts freely'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'and to think of people below them as if they really were fellow passengers to the grave'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('st  dunstan', 'the evil spirit s nose'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('st  dunstan', 'his familiar weapons'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('lord mayor', 'orders to his fifty cooks and butlers'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.796 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('lord mayor', 'christmas as a lord mayor s household'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('camden town', 'in london'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('cornhill', 'in london'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('london', 'in england'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('cain', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('abel', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('queen of sheba', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('abraham', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('belshazzar', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.797 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('apostle', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('church', 'invisible'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('church', 'the hours and quarters'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('firm', 'scrooge and marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('gentlemen', 'from scrooge'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fog', 'so'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('about with flaring links', 'people'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('labourers', 'repairing the gas pipes'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.798 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('labourers', 'lighted a great fire'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('and turned to misanthropic ice', 'water plug'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('little tailor', 'up to morrow s pudding'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley s face', 'like a bad lobster in a dark cellar'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley s face', 'with ghostly spectacles turned up on its ghostly forehead'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('dressing gown', 'he'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'slippers'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'nightcap'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'before the fire'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.799 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'gruel'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.800 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('old', 'fireplace'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.800 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('figures', 'pharaoh s daughters'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.800 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fireplace', 'built by dutch merchant'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.800 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fireplace', 'paved with dutch tiles'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 14:57:54.800 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('designed to illustrate the scriptures', 'dutch tiles'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:01:46.067 | INFO     | Core.GraphRAG:insert:355 - Starting chunk the given documents
+2024-12-06 15:01:46.086 | INFO     | Core.GraphRAG:insert:357 - ✅ Finished the chunking stage
+2024-12-06 15:01:46.087 | INFO     | Core.GraphRAG:insert:362 - Starting build graph for the given documents
+2024-12-06 15:01:46.087 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:01:46.116 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:01:46.117 | INFO     | Core.GraphRAG:insert:364 - ✅ Finished building graph for the given documents
+2024-12-06 15:01:46.117 | INFO     | Core.GraphRAG:insert:366 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:02:25.877 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'charles dickens'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:05:26.817 | INFO     | Core.GraphRAG:insert:355 - Starting chunk the given documents
+2024-12-06 15:05:26.845 | INFO     | Core.GraphRAG:insert:357 - ✅ Finished the chunking stage
+2024-12-06 15:05:26.845 | INFO     | Core.GraphRAG:insert:362 - Starting build graph for the given documents
+2024-12-06 15:05:26.845 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:05:26.870 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:05:26.870 | INFO     | Core.GraphRAG:insert:364 - ✅ Finished building graph for the given documents
+2024-12-06 15:05:26.871 | INFO     | Core.GraphRAG:insert:366 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:07:54.242 | INFO     | Core.GraphRAG:insert:356 - Starting chunk the given documents
+2024-12-06 15:07:54.253 | INFO     | Core.GraphRAG:insert:358 - ✅ Finished the chunking stage
+2024-12-06 15:07:54.253 | INFO     | Core.GraphRAG:insert:363 - Starting build graph for the given documents
+2024-12-06 15:07:54.253 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:07:54.263 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:07:54.263 | INFO     | Core.GraphRAG:insert:365 - ✅ Finished building graph for the given documents
+2024-12-06 15:07:54.263 | INFO     | Core.GraphRAG:insert:367 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'charles dickens'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'arthur rackham'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'j  b  lippincott company'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'philadelphia'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'new york'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'united states'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.267 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'project gutenberg'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'www gutenberg org'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'pgdp net'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'bob cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'peter cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'tim cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mr  fezziwig'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'fred'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas past'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas present'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.268 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of christmas yet to come'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ghost of jacob marley'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'joe'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'ebenezer scrooge'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mr  topper'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'dick wilkins'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'belle'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'caroline'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.269 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'belinda'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'martha cratchit'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  dilber'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'fan'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('a christmas carol', 'mrs  fezziwig'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'down a slide'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'in honour of'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'cornhill'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('bob cratchit', 'camden town'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.270 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'how are you'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fred', 'will you let me in'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'scrooge'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'what'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('joe', 'you'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'uncle'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'partner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'executor'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.271 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'administrator'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'assign'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'residuary legatee'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'friend'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mourner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'fezziwig'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'partner of marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'executor of marley s will'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'administrator of marley s estate'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.272 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'assign of marley s property'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'residuary legatee of marley s estate'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'friend of marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mourner of marley s death'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'man of business'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'owner of scrooge and marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'tight fisted'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'cold'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'frosty'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'unaffected by weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.273 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'unaffected by human sympathy'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'known by his reputation'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'avoided by people'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'seen by blind men s dogs'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'on christmas eve'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in his counting house'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the city'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the foggy weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the cold weather'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the dark'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.274 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in the counting house on christmas eve'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his counting house'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his own room'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'scrooge s nephew'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'bah'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'humbug'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'what right have you to be merry'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'what reason have you to be merry'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you re poor enough'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.275 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you re rich enough'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'bah  again'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'humbug  again'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'if i could work my will'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and buried with a stake of holly through his heart'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'nephew'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'keep christmas in your own way'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and let me keep it in mine'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.276 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'kind  forgiving  charitable  pleasant time'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'fellow passengers to the grave'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'clerk'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'speaker'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'gentlemen'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'poor'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'prisons'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'union workhouses'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas eve'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'christmas day'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.277 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'new year s eve'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'new year s day'): 'chunk-167195a2f3d31885e7de4ba99cafd363'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'gentleman'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'treadmill and poor law'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i wish to be left alone'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i don t make merry myself at christmas'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i can t afford to make idle people merry'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'i help to support the establishments'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'if they would rather die  they had better do it'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not my business'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.278 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s enough for a man to understand his own business'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'mine occupies me constantly'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'good afternoon  gentlemen'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his labours'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'an improved opinion of himself'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'a more facetious temper'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'drunk and bloodthirsty in the streets'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'pudding in his garret'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to buy the beef'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.279 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with energy of action'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'his stool'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to the expectant clerk'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you ll want all day to morrow'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not convenient'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'it s not fair'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'you don t think me ill used when i pay a day s wages for no work'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to the chin'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with a growl'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'in his usual melancholy tavern'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.280 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'chambers which had once belonged to his deceased partner'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'its every stone'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'the knocker on the door'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley since his last mention of his seven years  dead partner'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'marley s face'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'city of london'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'he had relinquished'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and lighted his candle'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'first'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'with a bang'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.281 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'and walked across the hall'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'slowly'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'going on before him'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to see that all was right'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge', 'to take his gruel'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fezziwig', 'out to dance'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fezziwig', 'with'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'dead'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'partner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.282 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'executor'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'administrator'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'assign'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'residuary legatee'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'friend'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'mourner'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'face'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'seven years dead'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley', 'old'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('tim', 'blood horse'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.283 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('tim', 'church'): 'chunk-83b453141113eb22d088292ab927dab5'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'uncle'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'but you don t keep it'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'there are many things from which i might have derived good'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'by which i have not profited'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'i dare say'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'christmas among the rest'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'as a good time'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'a kind  forgiving  charitable  pleasant time'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'the only time i know of'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.284 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'when men and women seem by one consent to open their shut up hearts freely'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('scrooge s nephew', 'and to think of people below them as if they really were fellow passengers to the grave'): 'chunk-90b2a67c265ac95538c8556696d41e85'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('st  dunstan', 'the evil spirit s nose'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('st  dunstan', 'his familiar weapons'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('lord mayor', 'orders to his fifty cooks and butlers'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('lord mayor', 'christmas as a lord mayor s household'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('camden town', 'in london'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('cornhill', 'in london'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('london', 'in england'): 'chunk-9b250b490516cb0f92c5f5f8736a341d'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('cain', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.285 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('abel', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('queen of sheba', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('abraham', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('belshazzar', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('apostle', 'figure'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('church', 'invisible'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('church', 'the hours and quarters'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('firm', 'scrooge and marley'): 'chunk-3f91b711e91ce83668562edd142135a4'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('gentlemen', 'from scrooge'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.286 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fog', 'so'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('about with flaring links', 'people'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('labourers', 'repairing the gas pipes'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('labourers', 'lighted a great fire'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('and turned to misanthropic ice', 'water plug'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('little tailor', 'up to morrow s pudding'): 'chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley s face', 'like a bad lobster in a dark cellar'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('marley s face', 'with ghostly spectacles turned up on its ghostly forehead'): 'chunk-c8616e24ddfb3bf6d00e8084b4b9c606'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('dressing gown', 'he'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'slippers'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.287 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'nightcap'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'before the fire'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('he', 'gruel'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('old', 'fireplace'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('figures', 'pharaoh s daughters'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fireplace', 'built by dutch merchant'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('fireplace', 'paved with dutch tiles'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:07:54.288 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:299 - KeyError in edge ('designed to illustrate the scriptures', 'dutch tiles'): 'chunk-aff6f422ee038e5b2ff9990f93363cdd'
+2024-12-06 15:08:39.617 | INFO     | Core.GraphRAG:insert:358 - Starting chunk the given documents
+2024-12-06 15:08:39.629 | INFO     | Core.GraphRAG:insert:360 - ✅ Finished the chunking stage
+2024-12-06 15:08:39.629 | INFO     | Core.GraphRAG:insert:365 - Starting build graph for the given documents
+2024-12-06 15:08:39.629 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:08:39.638 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:08:39.639 | INFO     | Core.GraphRAG:insert:367 - ✅ Finished building graph for the given documents
+2024-12-06 15:08:39.639 | INFO     | Core.GraphRAG:insert:369 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:10:28.778 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:304 - Unexpected error processing edge ('a christmas carol', 'arthur rackham'): 
+2024-12-06 15:10:29.681 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:304 - Unexpected error processing edge ('a christmas carol', 'j  b  lippincott company'): 
+2024-12-06 15:10:30.925 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:304 - Unexpected error processing edge ('a christmas carol', 'philadelphia'): 
+2024-12-06 15:10:50.847 | INFO     | Core.GraphRAG:insert:359 - Starting chunk the given documents
+2024-12-06 15:10:50.860 | INFO     | Core.GraphRAG:insert:361 - ✅ Finished the chunking stage
+2024-12-06 15:10:50.860 | INFO     | Core.GraphRAG:insert:366 - Starting build graph for the given documents
+2024-12-06 15:10:50.860 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:10:50.869 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:10:50.870 | INFO     | Core.GraphRAG:insert:368 - ✅ Finished building graph for the given documents
+2024-12-06 15:10:50.870 | INFO     | Core.GraphRAG:insert:370 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:12:13.628 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:302 - KeyError in edge ('a christmas carol', 'charles dickens'): 'chunk-d5cb63c91e4bea751bf090388c7859e9'
+2024-12-06 15:13:31.122 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:305 - Unexpected error processing edge ('a christmas carol', 'arthur rackham'): 
+2024-12-06 15:13:32.868 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:305 - Unexpected error processing edge ('a christmas carol', 'j  b  lippincott company'): 
+2024-12-06 15:13:33.823 | ERROR    | Core.GraphRAG:_build_edge_chunk_mapping:305 - Unexpected error processing edge ('a christmas carol', 'philadelphia'): 
+2024-12-06 15:13:56.502 | INFO     | Core.GraphRAG:insert:339 - Starting chunk the given documents
+2024-12-06 15:13:56.514 | INFO     | Core.GraphRAG:insert:341 - ✅ Finished the chunking stage
+2024-12-06 15:13:56.514 | INFO     | Core.GraphRAG:insert:346 - Starting build graph for the given documents
+2024-12-06 15:13:56.514 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:13:56.523 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:13:56.524 | INFO     | Core.GraphRAG:insert:348 - ✅ Finished building graph for the given documents
+2024-12-06 15:13:56.524 | INFO     | Core.GraphRAG:insert:350 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:14:23.259 | INFO     | Core.GraphRAG:insert:341 - Starting chunk the given documents
+2024-12-06 15:14:23.272 | INFO     | Core.GraphRAG:insert:343 - ✅ Finished the chunking stage
+2024-12-06 15:14:23.272 | INFO     | Core.GraphRAG:insert:348 - Starting build graph for the given documents
+2024-12-06 15:14:23.272 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:14:23.281 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:14:23.281 | INFO     | Core.GraphRAG:insert:350 - ✅ Finished building graph for the given documents
+2024-12-06 15:14:23.281 | INFO     | Core.GraphRAG:insert:352 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:21:17.232 | INFO     | Core.GraphRAG:insert:343 - Starting chunk the given documents
+2024-12-06 15:21:17.242 | INFO     | Core.GraphRAG:insert:345 - ✅ Finished the chunking stage
+2024-12-06 15:21:17.242 | INFO     | Core.GraphRAG:insert:350 - Starting build graph for the given documents
+2024-12-06 15:21:17.242 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:21:17.252 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:21:17.252 | INFO     | Core.GraphRAG:insert:352 - ✅ Finished building graph for the given documents
+2024-12-06 15:21:17.252 | INFO     | Core.GraphRAG:insert:354 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 15:51:22.210 | INFO     | Core.GraphRAG:insert:345 - Starting chunk the given documents
+2024-12-06 15:51:22.225 | INFO     | Core.GraphRAG:insert:347 - ✅ Finished the chunking stage
+2024-12-06 15:51:22.225 | INFO     | Core.GraphRAG:insert:352 - Starting build graph for the given documents
+2024-12-06 15:51:22.225 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 15:51:22.234 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 15:51:22.234 | INFO     | Core.GraphRAG:insert:354 - ✅ Finished building graph for the given documents
+2024-12-06 15:51:22.234 | INFO     | Core.GraphRAG:insert:356 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-06 16:18:23.820 | INFO     | Core.GraphRAG:insert:345 - Starting chunk the given documents
+2024-12-06 16:18:23.832 | INFO     | Core.GraphRAG:insert:347 - ✅ Finished the chunking stage
+2024-12-06 16:18:23.832 | INFO     | Core.GraphRAG:insert:352 - Starting build graph for the given documents
+2024-12-06 16:18:23.832 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml
+2024-12-06 16:18:23.841 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/debug_ppr/graph_storage_nx_data.graphml with 218 nodes and 208 edges
+2024-12-06 16:18:23.841 | INFO     | Core.GraphRAG:insert:354 - ✅ Finished building graph for the given documents
+2024-12-06 16:18:23.841 | INFO     | Core.GraphRAG:insert:356 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+>>>>>>> Stashed changes

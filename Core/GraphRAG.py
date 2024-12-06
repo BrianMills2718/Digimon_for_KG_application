@@ -47,35 +47,19 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @model_validator(mode="before")
     def welcome_message(cls, values):
-        # logo = f"""
-        #     {ANSI_COLOR} 👾 Welcome to DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems!
-        #    {Fore.CYAN} _______   _______   _______   _______   _______   _______   _______
-        #    {Fore.CYAN}|       | |       | |       | |       | |       | |       | |       |
-        #    {Fore.CYAN}|   D   | |   I   | |   G   | |   I   | |   M   | |   O   | |   N   |
-        #    {Fore.CYAN}|_______| |_______| |_______| |_______| |_______| |_______| |_______|
-        #    """
-        # print(logo)
-        # Create a Figlet object with a larger font
-        f = Figlet(font='big')  # You can try other fonts like 'slant', '3-d', 'bubble', etc.
 
+        f = Figlet(font='big')  #
         # Generate the large ASCII art text
         logo = f.renderText('DIGIMON')
         print(f"{Fore.GREEN}{'#' * 100}{Style.RESET_ALL}")
         # Print the logo with color
         print(f"{Fore.MAGENTA}{logo}{Style.RESET_ALL}")
-        # print(
-        #     f"{Fore.GREEN}You can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you.")
-        # print(f"{Fore.GREEN}Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.")
-        # print(
-        #     f"{Fore.CYAN}Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.")
-        # print(f"{Fore.YELLOW}Start exploring the potential of graph-based RAG algorithms today!{Style.RESET_ALL}")
-        # Prepare the text lines for the box
         text = [
             "Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.",
             "",
             "Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.",
             "",
-            "Start exploring the potential of graph-based RAG algorithms today!"
+            "You can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you!"
         ]
 
         # Function to print a boxed message
@@ -218,8 +202,13 @@ class GraphRAG(ContextMixin, BaseModel):
         chunks = await get_chunks(new_docs, self.config.chunk_method, self.ENCODER, is_chunked=is_chunked)
 
         inserting_chunks = {key: value for key, value in chunks.items() if key in chunks}
+
         # TODO: filter the already solved chunks maybe
         ordered_chunks = list(inserting_chunks.items())
+        # TODO: rewrite here, more ugly
+        self.chunk_key_to_idx = {}
+        for idx, chunk in enumerate(ordered_chunks):
+            self.chunk_key_to_idx[chunk[0]] = idx
         return ordered_chunks
 
     async def _build_retriever_context(self, query):
@@ -253,6 +242,7 @@ class GraphRAG(ContextMixin, BaseModel):
         """
         self.chunk_to_edge = defaultdict(int)
         self.edge_to_entity = defaultdict(int)
+        self.entity_to_edge = defaultdict(int)
         self.id_to_entity = defaultdict(int)
 
         nodes = list(await self.graph.nodes())
@@ -276,7 +266,7 @@ class GraphRAG(ContextMixin, BaseModel):
                 for source_id in source_ids:
                     # Map document to edge
                     source_idx = self.chunk_key_to_idx[source_id]
-                    edge_idx = edges.index(edge)
+                    edge_idx = edges.index((edge[0], edge[1]))
                     self.chunk_to_edge[(source_idx, edge_idx)] = 1
 
                 # Map fact to phrases for both nodes in the edge
@@ -285,7 +275,8 @@ class GraphRAG(ContextMixin, BaseModel):
 
                 self.edge_to_entity[(edge_idx, node_idx_1)] = 1
                 self.edge_to_entity[(edge_idx, node_idx_2)] = 1
-
+                self.entity_to_edge[(node_idx_1, edge_idx)] = 1
+                self.entity_to_edge[(node_idx_2, edge_idx)] = 1
             except ValueError as ve:
                 # Handle specific errors, such as when edge or node is not found
                 logger.error(f"ValueError in edge {edge}: {ve}")
@@ -317,8 +308,8 @@ class GraphRAG(ContextMixin, BaseModel):
     async def build_e2r_r2c_maps(self):
 
         await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
-
-        raw_relationships_to_chunks = await self.graph.get_relationships_attrs(key="chunks")
+    
+        raw_relationships_to_chunks = await self.graph.get_relationships_attrs(key="source_id")
         # Map Chunk IDs to indices
         raw_relationships_to_chunks = [
             [i for i in await self.chunk_storage.get_index(chunk_ids) if i is not None]

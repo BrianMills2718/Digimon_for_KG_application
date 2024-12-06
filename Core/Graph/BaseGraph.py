@@ -315,7 +315,7 @@ class BaseGraph(ABC):
     def edge_num(self):
         return self._graph.get_edge_num()
 
-    async def get_entities_to_relationships_map(self):
+    async def get_entities_to_relationships_map(self, is_directed=True):
         if self.node_num == 0:
             return csr_matrix((0, 0))
 
@@ -330,10 +330,22 @@ class BaseGraph(ABC):
                 if edge_index == -1: continue
                 node_index = self._graph.get_node_index(node)
                 data.append([node_index, edge_index])
+                if not is_directed:
+                    neighbor_index = self._graph.get_node_index(neighbor)
+                    data.append([neighbor_index, edge_index])
 
         # Get the number of nodes and edges
         node_count = self.node_num
-        edge_count = self.edge_num
+        edge_count = self.edge_num * (1 if is_directed else 2)
 
         # Construct the CSR matrix
         return csr_from_indices_list(data, shape=(node_count, edge_count))
+
+
+    async def get_relationships_attrs(self, key):
+        if self.edge_num == 0:
+            return []
+        lists_of_attrs = []
+        for edge in await self._graph.edges():
+            lists_of_attrs.append(edge[key])
+        return lists_of_attrs
