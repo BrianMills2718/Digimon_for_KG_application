@@ -35,7 +35,7 @@ class ColBertIndex(BaseIndex):
                 RunConfig(nranks=self.config.ranks, experiment=self.index_config.experiment,
                           root=self.index_config.root)
         ):
-            indexer = Indexer(checkpoint=self.config.model_name, config=self.index_config)
+            indexer = Indexer(checkpoint=self.config.model_name, config=self.index_config)            
             # Store the index
             elements = [element["content"] for element in elements]
             indexer.index(name=self.config.index_name, collection=elements, overwrite=True)
@@ -68,7 +68,7 @@ class ColBertIndex(BaseIndex):
         if top_k is None:
             top_k = self._get_retrieve_top_k()
 
-        return self._index.search(query, k=top_k)
+        return tuple(self._index.search(query, k=top_k))
 
     async def retrieval_batch(self, queries, top_k=None):
         if top_k is None:
@@ -79,7 +79,7 @@ class ColBertIndex(BaseIndex):
             elif not isinstance(queries, Queries):
                 queries = Queries(data=queries)
 
-            return self._index.search_all(queries, k=top_k)
+            return self._index.search_all(queries, k=top_k).data
         except Exception as e:
             logger.exception(f"fail to search {queries} for {e}")
             return []

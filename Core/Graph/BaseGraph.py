@@ -159,13 +159,17 @@ class BaseGraph(ABC):
         This method should be implemented by subclasses to define how the graph is built from the input chunks.
         """
         pass
+    
+    async def augment_graph_by_similrity_search(self, entity_vdb, duplicate=True):
+        pass
 
-    async def _augment_graph(self, queries, similarity_threshold=0.8, similarity_top_k=100, duplicate=True):
+    async def _augment_graph(self, entity_vdb, similarity_threshold=0.8, similarity_top_k=100, duplicate=True):
         """
         For each entity in the graph, get its synonyms from the knowledge base
         queries: list of entity names
         """
-        ranking = await self.entity_vdb.retrieve_batch(queries, top_k=similarity_top_k)
+    
+        ranking = await entity_vdb.retrieve_batch(queries, top_k=similarity_top_k)
         entity_names = list(queries.values())
         kb_similarity = {}
         for key, entity_name in queries.items():
@@ -289,6 +293,9 @@ class BaseGraph(ABC):
     async def get_node(self, node_id):
         return await self._graph.get_node(node_id)
 
+    async def get_node_by_index(self, index):
+        return await self._graph.get_node_by_index(index)
+    
     async def get_edge(self, src, tgt):
         return await self._graph.get_edge(src, tgt)
 
@@ -315,7 +322,7 @@ class BaseGraph(ABC):
     def edge_num(self):
         return self._graph.get_edge_num()
 
-    async def get_entities_to_relationships_map(self, is_directed=True):
+    async def get_entities_to_relationships_map(self, is_directed=False):
         if self.node_num == 0:
             return csr_matrix((0, 0))
 
@@ -328,16 +335,15 @@ class BaseGraph(ABC):
                 # Get the edge index (assuming edge indices are unique)
                 edge_index = self._graph.get_edge_index(node, neighbor)
                 if edge_index == -1: continue
-                node_index = self._graph.get_node_index(node)
+                node_index = await self._graph.get_node_index(node)
                 data.append([node_index, edge_index])
                 if not is_directed:
-                    neighbor_index = self._graph.get_node_index(neighbor)
+                    neighbor_index = await self._graph.get_node_index(neighbor)
                     data.append([neighbor_index, edge_index])
 
         # Get the number of nodes and edges
         node_count = self.node_num
-        edge_count = self.edge_num * (1 if is_directed else 2)
-
+        edge_count = self.edge_num 
         # Construct the CSR matrix
         return csr_from_indices(data, shape=(node_count, edge_count))
 
@@ -363,3 +369,7 @@ class BaseGraph(ABC):
         return csr_from_indices_list(
                 raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await doc_chunk.size)
             )
+
+
+    async def get_node_index(self, node_key):
+        return await self._graph.get_node_index(node_key)

@@ -264,7 +264,7 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def get_node_metadata(self):
 
-        return {"entity_name": node["entity_name"] for node in self._graph.nodes()}
+        return {"entity_name": node for node in self._graph.nodes()}
 
     def get_node_num(self):
         return self._graph.number_of_nodes()
@@ -289,10 +289,15 @@ class NetworkXStorage(BaseGraphStorage):
         except ValueError:
             return -1
 
-    def get_node_index(self, node_id):
+    async def get_node_index(self, node_id):
         if self.node_list is None:
             self.node_list = list(self._graph.nodes())
         try:
             return self.node_list.index(node_id)
         except ValueError:
             logger.error(f"Node {node_id} not in graph")
+
+    async def get_node_by_index(self, index): 
+        if self.node_list is None:
+            self.node_list = list(self._graph.nodes())
+        return await self.get_node(self.node_list[index])

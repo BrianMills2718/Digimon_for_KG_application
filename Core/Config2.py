@@ -42,7 +42,7 @@ class Config(CLIParams, YamlModel):
     embedding: EmbeddingConfig = EmbeddingConfig()
 
     # Basic Config
-    use_entities_vdb: bool = False
+    use_entities_vdb: bool = True
     use_relations_vdb: bool = False  # Only set True for LightRAG
     vdb_type: str = "colbert"  # vector/colbert
     # Chunking

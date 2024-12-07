@@ -9,5 +9,5 @@ if __name__ == "__main__":
     graph_rag = GraphRAG(working_dir = "./test_book")
     asyncio.run(graph_rag.insert([doc]))
     
-    asyncio.run(graph_rag.query("who are you"))
+    asyncio.run(graph_rag.query("What relationship does Fred Gehrke have to the 23rd overall pick in the 2010 Major League Baseball Draft?"))
    

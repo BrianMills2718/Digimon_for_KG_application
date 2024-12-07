@@ -54,3 +54,11 @@ class DocChunk:
     @property
     async def size(self):
         return await self._chunk.size()
+    
+    async def get_index_by_key(self, key):
+        return await self._chunk.get_index_by_key(key)
+    
+    async def get_data_by_key(self, chunk_id):
+     
+        chunk = await self._chunk.get_by_key(chunk_id)
+        return chunk.content

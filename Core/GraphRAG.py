@@ -10,6 +10,7 @@ import numpy as np
 from Core.Common.Constants import GRAPH_FIELD_SEP, ANSI_COLOR
 from Core.Common.Logger import logger
 import tiktoken
+from Core.Schema.VdbResult import * 
 from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
                                split_string_by_multi_markers)
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
@@ -182,37 +183,6 @@ class GraphRAG(ContextMixin, BaseModel):
         keywords = ", ".join(keywords)
         return keywords
 
-    async def _chunk_documents(self, docs: Union[str, list[Any]], is_chunked: bool = False):
-        """Chunk the given documents into smaller chunks.
-
-          This method takes a document or a list of documents and breaks them down into smaller, more manageable chunks.
-          The chunks are then processed and returned in a specific format.
-
-          Args:
-              docs (Union[str, list[str]]): The documents to chunk, either as a single string or a list of strings.
-              is_chunked (bool, optional): A flag indicating whether the documents are already chunked. Defaults to False.
-
-          Returns:
-              list: A list of tuples where each tuple contains a chunk identifier and the corresponding chunk content.
-          """
-        if isinstance(docs, str):
-            docs = [docs]
-        # TODO: Now we only support the str, list[str], Maybe for more types.
-        new_docs = {mdhash_id(doc.strip(), prefix="doc-"): {"content": doc.strip()} for doc in docs}
-        import pdb
-        pdb.set_trace() 
-        # TODO: config the chunk parameters, **WE ONLY CONFIG CHUNK-METHOD NOW**
-        chunks = await get_chunks(new_docs, self.config.chunk_method, self.ENCODER, is_chunked=is_chunked)
-
-        inserting_chunks = {key: value for key, value in chunks.items() if key in chunks}
-
-        # TODO: filter the already solved chunks maybe
-        ordered_chunks = list(inserting_chunks.items())
-        # TODO: rewrite here, more ugly
-        self.chunk_key_to_idx = {}
-        for idx, chunk in enumerate(ordered_chunks):
-            self.chunk_key_to_idx[chunk[0]] = idx
-        return ordered_chunks
 
     async def _build_retriever_context(self, query):
         """Build the retriever context for the given query."""
@@ -268,7 +238,7 @@ class GraphRAG(ContextMixin, BaseModel):
                 source_ids = edge_data['source_id'].split(GRAPH_FIELD_SEP)
                 for source_id in source_ids:
                     # Map document to edge
-                    source_idx = self.chunk_key_to_idx[source_id]
+                    source_idx = await self.doc_chunk.get_index_by_key(source_id)
                     edge_idx = edges.index((edge[0], edge[1]))
                     self.chunk_to_edge[(source_idx, edge_idx)] = 1
 
@@ -277,9 +247,7 @@ class GraphRAG(ContextMixin, BaseModel):
                 node_idx_2 = nodes.index(edge[1])
 
                 self.edge_to_entity[(edge_idx, node_idx_1)] = 1
-                self.edge_to_entity[(edge_idx, node_idx_2)] = 1
                 self.entity_to_edge[(node_idx_1, edge_idx)] = 1
-                self.entity_to_edge[(node_idx_2, edge_idx)] = 1
             except ValueError as ve:
                 # Handle specific errors, such as when edge or node is not found
                 logger.error(f"ValueError in edge {edge}: {ve}")
@@ -298,20 +266,22 @@ class GraphRAG(ContextMixin, BaseModel):
 
         self.chunk_to_edge_mat = csr_array(([int(v) for v in self.chunk_to_edge.values()], (
             [int(e[0]) for e in self.chunk_to_edge.keys()], [int(e[1]) for e in self.chunk_to_edge.keys()])),
-                                           shape=(len(self.chunk_key_to_idx.keys()), len(edges)))
+                                           shape=(await self.doc_chunk.size, len(edges)))
 
         self.edge_to_entity_mat = csr_array(([int(v) for v in self.edge_to_entity.values()], (
             [e[0] for e in self.edge_to_entity.keys()], [e[1] for e in self.edge_to_entity.keys()])),
                                             shape=(len(edges), len(nodes)))
 
         self.chunk_to_entity_mat = self.chunk_to_edge_mat.dot(self.edge_to_entity_mat)
+      
         self.chunk_to_entity_mat[self.chunk_to_entity_mat.nonzero()] = 1
         self.entity_doc_count = self.chunk_to_entity_mat.sum(0).T
 
-    async def build_e2r_r2c_maps(self, force = True):
+    async def build_e2r_r2c_maps(self, force = False):
+        await self._build_ppr_context()
         logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
         if not await self._entities_to_relationships.load(force):
-            await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map())
+            await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map(False))
             await self._entities_to_relationships.persist()
         if not await self._relationships_to_chunks.load(force):
             await self._relationships_to_chunks.set(await self.graph.get_relationships_to_chunks_map(self.doc_chunk))
@@ -336,7 +306,6 @@ class GraphRAG(ContextMixin, BaseModel):
         # 1. Chunking Stage
         ####################################################################################################
         logger.info("Starting chunk the given documents")
-        # chunks = await self._chunk_documents(docs)
         await self.doc_chunk.build_chunks(docs)
         logger.info("✅ Finished the chunking stage")
 
@@ -345,23 +314,32 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
         await self.graph.build_graph(await self.doc_chunk.get_chunks())
-        logger.info("✅ Finished building graph for the given documents")
-        if self.config.use_entity_link_chunk:
-            await self.build_e2r_r2c_maps()
+
         ####################################################################################################
-        # 3. Index building Stage
-        ####################################################################################################
+        # 3. Index building Stage 
         # Data-driven content should be pre-built offline to ensure efficient online query performance.
+        ####################################################################################################
 
         # NOTE: ** Ensure the graph is successfully loaded before proceeding to load the index from storage, as it represents a one-to-one mapping. **
         if self.config.use_entities_vdb:
             logger.info("Starting insert entities of the given graph into vector database")
-
-            #
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
             await self.entities_vdb.build_index(await self.graph.nodes_data(), await self.graph.node_metadata(),
                                                 force=False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
+
+        # Graph Augmentation Stage  (Optional) 
+        # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
+        # These edges represent similarity types and are leveraged in subsequent processes.
+
+        # if self.config.enable_graph_augmentation:
+        #     logger.info("Starting augment the existing graph with similariy edges")
+
+        #     await self.graph.augment_graph_by_similrity_search()
+        #     logger.info("✅ Finished augment the existing graph with similariy edges")
+
+        if self.config.use_entity_link_chunk:
+            await self.build_e2r_r2c_maps(True)
 
         if self.config.use_relations_vdb:
             logger.info("Starting insert relations of the given graph into vector database")
@@ -380,12 +358,9 @@ class GraphRAG(ContextMixin, BaseModel):
 
             await self.community.generate_community_report(self.graph, False)
             logger.info("✅ [Community Report]  Finished")
-            ####################################################################################################
-            # 4. Graph Augmentation Stage (Optional)
-            ####################################################################################################
+         
 
-            # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
-            # These edges represent similarity types and are leveraged in subsequent processes.
+         
 
     async def query(self, query):
         """
@@ -400,9 +375,11 @@ class GraphRAG(ContextMixin, BaseModel):
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
         query_entities = await self._extract_query_entities(query)
-        await self.link_node_by_colbertv2(query_entities)
-        entities = await self._find_relevant_entities_vdb(query)
-        await self._find_relevant_chunks_from_entities(entities)
+        entities = await self._link_entities(query_entities)
+        # await self._link_chunks_from_entities(entities)
+    
+        # entities = await self._find_relevant_entities_vdb(query)
+        # await self._find_relevant_chunks_from_entities(entities)
         keywords = await self._extract_query_keywords(query)
         relationships = await self._find_relevant_relations_vdb(query)
         print(relationships)
@@ -413,57 +390,41 @@ class GraphRAG(ContextMixin, BaseModel):
 
     # def get_colbert_max_score(self, query):
 
-    async def link_node_by_colbertv2(self, query_entities):
+    async def _link_entities(self, query_entities):
 
-        entity_ids = []
-        max_scores = []
+        entities = []
 
-        for query_entity in query_entities:
-            max_score = await self.entities_vdb.get_max_score([query_entity])
-            ranking = await self.entities_vdb.retrieval_batch(query_entity, top_k=1)
-            for entity_id, rank, score in ranking.data[0]:
-                entity = self.id_to_entity[entity_id]
-                real_score = await self.entities_vdb.similarity_score([query_entity], [entity])
-                entity_ids.append(entity_id)
-                max_scores.append(real_score / max_score)
-
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-        top_phrase_vec = np.zeros(self.graph.node_num)
-   
-        # Set the weight of the retrieved documents based on the number of documents they appear in
-        for entity_id in entity_ids:
-            if self.config.node_specificity:
-                if self.entity_doc_count[entity_id] == 0:
-                    weight = 1
-                else:
-                    weight = 1 / self.entity_doc_count[entity_id]
-                top_phrase_vec[entity_id] = weight
-            else:
-                top_phrase_vec[entity_id] = 1.0
-        return top_phrase_vec, {(query, self.id_to_entity[entity_id]): max_score for entity_id, max_score, query in
-                                zip(entity_ids, max_scores, query_entities)}
+        for query_entity in query_entities: 
+            results = await self.entities_vdb.retrieval(query_entity, top_k=1)
+            results = ColbertNodeResult(*results) if self.config.vdb_type == "colbert" else VectorIndexNodeResult(*results)
+            node_datas = await results.get_node_data(self.graph) 
+            # For entity link, we only consider the top-ranked entity
+            entities.append(node_datas[0]) 
+        return entities
+      
+      
 
     async def _find_relevant_entities_vdb(self, query, top_k=5):
         # ✅
         try:
             assert self.config.use_entities_vdb
-            results = await self.entities_vdb.retrieval(query, top_k=top_k)
-
+            results = await self.entities_vdb.retrieval(query, top_k=top_k)             
             if not len(results):
                 return None
-            node_datas = await asyncio.gather(
-                *[self.graph.get_node(r.metadata["entity_name"]) for r in results]
-            )
+            # We only support colbert and vector index (lamma-index based) for now
+            results = ColbertNodeResult(*results) if self.config.vdb_type == "colbert" else VectorIndexNodeResult(*results)
+            node_datas = await results.get_node_data(self.graph)
             if not all([n is not None for n in node_datas]):
                 logger.warning("Some nodes are missing, maybe the storage is damaged")
             node_degrees = await asyncio.gather(
-                *[self.graph.node_degree(r.metadata["entity_name"]) for r in results]
+                *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )
             node_datas = [
-                {**n, "entity_name": k.metadata["entity_name"], "rank": d}
-                for k, n, d in zip(results, node_datas, node_degrees)
+                {**n, "entity_name": n["entity_name"], "rank": d}
+                for n, d in zip( node_datas, node_degrees)
                 if n is not None
             ]
+  
             return node_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
@@ -504,8 +465,10 @@ class GraphRAG(ContextMixin, BaseModel):
         except Exception as e:
             logger.exception(f"Failed to find relevant relationships: {e}")
 
-    async def _find_relevant_chunks_from_entities(self, node_datas: list[dict]):
+    async def _find_relevant_chunks_from_entities_relationships(self, node_datas: list[dict]):
         # ✅
+        if len(node_datas) == 0:
+            return None
         text_units = [
             split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
             for dp in node_datas
@@ -540,7 +503,7 @@ class GraphRAG(ContextMixin, BaseModel):
                     ):
                         relation_counts += 1
                 all_text_units_lookup[c_id] = {
-                    "data": await self.text_chunks.get_by_id(c_id),
+                    "data": await self.doc_chunk.get_data_by_key(c_id),
                     "order": index,
                     "relation_counts": relation_counts,
                 }
@@ -548,19 +511,23 @@ class GraphRAG(ContextMixin, BaseModel):
             logger.warning("Text chunks are missing, maybe the storage is damaged")
         all_text_units = [
             {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-        ]
+        ]   
+        # for node_data in node_datas:
         all_text_units = sorted(
             all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
         )
         all_text_units = truncate_list_by_token_size(
             all_text_units,
-            key=lambda x: x["data"]["content"],
+            key=lambda x: x["data"],
             max_token_size=self.config.local_max_token_for_text_unit,
         )
         all_text_units = [t["data"] for t in all_text_units]
+
         return all_text_units
 
-    async def _find_relevant_edges_from_entities(self, node_datas: list[dict]):
+
+
+    async def _find_relevant_relationships_from_entities(self, node_datas: list[dict]):
         # ✅
         all_related_edges = await asyncio.gather(
             *[self.graph.get_node_edges(node["entity_name"]) for node in node_datas]
