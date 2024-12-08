@@ -198,7 +198,7 @@ class TreeGraph(BaseGraph):
             logger.info(self._graph.get_layer(layer + 1))
 
         logger.info(self._graph.num_layers)
-        return
+        
 
     async def _build_graph(self, chunks: List[Any]):
         self._graph.clear()  # clear the storage before rebuilding
@@ -210,4 +210,5 @@ class TreeGraph(BaseGraph):
 
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
-        return
+        
+    

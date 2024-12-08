@@ -23,7 +23,7 @@ class BaseCommunity(ABC):
 
         """
         # Try to load the community report
-        is_exist = await self._load_community_report(force)
+        is_exist = await self._load_community_report(graph,force)
         if force or not is_exist:
             logger.info("Generating community report...")
             # Generate the community report

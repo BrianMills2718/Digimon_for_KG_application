@@ -110,7 +110,7 @@ class BaseGraph(ABC):
                                                        upsert_edge_data["weight"]))
         merge_description = (MergeRelationship.merge_descriptions(existing_edge_data["description"],
                                                                   upsert_edge_data[
-                                                                      "description"]) if self.config.enable_edge_name else "")
+                                                                      "description"]) if self.config.enable_edge_description else "")
 
         description = (
             await self._handle_entity_relation_summary((src_id, tgt_id), merge_description)
@@ -120,7 +120,7 @@ class BaseGraph(ABC):
 
         keywords = (MergeRelationship.merge_keywords(existing_edge_data["keywords"],
                                                      upsert_edge_data[
-                                                         "keywords"]) if self.config.enable_edge_description else "")
+                                                         "keywords"]) if self.config.enable_edge_keywords else "")
 
         relation_name = (MergeRelationship.merge_relation_name(existing_edge_data["relation_name"],
                                                                upsert_edge_data[
@@ -275,6 +275,9 @@ class BaseGraph(ABC):
     async def node_metadata(self):
         return await self._graph.get_node_metadata()
 
+    async def edge_metadata(self):
+        return await self._graph.get_edge_metadata()
+    
     async def stable_largest_cc(self):
         if isinstance(self._graph, NetworkXStorage):
             return await self._graph.get_stable_largest_cc()

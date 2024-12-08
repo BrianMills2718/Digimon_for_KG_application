@@ -109,7 +109,7 @@ class ERGraph(BaseGraph):
             if src_id in maybe_nodes and tgt_id in maybe_nodes:
                 relationship = Relationship(
                     src_id=clean_str(src_id), tgt_id=clean_str(tgt_id), source_id=chunk_key,
-                    relation_type=clean_str(rel_type)
+                    relation_name=clean_str(rel_type)
                 )
                 maybe_edges[(src_id, tgt_id)].append(relationship)
         return maybe_nodes, maybe_edges
@@ -142,10 +142,17 @@ class ERGraph(BaseGraph):
             if len(triple) != 3:
                 logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
                 continue
+            src_entity = clean_str(triple[0])
+            tgt_entity = clean_str(triple[2])
+            relation_name = clean_str(triple[1])
+            if src_entity == '' or tgt_entity == '' or relation_name == '':
+                logger.warning(f"triple is not valid, since we have empty entity or relation, triple is: {triple}, so skip it")
+                continue
             relationship = Relationship(src_id=clean_str(triple[0]),
                                         tgt_id=clean_str(triple[2]),
                                         weight=1.0, source_id=chunk_key,
                                         relation_name=clean_str(triple[1]))
+    
             maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)

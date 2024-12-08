@@ -73,7 +73,7 @@ class RKGraph(BaseGraph):
         2. https://github.com/HKUDS/LightRAG/tree/main
         """
         context = self._build_context_for_entity_extraction(chunk_info.content)
-        prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD if self.config.enable_keywords else GraphPrompt.ENTITY_EXTRACTION
+        prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD if self.config.enable_edge_keywords else GraphPrompt.ENTITY_EXTRACTION
         prompt = prompt_template.format(**context)
 
         working_memory = Memory()
@@ -135,7 +135,7 @@ class RKGraph(BaseGraph):
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
-            keywords=clean_str(record_attributes[4]) if self.config.enable_keywords else ""
+            keywords=clean_str(record_attributes[4]) if self.config.enable_edge_keywords else ""
         )
 
     @classmethod

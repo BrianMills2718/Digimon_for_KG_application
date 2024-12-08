@@ -43,30 +43,30 @@ class Config(CLIParams, YamlModel):
 
     # Basic Config
     use_entities_vdb: bool = True
-    use_relations_vdb: bool = False  # Only set True for LightRAG
+    use_relations_vdb: bool = True  # Only set True for LightRAG
     vdb_type: str = "vector"  # vector/colbert
     # Chunking
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
     chunk_method: str = "chunking_by_token_size"
-    use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
+    use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
     
     # enable LightRAG
-    enable_keywords: bool = True
+    enable_edge_keywords: bool = True
 
     # Building graph
-    graph_type: str = "er_graph" # rkg_graph/er_graph/tree_graph
+    graph_type: str = "rkg_graph" # rkg_graph/er_graph/tree_graph/
     extract_two_step: bool = True
     max_gleaning: int = 1
-    enable_entity_description: bool = False
+    enable_entity_description: bool = True
     enable_entity_type: bool = False
-    enable_edge_description: bool = False
-    enable_edge_name: bool = False
+    enable_edge_description: bool = True
+    enable_edge_name: bool = True
     prior_prob: float = 0.8
     
     # Graph clustering
-    use_community: bool = True
+    use_community: bool = False
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
@@ -88,10 +88,6 @@ class Config(CLIParams, YamlModel):
 
     # Commuity report
     enforce_sub_communities: bool = False
-
-    # Misc Parameters
-    repair_llm_output: bool = False
-    prompt_schema: Literal["json", "markdown", "raw"] = "json"
 
     # Retrieval Parameters
     enable_local: bool = False
@@ -118,6 +114,8 @@ class Config(CLIParams, YamlModel):
     naive_max_token_for_text_unit: int = 12000
     # local search
     local_max_token_for_text_unit: int = 4000  # 12000 * 0.33
+    max_token_for_text_unit: int = 4000
+
     max_token_for_local_context: int = 4800  # 12000 * 0.4
     local_max_token_for_community_report: int = 3200  # 12000 * 0.27
     local_community_single_one: bool = False

@@ -25,7 +25,6 @@ class Relationship:
         source_id (str): The unique identifier of the source from which this edge is derived.
         **kwargs: Additional keyword arguments for optional attributes.
             - relation_name (str, optional): The name of the relation. Defaults to an empty string.
-            - relation_type (str, optional): The type of the relation. Defaults to an empty string.
             - weight (float, optional): The weight of the edge, used in GraphRAG and LightRAG. Defaults to 0.0.
             - description (str, optional): A description of the edge, used in GraphRAG and LightRAG. Defaults to an empty string.
             - keywords (str, optional): Keywords associated with the edge, used in LightRAG. Defaults to an empty string.
@@ -36,7 +35,6 @@ class Relationship:
     # (src_id, tgt_id), serving as the primary key for one edge.
     source_id: str  # Unique identifier of the source from which this edge is derived
     relation_name: str = field(default="")  # Name of the relation
-    relation_type: str = field(default="")  # Type of the relation
     weight: float = field(default=0.0)  # Weight of the edge, used in GraphRAG and LightRAG
     description: str = field(default="")  # Description of the edge, used in GraphRAG and LightRAG
     keywords: str = field(default="")  # Keywords associated with the edge, used in LightRAG

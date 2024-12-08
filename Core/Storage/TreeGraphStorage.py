@@ -95,7 +95,7 @@ class TreeGraphStorage(BaseGraphStorage):
     async def persist(self, force):
         return await self._persist(force)
 
-    async def get_nodes(self):
+    async def get_nodes_data(self):
         return [{"content": node.text, "index": node.index} for node in self.tree.all_nodes]
 
     async def get_node_metadata(self):

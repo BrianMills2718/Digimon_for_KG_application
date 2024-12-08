@@ -202,16 +202,20 @@ class NetworkXStorage(BaseGraphStorage):
     async def get_edges_data(self, need_content = True):
         edge_list = list(self._graph.edges())
         edges = []
-        for edge_id in edge_list:
+        async def get_edge_data(edge_id):
             edge_data = await self.get_edge(edge_id[0], edge_id[1])
             if need_content:
-                if edge_data.get("description", "") == "":
-                    edge_data["content"] = edge_data["relation_name"]
-                elif edge_data.get("keywords", "") != "":
+                description = edge_data.get("description", "")
+                relation_name = edge_data.get("relation_name", "")
+                keywords = edge_data.get("keywords", "")
+                if relation_name != "":
+                    edge_data["content"] = relation_name
+                else:
                     edge_data["content"] = "{keywords} {src_id} {tgt_id} {description}".format(
-                        keywords=edge_data["keywords"], src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
-                        description=edge_data["description"])
+                        keywords=keywords, src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
+                        description=description)
             edges.append(edge_data)
+        await asyncio.gather(*[get_edge_data(edge) for edge in edge_list])  
         return edges
 
     async def get_stable_largest_cc(self):
@@ -269,6 +273,8 @@ class NetworkXStorage(BaseGraphStorage):
     async def get_node_metadata(self) -> list[str]:
         return ["entity_name"]
 
+    async def get_edge_metadata(self) -> list[str]:
+        relation_metadata =  ["src_id", "tgt_id"]
     def get_node_num(self):
         return self._graph.number_of_nodes()
 

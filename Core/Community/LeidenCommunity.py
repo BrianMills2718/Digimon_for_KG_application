@@ -28,7 +28,7 @@ class LeidenCommunity(BaseCommunity):
 
         self._community_reports: JsonKVStorage = JsonKVStorage(self.namespace, "community_report")
         self._community_node_map: JsonKVStorage = JsonKVStorage(self.namespace, "community_node_map")
-        self.communities_schema: dict[str, LeidenInfo] = defaultdict(LeidenInfo)
+        self._communities_schema: dict[str, LeidenInfo] = defaultdict(LeidenInfo)
 
     @property
     def community_reports(self):
@@ -63,15 +63,15 @@ class LeidenCommunity(BaseCommunity):
 
     @property
     def community_schema(self):
-        return self.communities_schema
+        return self._communities_schema
 
     async def _generate_community_report(self, er_graph):
         # Construct the cluster <-> node mapping
         await er_graph.cluster_data_to_subgraphs(self._community_node_map.json_data)
         # Fetch community schema
-        self.communities_schema = await er_graph.community_schema()
+        self._communities_schema = await er_graph.community_schema()
 
-        community_keys, community_values = list(self.communities_schema.keys()), list(self.communities_schema.values())
+        community_keys, community_values = list(self._communities_schema.keys()), list(self._communities_schema.values())
         # Generate reports by community levels
         levels = sorted(set([c.level for c in community_values]), reverse=True)
         logger.info(f"Generating by levels: {levels}")
@@ -245,7 +245,7 @@ class LeidenCommunity(BaseCommunity):
             {edges_describe}
         ```"""
 
-    async def _load_community_report(self, force) -> bool:
+    async def _load_community_report(self, graph, force) -> bool:
 
         if force:
             logger.info("☠️ Force to regenerate the community report.")
@@ -255,6 +255,7 @@ class LeidenCommunity(BaseCommunity):
             logger.error("Failed to load community report.")
             return False
         else:
+            self._communities_schema = await graph.community_schema()
             logger.info("Successfully loaded community report.")
             return True
 
