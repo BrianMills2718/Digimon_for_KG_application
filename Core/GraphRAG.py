@@ -401,7 +401,189 @@ class GraphRAG(ContextMixin, BaseModel):
             # For entity link, we only consider the top-ranked entity
             entities.append(node_datas[0]) 
         return entities
-      
+
+    async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
+                                                       pre_head=None, width=3):
+        """
+        Use agent to select the top-K relations based on the input query and entities
+        Args:
+            query: str, the query to be processed.
+            entity: str, the entity seed
+            pre_relations_name: list, the relation name that has already exists
+            pre_head: bool, indicator that shows whether te pre head relations exist or not
+            width: int, the search width of agent
+        Returns:
+            results: list[str], top-k relation candidates list
+        """
+        # ✅
+        try:
+            from Core.Common.Constants import GRAPH_FIELD_SEP
+            from collections import defaultdict
+            from Core.Prompt.TogPrompt import extract_relation_prompt
+
+            # get relations from graph
+            edges = await self.graph._graph.get_node_edges(source_node_id=entity)
+            relations_name_super_edge = await asyncio.gather(
+                *[self.graph._graph.get_edge_relation_name(edge[0], edge[1]) for edge in edges]
+            )
+            relations_name = list(map(lambda x: x.split(GRAPH_FIELD_SEP), relations_name_super_edge))  # [[], [], []]
+
+            relations_dict = defaultdict(list)
+            for index, edge in enumerate(edges):
+                src, tar = edge[0], edge[1]
+                for rel in relations_name[index]:
+                    relations_dict[(src, rel)].append(tar)
+
+            tail_relations = []
+            head_relations = []
+            for index, rels in enumerate(relations_name):
+                if edges[index][0] == entity:
+                    head_relations.extend(rels)  # head
+                else:
+                    tail_relations.extend(rels)  # tail
+
+            if pre_relations_name:
+                if pre_head:
+                    tail_relations = list(set(tail_relations) - set(pre_relations_name))
+                else:
+                    head_relations = list(set(head_relations) - set(pre_relations_name))
+
+            head_relations = list(set(head_relations))
+            tail_relations = list(set(tail_relations))
+            total_relations = head_relations + tail_relations
+            total_relations.sort()  # make sure the order in prompt is always equal
+
+            # agent
+            prompt = extract_relation_prompt % (
+            width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
+                total_relations) + ';' + "\nA: "
+            result = await self.llm.aask(msg=[
+                {"role": "user",
+                 "content": prompt}
+            ])
+
+            # clean
+            import re
+            pattern = r"{\s*(?P<relation>[^()]+)\s+\(Score:\s+(?P<score>[0-9.]+)\)}"
+            relations = []
+            for match in re.finditer(pattern, result):
+                relation = match.group("relation").strip()
+                if ';' in relation:
+                    continue
+                score = match.group("score")
+                if not relation or not score:
+                    return False, "output uncompleted.."
+                try:
+                    score = float(score)
+                except ValueError:
+                    return False, "Invalid score"
+                if relation in head_relations:
+                    relations.append({"entity": entity, "relation": relation, "score": score, "head": True})
+                else:
+                    relations.append({"entity": entity, "relation": relation, "score": score, "head": False})
+
+            if len(relations) == 0:
+                flag = False
+                logger.info("No relations found by entity: {} and query: {}".format(entity, query))
+            else:
+                flag = True
+
+            # return
+            if flag:
+                return relations, relations_dict
+            else:
+                return [], relations_dict
+        except Exception as e:
+            logger.exception(f"Failed to find relevant relations by entity agent: {e}")
+
+    async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
+                                                        relations_dict: defaultdict[list], width=3):
+        """
+        Use agent to select the top-K relations based on the input query and entities
+        Args:
+            query: str, the query to be processed.
+            current_entity_relations_list: list,  whose element is {"entity": entity_name, "relation": relation, "score": score, "head": bool}
+            relations_dict: defaultdict[list], key is (src, rel), value is tar
+        Returns:
+            flag: bool,  indicator that shows whether to reason or not
+            relations, heads
+            cluster_chain_of_entities: list[list], reasoning paths
+            candidates: list[str], entity candidates
+            relations: list[str], related relation
+            heads: list[bool]
+        """
+        # ✅
+        try:
+            from Core.Prompt.TogPrompt import  score_entity_candidates_prompt
+            total_candidates = []
+            total_scores = []
+            total_relations = []
+            total_topic_entities = []
+            total_head = []
+
+            for index, entity in enumerate(current_entity_relations_list):
+                candidate_list = relations_dict[(entity["entity"], entity["relation"])]
+
+                # score these candidate entities
+                if len(candidate_list) == 1:
+                    scores = [entity["score"]]
+                elif len(candidate_list) == 0:
+                    scores = [0.0]
+                else:
+                    # agent
+                    prompt = score_entity_candidates_prompt.format(query, entity["relation"]) + '; '.join(
+                        candidate_list) + ';' + '\nScore: '
+                    result = await self.llm.aask(msg=[
+                        {"role": "user",
+                         "content": prompt}
+                    ])
+
+                    # clean
+                    import re
+                    scores = re.findall(r'\d+\.\d+', result)
+                    scores = [float(number) for number in scores]
+                    if len(scores) != len(candidate_list):
+                        logger.info("All entities are created with equal scores.")
+                        scores = [1 / len(candidate_list)] * len(candidate_list)
+
+                # update
+                if len(candidate_list) == 0:
+                    candidate_list.append("[FINISH]")
+                candidates_relation = [entity['relation']] * len(candidate_list)
+                topic_entities = [entity['entity']] * len(candidate_list)
+                head_num = [entity['head']] * len(candidate_list)
+                total_candidates.extend(candidate_list)
+                total_scores.extend(scores)
+                total_relations.extend(candidates_relation)
+                total_topic_entities.extend(topic_entities)
+                total_head.extend(head_num)
+
+            # entity_prune
+            zipped = list(zip(total_relations, total_candidates, total_topic_entities, total_head, total_scores))
+            sorted_zipped = sorted(zipped, key=lambda x: x[4], reverse=True)
+            sorted_relations = list(map(lambda x: x[0], sorted_zipped))
+            sorted_candidates = list(map(lambda x: x[1], sorted_zipped))
+            sorted_topic_entities = list(map(lambda x: x[2], sorted_zipped))
+            sorted_head = list(map(lambda x: x[3], sorted_zipped))
+            sorted_scores = list(map(lambda x: x[4], sorted_zipped))
+
+            # prune according to width
+            relations = sorted_relations[:width]
+            candidates = sorted_candidates[:width]
+            topics = sorted_topic_entities[:width]
+            heads = sorted_head[:width]
+            scores = sorted_scores[:width]
+
+            # merge and output
+            merged_list = list(zip(relations, candidates, topics, heads, scores))
+            filtered_list = [(rel, ent, top, hea, score) for rel, ent, top, hea, score in merged_list if score != 0]
+            if len(filtered_list) == 0:
+                return False, [], [], [], []
+            relations, candidates, tops, heads, scores = map(list, zip(*filtered_list))
+            cluster_chain_of_entities = [[(tops[i], relations[i], candidates[i]) for i in range(len(candidates))]]
+            return True, cluster_chain_of_entities, candidates, relations, heads
+        except Exception as e:
+            logger.exception(f"Failed to find relevant entities by relation agent: {e}")
       
 
     async def _find_relevant_entities_vdb(self, query, top_k=5):
