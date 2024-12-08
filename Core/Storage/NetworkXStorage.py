@@ -6,7 +6,7 @@ from typing import Any, Union, cast
 import networkx as nx
 import numpy as np
 from pydantic import model_validator
-
+import asyncio
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
 from Core.Schema.CommunitySchema import LeidenInfo
@@ -152,9 +152,11 @@ class NetworkXStorage(BaseGraphStorage):
     ):
         self._graph.add_edge(source_node_id, target_node_id, **edge_data)
 
-    def _cluster_data_to_subgraphs(self, cluster_data: dict[str, list[dict[str, str]]]):
+    async def _cluster_data_to_subgraphs(self, cluster_data: dict[str, list[dict[str, str]]]):
         for node_id, clusters in cluster_data.items():
             self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
+        logger.info(f"Rewrite the graph with cluster data")
+        await self._persist(force=True)
 
     async def embed_nodes(self, algorithm: str) -> tuple[np.ndarray, list[str]]:
         if algorithm not in self._node_embed_algorithms:
@@ -179,18 +181,21 @@ class NetworkXStorage(BaseGraphStorage):
     async def persist(self, force):
         return await self._persist(force)
 
+    #TODO: remove to the basegraph class 
     async def get_nodes_data(self):
         node_list = list(self._graph.nodes())
-        nodes = []
-        for node_id in node_list:
-
+        
+        async def get_node_data(node_id):
+   
             node_data = await self.get_node(node_id)
-            if node_data.get("description", "") == "":
+            if "entity_name" not in node_data: node_data["entity_name"] = ""
+            elif node_data.get("description", "") == "":
                 node_data["content"] = node_data["entity_name"]
             else:
                 node_data["content"] = "{entity}: {description}".format(entity=node_data["entity_name"],
                                                                         description=node_data["description"])
-            nodes.append(node_data)
+            return node_data
+        nodes = await asyncio.gather(*[get_node_data(node) for node in node_list])
 
         return nodes
 
@@ -212,9 +217,8 @@ class NetworkXStorage(BaseGraphStorage):
     async def get_stable_largest_cc(self):
         return NetworkXStorage.stable_largest_connected_component(self._graph)
 
-    def cluster_data_to_subgraphs(self, cluster_data):
-        for node_id, clusters in cluster_data.items():
-            self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
+    async def cluster_data_to_subgraphs(self, cluster_data):
+        await self._cluster_data_to_subgraphs(cluster_data)
 
     async def get_community_schema(self):
         max_num_ids = 0
@@ -262,9 +266,8 @@ class NetworkXStorage(BaseGraphStorage):
             v.occurrence = len(v.chunk_ids) / max_num_ids
         return _schemas
 
-    async def get_node_metadata(self):
-
-        return {"entity_name": node for node in self._graph.nodes()}
+    async def get_node_metadata(self) -> list[str]:
+        return ["entity_name"]
 
     def get_node_num(self):
         return self._graph.number_of_nodes()

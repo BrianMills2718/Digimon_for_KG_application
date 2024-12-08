@@ -40,11 +40,11 @@
         "checkpoint": "\/home\/yingli\/HippoRAG\/exp\/colbertv2.0",
         "triples": "\/future\/u\/okhattab\/root\/unit\/experiments\/2021.10\/downstream.distillation.round2.2_score\/round2.nway6.cosine.ib\/examples.64.json",
         "collection": [
-            "list with 218 elements starting with...",
+            "list with 253 elements starting with...",
             [
-                "a christmas carol",
-                "charles dickens",
-                "arthur rackham"
+                "project gutenberg",
+                "united states",
+                "project gutenberg license"
             ]
         ],
         "queries": "\/future\/u\/okhattab\/data\/MSMARCO\/queries.train.tsv",
@@ -53,15 +53,15 @@
         "root": ".\/test_book\/debug_ppr",
         "experiment": "entities_vdb",
         "index_root": null,
-        "name": "2024-12\/06\/00.28.29",
+        "name": "2024-12\/07\/19.20.38",
         "rank": 0,
         "nranks": 1,
         "amp": true,
-        "gpus": 1,
+        "gpus": 8,
         "avoid_fork_if_possible": false
     },
     "num_chunks": 1,
     "num_partitions": 512,
-    "num_embeddings_est": 1502.000012397766,
-    "avg_doclen_est": 6.889908313751221
+    "num_embeddings_est": 1510.0000128746033,
+    "avg_doclen_est": 5.968379497528076
 }

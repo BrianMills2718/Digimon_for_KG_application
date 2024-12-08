@@ -10,7 +10,31 @@
 <key id="d2" for="node" attr.name="entity_type" attr.type="string"/>
 <key id="d1" for="node" attr.name="entity_name" attr.type="string"/>
 <key id="d0" for="node" attr.name="source_id" attr.type="string"/>
-<graph edgedefault="undirected"><node id="a christmas carol">
+<graph edgedefault="undirected"><node id="project gutenberg">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">project gutenberg</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="united states">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">united states</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="project gutenberg license">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">project gutenberg license</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="www gutenberg org">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">www gutenberg org</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="a christmas carol">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d1">a christmas carol</data>
   <data key="d2"></data>
@@ -28,9 +52,15 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="j  b  lippincott company">
+<node id="december 24  2007">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d1">j  b  lippincott company</data>
+  <data key="d1">december 24  2007</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="english">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">english</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -46,27 +76,45 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="united states">
+<node id="j  b  lippincott company">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d1">united states</data>
+  <data key="d1">j  b  lippincott company</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="project gutenberg">
+<node id="1915">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d1">project gutenberg</data>
+  <data key="d1">1915</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="www gutenberg org">
+<node id="suzanne shell">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d1">www gutenberg org</data>
+  <data key="d1">suzanne shell</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="pgdp net">
+<node id="janet blenkinship">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d1">pgdp net</data>
+  <data key="d1">janet blenkinship</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="online distributed proofreading team">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">online distributed proofreading team</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="http   www pgdp net">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">http   www pgdp net</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d1">scrooge</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -85,6 +133,12 @@
 <node id="tim cratchit">
   <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d1">tim cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="tiny tim">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">tiny tim</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -196,27 +250,21 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="scrooge">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">scrooge</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
 <node id="fezziwig">
   <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">fezziwig</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="marley">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">marley</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
 <node id="tim">
   <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d1">tim</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="marley">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-aff6f422ee038e5b2ff9990f93363cdd&lt;SEP&gt;chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d1">marley</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -232,33 +280,75 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
+<node id="old marley">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">old marley</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1"></data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="s">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">s</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="c">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">c</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="r">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">r</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="o">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">o</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="g">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">g</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="e">
+  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d1">e</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
 <node id="christmas">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d&lt;SEP&gt;chunk-167195a2f3d31885e7de4ba99cafd363</data>
   <data key="d1">christmas</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="city">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">city</data>
+<node id="parliament">
+  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d1">parliament</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="scrooge s nephew">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">scrooge s nephew</data>
+<node id="new year">
+  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d1">new year</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="mr  scrooge">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">mr  scrooge</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="st  dunstan">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">st  dunstan</data>
+<node id="bedlam">
+  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
+  <data key="d1">bedlam</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -268,15 +358,15 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="mansion house">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">mansion house</data>
+<node id="st  dunstan">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">st  dunstan</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="camden town">
+<node id="evil spirit">
   <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">camden town</data>
+  <data key="d1">evil spirit</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -286,8 +376,14 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
+<node id="camden town">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">camden town</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
 <node id="london">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d1">london</data>
   <data key="d2"></data>
   <data key="d3"></data>
@@ -298,987 +394,27 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="cain">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">cain</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="abel">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">abel</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="pharaoh">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">pharaoh</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="queen of sheba">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">queen of sheba</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="abraham">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">abraham</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="belshazzar">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">belshazzar</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="apostle">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">apostle</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="uncle">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">uncle</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="partner">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">partner</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="executor">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">executor</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="administrator">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">administrator</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="assign">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">assign</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="residuary legatee">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">residuary legatee</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="friend">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">friend</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="mourner">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">mourner</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="dead">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">dead</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="down a slide">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">down a slide</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in honour of">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">in honour of</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="out to dance">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">out to dance</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="with">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">with</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="what">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">what</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="you">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">you</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="how are you">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">how are you</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="will you let me in">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">will you let me in</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="blood horse">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">blood horse</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="church">
-  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d1">church</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="partner of marley">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">partner of marley</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="executor of marley s will">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">executor of marley s will</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="administrator of marley s estate">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">administrator of marley s estate</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="assign of marley s property">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">assign of marley s property</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="residuary legatee of marley s estate">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">residuary legatee of marley s estate</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="friend of marley">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">friend of marley</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="mourner of marley s death">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">mourner of marley s death</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="man of business">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">man of business</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="owner of scrooge and marley">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">owner of scrooge and marley</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="firm">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">firm</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="scrooge and marley">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">scrooge and marley</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="tight fisted">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">tight fisted</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="cold">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">cold</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="frosty">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">frosty</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="unaffected by weather">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">unaffected by weather</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="unaffected by human sympathy">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">unaffected by human sympathy</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="known by his reputation">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">known by his reputation</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="avoided by people">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">avoided by people</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="seen by blind men s dogs">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">seen by blind men s dogs</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="on christmas eve">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">on christmas eve</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in his counting house">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in his counting house</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in the city">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in the city</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in the foggy weather">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in the foggy weather</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in the cold weather">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in the cold weather</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in the dark">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in the dark</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in the counting house on christmas eve">
-  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d1">in the counting house on christmas eve</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="his counting house">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">his counting house</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="his own room">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">his own room</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="bah">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">bah</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="humbug">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">humbug</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="what right have you to be merry">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">what right have you to be merry</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="what reason have you to be merry">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">what reason have you to be merry</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="you re poor enough">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">you re poor enough</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="you re rich enough">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">you re rich enough</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="bah  again">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">bah  again</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="humbug  again">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">humbug  again</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="if i could work my will">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">if i could work my will</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and buried with a stake of holly through his heart">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">and buried with a stake of holly through his heart</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="nephew">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">nephew</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="keep christmas in your own way">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">keep christmas in your own way</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and let me keep it in mine">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">and let me keep it in mine</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="but you don t keep it">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">but you don t keep it</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="there are many things from which i might have derived good">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">there are many things from which i might have derived good</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="by which i have not profited">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">by which i have not profited</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="i dare say">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">i dare say</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="christmas among the rest">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">christmas among the rest</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="as a good time">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">as a good time</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="a kind  forgiving  charitable  pleasant time">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">a kind  forgiving  charitable  pleasant time</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="the only time i know of">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">the only time i know of</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="when men and women seem by one consent to open their shut up hearts freely">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">when men and women seem by one consent to open their shut up hearts freely</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and to think of people below them as if they really were fellow passengers to the grave">
-  <data key="d0">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d1">and to think of people below them as if they really were fellow passengers to the grave</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="kind  forgiving  charitable  pleasant time">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">kind  forgiving  charitable  pleasant time</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="fellow passengers to the grave">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">fellow passengers to the grave</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="clerk">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">clerk</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="speaker">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">speaker</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="gentlemen">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">gentlemen</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="poor">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">poor</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="prisons">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">prisons</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="union workhouses">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">union workhouses</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="christmas eve">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">christmas eve</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="christmas day">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">christmas day</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="new year s eve">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">new year s eve</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="new year s day">
-  <data key="d0">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d1">new year s day</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="gentleman">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">gentleman</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="treadmill and poor law">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">treadmill and poor law</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="i wish to be left alone">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">i wish to be left alone</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="i don t make merry myself at christmas">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">i don t make merry myself at christmas</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="i can t afford to make idle people merry">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">i can t afford to make idle people merry</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="i help to support the establishments">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">i help to support the establishments</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="if they would rather die  they had better do it">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">if they would rather die  they had better do it</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="it s not my business">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">it s not my business</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="it s enough for a man to understand his own business">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">it s enough for a man to understand his own business</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="mine occupies me constantly">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">mine occupies me constantly</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="good afternoon  gentlemen">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">good afternoon  gentlemen</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="from scrooge">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">from scrooge</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="his labours">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">his labours</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="an improved opinion of himself">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">an improved opinion of himself</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="a more facetious temper">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">a more facetious temper</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="fog">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">fog</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="so">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">so</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="about with flaring links">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">about with flaring links</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="people">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">people</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="invisible">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">invisible</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="the hours and quarters">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">the hours and quarters</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="labourers">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">labourers</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="repairing the gas pipes">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">repairing the gas pipes</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="lighted a great fire">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">lighted a great fire</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and turned to misanthropic ice">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">and turned to misanthropic ice</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="water plug">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">water plug</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="orders to his fifty cooks and butlers">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">orders to his fifty cooks and butlers</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="christmas as a lord mayor s household">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">christmas as a lord mayor s household</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="little tailor">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">little tailor</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="up to morrow s pudding">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">up to morrow s pudding</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="the evil spirit s nose">
-  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d1">the evil spirit s nose</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="drunk and bloodthirsty in the streets">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">drunk and bloodthirsty in the streets</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="pudding in his garret">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">pudding in his garret</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="to buy the beef">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">to buy the beef</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="with energy of action">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">with energy of action</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="his stool">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">his stool</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="to the expectant clerk">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">to the expectant clerk</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="you ll want all day to morrow">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">you ll want all day to morrow</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="it s not convenient">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">it s not convenient</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="it s not fair">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">it s not fair</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="you don t think me ill used when i pay a day s wages for no work">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">you don t think me ill used when i pay a day s wages for no work</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="to the chin">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">to the chin</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="with a growl">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">with a growl</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in his usual melancholy tavern">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">in his usual melancholy tavern</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="chambers which had once belonged to his deceased partner">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">chambers which had once belonged to his deceased partner</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="its every stone">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">its every stone</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="the knocker on the door">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">the knocker on the door</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="marley since his last mention of his seven years  dead partner">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">marley since his last mention of his seven years  dead partner</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
 <node id="marley s face">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d1">marley s face</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="his familiar weapons">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">his familiar weapons</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in london">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">in london</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="in england">
-  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d1">in england</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="like a bad lobster in a dark cellar">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">like a bad lobster in a dark cellar</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="with ghostly spectacles turned up on its ghostly forehead">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">with ghostly spectacles turned up on its ghostly forehead</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="he had relinquished">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">he had relinquished</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and lighted his candle">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">and lighted his candle</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="first">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">first</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="with a bang">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">with a bang</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="and walked across the hall">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">and walked across the hall</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="slowly">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">slowly</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="going on before him">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">going on before him</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="to see that all was right">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">to see that all was right</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="to take his gruel">
-  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d1">to take his gruel</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="dressing gown">
+<node id="dutch">
   <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">dressing gown</data>
+  <data key="d1">dutch</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="he">
+<node id="cains">
   <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">he</data>
+  <data key="d1">cains</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="slippers">
+<node id="abels">
   <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">slippers</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="nightcap">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">nightcap</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="before the fire">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">before the fire</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="gruel">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">gruel</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="face">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">face</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="seven years dead">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">seven years dead</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="old">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">old</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="figure">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">figure</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="figures">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">figures</data>
+  <data key="d1">abels</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
@@ -1288,38 +424,1148 @@
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
+<node id="queens of sheba">
+  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d1">queens of sheba</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="abrahams">
+  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d1">abrahams</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="belshazzars">
+  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d1">belshazzars</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="apostles">
+  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d1">apostles</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="ebook">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">ebook</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="ebooks">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">ebooks</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="character in">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">character in</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="clerk to ebenezer scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">clerk to ebenezer scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="son of bob cratchit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">son of bob cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="youngest son of bob cratchit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">youngest son of bob cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="kind hearted merchant">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">kind hearted merchant</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="nephew of scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">nephew of scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="phantom">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">phantom</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="spirit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">spirit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="generous spirit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">generous spirit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="hearty spirit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">hearty spirit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="apparition">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">apparition</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="spectre">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">spectre</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="marine store dealer">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">marine store dealer</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="receiver of stolen goods">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">receiver of stolen goods</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="grasping old man">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">grasping old man</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="surviving partner of scrooge and marley">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">surviving partner of scrooge and marley</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="fellow apprentice of scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">fellow apprentice of scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="old sweetheart of scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">old sweetheart of scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="wife of scrooge s debtor">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">wife of scrooge s debtor</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="wife of bob cratchit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">wife of bob cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="belinda cratchit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">belinda cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="daughter of bob cratchit">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">daughter of bob cratchit</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="laundress">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">laundress</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="sister of scrooge">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">sister of scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="partner of mr  fezziwig">
+  <data key="d0">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d1">partner of mr  fezziwig</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="what do you call this">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">what do you call this</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="bed curtains">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">bed curtains</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="dead">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">dead</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="clergyman">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">clergyman</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="clerk">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">clerk</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="undertaker">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">undertaker</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="chief mourner">
+  <data key="d0">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d1">chief mourner</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="partner">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">partner</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="executor">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">executor</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="administrator">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">administrator</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="assign">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">assign</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="residuary legatee">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">residuary legatee</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="friend">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">friend</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="mourner">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">mourner</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="excellent man of business">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">excellent man of business</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="before the play began">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">before the play began</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="old marley s name">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">old marley s name</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="above the warehouse door">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">above the warehouse door</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge and marley">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge and marley</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="the firm">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">the firm</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="people">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">people</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge scrooge">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge marley">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge marley</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="both names">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">both names</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="tight fisted hand at the grindstone">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">tight fisted hand at the grindstone</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="squeezing">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">squeezing</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="wrenching">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">wrenching</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="grasping">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">grasping</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scraping">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scraping</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="clutching">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">clutching</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="covetous old sinner">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">covetous old sinner</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="hard and sharp as flint">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">hard and sharp as flint</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="secret">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">secret</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="self contained">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">self contained</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="solitary as an oyster">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">solitary as an oyster</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="his office in the dog days">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">his office in the dog days</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="office at christmas">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">office at christmas</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="external heat and cold">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">external heat and cold</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="little influence on scrooge">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">little influence on scrooge</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no warmth">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no warmth</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no wintry weather">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no wintry weather</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no wind">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no wind</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="more intent upon its purpose">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">more intent upon its purpose</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no falling snow">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no falling snow</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="less open to entreaty">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">less open to entreaty</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no pelting rain">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no pelting rain</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="foul weather">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">foul weather</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="the heaviest rain">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">the heaviest rain</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="snow">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">snow</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="hail">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">hail</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="sleet">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">sleet</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="nobody">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">nobody</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge in the street">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge in the street</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="beggars">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">beggars</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge to bestow a trifle">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge to bestow a trifle</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="children">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">children</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge what it was o clock">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">scrooge what it was o clock</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="no man or woman">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">no man or woman</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="blind men s dogs">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">blind men s dogs</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="owners into doorways and up courts">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">owners into doorways and up courts</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="tails">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">tails</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="to edge his way along the crowded paths of life">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">to edge his way along the crowded paths of life</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="human sympathy">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">human sympathy</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="counting house">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">counting house</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="people in the court outside">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">people in the court outside</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="wheezing up and down">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">wheezing up and down</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="beating their hands upon their breasts">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">beating their hands upon their breasts</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="stamping their feet upon the pavement stones">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">stamping their feet upon the pavement stones</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="city clocks">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">city clocks</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="three">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">three</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="dark already">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">dark already</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="it">
+  <data key="d0">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d1">it</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="gentleman">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">gentleman</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="prisons">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">prisons</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="union workhouses">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">union workhouses</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="treadmill">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">treadmill</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="poor law">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">poor law</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="fundraising for the poor">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">fundraising for the poor</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="nothing">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">nothing</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="anonymous">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">anonymous</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="establishments">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">establishments</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="it s not his business">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">it s not his business</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="scrooge s response">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">scrooge s response</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="seeing it useless to pursue">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">seeing it useless to pursue</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="labours">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">labours</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="flaring links">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">flaring links</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="horses in carriages">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">horses in carriages</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="horses on their way">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">horses on their way</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="ancient tower of a church">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">ancient tower of a church</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="hours and quarters">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">hours and quarters</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="fire in a brazier">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">fire in a brazier</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="blaze">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">blaze</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="solitude">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">solitude</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="water plug">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">water plug</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="overflowings of water plug">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">overflowings of water plug</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="suddenly">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">suddenly</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="brightness of the shops">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">brightness of the shops</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="pale faces ruddy">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">pale faces ruddy</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="a glorious pageant">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">a glorious pageant</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="poulterers  and grocers  trades">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">poulterers  and grocers  trades</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="cooks and butlers">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">cooks and butlers</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="lord mayor s household should">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">lord mayor s household should</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="pudding">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">pudding</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="tailor">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">tailor</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="beef">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">beef</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="tailor s wife and baby">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">tailor s wife and baby</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="evil spirit s nose">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">evil spirit s nose</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="lusty purpose">
+  <data key="d0">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d1">lusty purpose</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="stool">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">stool</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="fact">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">fact</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="half a crown">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">half a crown</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="day s wages">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">day s wages</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="greatcoat">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">greatcoat</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="chambers">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">chambers</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="newspapers">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">newspapers</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="evening">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">evening</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="bed">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">bed</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="knocker">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">knocker</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="key">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">key</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="purpose">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">purpose</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="slide">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">slide</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="blind man s buff">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">blind man s buff</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="play">
+  <data key="d0">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d1">play</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="a man">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">a man</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="dismal light">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">dismal light</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="ghostly spectacles">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">ghostly spectacles</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="ghostly forehead">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">ghostly forehead</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="curiously stirred hair">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">curiously stirred hair</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="wide open eyes">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">wide open eyes</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="livid color">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">livid color</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="horrible">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">horrible</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="in spite of the face">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">in spite of the face</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="beyond its control">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">beyond its control</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="startled">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">startled</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="terrible sensation">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">terrible sensation</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="candle">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">candle</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="before he shut the door">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">before he shut the door</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="door">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">door</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="marley s pigtail">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">marley s pigtail</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="hall">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">hall</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="stairs">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">stairs</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="rooms">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">rooms</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="face">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">face</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="surprise">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">surprise</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="cravat">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">cravat</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="dressing gown">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">dressing gown</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="slippers">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">slippers</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="nightcap">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">nightcap</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="fire">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">fire</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="gruel">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">gruel</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
+<node id="low">
+  <data key="d0">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d1">low</data>
+  <data key="d2"></data>
+  <data key="d3"></data>
+</node>
 <node id="fireplace">
   <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
   <data key="d1">fireplace</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="built by dutch merchant">
+<node id="scriptures">
   <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">built by dutch merchant</data>
+  <data key="d1">scriptures</data>
   <data key="d2"></data>
   <data key="d3"></data>
 </node>
-<node id="paved with dutch tiles">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">paved with dutch tiles</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="designed to illustrate the scriptures">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">designed to illustrate the scriptures</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
-<node id="dutch tiles">
-  <data key="d0">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d1">dutch tiles</data>
-  <data key="d2"></data>
-  <data key="d3"></data>
-</node>
+<edge source="project gutenberg" target="ebook">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ebook</data>
+  <data key="d10">project gutenberg</data>
+</edge>
+<edge source="project gutenberg" target="united states">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">project gutenberg</data>
+  <data key="d10">united states</data>
+</edge>
+<edge source="project gutenberg" target="ebooks">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ebooks</data>
+  <data key="d10">project gutenberg</data>
+</edge>
+<edge source="project gutenberg" target="www gutenberg org">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">project gutenberg</data>
+  <data key="d10">www gutenberg org</data>
+</edge>
 <edge source="a christmas carol" target="charles dickens">
-  <data key="d4">2.0</data>
+  <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
@@ -1328,7 +1574,7 @@
   <data key="d10">charles dickens</data>
 </edge>
 <edge source="a christmas carol" target="arthur rackham">
-  <data key="d4">2.0</data>
+  <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
@@ -1336,17 +1582,26 @@
   <data key="d9">a christmas carol</data>
   <data key="d10">arthur rackham</data>
 </edge>
-<edge source="a christmas carol" target="j  b  lippincott company">
-  <data key="d4">2.0</data>
+<edge source="a christmas carol" target="december 24  2007">
+  <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">j  b  lippincott company</data>
+  <data key="d10">december 24  2007</data>
+</edge>
+<edge source="a christmas carol" target="english">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">a christmas carol</data>
+  <data key="d10">english</data>
 </edge>
 <edge source="a christmas carol" target="philadelphia">
-  <data key="d4">2.0</data>
+  <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
@@ -1355,7 +1610,7 @@
   <data key="d10">philadelphia</data>
 </edge>
 <edge source="a christmas carol" target="new york">
-  <data key="d4">2.0</data>
+  <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
@@ -1363,360 +1618,99 @@
   <data key="d9">a christmas carol</data>
   <data key="d10">new york</data>
 </edge>
-<edge source="a christmas carol" target="united states">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">united states</data>
-</edge>
-<edge source="a christmas carol" target="project gutenberg">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">project gutenberg</data>
-</edge>
-<edge source="a christmas carol" target="www gutenberg org">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">www gutenberg org</data>
-</edge>
-<edge source="a christmas carol" target="pgdp net">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">pgdp net</data>
-</edge>
-<edge source="a christmas carol" target="bob cratchit">
+<edge source="a christmas carol" target="j  b  lippincott company">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">bob cratchit</data>
+  <data key="d10">j  b  lippincott company</data>
 </edge>
-<edge source="a christmas carol" target="peter cratchit">
+<edge source="a christmas carol" target="1915">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">1915</data>
+  <data key="d10">a christmas carol</data>
+</edge>
+<edge source="a christmas carol" target="suzanne shell">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">peter cratchit</data>
+  <data key="d10">suzanne shell</data>
 </edge>
-<edge source="a christmas carol" target="tim cratchit">
+<edge source="a christmas carol" target="janet blenkinship">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">tim cratchit</data>
+  <data key="d10">janet blenkinship</data>
 </edge>
-<edge source="a christmas carol" target="mr  fezziwig">
+<edge source="a christmas carol" target="online distributed proofreading team">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">mr  fezziwig</data>
+  <data key="d10">online distributed proofreading team</data>
 </edge>
-<edge source="a christmas carol" target="fred">
+<edge source="a christmas carol" target="http   www pgdp net">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">a christmas carol</data>
-  <data key="d10">fred</data>
+  <data key="d10">http   www pgdp net</data>
 </edge>
-<edge source="a christmas carol" target="ghost of christmas past">
+<edge source="scrooge" target="character in">
   <data key="d4">1.0</data>
   <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">ghost of christmas past</data>
-</edge>
-<edge source="a christmas carol" target="ghost of christmas present">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">ghost of christmas present</data>
-</edge>
-<edge source="a christmas carol" target="ghost of christmas yet to come">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">ghost of christmas yet to come</data>
-</edge>
-<edge source="a christmas carol" target="ghost of jacob marley">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">ghost of jacob marley</data>
-</edge>
-<edge source="a christmas carol" target="joe">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">joe</data>
-</edge>
-<edge source="a christmas carol" target="ebenezer scrooge">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">ebenezer scrooge</data>
-</edge>
-<edge source="a christmas carol" target="mr  topper">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">mr  topper</data>
-</edge>
-<edge source="a christmas carol" target="dick wilkins">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">dick wilkins</data>
-</edge>
-<edge source="a christmas carol" target="belle">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">belle</data>
-</edge>
-<edge source="a christmas carol" target="caroline">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">caroline</data>
-</edge>
-<edge source="a christmas carol" target="mrs  cratchit">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">mrs  cratchit</data>
-</edge>
-<edge source="a christmas carol" target="belinda">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">belinda</data>
-</edge>
-<edge source="a christmas carol" target="martha cratchit">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">martha cratchit</data>
-</edge>
-<edge source="a christmas carol" target="mrs  dilber">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">mrs  dilber</data>
-</edge>
-<edge source="a christmas carol" target="fan">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">fan</data>
-</edge>
-<edge source="a christmas carol" target="mrs  fezziwig">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a christmas carol</data>
-  <data key="d10">mrs  fezziwig</data>
-</edge>
-<edge source="bob cratchit" target="scrooge">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bob cratchit</data>
+  <data key="d9">character in</data>
   <data key="d10">scrooge</data>
-</edge>
-<edge source="bob cratchit" target="down a slide">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bob cratchit</data>
-  <data key="d10">down a slide</data>
-</edge>
-<edge source="bob cratchit" target="in honour of">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bob cratchit</data>
-  <data key="d10">in honour of</data>
-</edge>
-<edge source="bob cratchit" target="cornhill">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bob cratchit</data>
-  <data key="d10">cornhill</data>
-</edge>
-<edge source="bob cratchit" target="camden town">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bob cratchit</data>
-  <data key="d10">camden town</data>
-</edge>
-<edge source="fred" target="scrooge">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fred</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="fred" target="how are you">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fred</data>
-  <data key="d10">how are you</data>
-</edge>
-<edge source="fred" target="will you let me in">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fred</data>
-  <data key="d10">will you let me in</data>
-</edge>
-<edge source="joe" target="scrooge">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">joe</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="joe" target="what">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">joe</data>
-  <data key="d10">what</data>
-</edge>
-<edge source="joe" target="you">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">joe</data>
-  <data key="d10">you</data>
-</edge>
-<edge source="scrooge" target="uncle">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">uncle</data>
 </edge>
 <edge source="scrooge" target="marley">
-  <data key="d4">3.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d4">11.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4&lt;SEP&gt;chunk-83b453141113eb22d088292ab927dab5&lt;SEP&gt;chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">marley</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="partner">
+<edge source="scrooge" target="fred">
   <data key="d4">1.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">partner</data>
+  <data key="d9">fred</data>
   <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="tim">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">scrooge</data>
+  <data key="d10">tim</data>
 </edge>
 <edge source="scrooge" target="executor">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
@@ -1725,7 +1719,7 @@
 </edge>
 <edge source="scrooge" target="administrator">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
@@ -1734,7 +1728,7 @@
 </edge>
 <edge source="scrooge" target="assign">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
@@ -1743,7 +1737,7 @@
 </edge>
 <edge source="scrooge" target="residuary legatee">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
@@ -1752,7 +1746,7 @@
 </edge>
 <edge source="scrooge" target="friend">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
@@ -1761,506 +1755,281 @@
 </edge>
 <edge source="scrooge" target="mourner">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">mourner</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="fezziwig">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fezziwig</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="partner of marley">
+<edge source="scrooge" target="excellent man of business">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">partner of marley</data>
+  <data key="d9">excellent man of business</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="executor of marley s will">
+<edge source="scrooge" target="old marley s name">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">executor of marley s will</data>
+  <data key="d9">old marley s name</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="administrator of marley s estate">
+<edge source="scrooge" target="both names">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">administrator of marley s estate</data>
+  <data key="d9">both names</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="assign of marley s property">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">assign of marley s property</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="residuary legatee of marley s estate">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">residuary legatee of marley s estate</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="friend of marley">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">friend of marley</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="mourner of marley s death">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">mourner of marley s death</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="man of business">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">man of business</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="owner of scrooge and marley">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">owner of scrooge and marley</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="tight fisted">
+<edge source="scrooge" target="tight fisted hand at the grindstone">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">tight fisted</data>
+  <data key="d10">tight fisted hand at the grindstone</data>
 </edge>
-<edge source="scrooge" target="cold">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">cold</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="frosty">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">frosty</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="unaffected by weather">
+<edge source="scrooge" target="squeezing">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">unaffected by weather</data>
+  <data key="d10">squeezing</data>
 </edge>
-<edge source="scrooge" target="unaffected by human sympathy">
+<edge source="scrooge" target="wrenching">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">unaffected by human sympathy</data>
+  <data key="d10">wrenching</data>
 </edge>
-<edge source="scrooge" target="known by his reputation">
+<edge source="scrooge" target="grasping">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">known by his reputation</data>
+  <data key="d9">grasping</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="avoided by people">
+<edge source="scrooge" target="scraping">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">avoided by people</data>
+  <data key="d9">scraping</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="seen by blind men s dogs">
+<edge source="scrooge" target="clutching">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">clutching</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="covetous old sinner">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">covetous old sinner</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="hard and sharp as flint">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">hard and sharp as flint</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="secret">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">seen by blind men s dogs</data>
+  <data key="d10">secret</data>
 </edge>
-<edge source="scrooge" target="on christmas eve">
+<edge source="scrooge" target="self contained">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">on christmas eve</data>
-  <data key="d10">scrooge</data>
+  <data key="d9">scrooge</data>
+  <data key="d10">self contained</data>
 </edge>
-<edge source="scrooge" target="in his counting house">
+<edge source="scrooge" target="solitary as an oyster">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in his counting house</data>
-  <data key="d10">scrooge</data>
+  <data key="d9">scrooge</data>
+  <data key="d10">solitary as an oyster</data>
 </edge>
-<edge source="scrooge" target="in the city">
+<edge source="scrooge" target="his office in the dog days">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in the city</data>
+  <data key="d9">his office in the dog days</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="in the foggy weather">
+<edge source="scrooge" target="office at christmas">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in the foggy weather</data>
+  <data key="d9">office at christmas</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="in the cold weather">
+<edge source="scrooge" target="no warmth">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in the cold weather</data>
+  <data key="d9">no warmth</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="in the dark">
+<edge source="scrooge" target="no wintry weather">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in the dark</data>
+  <data key="d9">no wintry weather</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="in the counting house on christmas eve">
+<edge source="scrooge" target="no wind">
   <data key="d4">1.0</data>
   <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in the counting house on christmas eve</data>
+  <data key="d9">no wind</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="his counting house">
+<edge source="scrooge" target="foul weather">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">his counting house</data>
+  <data key="d9">foul weather</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="his own room">
+<edge source="scrooge" target="the heaviest rain">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">his own room</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="scrooge s nephew">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">scrooge s nephew</data>
+  <data key="d10">the heaviest rain</data>
 </edge>
-<edge source="scrooge" target="bah">
+<edge source="scrooge" target="snow">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">bah</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="humbug">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">humbug</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="what right have you to be merry">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">what right have you to be merry</data>
+  <data key="d10">snow</data>
 </edge>
-<edge source="scrooge" target="what reason have you to be merry">
+<edge source="scrooge" target="hail">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">hail</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="sleet">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">what reason have you to be merry</data>
+  <data key="d10">sleet</data>
 </edge>
-<edge source="scrooge" target="you re poor enough">
+<edge source="scrooge" target="no man or woman">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">no man or woman</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="blind men s dogs">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">blind men s dogs</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="to edge his way along the crowded paths of life">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">you re poor enough</data>
+  <data key="d10">to edge his way along the crowded paths of life</data>
 </edge>
-<edge source="scrooge" target="you re rich enough">
+<edge source="scrooge" target="human sympathy">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">you re rich enough</data>
+  <data key="d9">human sympathy</data>
+  <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="bah  again">
+<edge source="scrooge" target="counting house">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">bah  again</data>
+  <data key="d9">counting house</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="humbug  again">
+<edge source="scrooge" target="people in the court outside">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">humbug  again</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="if i could work my will">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">if i could work my will</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">every idiot who goes about with  merry christmas  on his lips should be boiled with his own pudding</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="and buried with a stake of holly through his heart">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">and buried with a stake of holly through his heart</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="nephew">
-  <data key="d4">5.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">nephew</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="keep christmas in your own way">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">keep christmas in your own way</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="and let me keep it in mine">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">and let me keep it in mine</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="christmas">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">christmas</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="kind  forgiving  charitable  pleasant time">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">kind  forgiving  charitable  pleasant time</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="fellow passengers to the grave">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fellow passengers to the grave</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="clerk">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">clerk</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="speaker">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">speaker</data>
-</edge>
-<edge source="scrooge" target="gentlemen">
-  <data key="d4">2.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">gentlemen</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="poor">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">poor</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="prisons">
-  <data key="d4">3.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">prisons</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="union workhouses">
-  <data key="d4">3.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363&lt;SEP&gt;chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">union workhouses</data>
-</edge>
-<edge source="scrooge" target="christmas eve">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">christmas eve</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="christmas day">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">christmas day</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="new year s eve">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">new year s eve</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="new year s day">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-167195a2f3d31885e7de4ba99cafd363</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">new year s day</data>
+  <data key="d9">people in the court outside</data>
   <data key="d10">scrooge</data>
 </edge>
 <edge source="scrooge" target="gentleman">
@@ -2272,283 +2041,184 @@
   <data key="d9">gentleman</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="treadmill and poor law">
+<edge source="scrooge" target="prisons">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">treadmill and poor law</data>
+  <data key="d9">prisons</data>
+  <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="i wish to be left alone">
+<edge source="scrooge" target="nothing">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">i wish to be left alone</data>
+  <data key="d9">nothing</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="i don t make merry myself at christmas">
+<edge source="scrooge" target="anonymous">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">i don t make merry myself at christmas</data>
+  <data key="d9">anonymous</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="i can t afford to make idle people merry">
+<edge source="scrooge" target="establishments">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">i can t afford to make idle people merry</data>
+  <data key="d9">establishments</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="i help to support the establishments">
+<edge source="scrooge" target="it s not his business">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">i help to support the establishments</data>
+  <data key="d9">it s not his business</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="if they would rather die  they had better do it">
+<edge source="scrooge" target="labours">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">if they would rather die  they had better do it</data>
+  <data key="d9">labours</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="it s not my business">
+<edge source="scrooge" target="ancient tower of a church">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">it s not my business</data>
+  <data key="d9">ancient tower of a church</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="it s enough for a man to understand his own business">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">it s enough for a man to understand his own business</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="mine occupies me constantly">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">mine occupies me constantly</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="good afternoon  gentlemen">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">good afternoon  gentlemen</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="his labours">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">his labours</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="an improved opinion of himself">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">an improved opinion of himself</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="a more facetious temper">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a more facetious temper</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="drunk and bloodthirsty in the streets">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">drunk and bloodthirsty in the streets</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="pudding in his garret">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">pudding in his garret</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="to buy the beef">
+<edge source="scrooge" target="stool">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">to buy the beef</data>
+  <data key="d10">stool</data>
 </edge>
-<edge source="scrooge" target="with energy of action">
+<edge source="scrooge" target="fact">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">with energy of action</data>
-</edge>
-<edge source="scrooge" target="his stool">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">his stool</data>
+  <data key="d9">fact</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="to the expectant clerk">
+<edge source="scrooge" target="half a crown">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">to the expectant clerk</data>
-</edge>
-<edge source="scrooge" target="you ll want all day to morrow">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">you ll want all day to morrow</data>
-</edge>
-<edge source="scrooge" target="it s not convenient">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">it s not convenient</data>
+  <data key="d9">half a crown</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="it s not fair">
+<edge source="scrooge" target="day s wages">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">it s not fair</data>
+  <data key="d9">day s wages</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="you don t think me ill used when i pay a day s wages for no work">
+<edge source="scrooge" target="greatcoat">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">you don t think me ill used when i pay a day s wages for no work</data>
-</edge>
-<edge source="scrooge" target="to the chin">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">to the chin</data>
-</edge>
-<edge source="scrooge" target="with a growl">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">with a growl</data>
-</edge>
-<edge source="scrooge" target="in his usual melancholy tavern">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">in his usual melancholy tavern</data>
+  <data key="d9">greatcoat</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="chambers which had once belonged to his deceased partner">
+<edge source="scrooge" target="chambers">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">chambers which had once belonged to his deceased partner</data>
+  <data key="d9">chambers</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="its every stone">
+<edge source="scrooge" target="newspapers">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">its every stone</data>
+  <data key="d9">newspapers</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="the knocker on the door">
+<edge source="scrooge" target="evening">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">the knocker on the door</data>
+  <data key="d9">evening</data>
+  <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="marley since his last mention of his seven years  dead partner">
+<edge source="scrooge" target="bed">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">marley since his last mention of his seven years  dead partner</data>
+  <data key="d9">bed</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="knocker">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">knocker</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="key">
+  <data key="d4">3.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">key</data>
   <data key="d10">scrooge</data>
 </edge>
 <edge source="scrooge" target="marley s face">
-  <data key="d4">2.0</data>
+  <data key="d4">3.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">marley s face</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="a man">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">a man</data>
   <data key="d10">scrooge</data>
 </edge>
 <edge source="scrooge" target="city of london">
@@ -2560,104 +2230,428 @@
   <data key="d9">city of london</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="he had relinquished">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">he had relinquished</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="and lighted his candle">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">and lighted his candle</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="first">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">first</data>
-  <data key="d10">scrooge</data>
-</edge>
-<edge source="scrooge" target="with a bang">
+<edge source="scrooge" target="startled">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">with a bang</data>
+  <data key="d10">startled</data>
 </edge>
-<edge source="scrooge" target="and walked across the hall">
+<edge source="scrooge" target="terrible sensation">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">and walked across the hall</data>
+  <data key="d9">scrooge</data>
+  <data key="d10">terrible sensation</data>
+</edge>
+<edge source="scrooge" target="candle">
+  <data key="d4">2.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">candle</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="slowly">
+<edge source="scrooge" target="before he shut the door">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">scrooge</data>
-  <data key="d10">slowly</data>
-</edge>
-<edge source="scrooge" target="going on before him">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">going on before him</data>
+  <data key="d9">before he shut the door</data>
   <data key="d10">scrooge</data>
 </edge>
-<edge source="scrooge" target="to see that all was right">
+<edge source="scrooge" target="door">
+  <data key="d4">4.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">door</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="marley s pigtail">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">marley s pigtail</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="hall">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">hall</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="stairs">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">to see that all was right</data>
+  <data key="d10">stairs</data>
 </edge>
-<edge source="scrooge" target="to take his gruel">
+<edge source="scrooge" target="rooms">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">rooms</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="face">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">face</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="surprise">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">scrooge</data>
-  <data key="d10">to take his gruel</data>
+  <data key="d10">surprise</data>
 </edge>
-<edge source="fezziwig" target="out to dance">
+<edge source="scrooge" target="cravat">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">cravat</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="dressing gown">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">dressing gown</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="slippers">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">scrooge</data>
+  <data key="d10">slippers</data>
+</edge>
+<edge source="scrooge" target="nightcap">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">nightcap</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="fire">
+  <data key="d4">2.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fire</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="scrooge" target="gruel">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gruel</data>
+  <data key="d10">scrooge</data>
+</edge>
+<edge source="bob cratchit" target="clerk to ebenezer scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">bob cratchit</data>
+  <data key="d10">clerk to ebenezer scrooge</data>
+</edge>
+<edge source="bob cratchit" target="cornhill">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">bob cratchit</data>
+  <data key="d10">cornhill</data>
+</edge>
+<edge source="bob cratchit" target="slide">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">bob cratchit</data>
+  <data key="d10">slide</data>
+</edge>
+<edge source="bob cratchit" target="blind man s buff">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">blind man s buff</data>
+  <data key="d10">bob cratchit</data>
+</edge>
+<edge source="peter cratchit" target="son of bob cratchit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">peter cratchit</data>
+  <data key="d10">son of bob cratchit</data>
+</edge>
+<edge source="tim cratchit" target="youngest son of bob cratchit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">tim cratchit</data>
+  <data key="d10">youngest son of bob cratchit</data>
+</edge>
+<edge source="tim cratchit" target="tiny tim">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">tim cratchit</data>
+  <data key="d10">tiny tim</data>
+</edge>
+<edge source="mr  fezziwig" target="kind hearted merchant">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">kind hearted merchant</data>
+  <data key="d10">mr  fezziwig</data>
+</edge>
+<edge source="fred" target="nephew of scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fred</data>
+  <data key="d10">nephew of scrooge</data>
+</edge>
+<edge source="ghost of christmas past" target="phantom">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghost of christmas past</data>
+  <data key="d10">phantom</data>
+</edge>
+<edge source="ghost of christmas present" target="spirit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghost of christmas present</data>
+  <data key="d10">spirit</data>
+</edge>
+<edge source="ghost of christmas present" target="generous spirit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">generous spirit</data>
+  <data key="d10">ghost of christmas present</data>
+</edge>
+<edge source="ghost of christmas present" target="hearty spirit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghost of christmas present</data>
+  <data key="d10">hearty spirit</data>
+</edge>
+<edge source="ghost of christmas yet to come" target="apparition">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">apparition</data>
+  <data key="d10">ghost of christmas yet to come</data>
+</edge>
+<edge source="ghost of jacob marley" target="spectre">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghost of jacob marley</data>
+  <data key="d10">spectre</data>
+</edge>
+<edge source="joe" target="marine store dealer">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">joe</data>
+  <data key="d10">marine store dealer</data>
+</edge>
+<edge source="joe" target="receiver of stolen goods">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">joe</data>
+  <data key="d10">receiver of stolen goods</data>
+</edge>
+<edge source="joe" target="what do you call this">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">joe</data>
+  <data key="d10">what do you call this</data>
+</edge>
+<edge source="joe" target="bed curtains">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">bed curtains</data>
+  <data key="d10">joe</data>
+</edge>
+<edge source="ebenezer scrooge" target="grasping old man">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ebenezer scrooge</data>
+  <data key="d10">grasping old man</data>
+</edge>
+<edge source="ebenezer scrooge" target="surviving partner of scrooge and marley">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ebenezer scrooge</data>
+  <data key="d10">surviving partner of scrooge and marley</data>
+</edge>
+<edge source="dick wilkins" target="fellow apprentice of scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">dick wilkins</data>
+  <data key="d10">fellow apprentice of scrooge</data>
+</edge>
+<edge source="belle" target="old sweetheart of scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">belle</data>
+  <data key="d10">old sweetheart of scrooge</data>
+</edge>
+<edge source="caroline" target="wife of scrooge s debtor">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">caroline</data>
+  <data key="d10">wife of scrooge s debtor</data>
+</edge>
+<edge source="mrs  cratchit" target="wife of bob cratchit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">mrs  cratchit</data>
+  <data key="d10">wife of bob cratchit</data>
+</edge>
+<edge source="martha cratchit" target="daughter of bob cratchit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">daughter of bob cratchit</data>
+  <data key="d10">martha cratchit</data>
+</edge>
+<edge source="mrs  dilber" target="laundress">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">laundress</data>
+  <data key="d10">mrs  dilber</data>
+</edge>
+<edge source="fan" target="sister of scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fan</data>
+  <data key="d10">sister of scrooge</data>
+</edge>
+<edge source="mrs  fezziwig" target="partner of mr  fezziwig">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">mrs  fezziwig</data>
+  <data key="d10">partner of mr  fezziwig</data>
+</edge>
+<edge source="mrs  fezziwig" target="fezziwig">
   <data key="d4">1.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">fezziwig</data>
-  <data key="d10">out to dance</data>
-</edge>
-<edge source="fezziwig" target="with">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fezziwig</data>
-  <data key="d10">with</data>
+  <data key="d10">mrs  fezziwig</data>
 </edge>
 <edge source="marley" target="dead">
   <data key="d4">2.0</data>
@@ -2668,68 +2662,59 @@
   <data key="d9">dead</data>
   <data key="d10">marley</data>
 </edge>
-<edge source="marley" target="partner">
+<edge source="marley" target="clergyman">
   <data key="d4">1.0</data>
   <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">clergyman</data>
+  <data key="d10">marley</data>
+</edge>
+<edge source="marley" target="clerk">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">clerk</data>
+  <data key="d10">marley</data>
+</edge>
+<edge source="marley" target="undertaker">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">marley</data>
+  <data key="d10">undertaker</data>
+</edge>
+<edge source="marley" target="chief mourner">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">chief mourner</data>
+  <data key="d10">marley</data>
+</edge>
+<edge source="marley" target="partner">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">marley</data>
   <data key="d10">partner</data>
 </edge>
-<edge source="marley" target="executor">
+<edge source="marley" target="before the play began">
   <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">executor</data>
+  <data key="d9">before the play began</data>
   <data key="d10">marley</data>
-</edge>
-<edge source="marley" target="administrator">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">administrator</data>
-  <data key="d10">marley</data>
-</edge>
-<edge source="marley" target="assign">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">assign</data>
-  <data key="d10">marley</data>
-</edge>
-<edge source="marley" target="residuary legatee">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">marley</data>
-  <data key="d10">residuary legatee</data>
-</edge>
-<edge source="marley" target="friend">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">friend</data>
-  <data key="d10">marley</data>
-</edge>
-<edge source="marley" target="mourner">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">marley</data>
-  <data key="d10">mourner</data>
 </edge>
 <edge source="marley" target="face">
   <data key="d4">1.0</data>
@@ -2740,454 +2725,562 @@
   <data key="d9">face</data>
   <data key="d10">marley</data>
 </edge>
-<edge source="marley" target="seven years dead">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">marley</data>
-  <data key="d10">seven years dead</data>
-</edge>
-<edge source="marley" target="old">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">marley</data>
-  <data key="d10">old</data>
-</edge>
-<edge source="tim" target="blood horse">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">blood horse</data>
-  <data key="d10">tim</data>
-</edge>
-<edge source="tim" target="church">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-83b453141113eb22d088292ab927dab5</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">church</data>
-  <data key="d10">tim</data>
-</edge>
-<edge source="scrooge s nephew" target="uncle">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge s nephew</data>
-  <data key="d10">uncle</data>
-</edge>
-<edge source="scrooge s nephew" target="but you don t keep it">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">but you don t keep it</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="there are many things from which i might have derived good">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge s nephew</data>
-  <data key="d10">there are many things from which i might have derived good</data>
-</edge>
-<edge source="scrooge s nephew" target="by which i have not profited">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">by which i have not profited</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="i dare say">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">i dare say</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="christmas among the rest">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">christmas among the rest</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="as a good time">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">as a good time</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="a kind  forgiving  charitable  pleasant time">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">a kind  forgiving  charitable  pleasant time</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="scrooge s nephew" target="the only time i know of">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge s nephew</data>
-  <data key="d10">the only time i know of</data>
-</edge>
-<edge source="scrooge s nephew" target="when men and women seem by one consent to open their shut up hearts freely">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">scrooge s nephew</data>
-  <data key="d10">when men and women seem by one consent to open their shut up hearts freely</data>
-</edge>
-<edge source="scrooge s nephew" target="and to think of people below them as if they really were fellow passengers to the grave">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-90b2a67c265ac95538c8556696d41e85</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">and to think of people below them as if they really were fellow passengers to the grave</data>
-  <data key="d10">scrooge s nephew</data>
-</edge>
-<edge source="st  dunstan" target="the evil spirit s nose">
+<edge source="lord mayor" target="cooks and butlers">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">st  dunstan</data>
-  <data key="d10">the evil spirit s nose</data>
+  <data key="d9">cooks and butlers</data>
+  <data key="d10">lord mayor</data>
 </edge>
-<edge source="st  dunstan" target="his familiar weapons">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">his familiar weapons</data>
-  <data key="d10">st  dunstan</data>
-</edge>
-<edge source="lord mayor" target="orders to his fifty cooks and butlers">
+<edge source="lord mayor" target="lord mayor s household should">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">lord mayor</data>
-  <data key="d10">orders to his fifty cooks and butlers</data>
+  <data key="d10">lord mayor s household should</data>
 </edge>
-<edge source="lord mayor" target="christmas as a lord mayor s household">
+<edge source="st  dunstan" target="evil spirit s nose">
+  <data key="d4">2.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc&lt;SEP&gt;chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">evil spirit s nose</data>
+  <data key="d10">st  dunstan</data>
+</edge>
+<edge source="st  dunstan" target="lusty purpose">
   <data key="d4">1.0</data>
   <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">christmas as a lord mayor s household</data>
-  <data key="d10">lord mayor</data>
+  <data key="d9">lusty purpose</data>
+  <data key="d10">st  dunstan</data>
 </edge>
-<edge source="camden town" target="in london">
+<edge source="evil spirit" target="purpose">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">camden town</data>
-  <data key="d10">in london</data>
+  <data key="d9">evil spirit</data>
+  <data key="d10">purpose</data>
 </edge>
-<edge source="cornhill" target="in london">
+<edge source="cornhill" target="slide">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">cornhill</data>
-  <data key="d10">in london</data>
+  <data key="d10">slide</data>
 </edge>
-<edge source="london" target="in england">
+<edge source="camden town" target="play">
   <data key="d4">1.0</data>
   <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">in england</data>
+  <data key="d9">camden town</data>
+  <data key="d10">play</data>
+</edge>
+<edge source="london" target="london">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-9b250b490516cb0f92c5f5f8736a341d</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">london</data>
   <data key="d10">london</data>
 </edge>
-<edge source="cain" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">cain</data>
-  <data key="d10">figure</data>
-</edge>
-<edge source="abel" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">abel</data>
-  <data key="d10">figure</data>
-</edge>
-<edge source="queen of sheba" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">figure</data>
-  <data key="d10">queen of sheba</data>
-</edge>
-<edge source="abraham" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">abraham</data>
-  <data key="d10">figure</data>
-</edge>
-<edge source="belshazzar" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">belshazzar</data>
-  <data key="d10">figure</data>
-</edge>
-<edge source="apostle" target="figure">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">apostle</data>
-  <data key="d10">figure</data>
-</edge>
-<edge source="church" target="invisible">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">church</data>
-  <data key="d10">invisible</data>
-</edge>
-<edge source="church" target="the hours and quarters">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">church</data>
-  <data key="d10">the hours and quarters</data>
-</edge>
-<edge source="firm" target="scrooge and marley">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">firm</data>
-  <data key="d10">scrooge and marley</data>
-</edge>
-<edge source="gentlemen" target="from scrooge">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">from scrooge</data>
-  <data key="d10">gentlemen</data>
-</edge>
-<edge source="fog" target="so">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fog</data>
-  <data key="d10">so</data>
-</edge>
-<edge source="about with flaring links" target="people">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">about with flaring links</data>
-  <data key="d10">people</data>
-</edge>
-<edge source="labourers" target="repairing the gas pipes">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">labourers</data>
-  <data key="d10">repairing the gas pipes</data>
-</edge>
-<edge source="labourers" target="lighted a great fire">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">labourers</data>
-  <data key="d10">lighted a great fire</data>
-</edge>
-<edge source="and turned to misanthropic ice" target="water plug">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">and turned to misanthropic ice</data>
-  <data key="d10">water plug</data>
-</edge>
-<edge source="little tailor" target="up to morrow s pudding">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">little tailor</data>
-  <data key="d10">up to morrow s pudding</data>
-</edge>
-<edge source="marley s face" target="like a bad lobster in a dark cellar">
+<edge source="marley s face" target="dismal light">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">like a bad lobster in a dark cellar</data>
+  <data key="d9">dismal light</data>
   <data key="d10">marley s face</data>
 </edge>
-<edge source="marley s face" target="with ghostly spectacles turned up on its ghostly forehead">
+<edge source="marley s face" target="ghostly spectacles">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghostly spectacles</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="ghostly forehead">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ghostly forehead</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="curiously stirred hair">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">curiously stirred hair</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="wide open eyes">
   <data key="d4">1.0</data>
   <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
   <data key="d9">marley s face</data>
-  <data key="d10">with ghostly spectacles turned up on its ghostly forehead</data>
+  <data key="d10">wide open eyes</data>
 </edge>
-<edge source="dressing gown" target="he">
+<edge source="marley s face" target="livid color">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">livid color</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="horrible">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">horrible</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="in spite of the face">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">in spite of the face</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="marley s face" target="beyond its control">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">beyond its control</data>
+  <data key="d10">marley s face</data>
+</edge>
+<edge source="dutch" target="fireplace">
   <data key="d4">1.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">dressing gown</data>
-  <data key="d10">he</data>
-</edge>
-<edge source="he" target="slippers">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">he</data>
-  <data key="d10">slippers</data>
-</edge>
-<edge source="he" target="nightcap">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">he</data>
-  <data key="d10">nightcap</data>
-</edge>
-<edge source="he" target="before the fire">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">before the fire</data>
-  <data key="d10">he</data>
-</edge>
-<edge source="he" target="gruel">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">gruel</data>
-  <data key="d10">he</data>
-</edge>
-<edge source="old" target="fireplace">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">fireplace</data>
-  <data key="d10">old</data>
-</edge>
-<edge source="figures" target="pharaoh s daughters">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">figures</data>
-  <data key="d10">pharaoh s daughters</data>
-</edge>
-<edge source="fireplace" target="built by dutch merchant">
-  <data key="d4">1.0</data>
-  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
-  <data key="d6"></data>
-  <data key="d7"></data>
-  <data key="d8"></data>
-  <data key="d9">built by dutch merchant</data>
+  <data key="d9">dutch</data>
   <data key="d10">fireplace</data>
 </edge>
-<edge source="fireplace" target="paved with dutch tiles">
+<edge source="cains" target="scriptures">
   <data key="d4">1.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">fireplace</data>
-  <data key="d10">paved with dutch tiles</data>
+  <data key="d9">cains</data>
+  <data key="d10">scriptures</data>
 </edge>
-<edge source="designed to illustrate the scriptures" target="dutch tiles">
+<edge source="abels" target="scriptures">
   <data key="d4">1.0</data>
   <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
   <data key="d6"></data>
   <data key="d7"></data>
   <data key="d8"></data>
-  <data key="d9">designed to illustrate the scriptures</data>
-  <data key="d10">dutch tiles</data>
+  <data key="d9">abels</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="pharaoh s daughters" target="scriptures">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">pharaoh s daughters</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="queens of sheba" target="scriptures">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">queens of sheba</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="abrahams" target="scriptures">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">abrahams</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="belshazzars" target="scriptures">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">belshazzars</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="apostles" target="scriptures">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-aff6f422ee038e5b2ff9990f93363cdd</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">apostles</data>
+  <data key="d10">scriptures</data>
+</edge>
+<edge source="belinda cratchit" target="daughter of bob cratchit">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-d5cb63c91e4bea751bf090388c7859e9</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">belinda cratchit</data>
+  <data key="d10">daughter of bob cratchit</data>
+</edge>
+<edge source="old marley s name" target="above the warehouse door">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">above the warehouse door</data>
+  <data key="d10">old marley s name</data>
+</edge>
+<edge source="scrooge and marley" target="the firm">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">scrooge and marley</data>
+  <data key="d10">the firm</data>
+</edge>
+<edge source="people" target="scrooge scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">people</data>
+  <data key="d10">scrooge scrooge</data>
+</edge>
+<edge source="people" target="scrooge marley">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">people</data>
+  <data key="d10">scrooge marley</data>
+</edge>
+<edge source="people" target="wheezing up and down">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">people</data>
+  <data key="d10">wheezing up and down</data>
+</edge>
+<edge source="people" target="beating their hands upon their breasts">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">beating their hands upon their breasts</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="people" target="stamping their feet upon the pavement stones">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">people</data>
+  <data key="d10">stamping their feet upon the pavement stones</data>
+</edge>
+<edge source="people" target="flaring links">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">flaring links</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="people" target="horses in carriages">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">horses in carriages</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="people" target="horses on their way">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">horses on their way</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="people" target="fire in a brazier">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fire in a brazier</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="people" target="blaze">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">blaze</data>
+  <data key="d10">people</data>
+</edge>
+<edge source="external heat and cold" target="little influence on scrooge">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">external heat and cold</data>
+  <data key="d10">little influence on scrooge</data>
+</edge>
+<edge source="more intent upon its purpose" target="no falling snow">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">more intent upon its purpose</data>
+  <data key="d10">no falling snow</data>
+</edge>
+<edge source="less open to entreaty" target="no pelting rain">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">less open to entreaty</data>
+  <data key="d10">no pelting rain</data>
+</edge>
+<edge source="nobody" target="scrooge in the street">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">nobody</data>
+  <data key="d10">scrooge in the street</data>
+</edge>
+<edge source="beggars" target="scrooge to bestow a trifle">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">beggars</data>
+  <data key="d10">scrooge to bestow a trifle</data>
+</edge>
+<edge source="children" target="scrooge what it was o clock">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">children</data>
+  <data key="d10">scrooge what it was o clock</data>
+</edge>
+<edge source="blind men s dogs" target="owners into doorways and up courts">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">blind men s dogs</data>
+  <data key="d10">owners into doorways and up courts</data>
+</edge>
+<edge source="blind men s dogs" target="tails">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">blind men s dogs</data>
+  <data key="d10">tails</data>
+</edge>
+<edge source="city clocks" target="three">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">city clocks</data>
+  <data key="d10">three</data>
+</edge>
+<edge source="dark already" target="it">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-3f91b711e91ce83668562edd142135a4</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">dark already</data>
+  <data key="d10">it</data>
+</edge>
+<edge source="gentleman" target="union workhouses">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gentleman</data>
+  <data key="d10">union workhouses</data>
+</edge>
+<edge source="gentleman" target="treadmill">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gentleman</data>
+  <data key="d10">treadmill</data>
+</edge>
+<edge source="gentleman" target="poor law">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gentleman</data>
+  <data key="d10">poor law</data>
+</edge>
+<edge source="gentleman" target="fundraising for the poor">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fundraising for the poor</data>
+  <data key="d10">gentleman</data>
+</edge>
+<edge source="gentleman" target="scrooge s response">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gentleman</data>
+  <data key="d10">scrooge s response</data>
+</edge>
+<edge source="gentleman" target="seeing it useless to pursue">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">gentleman</data>
+  <data key="d10">seeing it useless to pursue</data>
+</edge>
+<edge source="ancient tower of a church" target="hours and quarters">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">ancient tower of a church</data>
+  <data key="d10">hours and quarters</data>
+</edge>
+<edge source="solitude" target="water plug">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">solitude</data>
+  <data key="d10">water plug</data>
+</edge>
+<edge source="overflowings of water plug" target="suddenly">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">overflowings of water plug</data>
+  <data key="d10">suddenly</data>
+</edge>
+<edge source="brightness of the shops" target="pale faces ruddy">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">brightness of the shops</data>
+  <data key="d10">pale faces ruddy</data>
+</edge>
+<edge source="a glorious pageant" target="poulterers  and grocers  trades">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">a glorious pageant</data>
+  <data key="d10">poulterers  and grocers  trades</data>
+</edge>
+<edge source="pudding" target="tailor">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">pudding</data>
+  <data key="d10">tailor</data>
+</edge>
+<edge source="beef" target="tailor s wife and baby">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-4bbeecd2c73ef0c2e77eb7b3bb64b5dc</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">beef</data>
+  <data key="d10">tailor s wife and baby</data>
+</edge>
+<edge source="fire" target="low">
+  <data key="d4">1.0</data>
+  <data key="d5">chunk-c8616e24ddfb3bf6d00e8084b4b9c606</data>
+  <data key="d6"></data>
+  <data key="d7"></data>
+  <data key="d8"></data>
+  <data key="d9">fire</data>
+  <data key="d10">low</data>
 </edge>
 </graph></graphml>

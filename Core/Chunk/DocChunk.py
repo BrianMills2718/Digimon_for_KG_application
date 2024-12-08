@@ -1,3 +1,4 @@
+import asyncio
 from Core.Chunk.ChunkFactory import create_chunk_method
 from Core.Common.Utils import mdhash_id
 from Core.Schema.ChunkSchema import TextChunk
@@ -62,3 +63,10 @@ class DocChunk:
      
         chunk = await self._chunk.get_by_key(chunk_id)
         return chunk.content
+    
+    async def get_data_by_index(self, index):
+        chunk = await self._chunk.get_data_by_index(index)
+        return chunk.content
+    
+    async def get_data_by_indices(self, indices):
+        return await asyncio.gather(*[self.get_data_by_index(index) for index in indices])

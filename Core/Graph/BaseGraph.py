@@ -1,6 +1,8 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
+import igraph as ig
+import numpy as np
 
 from lazy_object_proxy.utils import await_
 from scipy.sparse import csr_matrix
@@ -282,7 +284,8 @@ class BaseGraph(ABC):
 
     async def cluster_data_to_subgraphs(self, cluster_data: dict):
         if isinstance(self._graph, NetworkXStorage):
-            self._graph.cluster_data_to_subgraphs(cluster_data)
+            
+            await self._graph.cluster_data_to_subgraphs(cluster_data)
         else:
             logger.exception("**Only NETWORKX is supported for constructing the cluster <-> node mapping.** ")
             return None
@@ -296,6 +299,16 @@ class BaseGraph(ABC):
     async def get_node_by_index(self, index):
         return await self._graph.get_node_by_index(index)
     
+
+    async def get_node_by_indices(self, node_idxs):
+        return await asyncio.gather(
+            *[self.get_node_by_index(node_idx) for node_idx in node_idxs]
+        )
+    
+    async def get_node_by_indices(self, node_idxs):
+        return await asyncio.gather(
+            *[self.get_node_by_index(node_idx) for node_idx in node_idxs]
+        )
     async def get_edge(self, src, tgt):
         return await self._graph.get_edge(src, tgt)
 
@@ -373,6 +386,27 @@ class BaseGraph(ABC):
                 raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await doc_chunk.size)
             )
 
-
+    async def get_edge_weight(self, src_id: str, tgt_id: str):
+        return await self._graph.get_edge_weight(src_id, tgt_id)
+    
     async def get_node_index(self, node_key):
         return await self._graph.get_node_index(node_key)
+
+    async def personalized_pagerank(self, reset_prob_chunk, damping:float = 0.1):
+        pageranked_probabilities = []
+        igraph_ = ig.Graph.from_networkx(self._graph.graph)
+        igraph_.es['weight'] = [await self.get_edge_weight(edge[0], edge[1]) for edge in list(await self.edges())]
+
+        for reset_prob in reset_prob_chunk:
+            pageranked_probs = igraph_.personalized_pagerank(vertices=range(self.node_num), damping=damping, directed=False,
+                                                            weights='weight', reset=reset_prob, implementation='prpack')
+
+            pageranked_probabilities.append(np.array(pageranked_probs))
+        pageranked_probabilities = np.array(pageranked_probabilities)
+        
+        return pageranked_probabilities[0]
+    
+    async def get_edge_by_indices(self, edge_idxs):
+        return await asyncio.gather(
+            *[self.get_edge(edge_idx[0], edge_idx[1]) for edge_idx in edge_idxs]
+        )

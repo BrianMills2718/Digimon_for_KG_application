@@ -24,12 +24,10 @@ class ChunkKVStorage(BaseKVStorage):
     async def get_by_key(self, key:str) -> TextChunk:
         return self._data.get(self._key_to_index.get(key, None), None)
 
-    async def get_by_index(self, index) -> TextChunk:
+    async def get_data_by_index(self, index) -> TextChunk:
         return self._data.get(index, None)
 
-    async def get_by_indices(self, indices: List[int]) -> list[TextChunk]:
-        return [self._data.get(index, None) for index in indices]
-    
+
         
     async def get_index_by_merge_key(self, merge_chunk_id: str) -> list[int]:
         key_list  = split_string_by_multi_markers(merge_chunk_id, [GRAPH_FIELD_SEP])

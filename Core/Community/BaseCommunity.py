@@ -1,21 +1,15 @@
 from abc import ABC, abstractmethod
+from Core.Common.Logger import logger
 
 
 class BaseCommunity(ABC):
     """Base community class definition."""
 
-    def __init__(self, llm, enforce_sub_communities):
+    def __init__(self, llm, enforce_sub_communities, namespace):
         self.llm = llm
         self.enforce_sub_communities = enforce_sub_communities
-
-    @property
-    def namespace(self):
-        return None
-
-    # TODO: Try to rewrite here, not now
-    @namespace.setter
-    def namespace(self, namespace):
         self.namespace = namespace
+
         
     async def generate_community_report(self, graph, force=False):
         """
@@ -31,6 +25,7 @@ class BaseCommunity(ABC):
         # Try to load the community report
         is_exist = await self._load_community_report(force)
         if force or not is_exist:
+            logger.info("Generating community report...")
             # Generate the community report
             await self._generate_community_report(graph)
             # Persist the community report

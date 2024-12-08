@@ -36,7 +36,7 @@ class LeidenCommunity(BaseCommunity):
         return self._community_reports
 
     async def clustering(self, largest_cc, max_cluster_size, random_seed):
-        return await self._clustering(largest_cc, max_cluster_size, random_seed)
+        await self._clustering(largest_cc, max_cluster_size, random_seed)
 
     async def _clustering(self, largest_cc, max_cluster_size, random_seed):
 
@@ -59,7 +59,7 @@ class LeidenCommunity(BaseCommunity):
         __levels = {k: len(v) for k, v in __levels.items()}
         logger.info(f"Each level has communities: {dict(__levels)}")
         await self._community_node_map.upsert(node_communities)
-        return node_communities
+
 
     @property
     def community_schema(self):

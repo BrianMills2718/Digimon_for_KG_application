@@ -9,7 +9,7 @@ from Core.Common.Logger import logger
 import os
 from typing import Any
 from colbert.data import Queries
-from Core.Index.BaseIndex import BaseIndex
+from Core.Index.BaseIndex import BaseIndex, ColbertNodeResult
 
 
 class ColBertIndex(BaseIndex):
@@ -68,8 +68,15 @@ class ColBertIndex(BaseIndex):
         if top_k is None:
             top_k = self._get_retrieve_top_k()
 
-        return tuple(self._index.search(query, k=top_k))
+        results =  tuple(self._index.search(query, k=top_k))
+        return results
 
+
+    async def retrieval_nodes(self, query, top_k, graph):
+
+        result =  ColbertNodeResult(*(await self.retrieval(query, top_k)))
+        return await result.get_node_data(graph)
+    
     async def retrieval_batch(self, queries, top_k=None):
         if top_k is None:
             top_k = self._get_retrieve_top_k()

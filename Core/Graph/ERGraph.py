@@ -132,6 +132,9 @@ class ERGraph(BaseGraph):
 
         for _entity in entities:
             entity_name = clean_str(_entity)
+            if entity_name == '':
+                logger.warning(f"entity name is not valid, entity is: {_entity}, so skip it")
+                continue
             entity = Entity(entity_name=entity_name, source_id=chunk_key)
             maybe_nodes[entity_name].append(entity)
 

@@ -2,14 +2,14 @@ import os
 from abc import ABC, abstractmethod
 
 from Core.Common.Logger import logger
-
+from Core.Schema.VdbResult import * 
 
 class BaseIndex(ABC):
     def __init__(self, config):
         self.config = config
         self._index = None
 
-    async def build_index(self, elements, meta_data, force):
+    async def build_index(self, elements, meta_data, force=False):
         from_load = False
         if self.exist_index() and not force:
             logger.info("Loading index from the file {}".format(self.config.persist_path))
@@ -57,11 +57,18 @@ class BaseIndex(ABC):
     async def similarity_score(self, object_q, object_d):
         return await self._similarity_score(object_q, object_d)
 
-    @abstractmethod
+    
     async def _similarity_score(self, object_q, object_d):
         pass
 
-    @abstractmethod
+    
     async def get_max_score(self, query):
         pass
 
+    @abstractmethod
+    async def retrieval_nodes(self, query, top_k, graph):
+        pass
+
+    @abstractmethod
+    async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
+        pass

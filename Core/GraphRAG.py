@@ -1,5 +1,5 @@
 import asyncio
-from collections import defaultdict
+from collections import defaultdict, Counter
 from typing import Union, Any
 
 from lazy_object_proxy.utils import await_
@@ -10,9 +10,8 @@ import numpy as np
 from Core.Common.Constants import GRAPH_FIELD_SEP, ANSI_COLOR
 from Core.Common.Logger import logger
 import tiktoken
-from Core.Schema.VdbResult import * 
 from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, truncate_list_by_token_size, \
-                               split_string_by_multi_markers)
+                               split_string_by_multi_markers, min_max_normalize)
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
 from Core.Graph.GraphFactory import get_graph
@@ -23,6 +22,7 @@ from Core.Storage.NameSpace import Workspace
 from Core.Community.ClusterFactory import get_community
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
 from colorama import Fore, Style, init
+import json
 
 init(autoreset=True)  # Initialize colorama and reset color after each print
 
@@ -47,7 +47,6 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @model_validator(mode="before")
     def welcome_message(cls, values):
-
         f = Figlet(font='big')  #
         # Generate the large ASCII art text
         logo = f.renderText('DIGIMON')
@@ -125,9 +124,8 @@ class GraphRAG(ContextMixin, BaseModel):
     def _register_community(cls, data):
         if data.config.use_community:
             cls.community = get_community(data.config.graph_cluster_algorithm,
-                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm,
+                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm,namespace = data.community_namespace
                                          )
-            cls.community.namesapce = data.community_namespace
 
         return data
 
@@ -247,7 +245,9 @@ class GraphRAG(ContextMixin, BaseModel):
                 node_idx_2 = nodes.index(edge[1])
 
                 self.edge_to_entity[(edge_idx, node_idx_1)] = 1
+                self.edge_to_entity[(edge_idx, node_idx_2)] = 1
                 self.entity_to_edge[(node_idx_1, edge_idx)] = 1
+                self.entity_to_edge[(node_idx_2, edge_idx)] = 1
             except ValueError as ve:
                 # Handle specific errors, such as when edge or node is not found
                 logger.error(f"ValueError in edge {edge}: {ve}")
@@ -278,7 +278,7 @@ class GraphRAG(ContextMixin, BaseModel):
         self.entity_doc_count = self.chunk_to_entity_mat.sum(0).T
 
     async def build_e2r_r2c_maps(self, force = False):
-        await self._build_ppr_context()
+        # await self._build_ppr_context()
         logger.info("Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks ")
         if not await self._entities_to_relationships.load(force):
             await self._entities_to_relationships.set(await self.graph.get_entities_to_relationships_map(False))
@@ -287,6 +287,10 @@ class GraphRAG(ContextMixin, BaseModel):
             await self._relationships_to_chunks.set(await self.graph.get_relationships_to_chunks_map(self.doc_chunk))
             await self._relationships_to_chunks.persist()
         logger.info("✅ Finished building the two maps ")
+
+
+ 
+
         
     async def insert(self, docs: Union[str, list[Any]]):
 
@@ -313,7 +317,7 @@ class GraphRAG(ContextMixin, BaseModel):
         # 2. Building Graph Stage
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
-        await self.graph.build_graph(await self.doc_chunk.get_chunks())
+        await self.graph.build_graph(await self.doc_chunk.get_chunks(), False)
 
         ####################################################################################################
         # 3. Index building Stage 
@@ -324,8 +328,7 @@ class GraphRAG(ContextMixin, BaseModel):
         if self.config.use_entities_vdb:
             logger.info("Starting insert entities of the given graph into vector database")
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
-            await self.entities_vdb.build_index(await self.graph.nodes_data(), await self.graph.node_metadata(),
-                                                force=False)
+            await self.entities_vdb.build_index(await self.graph.nodes_data(), await self.graph.node_metadata(), False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
         # Graph Augmentation Stage  (Optional) 
@@ -339,7 +342,7 @@ class GraphRAG(ContextMixin, BaseModel):
         #     logger.info("✅ Finished augment the existing graph with similariy edges")
 
         if self.config.use_entity_link_chunk:
-            await self.build_e2r_r2c_maps(True)
+            await self.build_e2r_r2c_maps(False)
 
         if self.config.use_relations_vdb:
             logger.info("Starting insert relations of the given graph into vector database")
@@ -375,9 +378,17 @@ class GraphRAG(ContextMixin, BaseModel):
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
         query_entities = await self._extract_query_entities(query)
-        entities = await self._link_entities(query_entities)
-        # await self._link_chunks_from_entities(entities)
-    
+        link_entities = await self._link_entities(query_entities)
+        entities = await self._find_relevant_entities_vdb(query)
+        ppr_entites, ppr_node_matrix = await self._find_relevant_entities_by_ppr(query, query_entities)
+
+        await self._find_relevant_community_from_entities(ppr_entites, self.community.community_reports)
+
+        # await self._find_relevant_entities_from_keywords(query)
+        await self._find_relevant_relationships_by_ppr(query, query_entities, 5, ppr_node_matrix)
+        await self._find_relevant_chunks_by_ppr(entities)
+
+        await self.graph.get_induced_subgraph(entities, relationships)
         # entities = await self._find_relevant_entities_vdb(query)
         # await self._find_relevant_chunks_from_entities(entities)
         keywords = await self._extract_query_keywords(query)
@@ -387,19 +398,92 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 2. Generation Stage
         ####################################################################################################
+    async def _run_personalized_pagerank(self, query, query_entities):
+        # ✅
+        assert self.config.use_entities_vdb
+        # Run Personalized PageRank
+        reset_prob_matrix = np.zeros(self.graph.node_num)
 
+        if self.config.use_entity_similarity_for_ppr:
+            # Here, we re-implement the key idea of the FastGraphRAG, you can refer to the source code for more details:
+            # https://github.com/circlemind-ai/fast-graphrag/tree/main
+
+            # Use entity similarity to compute the reset probability matrix
+            reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query_entities, top_k=1, graph = self.graph)
+            # Run Personalized PageRank on the linked entities      
+            reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query, top_k=self.config.top_k_entity_for_ppr, graph = self.graph)     
+        else:
+            # Set the weight of the retrieved documents based on the number of documents they appear in
+            # Please refer to the HippoRAG code for more details: https://github.com/OSU-NLP-Group/HippoRAG/tree/main
+            if not hasattr(self, "entity_chunk_count"):
+                    # Register the entity-chunk count matrix into the class when you first use it.
+                    e2r = await self._entities_to_relationships.get()
+                    r2c = await self._relationships_to_chunks.get()
+                    c2e= e2r.dot(r2c).T
+                    c2e[c2e.nonzero()] = 1
+                    self.entity_chunk_count = c2e.sum(0).T
+            for entity in query_entities:
+                entity_idx = await self.graph.get_node_index(entity["entity_name"])
+                if self.config.node_specificity:
+                    if self.entity_chunk_count[entity_idx] == 0:
+                        weight = 1
+                    else:
+                        weight = 1 / float(self.entity_chunk_count[entity_idx])
+                    reset_prob_matrix[entity_idx] = weight
+                else:
+                    reset_prob_matrix[entity_idx] = 1.0
+        #TODO: as a method in our NetworkXGraph class or directly use the networkx graph
+        # Transform the graph to igraph format 
+        return await self.graph.personalized_pagerank([reset_prob_matrix])
+        
+    
     # def get_colbert_max_score(self, query):
+    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict], top_k=5):
+        # ✅
+        if len(seed_entities) == 0:
+            return None
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+        ppr_node_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        topk_indices = np.argsort(ppr_node_matrix)[-top_k:]
+        nodes = await self.graph.get_node_by_indices(topk_indices)
+ 
+        return nodes, ppr_node_matrix
 
+    async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
+        # ✅
+        entity_to_edge_mat = await self._entities_to_relationships.get()
+        if node_ppr_matrix is None:
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
+        topk_indices = np.argsort(edge_prob_matrix)[-top_k:]
+        edges =  await self.graph.get_edge_by_indices(topk_indices)
+        return await self._construct_relationship_context(edges)
+    
+    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
+        # ✅
+        entity_to_edge_mat = await self._entities_to_relationships.get()
+        relationship_to_chunk_mat = await self._relationships_to_chunks.get()
+        if node_ppr_matrix is None:
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
+        ppr_chunk_prob = relationship_to_chunk_mat.T.dot(edge_prob)
+        ppr_chunk_prob = min_max_normalize(ppr_chunk_prob)
+         # Return top k documents
+        sorted_doc_ids = np.argsort(ppr_chunk_prob, kind='mergesort')[::-1]
+        sorted_scores = ppr_chunk_prob[sorted_doc_ids]
+        soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
+        return soreted_docs, sorted_scores[:top_k]
+    
     async def _link_entities(self, query_entities):
 
         entities = []
-
         for query_entity in query_entities: 
-            results = await self.entities_vdb.retrieval(query_entity, top_k=1)
-            results = ColbertNodeResult(*results) if self.config.vdb_type == "colbert" else VectorIndexNodeResult(*results)
-            node_datas = await results.get_node_data(self.graph) 
+            node_datas = await self.entities_vdb.retrieval_nodes(query_entity, top_k=1, graph = self.graph)
             # For entity link, we only consider the top-ranked entity
             entities.append(node_datas[0]) 
+ 
         return entities
 
     async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
@@ -585,17 +669,16 @@ class GraphRAG(ContextMixin, BaseModel):
         except Exception as e:
             logger.exception(f"Failed to find relevant entities by relation agent: {e}")
       
+      
+        
 
     async def _find_relevant_entities_vdb(self, query, top_k=5):
         # ✅
         try:
             assert self.config.use_entities_vdb
-            results = await self.entities_vdb.retrieval(query, top_k=top_k)             
-            if not len(results):
+            node_datas = await self.entities_vdb.retrieval_nodes(query, top_k, self.graph)             
+            if not len(node_datas):
                 return None
-            # We only support colbert and vector index (lamma-index based) for now
-            results = ColbertNodeResult(*results) if self.config.vdb_type == "colbert" else VectorIndexNodeResult(*results)
-            node_datas = await results.get_node_data(self.graph)
             if not all([n is not None for n in node_datas]):
                 logger.warning("Some nodes are missing, maybe the storage is damaged")
             node_degrees = await asyncio.gather(
@@ -624,25 +707,7 @@ class GraphRAG(ContextMixin, BaseModel):
             edge_datas = await asyncio.gather(
                 *[self.graph.get_edge(r.metadata["src_id"], r.metadata["tgt_id"]) for r in results]
             )
-
-            if not all([n is not None for n in edge_datas]):
-                logger.warning("Some edges are missing, maybe the storage is damaged")
-            edge_degree = await asyncio.gather(
-                *[self.graph.edge_degree(r.metadata["src_id"], r.metadata["tgt_id"]) for r in results]
-            )
-            edge_datas = [
-                {"src_id": k.metadata["src_id"], "tgt_id": k.metadata["tgt_id"], "rank": d, **v}
-                for k, v, d in zip(results, edge_datas, edge_degree)
-                if v is not None
-            ]
-            edge_datas = sorted(
-                edge_datas, key=lambda x: (x["rank"], x["weight"]), reverse=True
-            )
-            edge_datas = truncate_list_by_token_size(
-                edge_datas,
-                key=lambda x: x["description"],
-                max_token_size=self.config.max_token_for_global_context,
-            )
+            edge_datas = await self._construct_relationship_context(edge_datas)
             return edge_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant relationships: {e}")
@@ -738,3 +803,73 @@ class GraphRAG(ContextMixin, BaseModel):
             max_token_size=self.config.max_token_for_local_context,
         )
         return all_edges_data
+
+
+
+
+    async def _construct_relationship_context(self, edge_datas: list[dict]):
+
+        if not all([n is not None for n in edge_datas]):
+            logger.warning("Some edges are missing, maybe the storage is damaged")
+        edge_degree = await asyncio.gather(
+            *[self.graph.edge_degree(r["src_id"], r["tgt_id"]) for r in edge_datas]
+        )
+        edge_datas = [
+            {"src_id": v["src_id"], "tgt_id": v["tgt_id"], "rank": d, **v}
+            for v, d in zip( edge_datas, edge_degree)
+            if v is not None
+        ]
+        edge_datas = sorted(
+            edge_datas, key=lambda x: (x["rank"], x["weight"]), reverse=True
+        )
+        edge_datas = truncate_list_by_token_size(
+            edge_datas,
+            key=lambda x: x["description"],
+            max_token_size=self.config.max_token_for_global_context,
+        )
+        return edge_datas
+    
+    async def _find_relevant_community_from_entities(self, node_datas: list[dict], community_reports):
+        # ✅
+        related_communities = []
+        for node_d in node_datas:
+            if "clusters" not in node_d:
+                continue
+            related_communities.extend(json.loads(node_d["clusters"]))
+        related_community_dup_keys = [
+            str(dp["cluster"])
+            for dp in related_communities
+            if dp["level"] <= self.config.level
+        ]
+        import pdb
+        pdb.set_trace()
+        related_community_keys_counts = dict(Counter(related_community_dup_keys))
+        _related_community_datas = await asyncio.gather(
+            *[community_reports.get_by_id(k) for k in related_community_keys_counts.keys()]
+        )
+        related_community_datas = {
+            k: v
+            for k, v in zip(related_community_keys_counts.keys(), _related_community_datas)
+            if v is not None
+        }
+        related_community_keys = sorted(
+            related_community_keys_counts.keys(),
+            key=lambda k: (
+                related_community_keys_counts[k],
+                related_community_datas[k]["report_json"].get("rating", -1),
+            ),
+            reverse=True,
+        )
+        sorted_community_datas = [
+            related_community_datas[k] for k in related_community_keys
+        ]
+
+        use_community_reports = truncate_list_by_token_size(
+            sorted_community_datas,
+            key=lambda x: x["report_string"],
+            max_token_size= self.config.local_max_token_for_community_report,
+        )
+        if self.config.local_community_single_one:
+            use_community_reports = use_community_reports[:1]
+
+        return use_community_reports

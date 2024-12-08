@@ -37,14 +37,14 @@ class Config(CLIParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug_ppr"
+    exp_name: str = "debug_fastgraph"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
     # Basic Config
     use_entities_vdb: bool = True
     use_relations_vdb: bool = False  # Only set True for LightRAG
-    vdb_type: str = "colbert"  # vector/colbert
+    vdb_type: str = "vector"  # vector/colbert
     # Chunking
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
@@ -66,7 +66,7 @@ class Config(CLIParams, YamlModel):
     prior_prob: float = 0.8
     
     # Graph clustering
-    use_community: bool = False
+    use_community: bool = True
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
@@ -96,6 +96,9 @@ class Config(CLIParams, YamlModel):
     # Retrieval Parameters
     enable_local: bool = False
     enable_naive_rag: bool = False
+    use_entity_similarity_for_ppr: bool = True
+    top_k_entity_for_ppr: int = 8
+    
     node_specificity: bool = True
     damping: float = 0.1
     # ColBert Option
