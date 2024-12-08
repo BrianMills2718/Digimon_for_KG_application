@@ -289,6 +289,15 @@ class NetworkXStorage(BaseGraphStorage):
         except ValueError:
             return -1
 
+    async def get_edge_relation_name(
+            self, source_node_id: str, target_node_id: str
+    ) -> Union[float, None]:
+        edge_data = self._graph.edges.get((source_node_id, target_node_id))
+        return edge_data.get("relation_name") if edge_data is not None else None
+
+    async def get_induced_subgraph(self, nodes: list[str]):
+        return self._graph.subgraph(nodes)
+
     async def get_node_index(self, node_id):
         if self.node_list is None:
             self.node_list = list(self._graph.nodes())

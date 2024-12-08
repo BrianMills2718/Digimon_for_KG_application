@@ -322,6 +322,9 @@ class BaseGraph(ABC):
     def edge_num(self):
         return self._graph.get_edge_num()
 
+    async def get_induced_subgraph(self, nodes: list[str]):
+        return self._graph.get_induced_subgraph(nodes)
+
     async def get_entities_to_relationships_map(self, is_directed=False):
         if self.node_num == 0:
             return csr_matrix((0, 0))
