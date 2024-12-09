@@ -37,6 +37,7 @@ class TFIDFIndex(BaseIndex[IndexDict]):
     def _build_index_from_nodes(self, nodes: List[BaseNode]):
         raise NotImplementedError("TFIDFStoreIndex does not support insertion yet.")
     def _build_index_from_list(self, docs_list: List[str]):
+
         self.tfidf_matrix = self.vectorizer.fit_transform(docs_list)
 
 
@@ -65,14 +66,13 @@ class TFIDFIndex(BaseIndex[IndexDict]):
         """
         query_emb = self.vectorizer.transform([query_str])
         cosine_sim = cosine_similarity(query_emb, self.tfidf_matrix).flatten()
+
         top_k = min(top_k, len(cosine_sim))
         idxs = cosine_sim.argsort()[::-1][:top_k]
         
         return idxs
         
 
-
-        return nodes_with_score
     def query_batch(self, queries, top_k):
         raise NotImplementedError("TFIDFStoreIndex does not support query_batch yet.")
         

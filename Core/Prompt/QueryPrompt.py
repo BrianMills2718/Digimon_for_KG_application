@@ -231,3 +231,17 @@ Add sections and commentary to the response as appropriate for the length and fo
 IRCOT_REASON_INSTRUCTION = 'You serve as an intelligent assistant, adept at facilitating users through complex, multi-hop reasoning across multiple documents. This task is illustrated through demonstrations, each consisting of a document set paired with a relevant question and its multi-hop reasoning thoughts. Your task is to generate one thought for current step, DON\'T generate the whole thoughts at once! If you reach what you believe to be the final step, start with "So the answer is:".'
 
 
+
+
+def prompt_qac_wiki(context):
+    context = '\n'.join(f'{i}: {c}' for i, c in enumerate(context, start=1))
+
+    start = "Given the following question and contexts, create a final answer to the question."
+
+    return start + '\n=========\n' + 'QUESTION: {question}' + '\n=========\n' + 'CONTEXT:\n' + context + '\n=========\n' + 'QUESTION: {question}' + '\n=========\n' + 'ANSWER: please answer less than 6 words.'
+
+KGP_QUERY_PROMPT = """
+What evidence do we need to answer the question given the current evidence?"
+Question: {question}
+Evidence: {context}
+"""

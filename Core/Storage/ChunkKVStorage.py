@@ -37,6 +37,9 @@ class ChunkKVStorage(BaseKVStorage):
     async def get_index_by_key(self, key:str) -> int:
         return self._key_to_index.get(key, None)
 
+
+
+
     async def upsert_batch(self, keys, values) -> None:
         for key, value in zip(keys, values):
             self._chunk[key] = value

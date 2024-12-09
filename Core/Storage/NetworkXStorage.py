@@ -180,7 +180,8 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def persist(self, force):
         return await self._persist(force)
-
+    async def get_nodes(self):
+        return self._graph.nodes()
     #TODO: remove to the basegraph class 
     async def get_nodes_data(self):
         node_list = list(self._graph.nodes())

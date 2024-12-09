@@ -10,6 +10,7 @@ from collections import defaultdict
 from itertools import combinations
 import requests
 from Core.Common.Constants import GCUBE_TOKEN, GRAPH_FIELD_SEP
+from Core.Storage.NetworkXStorage import NetworkXStorage
 
 from Core.Utils.WAT import WATAnnotation
 
@@ -26,8 +27,11 @@ class PassageGraph(BaseGraph):
     1. The original code implementation on GitHub: https://github.com/YuWVandy/KG-LLM-MDQA
     2. The associated research paper: https://arxiv.org/abs/2308.11730
     """
-    k: int = 30
-    k_nei: int = 3
+    def __init__(self, config, llm, encoder):
+        super().__init__(config, llm, encoder)
+        self.k: int = 30
+        self.k_nei: int = 3
+        self._graph = NetworkXStorage()
 
     @staticmethod
     async def _wat_entity_linking(text: str):
@@ -82,7 +86,9 @@ class PassageGraph(BaseGraph):
             for k, v in kw_chunk.items():
                 merge_wikis[k].extend(v)
         for chunk_pair in chunk_list:
-            node_data = Entity(entity_name=chunk_pair[0], source_id=chunk_pair[1])
+            import pdb
+            pdb.set_trace()
+            node_data = Entity(entity_name=chunk_pair[0], description=chunk_pair[1].content, source_id=chunk_pair[0])
             maybe_nodes[chunk_pair[0]].append(node_data)
         # Merge edge information
         # If two nodes contain the same wiki entity, then there is an edge between these two nodes
@@ -93,7 +99,7 @@ class PassageGraph(BaseGraph):
                 edge_data = Relationship(src_id=src_id, tgt_id=tgt_id, relation_name=wiki_key,
                                          source_id=GRAPH_FIELD_SEP.join([chunk1, chunk2]))
                 maybe_edges[(src_id, tgt_id)].append(edge_data)
-
+ 
         # Asynchronously merge and upsert nodes
         await asyncio.gather(*[self._merge_nodes_then_upsert(k, v) for k, v in maybe_nodes.items()])
         # Asynchronously merge and upsert edges

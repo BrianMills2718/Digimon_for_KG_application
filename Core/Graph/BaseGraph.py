@@ -63,6 +63,7 @@ class BaseGraph(ABC):
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
+
         existing_data = build_data_for_merge(existing_node) if existing_node else defaultdict(list)
         # Groups node properties by their keys for upsert operation.
         upsert_nodes_data = defaultdict(list)
@@ -86,7 +87,7 @@ class BaseGraph(ABC):
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
-
+       
         # Upsert the node with the merged data
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
@@ -248,9 +249,8 @@ class BaseGraph(ABC):
         # Check if the token length is within the maximum allowed tokens for summarization
         if len(tokens) < self.config.summary_max_tokens:
             return description
-
         # Truncate the description to fit within the maximum token limit
-        use_description = self.ENCODER.decode(tokens[:self.llm.get_maxtokens()])
+        use_description = self.ENCODER.decode(tokens[:self.config.llm_model_max_token_size])
 
         # Construct the context base for the prompt
         context_base = dict(
@@ -395,6 +395,11 @@ class BaseGraph(ABC):
     async def get_node_index(self, node_key):
         return await self._graph.get_node_index(node_key)
 
+
+    async def get_node_indices(self, node_keys):
+        return await asyncio.gather(
+            *[self.get_node_index(node_key) for node_key in node_keys]
+        )
     async def personalized_pagerank(self, reset_prob_chunk, damping:float = 0.1):
         pageranked_probabilities = []
         igraph_ = ig.Graph.from_networkx(self._graph.graph)
@@ -413,3 +418,9 @@ class BaseGraph(ABC):
         return await asyncio.gather(
             *[self.get_edge(edge_idx[0], edge_idx[1]) for edge_idx in edge_idxs]
         )
+    
+    async def get_neighbors(self, node_id: str):
+        return await self._graph.neighbors(node_id)
+    
+    async def get_nodes(self):
+        return await self._graph.nodes()

@@ -36,7 +36,8 @@ class DocChunk:
         chunks = await self.chunk_method(tokens, doc_keys=doc_keys, tiktoken_model=self.token_model)
 
         for chunk in chunks:
-            await self._chunk.upsert(mdhash_id(chunk["content"], prefix="chunk-"), TextChunk(**chunk))
+            chunk["chunk_id"] = mdhash_id(chunk["content"], prefix="chunk-")
+            await self._chunk.upsert(chunk["chunk_id"], TextChunk(**chunk))
       
         await self._chunk.persist()
 
@@ -67,6 +68,10 @@ class DocChunk:
     async def get_data_by_index(self, index):
         chunk = await self._chunk.get_data_by_index(index)
         return chunk.content
+    
+    async def get_key_by_index(self, index):
+        return await self._chunk.get_key_by_index(index)
+        
     
     async def get_data_by_indices(self, indices):
         return await asyncio.gather(*[self.get_data_by_index(index) for index in indices])

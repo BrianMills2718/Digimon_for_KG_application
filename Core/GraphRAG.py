@@ -1,6 +1,8 @@
 import asyncio
 from collections import defaultdict, Counter
 from typing import Union, Any
+from Core.Index.TFIDFStore import TFIDFIndex
+from Core.Prompt.QueryPrompt import KGP_QUERY_PROMPT
 
 from lazy_object_proxy.utils import await_
 from scipy.sparse import csr_matrix, csr_array
@@ -319,7 +321,7 @@ class GraphRAG(ContextMixin, BaseModel):
         # 1. Chunking Stage
         ####################################################################################################
         logger.info("Starting chunk the given documents")
-        await self.doc_chunk.build_chunks(docs)
+        await self.doc_chunk.build_chunks(docs, True)
         logger.info("✅ Finished the chunking stage")
 
         ####################################################################################################
@@ -327,6 +329,7 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
         await self.graph.build_graph(await self.doc_chunk.get_chunks(), False)
+       
 
         ####################################################################################################
         # 3. Index building Stage 
@@ -335,9 +338,12 @@ class GraphRAG(ContextMixin, BaseModel):
 
         # NOTE: ** Ensure the graph is successfully loaded before proceeding to load the index from storage, as it represents a one-to-one mapping. **
         if self.config.use_entities_vdb:
+            node_metadata = await self.graph.node_metadata()
+            if not node_metadata:
+                logger.warning("No node metadata found. Skipping entity indexing.")
             logger.info("Starting insert entities of the given graph into vector database")
             # await self.entities_vdb.build_index(await self.graph.nodes(), entity_metadata, force=False)
-            await self.entities_vdb.build_index(await self.graph.nodes_data(), await self.graph.node_metadata(), False)
+            await self.entities_vdb.build_index(await self.graph.nodes_data(), node_metadata, False)
             logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
         # Graph Augmentation Stage  (Optional) 
@@ -354,12 +360,14 @@ class GraphRAG(ContextMixin, BaseModel):
             await self.build_e2r_r2c_maps(False)
 
         if self.config.use_relations_vdb:
+            edge_metadata = await self.graph.edge_metadata()
+            if not edge_metadata:
+                logger.warning("No edge metadata found. Skipping relation indexing.")
+                return
             logger.info("Starting insert relations of the given graph into vector database")
-      
-           
-      
-            await self.relations_vdb.build_index(await self.graph.edges_data(), await self.graph.edge_metadata(), force=False)
+            await self.relations_vdb.build_index(await self.graph.edges_data(), edge_metadata, force=False)
             logger.info("✅ Finished starting insert relations of the given graph into vector database")
+
 
         if self.config.use_community:
             logger.info("Starting build community of the given graph")
@@ -373,7 +381,51 @@ class GraphRAG(ContextMixin, BaseModel):
          
 
          
+    async def retrieve(self, question):
+        self.k: int = 30
+        self.k_nei: int = 3
+        graph_nodes = list(await self.graph.get_nodes())
+        # corpus = dict({id: (await self.graph.get_node(id))['chunk'] for id in list(self.gra.graph.nodes)})
+        corpus = dict({id: (await self.graph.get_node(id))['description'] for id in graph_nodes})
+        candidates_idx = list(id for id in graph_nodes)
+        import pdb
+        pdb.set_trace()
+        seed = question
+        contexts = []
+        
+        idxs = await self.tf_idf(seed, candidates_idx, corpus, k = self.k // self.k_nei)
 
+        cur_contexts = [corpus[_] for _ in idxs]
+        next_reasons = [seed + '\n' + (await self.llm.aask(KGP_QUERY_PROMPT.format(question=question, context=context))) for context in cur_contexts]
+
+        logger.info("next_reasons: {next_reasons}".format(next_reasons=next_reasons))
+
+        visited = []
+
+        for idx, next_reason in zip(idxs, next_reasons):
+            nei_candidates_idx = list(await self.graph.get_neighbors(idx))
+            import pdb
+            pdb.set_trace()
+            nei_candidates_idx = [_ for _ in nei_candidates_idx if _ not in visited]
+            if (nei_candidates_idx == []):
+                continue
+
+            next_contexts = await self.tf_idf(next_reason, nei_candidates_idx, corpus, k = self.k_nei)
+            contexts.extend([corpus[idx] + '\n' + corpus[_] for _ in next_contexts if corpus[_] != corpus[idx]])
+            visited.append(idx)
+            visited.extend([_ for _ in next_contexts])
+        import pdb
+        pdb.set_trace()
+        return contexts
+
+    async def tf_idf(self, seed, candidates_idx, corpus, k):
+
+        index = TFIDFIndex()
+
+        index._build_index_from_list([corpus[_] for _ in candidates_idx])
+        idxs = index.query(query_str = seed, top_k = k)
+
+        return [candidates_idx[_] for _ in idxs]
     async def query(self, query):
         """
             Executes the query by extracting the relevant content, and then generating a response.
@@ -387,10 +439,12 @@ class GraphRAG(ContextMixin, BaseModel):
         # await self._build_retriever_context(query)
         # await self._build_retriever_operator()
         # await self.global_query(query)
+        await self.retrieve(query)
         keywords = await self._extract_query_keywords(query, "high")
-        relationships = await self._find_relevant_relations_vdb(keywords)
+        # relationships = await self._find_relevant_relations_vdb(keywords)
         entities = await self._find_relevant_entities_vdb(query)
-
+        import pdb
+        pdb.set_trace()
         
         entities_by_relations = await self._find_relevant_entities_by_relationships(relationships)
         await self._find_relevant_chunks_from_relationships(entities_by_relations)

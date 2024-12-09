@@ -210,7 +210,7 @@ class OpenAILLM(BaseLLM):
 
    
     def get_maxtokens(self) -> int:
-       self._cons_kwargs['max_tokens']
+       return ['max_tokens']
 
     async def openai_embedding(self, text):
         response = await self.aclient.embeddings.create(

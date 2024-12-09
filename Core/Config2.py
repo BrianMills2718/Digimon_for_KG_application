@@ -37,7 +37,7 @@ class Config(CLIParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug_fastgraph"
+    exp_name: str = "debug_passage_graph"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
@@ -49,6 +49,7 @@ class Config(CLIParams, YamlModel):
     chunk_token_size: int = 1200
     chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
+    llm_model_max_token_size: int = 32768
     chunk_method: str = "chunking_by_token_size"
     use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
     
@@ -56,7 +57,7 @@ class Config(CLIParams, YamlModel):
     enable_edge_keywords: bool = True
 
     # Building graph
-    graph_type: str = "rkg_graph" # rkg_graph/er_graph/tree_graph/
+    graph_type: str = "passage_graph" # rkg_graph/er_graph/tree_graph/passage_graph
     extract_two_step: bool = True
     max_gleaning: int = 1
     enable_entity_description: bool = True
