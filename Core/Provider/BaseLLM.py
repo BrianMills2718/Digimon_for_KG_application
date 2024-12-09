@@ -125,6 +125,11 @@ class BaseLLM(ABC):
             return Costs(0, 0, 0, 0)
         return self.cost_manager.get_costs()
 
+    def get_last_stage_cost(self) -> Costs:
+        if not self.cost_manager:
+            return Costs(0, 0, 0, 0)
+        return self.cost_manager.get_last_stage_cost()
+
     async def aask(
         self,
         msg: Union[str, list[dict[str, str]]],
@@ -150,7 +155,7 @@ class BaseLLM(ABC):
         if stream is None:
             stream = self.config.stream
         logger.debug(message)
-
+        
         rsp = await self.acompletion_text(message, stream=stream, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
         return rsp
 
