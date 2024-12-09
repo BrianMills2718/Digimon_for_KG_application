@@ -16,6 +16,7 @@ from Core.Common.Utils import (mdhash_id, prase_json_from_response, clean_str, t
                                split_string_by_multi_markers, min_max_normalize,    list_to_quoted_csv_string,)
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 from Core.Common.ContextMixin import ContextMixin
+from Core.Common.TimeStatistic import TimeStatistic
 from Core.Graph.GraphFactory import get_graph
 from Core.Index import get_index
 from Core.Index.IndexConfigFactory import get_index_config
@@ -34,7 +35,6 @@ class GraphRAG(ContextMixin, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     working_dir: str = Field(default="", exclude=True)
-
     # The following two matrices are utilized for mapping entities to their corresponding chunks through the specified link-path:
     # Entity Matrix: Represents the entities in the dataset.
     # Chunk Matrix: Represents the chunks associated with the entities.
@@ -88,6 +88,7 @@ class GraphRAG(ContextMixin, BaseModel):
         cls.workspace = Workspace(data.working_dir, cls.config.exp_name)  # register workspace
         cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
         cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
+        cls.time_manager = TimeStatistic()
         data = cls._init_storage_namespace(data)
         data = cls._register_vdbs(data)
         data = cls._register_community(data)
@@ -300,7 +301,11 @@ class GraphRAG(ContextMixin, BaseModel):
         logger.info("✅ Finished building the two maps ")
 
 
- 
+    def _update_costs_info(self, stage_str:str):
+        last_cost = self.llm.get_last_stage_cost()
+        logger.info(f"{stage_str} stage cost: Total prompt token: {last_cost.total_prompt_tokens}, Total completeion token: {last_cost.total_completion_tokens}, Total cost: {last_cost.total_cost}")
+        last_stage_time = self.time_manager.stop_last_stage()
+        logger.info(f"{stage_str} time(s): {last_stage_time:.2f}")
 
         
     async def insert(self, docs: Union[str, list[Any]]):
@@ -320,17 +325,25 @@ class GraphRAG(ContextMixin, BaseModel):
         ####################################################################################################
         # 1. Chunking Stage
         ####################################################################################################
+        self.time_manager.start_stage()
+        
         logger.info("Starting chunk the given documents")
         await self.doc_chunk.build_chunks(docs, True)
         logger.info("✅ Finished the chunking stage")
 
+        self._update_costs_info("Chunking")
+        
         ####################################################################################################
         # 2. Building Graph Stage
         ####################################################################################################
         logger.info("Starting build graph for the given documents")
-        await self.graph.build_graph(await self.doc_chunk.get_chunks(), False)
-       
-
+        await self.graph.build_graph(await self.doc_chunk.get_chunks(), True)
+        logger.info("✅ Finished the graph building stage")
+        
+        self._update_costs_info("Build Graph")
+        
+        import pdb
+        pdb.set_trace()
         ####################################################################################################
         # 3. Index building Stage 
         # Data-driven content should be pre-built offline to ensure efficient online query performance.
@@ -368,7 +381,7 @@ class GraphRAG(ContextMixin, BaseModel):
             await self.relations_vdb.build_index(await self.graph.edges_data(), edge_metadata, force=False)
             logger.info("✅ Finished starting insert relations of the given graph into vector database")
 
-
+          
         if self.config.use_community:
             logger.info("Starting build community of the given graph")
             logger.start("Clustering nodes")
@@ -389,7 +402,7 @@ class GraphRAG(ContextMixin, BaseModel):
         corpus = dict({id: (await self.graph.get_node(id))['description'] for id in graph_nodes})
         candidates_idx = list(id for id in graph_nodes)
         import pdb
-        pdb.set_trace()
+
         seed = question
         contexts = []
         
@@ -405,7 +418,6 @@ class GraphRAG(ContextMixin, BaseModel):
         for idx, next_reason in zip(idxs, next_reasons):
             nei_candidates_idx = list(await self.graph.get_neighbors(idx))
             import pdb
-            pdb.set_trace()
             nei_candidates_idx = [_ for _ in nei_candidates_idx if _ not in visited]
             if (nei_candidates_idx == []):
                 continue
@@ -415,7 +427,7 @@ class GraphRAG(ContextMixin, BaseModel):
             visited.append(idx)
             visited.extend([_ for _ in next_contexts])
         import pdb
-        pdb.set_trace()
+     
         return contexts
 
     async def tf_idf(self, seed, candidates_idx, corpus, k):

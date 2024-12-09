@@ -30,6 +30,7 @@ class CostManager(BaseModel):
     max_budget: float = 10.0
     total_cost: float = 0
     token_costs: dict[str, dict[str, float]] = TOKEN_COSTS  # different model's token cost
+    stage_costs: list[Costs] = []
 
     def update_cost(self, prompt_tokens, completion_tokens, model):
         """
@@ -89,6 +90,34 @@ class CostManager(BaseModel):
         """Get all costs"""
         return Costs(self.total_prompt_tokens, self.total_completion_tokens, self.total_cost, self.total_budget)
 
+    def set_stage_cost(self):
+        """Set the cost of the current stage."""
+        self.stage_costs.append(self.get_costs())
+        
+        
+    def get_last_stage_cost(self) -> Costs:
+        """Get the cost of the last stage."""
+        
+        current_cost = self.get_costs()
+        
+        if len(self.stage_costs) == 0:
+            last_cost = Costs(0, 0, 0, 0)
+        else:
+            last_cost = self.stage_costs[-1]
+        
+        last_stage_cost = Costs(
+            current_cost.total_prompt_tokens - last_cost.total_prompt_tokens,
+            current_cost.total_completion_tokens - last_cost.total_completion_tokens,
+            current_cost.total_cost - last_cost.total_cost,
+            current_cost.total_budget - last_cost.total_budget
+        )
+        
+        self.set_stage_cost()
+        
+        return last_stage_cost
+            
+        
+    
 
 class TokenCostManager(CostManager):
     """open llm model is self-host, it's free and without cost"""
