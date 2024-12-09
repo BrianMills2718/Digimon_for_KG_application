@@ -1,0 +1,160 @@
+
+from Core.Retriever.BaseRetriever import BaseRetriever
+class RelationshipRetriever(BaseRetriever):
+    def __init__(self, config):
+        super().__init__(config)
+
+async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
+                                                       pre_head=None, width=3):
+        """
+        Use agent to select the top-K relations based on the input query and entities
+        Args:
+            query: str, the query to be processed.
+            entity: str, the entity seed
+            pre_relations_name: list, the relation name that has already exists
+            pre_head: bool, indicator that shows whether te pre head relations exist or not
+            width: int, the search width of agent
+        Returns:
+            results: list[str], top-k relation candidates list
+        """
+        # ✅
+        try:
+            from Core.Common.Constants import GRAPH_FIELD_SEP
+            from collections import defaultdict
+            from Core.Prompt.TogPrompt import extract_relation_prompt
+
+            # get relations from graph
+            edges = await self.graph._graph.get_node_edges(source_node_id=entity)
+            relations_name_super_edge = await asyncio.gather(
+                *[self.graph._graph.get_edge_relation_name(edge[0], edge[1]) for edge in edges]
+            )
+            relations_name = list(map(lambda x: x.split(GRAPH_FIELD_SEP), relations_name_super_edge))  # [[], [], []]
+
+            relations_dict = defaultdict(list)
+            for index, edge in enumerate(edges):
+                src, tar = edge[0], edge[1]
+                for rel in relations_name[index]:
+                    relations_dict[(src, rel)].append(tar)
+
+            tail_relations = []
+            head_relations = []
+            for index, rels in enumerate(relations_name):
+                if edges[index][0] == entity:
+                    head_relations.extend(rels)  # head
+                else:
+                    tail_relations.extend(rels)  # tail
+
+            if pre_relations_name:
+                if pre_head:
+                    tail_relations = list(set(tail_relations) - set(pre_relations_name))
+                else:
+                    head_relations = list(set(head_relations) - set(pre_relations_name))
+
+            head_relations = list(set(head_relations))
+            tail_relations = list(set(tail_relations))
+            total_relations = head_relations + tail_relations
+            total_relations.sort()  # make sure the order in prompt is always equal
+
+            # agent
+            prompt = extract_relation_prompt % (
+            width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
+                total_relations) + ';' + "\nA: "
+            result = await self.llm.aask(msg=[
+                {"role": "user",
+                 "content": prompt}
+            ])
+
+            # clean
+            import re
+            pattern = r"{\s*(?P<relation>[^()]+)\s+\(Score:\s+(?P<score>[0-9.]+)\)}"
+            relations = []
+            for match in re.finditer(pattern, result):
+                relation = match.group("relation").strip()
+                if ';' in relation:
+                    continue
+                score = match.group("score")
+                if not relation or not score:
+                    return False, "output uncompleted.."
+                try:
+                    score = float(score)
+                except ValueError:
+                    return False, "Invalid score"
+                if relation in head_relations:
+                    relations.append({"entity": entity, "relation": relation, "score": score, "head": True})
+                else:
+                    relations.append({"entity": entity, "relation": relation, "score": score, "head": False})
+
+            if len(relations) == 0:
+                flag = False
+                logger.info("No relations found by entity: {} and query: {}".format(entity, query))
+            else:
+                flag = True
+
+            # return
+            if flag:
+                return relations, relations_dict
+            else:
+                return [], relations_dict
+        except Exception as e:
+            logger.exception(f"Failed to find relevant relations by entity agent: {e}")
+            
+            
+async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
+        # ✅
+        entity_to_edge_mat = await self._entities_to_relationships.get()
+        if node_ppr_matrix is None:
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
+        topk_indices = np.argsort(edge_prob_matrix)[-top_k:]
+        edges =  await self.graph.get_edge_by_indices(topk_indices)
+        return await self._construct_relationship_context(edges)
+    
+async def _find_relevant_relations_vdb(self, query, top_k=5):
+        # ✅
+        try:
+            if query is None: return None
+            assert self.config.use_relations_vdb
+            edge_datas = await self.relations_vdb.retrieval_edges(query, top_k=top_k, graph = self.graph)
+        
+            if not len(edge_datas):
+                return None
+     
+            edge_datas = await self._construct_relationship_context(edge_datas)
+            return edge_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant relationships: {e}")
+            
+            
+            
+    async def _find_relevant_relationships_from_entities(self, node_datas: list[dict]):
+        # ✅
+        all_related_edges = await asyncio.gather(
+            *[self.graph.get_node_edges(node["entity_name"]) for node in node_datas]
+        )
+        all_edges = set()
+        for this_edges in all_related_edges:
+            all_edges.update([tuple(sorted(e)) for e in this_edges])
+        all_edges = list(all_edges)
+        all_edges_pack = await asyncio.gather(
+            *[self.graph.get_edge(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_degree = await asyncio.gather(
+            *[self.graph.edge_degree(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_data = [
+            {"src_tgt": k, "rank": d, **v}
+            for k, v, d in zip(all_edges, all_edges_pack, all_edges_degree)
+            if v is not None
+        ]
+        all_edges_data = sorted(
+            all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
+        )
+        all_edges_data = truncate_list_by_token_size(
+            all_edges_data,
+            key=lambda x: x["description"],
+            max_token_size=self.config.max_token_for_local_context,
+        )
+        return all_edges_data
+
+

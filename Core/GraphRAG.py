@@ -26,6 +26,7 @@ from Core.Community.ClusterFactory import get_community
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
 from colorama import Fore, Style, init
 import json
+from Core.Retriever.MixRetriever import MixRetriever
 
 init(autoreset=True)  # Initialize colorama and reset color after each print
 
@@ -89,6 +90,7 @@ class GraphRAG(ContextMixin, BaseModel):
         cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
         cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         cls.time_manager = TimeStatistic()
+        cls.retriever = MixRetriever()
         data = cls._init_storage_namespace(data)
         data = cls._register_vdbs(data)
         data = cls._register_community(data)
@@ -134,160 +136,58 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @classmethod
     def _register_e2r_r2c_matrix(cls, data):
+        # The following two matrices are utilized for mapping entities to their corresponding chunks through the specified link-path:
+        # Entity Matrix: Represents the entities in the dataset.
+        # Chunk Matrix: Represents the chunks associated with the entities.
+        # These matrices facilitate the entity -> relationship -> chunk linkage, which is integral to the HippoRAG and FastGraphRAG models.
         if data.config.use_entity_link_chunk:
-            cls._entities_to_relationships = PickleBlobStorage(
+            cls.entities_to_relationships = PickleBlobStorage(
                 namespace=data.e2r_namespace, config=None
             )
-            cls._relationships_to_chunks = PickleBlobStorage(
+            cls.relationships_to_chunks = PickleBlobStorage(
                 namespace=data.r2c_namespace, config=None
             )
         return data
 
     @classmethod
     def _register_retriever_context(cls, data):
-        # register the retriever context
-        cls._retriever = None
-        cls._retriever_context = defaultdict
-        cls._retriever_context.update({"graph": True})
-        cls._retriever_context.update({"chunks": True})
-        cls._retriever_context.update({"entities_vdb": data.config.use_entities_vdb})
-        cls._retriever_context.update({"relations_vdb": data.config.use_relations_vdb})
-        cls._retriever_context.update({"community": data.config.use_community})
-        cls._retriever_context.update({"community": data.config.use_entity_link_chunk})
+        """
+        Register the retriever context based on the configuration provided in `data`.
+
+        Args:
+            data: An object containing the configuration.
+
+        Returns:
+            The input `data` object.
+        """
+        cls._retriever_context = {
+            "graph": True,
+            "doc_chunk": True,
+            "entities_vdb": data.config.use_entities_vdb,
+            "relations_vdb": data.config.use_relations_vdb,
+            "community": data.config.use_community,
+            "relationships_to_chunks": data.config.use_entity_link_chunk,
+            "entities_to_relationships": data.config.use_entity_link_chunk,
+        }
         return data
 
-    async def _extract_query_entities(self, query):
-        entities = []
+    async def _build_retriever_context(self):
+        """
+        Build the retriever context for subsequent retriever calls.
+
+        This method registers the necessary contexts with the retriever based on the
+        configuration set in `_retriever_context`.
+        """
+        logger.info("Building retriever context for the current execution")
         try:
-            ner_messages = GraphPrompt.NER.format(user_input=query)
-
-            response_content = await self.llm.aask(ner_messages)
-            entities = prase_json_from_response(response_content)
-
-            if 'named_entities' not in entities:
-                entities = []
-            else:
-                entities = entities['named_entities']
-
-            entities = [clean_str(p) for p in entities]
+            self.retriever.register_context("graph", self.graph)
+            for context_name, use_context in self._retriever_context.items():
+                if use_context:
+                    self.retriever.register_context(context_name, getattr(self, context_name))
         except Exception as e:
-            logger.error('Error in Retrieval NER: {}'.format(e))
+            logger.error(f"Failed to build retriever context: {e}")
+            raise
 
-        return entities
-
-    async def _extract_query_keywords(self, query, mode = "low"):
-        kw_prompt = QueryPrompt.KEYWORDS_EXTRACTION.format(query=query)
-        result = await self.llm.aask(kw_prompt)
-
-        keywords_data = prase_json_from_response(result)
-        if mode == "low":
-            keywords = keywords_data.get("low_level_keywords", [])
-            keywords = ", ".join(keywords)
-        elif mode == "high":
-            keywords = keywords_data.get("high_level_keywords", [])
-            keywords = ", ".join(keywords)
-        elif mode == "hybrid":
-           low_level = keywords_data.get("low_level_keywords", [])
-           high_level = keywords_data.get("high_level_keywords", [])
-           keywords = [low_level, high_level]
-
-        return keywords
-
-
-    async def _build_retriever_context(self, query):
-        """Build the retriever context for the given query."""
-        logger.info("Building retriever context for the given query: {query}".format(query=query))
-
-        self._retriever.register_context("graph", self.graph)
-        self._retriever.register_context("query", query)
-        for context_name, use_context in self._retriever_context.items():
-            if use_context:
-                self._retriever.register_context(context_name, getattr(self, context_name))
-
-        if self.config.use_query_entity:
-            try:
-                query_entities = await self._extract_query_entities(query)
-                self._retriever.register_context("query_entity", query_entities)
-            except Exception as e:
-                logger.error(f"Failed to extract query entities: {e}")
-                raise
-
-    async def _build_ppr_context(self):
-        """
-        Build the context for the Personalized PageRank (PPR) query.
-
-        This function constructs two mappings:
-            1. chunk_to_edge: Maps chunks (document sources) to edge indices.
-            2. edge_to_entity: Maps edges to the entities (nodes) they connect.
-
-        The function iterates over all edges in the graph, retrieves relevant metadata for each edge,
-        and updates the mappings. These mappings are essential for executing PPR queries efficiently.
-        """
-        self.chunk_to_edge = defaultdict(int)
-        self.edge_to_entity = defaultdict(int)
-        self.entity_to_edge = defaultdict(int)
-        self.id_to_entity = defaultdict(int)
-
-        nodes = list(await self.graph.nodes())
-        edges = list(await self.graph.edges())
-
-        async def _build_edge_chunk_mapping(edge) -> None:
-            """
-            Build mappings for the edges of a given graph.
-
-            Args:
-                edge (Tuple[str, str]): A tuple representing the edge (node1, node2).
-                edges (list): List of all edges in the graph.
-                nodes (list): List of all nodes in the graph.
-                docs_to_facts (Dict[Tuple[int, int], int]): Mapping of document indices to fact indices.
-                facts_to_phrases (Dict[Tuple[int, int], int]): Mapping of fact indices to phrase indices.
-            """
-            try:
-                # Fetch edge data asynchronously
-                edge_data = await self.graph.get_edge(edge[0], edge[1])
-                source_ids = edge_data['source_id'].split(GRAPH_FIELD_SEP)
-                for source_id in source_ids:
-                    # Map document to edge
-                    source_idx = await self.doc_chunk.get_index_by_key(source_id)
-                    edge_idx = edges.index((edge[0], edge[1]))
-                    self.chunk_to_edge[(source_idx, edge_idx)] = 1
-
-                # Map fact to phrases for both nodes in the edge
-                node_idx_1 = nodes.index(edge[0])
-                node_idx_2 = nodes.index(edge[1])
-
-                self.edge_to_entity[(edge_idx, node_idx_1)] = 1
-                self.edge_to_entity[(edge_idx, node_idx_2)] = 1
-                self.entity_to_edge[(node_idx_1, edge_idx)] = 1
-                self.entity_to_edge[(node_idx_2, edge_idx)] = 1
-            except ValueError as ve:
-                # Handle specific errors, such as when edge or node is not found
-                logger.error(f"ValueError in edge {edge}: {ve}")
-            except KeyError as ke:
-                # Handle missing data in chunk_key_to_idx
-                logger.error(f"KeyError in edge {edge}: {ke}")
-            except Exception as e:
-                # Handle general exceptions gracefully
-                logger.error(f"Unexpected error processing edge {edge}: {e}")
-
-        # Process all nodes asynchronously
-        await asyncio.gather(*[_build_edge_chunk_mapping(edge) for edge in edges])
-
-        for node in nodes:
-            self.id_to_entity[nodes.index(node)] = node
-
-        self.chunk_to_edge_mat = csr_array(([int(v) for v in self.chunk_to_edge.values()], (
-            [int(e[0]) for e in self.chunk_to_edge.keys()], [int(e[1]) for e in self.chunk_to_edge.keys()])),
-                                           shape=(await self.doc_chunk.size, len(edges)))
-
-        self.edge_to_entity_mat = csr_array(([int(v) for v in self.edge_to_entity.values()], (
-            [e[0] for e in self.edge_to_entity.keys()], [e[1] for e in self.edge_to_entity.keys()])),
-                                            shape=(len(edges), len(nodes)))
-
-        self.chunk_to_entity_mat = self.chunk_to_edge_mat.dot(self.edge_to_entity_mat)
-      
-        self.chunk_to_entity_mat[self.chunk_to_entity_mat.nonzero()] = 1
-        self.entity_doc_count = self.chunk_to_entity_mat.sum(0).T
 
     async def build_e2r_r2c_maps(self, force = False):
         # await self._build_ppr_context()
@@ -395,6 +295,7 @@ class GraphRAG(ContextMixin, BaseModel):
 
          
     async def retrieve(self, question):
+        
         self.k: int = 30
         self.k_nei: int = 3
         graph_nodes = list(await self.graph.get_nodes())
@@ -444,599 +345,35 @@ class GraphRAG(ContextMixin, BaseModel):
             Args:
                 query: The query to be processed.
             Returns:
-            """
-        ####################################################################################################
-        # 1. Building query relevant content (subgraph) Stage
-        ####################################################################################################
-        # await self._build_retriever_context(query)
-        # await self._build_retriever_operator()
-        # await self.global_query(query)
-        await self.retrieve(query)
-        keywords = await self._extract_query_keywords(query, "high")
-        # relationships = await self._find_relevant_relations_vdb(keywords)
-        entities = await self._find_relevant_entities_vdb(query)
+        """
+        await self._build_retriever_context()
         import pdb
         pdb.set_trace()
         
-        entities_by_relations = await self._find_relevant_entities_by_relationships(relationships)
-        await self._find_relevant_chunks_from_relationships(entities_by_relations)
-        query_entities = await self._extract_query_entities(query)
-        link_entities = await self._link_entities(query_entities)
-        entities = await self._find_relevant_entities_vdb(query)
-        ppr_entites, ppr_node_matrix = await self._find_relevant_entities_by_ppr(query, query_entities)
-
-        await self._find_relevant_community_from_entities(ppr_entites, self.community.community_reports)
-
-        # await self._find_relevant_entities_from_keywords(query)
-        await self._find_relevant_relationships_by_ppr(query, query_entities, 5, ppr_node_matrix)
-        await self._find_relevant_chunks_by_ppr(entities)
-
-        await self.graph.get_induced_subgraph(entities, relationships)
-        # entities = await self._find_relevant_entities_vdb(query)
-        # await self._find_relevant_chunks_from_entities(entities)
-  
-        relationships = await self._find_relevant_relations_vdb(query)
-        print(relationships)
+        print("Sdsdsdsd")
 
         ####################################################################################################
         # 2. Generation Stage
         ####################################################################################################
 
-    async def _find_relevant_entities_by_relationships(self, edge_datas):
-        # ✅
-        entity_names = set()
-        for e in edge_datas:
-            entity_names.add(e["src_id"])
-            entity_names.add(e["tgt_id"])
 
-        node_datas = await asyncio.gather(
-            *[self.graph.get_node(entity_name) for entity_name in entity_names]
-        )
 
-        node_degrees = await asyncio.gather(
-            *[self.graph.node_degree(entity_name) for entity_name in entity_names]
-        )
-        node_datas = [
-            {**n, "entity_name": k, "rank": d}
-            for k, n, d in zip(entity_names, node_datas, node_degrees)
-        ]
 
-        node_datas = truncate_list_by_token_size(
-            node_datas,
-            key=lambda x: x["description"],
-            max_token_size = self.config.max_token_for_local_context,
-        )
+   
 
-        return node_datas
     
-    async def _run_personalized_pagerank(self, query, query_entities):
-        # ✅
-        assert self.config.use_entities_vdb
-        # Run Personalized PageRank
-        reset_prob_matrix = np.zeros(self.graph.node_num)
-
-        if self.config.use_entity_similarity_for_ppr:
-            # Here, we re-implement the key idea of the FastGraphRAG, you can refer to the source code for more details:
-            # https://github.com/circlemind-ai/fast-graphrag/tree/main
-
-            # Use entity similarity to compute the reset probability matrix
-            reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query_entities, top_k=1, graph = self.graph)
-            # Run Personalized PageRank on the linked entities      
-            reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query, top_k=self.config.top_k_entity_for_ppr, graph = self.graph)     
-        else:
-            # Set the weight of the retrieved documents based on the number of documents they appear in
-            # Please refer to the HippoRAG code for more details: https://github.com/OSU-NLP-Group/HippoRAG/tree/main
-            if not hasattr(self, "entity_chunk_count"):
-                    # Register the entity-chunk count matrix into the class when you first use it.
-                    e2r = await self._entities_to_relationships.get()
-                    r2c = await self._relationships_to_chunks.get()
-                    c2e= e2r.dot(r2c).T
-                    c2e[c2e.nonzero()] = 1
-                    self.entity_chunk_count = c2e.sum(0).T
-            for entity in query_entities:
-                entity_idx = await self.graph.get_node_index(entity["entity_name"])
-                if self.config.node_specificity:
-                    if self.entity_chunk_count[entity_idx] == 0:
-                        weight = 1
-                    else:
-                        weight = 1 / float(self.entity_chunk_count[entity_idx])
-                    reset_prob_matrix[entity_idx] = weight
-                else:
-                    reset_prob_matrix[entity_idx] = 1.0
-        #TODO: as a method in our NetworkXGraph class or directly use the networkx graph
-        # Transform the graph to igraph format 
-        return await self.graph.personalized_pagerank([reset_prob_matrix])
-        
     
-    # def get_colbert_max_score(self, query):
-    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict], top_k=5):
-        # ✅
-        if len(seed_entities) == 0:
-            return None
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-        ppr_node_matrix = await self._run_personalized_pagerank(query, seed_entities)
-        topk_indices = np.argsort(ppr_node_matrix)[-top_k:]
-        nodes = await self.graph.get_node_by_indices(topk_indices)
- 
-        return nodes, ppr_node_matrix
-
-    async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
-        # ✅
-        entity_to_edge_mat = await self._entities_to_relationships.get()
-        if node_ppr_matrix is None:
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
-        edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
-        topk_indices = np.argsort(edge_prob_matrix)[-top_k:]
-        edges =  await self.graph.get_edge_by_indices(topk_indices)
-        return await self._construct_relationship_context(edges)
-    
-    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
-        # ✅
-        entity_to_edge_mat = await self._entities_to_relationships.get()
-        relationship_to_chunk_mat = await self._relationships_to_chunks.get()
-        if node_ppr_matrix is None:
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
-        edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
-        ppr_chunk_prob = relationship_to_chunk_mat.T.dot(edge_prob)
-        ppr_chunk_prob = min_max_normalize(ppr_chunk_prob)
-         # Return top k documents
-        sorted_doc_ids = np.argsort(ppr_chunk_prob, kind='mergesort')[::-1]
-        sorted_scores = ppr_chunk_prob[sorted_doc_ids]
-        soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
-        return soreted_docs, sorted_scores[:top_k]
-    
-    async def _link_entities(self, query_entities):
-
-        entities = []
-        for query_entity in query_entities: 
-            node_datas = await self.entities_vdb.retrieval_nodes(query_entity, top_k=1, graph = self.graph)
-            # For entity link, we only consider the top-ranked entity
-            entities.append(node_datas[0]) 
- 
-        return entities
-
-    async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
-                                                       pre_head=None, width=3):
-        """
-        Use agent to select the top-K relations based on the input query and entities
-        Args:
-            query: str, the query to be processed.
-            entity: str, the entity seed
-            pre_relations_name: list, the relation name that has already exists
-            pre_head: bool, indicator that shows whether te pre head relations exist or not
-            width: int, the search width of agent
-        Returns:
-            results: list[str], top-k relation candidates list
-        """
-        # ✅
-        try:
-            from Core.Common.Constants import GRAPH_FIELD_SEP
-            from collections import defaultdict
-            from Core.Prompt.TogPrompt import extract_relation_prompt
-
-            # get relations from graph
-            edges = await self.graph._graph.get_node_edges(source_node_id=entity)
-            relations_name_super_edge = await asyncio.gather(
-                *[self.graph._graph.get_edge_relation_name(edge[0], edge[1]) for edge in edges]
-            )
-            relations_name = list(map(lambda x: x.split(GRAPH_FIELD_SEP), relations_name_super_edge))  # [[], [], []]
-
-            relations_dict = defaultdict(list)
-            for index, edge in enumerate(edges):
-                src, tar = edge[0], edge[1]
-                for rel in relations_name[index]:
-                    relations_dict[(src, rel)].append(tar)
-
-            tail_relations = []
-            head_relations = []
-            for index, rels in enumerate(relations_name):
-                if edges[index][0] == entity:
-                    head_relations.extend(rels)  # head
-                else:
-                    tail_relations.extend(rels)  # tail
-
-            if pre_relations_name:
-                if pre_head:
-                    tail_relations = list(set(tail_relations) - set(pre_relations_name))
-                else:
-                    head_relations = list(set(head_relations) - set(pre_relations_name))
-
-            head_relations = list(set(head_relations))
-            tail_relations = list(set(tail_relations))
-            total_relations = head_relations + tail_relations
-            total_relations.sort()  # make sure the order in prompt is always equal
-
-            # agent
-            prompt = extract_relation_prompt % (
-            width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
-                total_relations) + ';' + "\nA: "
-            result = await self.llm.aask(msg=[
-                {"role": "user",
-                 "content": prompt}
-            ])
-
-            # clean
-            import re
-            pattern = r"{\s*(?P<relation>[^()]+)\s+\(Score:\s+(?P<score>[0-9.]+)\)}"
-            relations = []
-            for match in re.finditer(pattern, result):
-                relation = match.group("relation").strip()
-                if ';' in relation:
-                    continue
-                score = match.group("score")
-                if not relation or not score:
-                    return False, "output uncompleted.."
-                try:
-                    score = float(score)
-                except ValueError:
-                    return False, "Invalid score"
-                if relation in head_relations:
-                    relations.append({"entity": entity, "relation": relation, "score": score, "head": True})
-                else:
-                    relations.append({"entity": entity, "relation": relation, "score": score, "head": False})
-
-            if len(relations) == 0:
-                flag = False
-                logger.info("No relations found by entity: {} and query: {}".format(entity, query))
-            else:
-                flag = True
-
-            # return
-            if flag:
-                return relations, relations_dict
-            else:
-                return [], relations_dict
-        except Exception as e:
-            logger.exception(f"Failed to find relevant relations by entity agent: {e}")
-
-    async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
-                                                        relations_dict: defaultdict[list], width=3):
-        """
-        Use agent to select the top-K relations based on the input query and entities
-        Args:
-            query: str, the query to be processed.
-            current_entity_relations_list: list,  whose element is {"entity": entity_name, "relation": relation, "score": score, "head": bool}
-            relations_dict: defaultdict[list], key is (src, rel), value is tar
-        Returns:
-            flag: bool,  indicator that shows whether to reason or not
-            relations, heads
-            cluster_chain_of_entities: list[list], reasoning paths
-            candidates: list[str], entity candidates
-            relations: list[str], related relation
-            heads: list[bool]
-        """
-        # ✅
-        try:
-            from Core.Prompt.TogPrompt import  score_entity_candidates_prompt
-            total_candidates = []
-            total_scores = []
-            total_relations = []
-            total_topic_entities = []
-            total_head = []
-
-            for index, entity in enumerate(current_entity_relations_list):
-                candidate_list = relations_dict[(entity["entity"], entity["relation"])]
-
-                # score these candidate entities
-                if len(candidate_list) == 1:
-                    scores = [entity["score"]]
-                elif len(candidate_list) == 0:
-                    scores = [0.0]
-                else:
-                    # agent
-                    prompt = score_entity_candidates_prompt.format(query, entity["relation"]) + '; '.join(
-                        candidate_list) + ';' + '\nScore: '
-                    result = await self.llm.aask(msg=[
-                        {"role": "user",
-                         "content": prompt}
-                    ])
-
-                    # clean
-                    import re
-                    scores = re.findall(r'\d+\.\d+', result)
-                    scores = [float(number) for number in scores]
-                    if len(scores) != len(candidate_list):
-                        logger.info("All entities are created with equal scores.")
-                        scores = [1 / len(candidate_list)] * len(candidate_list)
-
-                # update
-                if len(candidate_list) == 0:
-                    candidate_list.append("[FINISH]")
-                candidates_relation = [entity['relation']] * len(candidate_list)
-                topic_entities = [entity['entity']] * len(candidate_list)
-                head_num = [entity['head']] * len(candidate_list)
-                total_candidates.extend(candidate_list)
-                total_scores.extend(scores)
-                total_relations.extend(candidates_relation)
-                total_topic_entities.extend(topic_entities)
-                total_head.extend(head_num)
-
-            # entity_prune
-            zipped = list(zip(total_relations, total_candidates, total_topic_entities, total_head, total_scores))
-            sorted_zipped = sorted(zipped, key=lambda x: x[4], reverse=True)
-            sorted_relations = list(map(lambda x: x[0], sorted_zipped))
-            sorted_candidates = list(map(lambda x: x[1], sorted_zipped))
-            sorted_topic_entities = list(map(lambda x: x[2], sorted_zipped))
-            sorted_head = list(map(lambda x: x[3], sorted_zipped))
-            sorted_scores = list(map(lambda x: x[4], sorted_zipped))
-
-            # prune according to width
-            relations = sorted_relations[:width]
-            candidates = sorted_candidates[:width]
-            topics = sorted_topic_entities[:width]
-            heads = sorted_head[:width]
-            scores = sorted_scores[:width]
-
-            # merge and output
-            merged_list = list(zip(relations, candidates, topics, heads, scores))
-            filtered_list = [(rel, ent, top, hea, score) for rel, ent, top, hea, score in merged_list if score != 0]
-            if len(filtered_list) == 0:
-                return False, [], [], [], []
-            relations, candidates, tops, heads, scores = map(list, zip(*filtered_list))
-            cluster_chain_of_entities = [[(tops[i], relations[i], candidates[i]) for i in range(len(candidates))]]
-            return True, cluster_chain_of_entities, candidates, relations, heads
-        except Exception as e:
-            logger.exception(f"Failed to find relevant entities by relation agent: {e}")
-      
+   
       
         
 
-    async def _find_relevant_entities_vdb(self, query, top_k=5):
-        # ✅
-        try:
-            assert self.config.use_entities_vdb
-            node_datas = await self.entities_vdb.retrieval_nodes(query, top_k, self.graph)             
-            if not len(node_datas):
-                return None
-            if not all([n is not None for n in node_datas]):
-                logger.warning("Some nodes are missing, maybe the storage is damaged")
-            node_degrees = await asyncio.gather(
-                *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
-            )
-            node_datas = [
-                {**n, "entity_name": n["entity_name"], "rank": d}
-                for n, d in zip( node_datas, node_degrees)
-                if n is not None
-            ]
+   
+
+
+
+   
+
   
-            return node_datas
-        except Exception as e:
-            logger.exception(f"Failed to find relevant entities_vdb: {e}")
-
-
-    async def _find_relevant_tree_nodes_vdb(self, query, top_k=5):
-        # ✅
-        try:
-            assert self.config.use_entities_vdb
-            node_datas = await self.entities_vdb.retrieval(query, top_k)
-            import pdb
-            pdb.set_trace()             
-            if not len(node_datas):
-                return None
-            if not all([n is not None for n in node_datas]):
-                logger.warning("Some nodes are missing, maybe the storage is damaged")
-            node_degrees = await asyncio.gather(
-                *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
-            )
-            node_datas = [
-                {**n, "entity_name": n["entity_name"], "rank": d}
-                for n, d in zip( node_datas, node_degrees)
-                if n is not None
-            ]
-  
-            return node_datas
-        except Exception as e:
-            logger.exception(f"Failed to find relevant entities_vdb: {e}")
-    async def _find_relevant_relations_vdb(self, query, top_k=5):
-        # ✅
-        try:
-            if query is None: return None
-            assert self.config.use_relations_vdb
-            edge_datas = await self.relations_vdb.retrieval_edges(query, top_k=top_k, graph = self.graph)
-        
-            if not len(edge_datas):
-                return None
-     
-            edge_datas = await self._construct_relationship_context(edge_datas)
-            return edge_datas
-        except Exception as e:
-            logger.exception(f"Failed to find relevant relationships: {e}")
-
-    async def _find_relevant_chunks_from_entities_relationships(self, node_datas: list[dict]):
-        # ✅
-        if len(node_datas) == 0:
-            return None
-        text_units = [
-            split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
-            for dp in node_datas
-        ]
-        edges = await asyncio.gather(
-            *[self.graph.get_node_edges(dp["entity_name"]) for dp in node_datas]
-        )
-        all_one_hop_nodes = set()
-        for this_edges in edges:
-            if not this_edges:
-                continue
-            all_one_hop_nodes.update([e[1] for e in this_edges])
-        all_one_hop_nodes = list(all_one_hop_nodes)
-        all_one_hop_nodes_data = await asyncio.gather(
-            *[self.graph.get_node(e) for e in all_one_hop_nodes]
-        )
-        all_one_hop_text_units_lookup = {
-            k: set(split_string_by_multi_markers(v["source_id"], [GRAPH_FIELD_SEP]))
-            for k, v in zip(all_one_hop_nodes, all_one_hop_nodes_data)
-            if v is not None
-        }
-        all_text_units_lookup = {}
-        for index, (this_text_units, this_edges) in enumerate(zip(text_units, edges)):
-            for c_id in this_text_units:
-                if c_id in all_text_units_lookup:
-                    continue
-                relation_counts = 0
-                for e in this_edges:
-                    if (
-                            e[1] in all_one_hop_text_units_lookup
-                            and c_id in all_one_hop_text_units_lookup[e[1]]
-                    ):
-                        relation_counts += 1
-                all_text_units_lookup[c_id] = {
-                    "data": await self.doc_chunk.get_data_by_key(c_id),
-                    "order": index,
-                    "relation_counts": relation_counts,
-                }
-        if any([v is None for v in all_text_units_lookup.values()]):
-            logger.warning("Text chunks are missing, maybe the storage is damaged")
-        all_text_units = [
-            {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-        ]   
-        # for node_data in node_datas:
-        all_text_units = sorted(
-            all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
-        )
-        all_text_units = truncate_list_by_token_size(
-            all_text_units,
-            key=lambda x: x["data"],
-            max_token_size=self.config.local_max_token_for_text_unit,
-        )
-        all_text_units = [t["data"] for t in all_text_units]
-
-        return all_text_units
-
-
-    async def _find_relevant_chunks_from_relationships(self, edge_datas: list[dict]):
-        text_units = [
-            split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
-            for dp in edge_datas
-        ]
-
-        all_text_units_lookup = {}
-
-        for index, unit_list in enumerate(text_units):
-            for c_id in unit_list:
-                if c_id not in all_text_units_lookup:
-                    all_text_units_lookup[c_id] = {
-                        "data": await self.doc_chunk.get_data_by_key(c_id),
-                        "order": index,
-                    }
-
-        if any([v is None for v in all_text_units_lookup.values()]):
-            logger.warning("Text chunks are missing, maybe the storage is damaged")
-        all_text_units = [
-            {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-        ]
-        all_text_units = sorted(all_text_units, key=lambda x: x["order"])
-        all_text_units = truncate_list_by_token_size(
-            all_text_units,
-            key=lambda x: x["data"],
-            max_token_size = self.config.max_token_for_text_unit,
-        )
-        all_text_units = [t["data"] for t in all_text_units]
-
-        return all_text_units
-    
-    async def _find_relevant_relationships_from_entities(self, node_datas: list[dict]):
-        # ✅
-        all_related_edges = await asyncio.gather(
-            *[self.graph.get_node_edges(node["entity_name"]) for node in node_datas]
-        )
-        all_edges = set()
-        for this_edges in all_related_edges:
-            all_edges.update([tuple(sorted(e)) for e in this_edges])
-        all_edges = list(all_edges)
-        all_edges_pack = await asyncio.gather(
-            *[self.graph.get_edge(e[0], e[1]) for e in all_edges]
-        )
-        all_edges_degree = await asyncio.gather(
-            *[self.graph.edge_degree(e[0], e[1]) for e in all_edges]
-        )
-        all_edges_data = [
-            {"src_tgt": k, "rank": d, **v}
-            for k, v, d in zip(all_edges, all_edges_pack, all_edges_degree)
-            if v is not None
-        ]
-        all_edges_data = sorted(
-            all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
-        )
-        all_edges_data = truncate_list_by_token_size(
-            all_edges_data,
-            key=lambda x: x["description"],
-            max_token_size=self.config.max_token_for_local_context,
-        )
-        return all_edges_data
-
-
-
-
-    async def _construct_relationship_context(self, edge_datas: list[dict]):
-
-        if not all([n is not None for n in edge_datas]):
-            logger.warning("Some edges are missing, maybe the storage is damaged")
-        edge_degree = await asyncio.gather(
-            *[self.graph.edge_degree(r["src_id"], r["tgt_id"]) for r in edge_datas]
-        )
-        edge_datas = [
-            {"src_id": v["src_id"], "tgt_id": v["tgt_id"], "rank": d, **v}
-            for v, d in zip( edge_datas, edge_degree)
-            if v is not None
-        ]
-        edge_datas = sorted(
-            edge_datas, key=lambda x: (x["rank"], x["weight"]), reverse=True
-        )
-        edge_datas = truncate_list_by_token_size(
-            edge_datas,
-            key=lambda x: x["description"],
-            max_token_size=self.config.max_token_for_global_context,
-        )
-        return edge_datas
-    
-    async def _find_relevant_community_from_entities(self, node_datas: list[dict], community_reports):
-        # ✅
-        related_communities = []
-        for node_d in node_datas:
-            if "clusters" not in node_d:
-                continue
-            related_communities.extend(json.loads(node_d["clusters"]))
-        related_community_dup_keys = [
-            str(dp["cluster"])
-            for dp in related_communities
-            if dp["level"] <= self.config.level
-        ]
-        import pdb
-        pdb.set_trace()
-        related_community_keys_counts = dict(Counter(related_community_dup_keys))
-        _related_community_datas = await asyncio.gather(
-            *[community_reports.get_by_id(k) for k in related_community_keys_counts.keys()]
-        )
-        related_community_datas = {
-            k: v
-            for k, v in zip(related_community_keys_counts.keys(), _related_community_datas)
-            if v is not None
-        }
-        related_community_keys = sorted(
-            related_community_keys_counts.keys(),
-            key=lambda k: (
-                related_community_keys_counts[k],
-                related_community_datas[k]["report_json"].get("rating", -1),
-            ),
-            reverse=True,
-        )
-        sorted_community_datas = [
-            related_community_datas[k] for k in related_community_keys
-        ]
-
-        use_community_reports = truncate_list_by_token_size(
-            sorted_community_datas,
-            key=lambda x: x["report_string"],
-            max_token_size= self.config.local_max_token_for_community_report,
-        )
-        if self.config.local_community_single_one:
-            use_community_reports = use_community_reports[:1]
-
-        return use_community_reports
-    
-
     async def _map_global_communities(
             self,
             query: str,
@@ -1090,8 +427,6 @@ class GraphRAG(ContextMixin, BaseModel):
             community_schema = {
                 k: v for k, v in community_schema.items() if v.level <= self.config.level
             }
-            import pdb
-            pdb.set_trace()
             if not len(community_schema):
                 return QueryPrompt.FAIL_RESPONSE
 

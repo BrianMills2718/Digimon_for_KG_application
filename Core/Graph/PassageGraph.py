@@ -86,8 +86,7 @@ class PassageGraph(BaseGraph):
             for k, v in kw_chunk.items():
                 merge_wikis[k].extend(v)
         for chunk_pair in chunk_list:
-            import pdb
-            pdb.set_trace()
+          
             node_data = Entity(entity_name=chunk_pair[0], description=chunk_pair[1].content, source_id=chunk_pair[0])
             maybe_nodes[chunk_pair[0]].append(node_data)
         # Merge edge information
