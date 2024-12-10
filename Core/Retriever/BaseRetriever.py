@@ -1,28 +1,32 @@
 import asyncio
-from Core.Config2 import Config
-from Core.Common.ContextMixin import ContextMixin
-from abc import ABC, abstractmethod
+from abc import ABC
+from Core.Common.Utils import truncate_list_by_token_size
+from Core.Common.Logger import logger
+import numpy as np
+import asyncio
+from Core.Retriever.RetrieverFactory import get_retriever_operator
 
 
 class BaseRetriever(ABC):
   
         
     def __init__(self, config):
-          self.config = config
+        self.config = config
 
-    def reset(self):
-        self.memory.clear()
 
-    @abstractmethod
-    async def find_relevant_contexts(self, query, top_k=10, **context):
-         """
-        Find the top-k relevant contexts for the given query.
-        :param query: The query string.
-        :param top_k: The number of top-k relevant contexts to return.
-        :return: A list of tuples, where each tuple contains the document id and the context text.
+    async def retrieve_relevant_content(self, **kwargs):
         """
+        Find the relevant contexts for the given query.
+        """
+        mode = kwargs.pop("mode")
+        if mode not in self.mode_list:
+            logger.warning(f"Invalid mode: {mode}")
+            return None
         
-      async def _construct_relationship_context(self, edge_datas: list[dict]):
+        retrieve_fun = get_retriever_operator(self.type, mode)
+        return await retrieve_fun(self, **kwargs)
+    
+    async def _construct_relationship_context(self, edge_datas: list[dict]):
 
         if not all([n is not None for n in edge_datas]):
             logger.warning("Some edges are missing, maybe the storage is damaged")
@@ -65,8 +69,8 @@ class BaseRetriever(ABC):
             # Please refer to the HippoRAG code for more details: https://github.com/OSU-NLP-Group/HippoRAG/tree/main
             if not hasattr(self, "entity_chunk_count"):
                     # Register the entity-chunk count matrix into the class when you first use it.
-                    e2r = await self._entities_to_relationships.get()
-                    r2c = await self._relationships_to_chunks.get()
+                    e2r = await self.entities_to_relationships.get()
+                    r2c = await self.relationships_to_chunks.get()
                     c2e= e2r.dot(r2c).T
                     c2e[c2e.nonzero()] = 1
                     self.entity_chunk_count = c2e.sum(0).T

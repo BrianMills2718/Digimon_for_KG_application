@@ -1,34 +1,39 @@
-
+from Core.Common.Logger import logger
 from Core.Retriever.BaseRetriever import BaseRetriever
+import numpy as np
+import asyncio
+from collections import defaultdict
+from Core.Common.Utils import truncate_list_by_token_size
+
+from Core.Retriever.RetrieverFactory import register_retriever_method
 class EntityRetriever(BaseRetriever):
-    def __init__(self, config):
+    def __init__(self, **kwargs):
+
+        config = kwargs.pop("config")
         super().__init__(config)
-        
-
-
-
-    async def find_relevant_contexts(self, query, top_k, entity_vdb, llm, graph, mode = "vdb"):
-         """
-        Find the top-k relevant contexts for the given query.
-        :param query: The query string.
-        :param top_k: The number of top-k relevant contexts to return.
-        :return: A list of tuples, where each tuple contains the document id and the context text.
-        """
-        # def get_colbert_max_score(self, query):
-    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict], top_k=5):
-        # ✅
+        self.mode_list = ["ppr", "vdb", "from_relation"]
+        self.type = "entity"
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+           
+    
+    @register_retriever_method(type = "entity", method_name = "ppr")    
+    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict]):
+ 
         if len(seed_entities) == 0:
             return None
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
         ppr_node_matrix = await self._run_personalized_pagerank(query, seed_entities)
-        topk_indices = np.argsort(ppr_node_matrix)[-top_k:]
+        topk_indices = np.argsort(ppr_node_matrix)[-self.config.top_k:]
         nodes = await self.graph.get_node_by_indices(topk_indices)
  
         return nodes, ppr_node_matrix
-    async def _find_relevant_entities_vdb(self, query, top_k=5):
-        try:
-            assert self.config.use_entities_vdb
-            node_datas = await self.entities_vdb.retrieval_nodes(query, top_k, self.graph)             
+    
+    @register_retriever_method(type = "entity", method_name = "vdb")    
+    async def _find_relevant_entities_vdb(self, seed):
+        try:           
+            node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph)
+                    
             if not len(node_datas):
                 return None
             if not all([n is not None for n in node_datas]):
@@ -50,7 +55,7 @@ class EntityRetriever(BaseRetriever):
 
    
     
-    
+
     async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
                                                         relations_dict: defaultdict[list], width=3):
         """
@@ -141,10 +146,10 @@ class EntityRetriever(BaseRetriever):
             logger.exception(f"Failed to find relevant entities by relation agent: {e}")
       
      
-     
-    async def _find_relevant_entities_by_relationships(self, edge_datas):
+    @register_retriever_method(type = "entity", method_name = "from_relation")    
+    async def _find_relevant_entities_by_relationships(self, seed):
         entity_names = set()
-        for e in edge_datas:
+        for e in seed:
             entity_names.add(e["src_id"])
             entity_names.add(e["tgt_id"])
 
@@ -168,7 +173,7 @@ class EntityRetriever(BaseRetriever):
 
         return node_datas 
     
-        async def _find_relevant_tree_nodes_vdb(self, query, top_k=5):
+    async def _find_relevant_tree_nodes_vdb(self, query, top_k=5):
         # ✅
         try:
             assert self.config.use_entities_vdb
@@ -194,42 +199,8 @@ class EntityRetriever(BaseRetriever):
    
    
    
-    async def _extract_query_entities(self, query):
-        entities = []
-        try:
-            ner_messages = GraphPrompt.NER.format(user_input=query)
 
-            response_content = await self.llm.aask(ner_messages)
-            entities = prase_json_from_response(response_content)
 
-            if 'named_entities' not in entities:
-                entities = []
-            else:
-                entities = entities['named_entities']
-
-            entities = [clean_str(p) for p in entities]
-        except Exception as e:
-            logger.error('Error in Retrieval NER: {}'.format(e))
-
-        return entities
-
-    async def _extract_query_keywords(self, query, mode = "low"):
-        kw_prompt = QueryPrompt.KEYWORDS_EXTRACTION.format(query=query)
-        result = await self.llm.aask(kw_prompt)
-
-        keywords_data = prase_json_from_response(result)
-        if mode == "low":
-            keywords = keywords_data.get("low_level_keywords", [])
-            keywords = ", ".join(keywords)
-        elif mode == "high":
-            keywords = keywords_data.get("high_level_keywords", [])
-            keywords = ", ".join(keywords)
-        elif mode == "hybrid":
-           low_level = keywords_data.get("low_level_keywords", [])
-           high_level = keywords_data.get("high_level_keywords", [])
-           keywords = [low_level, high_level]
-
-        return keywords
 
 
 

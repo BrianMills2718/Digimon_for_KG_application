@@ -27,7 +27,7 @@ from Core.Common.LLMConfig import LLMConfig, LLMType
 from Core.Common.Constants import USE_CONFIG_TIMEOUT
 from Core.Common.Logger import log_llm_stream, logger
 from Core.Provider.BaseLLM import BaseLLM
-from Core.Provider.LLM_Provider_Register import register_provider
+from Core.Provider.LLMProviderRegister import register_provider
 from Core.Common.Utils import  log_and_reraise
 from Core.Common.CostManager import CostManager
 from Core.Utils.Exceptions import handle_exception
@@ -166,6 +166,7 @@ class OpenAILLM(BaseLLM):
             return await self._achat_completion_stream(messages, timeout=timeout, max_tokens = max_tokens)
 
         rsp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
+        
         return self.get_choice_text(rsp)
 
 
@@ -195,18 +196,6 @@ class OpenAILLM(BaseLLM):
         # https://community.openai.com/t/why-is-gpt-3-5-turbo-1106-max-tokens-limited-to-4096/494973/3
         return min(get_max_completion_tokens(messages, self.model, self.config.max_token), 4096)
 
-    @handle_exception
-    async def amoderation(self, content: Union[str, list[str]]):
-        """Moderate content."""
-        return await self.aclient.moderations.create(input=content)
-
-    async def atext_to_speech(self, **kwargs):
-        """text to speech"""
-        return await self.aclient.audio.speech.create(**kwargs)
-
-    async def aspeech_to_text(self, **kwargs):
-        """speech to text"""
-        return await self.aclient.audio.transcriptions.create(**kwargs)
 
    
     def get_maxtokens(self) -> int:

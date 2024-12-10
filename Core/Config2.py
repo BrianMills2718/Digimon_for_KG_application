@@ -37,7 +37,7 @@ class Config(CLIParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug_passage_graph"
+    exp_name: str = "debug_fastgraph"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
@@ -51,13 +51,13 @@ class Config(CLIParams, YamlModel):
     token_model: str = "gpt-3.5-turbo"
     llm_model_max_token_size: int = 32768
     chunk_method: str = "chunking_by_token_size"
-    use_entity_link_chunk: bool = False  # Only set True for HippoRAG and FastGraphRAG
+    use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
     
     # enable LightRAG
     enable_edge_keywords: bool = True
 
     # Building graph
-    graph_type: str = "passage_graph" # rkg_graph/er_graph/tree_graph/passage_graph
+    graph_type: str = "rkg_graph" # rkg_graph/er_graph/tree_graph/passage_graph
     extract_two_step: bool = True
     max_gleaning: int = 1
     enable_entity_description: bool = True
@@ -67,7 +67,7 @@ class Config(CLIParams, YamlModel):
     prior_prob: float = 0.8
     
     # Graph clustering
-    use_community: bool = False
+    use_community: bool =True
     graph_cluster_algorithm: str = "leiden"
     max_graph_cluster_size: int = 10
     graph_cluster_seed: int = 0xDEADBEEF
@@ -91,6 +91,7 @@ class Config(CLIParams, YamlModel):
     enforce_sub_communities: bool = False
 
     # Retrieval Parameters
+    query_type: str = "ppr"
     enable_local: bool = False
     enable_naive_rag: bool = False
     use_entity_similarity_for_ppr: bool = True
@@ -108,6 +109,7 @@ class Config(CLIParams, YamlModel):
 
     # Query config 
     only_need_context: bool = False
+    enable_hybrid_query: bool = True
     response_type: str = "Multiple Paragraphs"
     level: int = 2
     retrieve_top_k: int = 20
@@ -116,11 +118,13 @@ class Config(CLIParams, YamlModel):
     # local search
     local_max_token_for_text_unit: int = 4000  # 12000 * 0.33
     max_token_for_text_unit: int = 4000
+    use_keywords: bool = True
 
     max_token_for_local_context: int = 4800  # 12000 * 0.4
     local_max_token_for_community_report: int = 3200  # 12000 * 0.27
     local_community_single_one: bool = False
     # global search
+    use_global_query: bool = True
     global_min_community_rating: float = 0
     global_max_consider_community: float = 512
     global_max_token_for_community_report: int = 16384

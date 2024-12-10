@@ -2,7 +2,8 @@ import os
 from pathlib import Path
 
 from loguru import logger
-import Core.Common
+from enum import Enum
+
 Process_tickers = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
 
@@ -96,3 +97,9 @@ r = int(hex_color[1:3], 16)
 g = int(hex_color[3:5], 16)
 b = int(hex_color[5:7], 16)
 ANSI_COLOR = f"\033[38;2;{r};{g};{b}m"
+
+class Retriever(Enum):
+    ENTITY = "entity"
+    RELATION = "relationship"
+    CHUNK = "chunk"
+    COMMUNITY = "community"

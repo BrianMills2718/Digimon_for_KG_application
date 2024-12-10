@@ -31,7 +31,6 @@ class VectorIndex(BaseIndex):
     async def retrieval_nodes(self, query, top_k, graph, need_score = False):
         results = await self.retrieval(query, top_k)
         result =  VectorIndexNodeResult(results)
-        
         return await result.get_node_data(graph, need_score)
     
 

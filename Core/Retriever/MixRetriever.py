@@ -1,9 +1,28 @@
-
+from Core.Common.Constants import Retriever
+from Core.Retriever import * 
 
 class MixRetriever:
-    def __init__(self):
-        pass
+    def __init__(self, retirever_context):
+        self.context = retirever_context
+        self.retrievers = {} 
+        self.register_retrievers()
+
+    def register_retrievers(self):
+
+        self.retrievers[Retriever.ENTITY] = EntityRetriever(**self.context.as_dict)
+        self.retrievers[Retriever.COMMUNITY] = CommunityRetriever(**self.context.as_dict)
+        self.retrievers[Retriever.CHUNK] = ChunkRetriever(**self.context.as_dict)
+        self.retrievers[Retriever.RELATION] = RelationshipRetriever(**self.context.as_dict)
+        
+    async def retrieve_relevant_content(self, type: Retriever, mode: str, **kwargs):
+        return await self.retrievers[type].retrieve_relevant_content(mode = mode, **kwargs) 
     
     
-    def register_context(self, key, value):
-        self.__setattr__(key, value)
+    @property
+    def llm(self):
+        return self.context.llm
+    
+    @property
+    def config(self):
+        return self.context.config
+    

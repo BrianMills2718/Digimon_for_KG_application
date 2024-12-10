@@ -23,13 +23,15 @@ class BaseCommunity(ABC):
 
         """
         # Try to load the community report
+        logger.info("Generating community report...")
+
         is_exist = await self._load_community_report(graph,force)
         if force or not is_exist:
-            logger.info("Generating community report...")
             # Generate the community report
             await self._generate_community_report(graph)
             # Persist the community report
             await self._persist_community()
+        logger.info("✅ [Community Report]  Finished")
 
     async def cluster(self, **kwargs):
         """
@@ -41,10 +43,13 @@ class BaseCommunity(ABC):
               **kwargs: Additional keyword arguments that may include parameters for clustering.
                   - force (bool): If True, forces the clustering process even if a cluster map already exists. Defaults to False.
           """
+        logger.info("Starting build community of the given graph")
+        logger.start("Clustering nodes")
         force = kwargs.pop('force', False)
         # Try to load the community <-> node map
-        is_exist = await self._load_cluster_map()
+        is_exist = await self._load_cluster_map(force)
         if force or not is_exist:
+           
             # Clustering the graph and generate the community <-> node map
             await self.clustering(**kwargs)
             # Persist the community <-> node map
@@ -67,7 +72,7 @@ class BaseCommunity(ABC):
         pass
 
     @abstractmethod
-    async def _load_cluster_map(self):
+    async def _load_cluster_map(self, force):
         pass
 
     @abstractmethod

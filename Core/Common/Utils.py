@@ -3,7 +3,9 @@ import html
 from typing import Any, List, Union, Tuple
 import re
 import numbers
-
+import shutil
+import io
+import csv
 from scipy.sparse import csr_matrix
 
 from Core.Common.Logger import logger
@@ -338,3 +340,81 @@ def csr_from_indices_list(data: List[List[int]], shape: Tuple[int, int]) -> csr_
 
     # Create the CSR matrix
     return csr_matrix((values, (row_indices, col_indices)), shape=shape)
+
+def clean_storage(path):
+    try:
+        if os.path.exists(path):
+            if os.path.isfile(path):
+                os.remove(path)
+                print(f"File {path} has been deleted.")
+            elif os.path.isdir(path):
+                shutil.rmtree(path)
+                print(f"Directory {path} and its contents have been deleted.")
+            else:
+                print(f"The path {path} exists but is not a file or directory.")
+        else:
+            print(f"The path {path} does not exist.")
+    except Exception as e:
+        print(f"An error occurred while deleting {path}: {e}")
+        
+def csv_string_to_list(csv_string: str) -> List[List[str]]:
+    output = io.StringIO(csv_string)
+    reader = csv.reader(output)
+    return [row for row in reader]
+
+       
+def process_combine_contexts(hl, ll):
+    header = None
+    list_hl = csv_string_to_list(hl.strip())
+    list_ll = csv_string_to_list(ll.strip())
+
+    if list_hl:
+        header = list_hl[0]
+        list_hl = list_hl[1:]
+    if list_ll:
+        header = list_ll[0]
+        list_ll = list_ll[1:]
+    if header is None:
+        return ""
+
+    if list_hl:
+        list_hl = [",".join(item[1:]) for item in list_hl if item]
+    if list_ll:
+        list_ll = [",".join(item[1:]) for item in list_ll if item]
+
+    combined_sources = []
+    seen = set()
+
+    for item in list_hl + list_ll:
+        if item and item not in seen:
+            combined_sources.append(item)
+            seen.add(item)
+
+    combined_sources_result = [",\t".join(header)]
+
+    for i, item in enumerate(combined_sources, start=1):
+        combined_sources_result.append(f"{i},\t{item}")
+
+    combined_sources_result = "\n".join(combined_sources_result)
+
+    return combined_sources_result
+
+        
+def combine_contexts(entities, relationships, sources):
+
+    # Function to extract entities, relationships, and sources from context strings
+    hl_entities, ll_entities = entities[0], entities[1]
+    hl_relationships, ll_relationships = relationships[0], relationships[1]
+    hl_sources, ll_sources = sources[0], sources[1]
+    # Combine and deduplicate the entities
+    combined_entities = process_combine_contexts(hl_entities, ll_entities)
+
+    # Combine and deduplicate the relationships
+    combined_relationships = process_combine_contexts(
+        hl_relationships, ll_relationships
+    )
+
+    # Combine and deduplicate the sources
+    combined_sources = process_combine_contexts(hl_sources, ll_sources)
+    
+    return combined_entities, combined_relationships, combined_sources

@@ -51,6 +51,7 @@ class LeidenCommunity(BaseCommunity):
         for partition in community_mapping:
             level_key = partition.level
             cluster_id = partition.cluster
+          
             node_communities[clean_str(partition.node)].append(
                 {"level": level_key, "cluster": str(cluster_id)}
             )
@@ -265,7 +266,8 @@ class LeidenCommunity(BaseCommunity):
         except Exception as e:
             logger.exception("❌ Failed to persist community report: {error}.".format(error=e))
 
-    async def _load_cluster_map(self):
+    async def _load_cluster_map(self, force):
+        if force: return False
         await self._community_node_map.load()
         if await self._community_node_map.is_empty():
             logger.error("❌ Failed to load community <-> node map.")

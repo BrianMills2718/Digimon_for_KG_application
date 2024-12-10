@@ -1,6 +1,6 @@
 import os
 from abc import ABC, abstractmethod
-
+from Core.Common.Utils import clean_storage
 from Core.Common.Logger import logger
 from Core.Schema.VdbResult import * 
 
@@ -10,6 +10,8 @@ class BaseIndex(ABC):
         self._index = None
 
     async def build_index(self, elements, meta_data, force=False):
+        logger.info("Starting insert elements of the given graph into vector database")
+
         from_load = False
         if self.exist_index() and not force:
             logger.info("Loading index from the file {}".format(self.config.persist_path))
@@ -18,10 +20,12 @@ class BaseIndex(ABC):
             self._index = self._get_index()
         if not from_load:
             # Note: When you successfully load the index from a file, you don't need to rebuild it.
+            await self.clean_index()
             logger.info("Building index for input elements")
             await self._update_index(elements, meta_data)
             self._storage_index()
             logger.info("Index successfully built and stored.")
+        logger.info("✅ Finished starting insert entities of the given graph into vector database")
 
     def exist_index(self):
         return os.path.exists(self.config.persist_path)
@@ -65,6 +69,9 @@ class BaseIndex(ABC):
     async def get_max_score(self, query):
         pass
 
+    async def clean_index(self):
+       clean_storage(self.config.persist_path)
+       
     @abstractmethod
     async def retrieval_nodes(self, query, top_k, graph):
         pass

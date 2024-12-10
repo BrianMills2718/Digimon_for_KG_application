@@ -39,12 +39,15 @@ class BaseGraph(ABC):
             The graph if it already exists, otherwise builds and returns the graph.
         """
         # Try to load the graph
+        logger.info("Starting build graph for the given documents")
+
         is_exist = await self._load_graph(force)
         if force or not is_exist:
             # Build the graph based on the input chunks
             await self._build_graph(chunks)
             # Persist the graph into file
             await self._persist_graph(force)
+        logger.info("✅ Finished the graph building stage")
 
     async def _load_graph(self, force: bool = False):
         """

@@ -1,5 +1,26 @@
- async def _find_relevant_chunks_from_entities_relationships(self, node_datas: list[dict]):
-        # ✅
+from Core.Common.Logger import logger
+from Core.Retriever.BaseRetriever import BaseRetriever
+import asyncio
+import json
+import numpy as np
+from Core.Common.Utils import truncate_list_by_token_size, split_string_by_multi_markers, min_max_normalize
+from collections import defaultdict, Counter
+from Core.Retriever.RetrieverFactory import register_retriever_method
+from Core.Common.Constants import GRAPH_FIELD_SEP
+
+class ChunkRetriever(BaseRetriever):
+    def __init__(self, **kwargs):
+
+        config = kwargs.pop("config")
+        super().__init__(config)
+        self.mode_list = ["entity_occurrence", "ppr", "from_relation"]
+        self.type = "chunk"
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+            
+    @register_retriever_method(type = "chunk", method_name="entity_occurrence")       
+    async def _find_relevant_chunks_from_entitiy_occurrence(self, node_datas: list[dict]):
+        
         if len(node_datas) == 0:
             return None
         text_units = [
@@ -58,51 +79,53 @@
 
         return all_text_units
 
+    @register_retriever_method(type = "chunk", method_name="from_relation")
+    async def _find_relevant_chunks_from_relationships(self, seed: list[dict]):
+            text_units = [
+                split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
+                for dp in seed
+            ]
 
-    async def _find_relevant_chunks_from_relationships(self, edge_datas: list[dict]):
-        text_units = [
-            split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
-            for dp in edge_datas
-        ]
+            all_text_units_lookup = {}
 
-        all_text_units_lookup = {}
+            for index, unit_list in enumerate(text_units):
+                for c_id in unit_list:
+                    if c_id not in all_text_units_lookup:
+                        all_text_units_lookup[c_id] = {
+                            "data": await self.doc_chunk.get_data_by_key(c_id),
+                            "order": index,
+                        }
 
-        for index, unit_list in enumerate(text_units):
-            for c_id in unit_list:
-                if c_id not in all_text_units_lookup:
-                    all_text_units_lookup[c_id] = {
-                        "data": await self.doc_chunk.get_data_by_key(c_id),
-                        "order": index,
-                    }
+            if any([v is None for v in all_text_units_lookup.values()]):
+                logger.warning("Text chunks are missing, maybe the storage is damaged")
+            all_text_units = [
+                {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
+            ]
+            all_text_units = sorted(all_text_units, key=lambda x: x["order"])
+            all_text_units = truncate_list_by_token_size(
+                all_text_units,
+                key=lambda x: x["data"],
+                max_token_size = self.config.max_token_for_text_unit,
+            )
+            all_text_units = [t["data"] for t in all_text_units]
 
-        if any([v is None for v in all_text_units_lookup.values()]):
-            logger.warning("Text chunks are missing, maybe the storage is damaged")
-        all_text_units = [
-            {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-        ]
-        all_text_units = sorted(all_text_units, key=lambda x: x["order"])
-        all_text_units = truncate_list_by_token_size(
-            all_text_units,
-            key=lambda x: x["data"],
-            max_token_size = self.config.max_token_for_text_unit,
-        )
-        all_text_units = [t["data"] for t in all_text_units]
-
-        return all_text_units
-    
-       
-    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
-        # ✅
-        entity_to_edge_mat = await self._entities_to_relationships.get()
-        relationship_to_chunk_mat = await self._relationships_to_chunks.get()
-        if node_ppr_matrix is None:
+            return all_text_units
+        
+    @register_retriever_method(type = "chunk", method_name="ppr")
+    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict]):
+        # 
+        entity_to_edge_mat = await self.entities_to_relationships.get()
+        relationship_to_chunk_mat = await self.relationships_to_chunks.get()
+        import pdb
+        pdb.set_trace()
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
         edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
         ppr_chunk_prob = relationship_to_chunk_mat.T.dot(edge_prob)
         ppr_chunk_prob = min_max_normalize(ppr_chunk_prob)
-         # Return top k documents
+        # Return top k documents
         sorted_doc_ids = np.argsort(ppr_chunk_prob, kind='mergesort')[::-1]
         sorted_scores = ppr_chunk_prob[sorted_doc_ids]
+        top_k = self.config.top_k
         soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
         return soreted_docs, sorted_scores[:top_k]

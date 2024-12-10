@@ -153,6 +153,7 @@ class NetworkXStorage(BaseGraphStorage):
         self._graph.add_edge(source_node_id, target_node_id, **edge_data)
 
     async def _cluster_data_to_subgraphs(self, cluster_data: dict[str, list[dict[str, str]]]):
+     
         for node_id, clusters in cluster_data.items():
             self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
         logger.info(f"Rewrite the graph with cluster data")
@@ -276,6 +277,7 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def get_edge_metadata(self) -> list[str]:
         relation_metadata =  ["src_id", "tgt_id"]
+        return relation_metadata
     def get_node_num(self):
         return self._graph.number_of_nodes()
 

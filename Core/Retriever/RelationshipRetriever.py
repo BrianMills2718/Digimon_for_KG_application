@@ -1,10 +1,83 @@
-
+import asyncio
+from Core.Common.Utils import truncate_list_by_token_size
 from Core.Retriever.BaseRetriever import BaseRetriever
+from Core.Retriever.RetrieverFactory import register_retriever_method
+from Core.Common.Logger import logger
+import numpy as np
 class RelationshipRetriever(BaseRetriever):
-    def __init__(self, config):
+    def __init__(self, **kwargs):
+        config = kwargs.pop("config")
         super().__init__(config)
+        self.mode_list = ["entity_occurrence", "from_entity", "ppr", "vdb"]
+        self.type = "relationship"
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+    
+   
+            
+    @register_retriever_method(type = "relationship", method_name= "ppr")         
+         
+    async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], node_ppr_matrix=None):
+        #
+        entity_to_edge_mat = await self._entities_to_relationships.get()
+        if node_ppr_matrix is None:
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
+        topk_indices = np.argsort(edge_prob_matrix)[-self.config.top_k:]
+        edges =  await self.graph.get_edge_by_indices(topk_indices)
 
-async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
+        return await self._construct_relationship_context(edges)
+    
+    @register_retriever_method(type = "relationship", method_name= "vdb")       
+    async def _find_relevant_relations_vdb(self, seed):
+        try:
+            if seed is None: return None
+            assert self.config.use_relations_vdb
+            edge_datas = await self.relations_vdb.retrieval_edges(seed, top_k=self.config.top_k, graph = self.graph)
+        
+            if not len(edge_datas):
+                return None
+     
+            edge_datas = await self._construct_relationship_context(edge_datas)
+            return edge_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant relationships: {e}")
+            
+            
+    @register_retriever_method(type = "relationship", method_name= "from_entity")         
+    async def _find_relevant_relationships_from_entities(self, seed: list[dict]):
+        all_related_edges = await asyncio.gather(
+            *[self.graph.get_node_edges(node["entity_name"]) for node in seed]
+        )
+        all_edges = set()
+        for this_edges in all_related_edges:
+            all_edges.update([tuple(sorted(e)) for e in this_edges])
+        all_edges = list(all_edges)
+        all_edges_pack = await asyncio.gather(
+            *[self.graph.get_edge(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_degree = await asyncio.gather(
+            *[self.graph.edge_degree(e[0], e[1]) for e in all_edges]
+        )
+        all_edges_data = [
+            {"src_tgt": k, "rank": d, **v}
+            for k, v, d in zip(all_edges, all_edges_pack, all_edges_degree)
+            if v is not None
+        ]
+        all_edges_data = sorted(
+            all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
+        )
+        all_edges_data = truncate_list_by_token_size(
+            all_edges_data,
+            key=lambda x: x["description"],
+            max_token_size=self.config.max_token_for_local_context,
+        )
+        return all_edges_data
+
+
+    #TODO: For yaodong to achieve this function
+    async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
                                                        pre_head=None, width=3):
         """
         Use agent to select the top-K relations based on the input query and entities
@@ -17,7 +90,6 @@ async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str
         Returns:
             results: list[str], top-k relation candidates list
         """
-        # ✅
         try:
             from Core.Common.Constants import GRAPH_FIELD_SEP
             from collections import defaultdict
@@ -97,64 +169,3 @@ async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str
                 return [], relations_dict
         except Exception as e:
             logger.exception(f"Failed to find relevant relations by entity agent: {e}")
-            
-            
-async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], top_k=5, node_ppr_matrix=None):
-        # ✅
-        entity_to_edge_mat = await self._entities_to_relationships.get()
-        if node_ppr_matrix is None:
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
-        edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
-        topk_indices = np.argsort(edge_prob_matrix)[-top_k:]
-        edges =  await self.graph.get_edge_by_indices(topk_indices)
-        return await self._construct_relationship_context(edges)
-    
-async def _find_relevant_relations_vdb(self, query, top_k=5):
-        # ✅
-        try:
-            if query is None: return None
-            assert self.config.use_relations_vdb
-            edge_datas = await self.relations_vdb.retrieval_edges(query, top_k=top_k, graph = self.graph)
-        
-            if not len(edge_datas):
-                return None
-     
-            edge_datas = await self._construct_relationship_context(edge_datas)
-            return edge_datas
-        except Exception as e:
-            logger.exception(f"Failed to find relevant relationships: {e}")
-            
-            
-            
-    async def _find_relevant_relationships_from_entities(self, node_datas: list[dict]):
-        # ✅
-        all_related_edges = await asyncio.gather(
-            *[self.graph.get_node_edges(node["entity_name"]) for node in node_datas]
-        )
-        all_edges = set()
-        for this_edges in all_related_edges:
-            all_edges.update([tuple(sorted(e)) for e in this_edges])
-        all_edges = list(all_edges)
-        all_edges_pack = await asyncio.gather(
-            *[self.graph.get_edge(e[0], e[1]) for e in all_edges]
-        )
-        all_edges_degree = await asyncio.gather(
-            *[self.graph.edge_degree(e[0], e[1]) for e in all_edges]
-        )
-        all_edges_data = [
-            {"src_tgt": k, "rank": d, **v}
-            for k, v, d in zip(all_edges, all_edges_pack, all_edges_degree)
-            if v is not None
-        ]
-        all_edges_data = sorted(
-            all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
-        )
-        all_edges_data = truncate_list_by_token_size(
-            all_edges_data,
-            key=lambda x: x["description"],
-            max_token_size=self.config.max_token_for_local_context,
-        )
-        return all_edges_data
-
-
