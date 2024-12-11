@@ -419,10 +419,7 @@ class BaseGraph(ABC):
         
         return pageranked_probabilities[0]
     
-    async def get_edge_by_indices(self, edge_idxs):
-        return await asyncio.gather(
-            *[self.get_edge(edge_idx[0], edge_idx[1]) for edge_idx in edge_idxs]
-        )
+ 
     
     async def get_neighbors(self, node_id: str):
         return await self._graph.neighbors(node_id)

@@ -13,7 +13,7 @@ class ChunkRetriever(BaseRetriever):
 
         config = kwargs.pop("config")
         super().__init__(config)
-        self.mode_list = ["entity_occurrence", "ppr", "from_relation"]
+        self.mode_list = ["entity_occurrence", "ppr", "from_relation", "aug_ppr"]
         self.type = "chunk"
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -143,6 +143,6 @@ class ChunkRetriever(BaseRetriever):
         sorted_relationship_ids = np.argsort(edge_prob, kind='mergesort')[::-1]
 
         soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids)
-        sorted_entities = await self.graph.get_node_data_by_indices(sorted_entity_ids)
-        sorted_relationships = await self.graph.get_edge_data_by_indices(sorted_relationship_ids)
-        return soreted_docs,
+        sorted_entities = await self.graph.get_node_by_indices(sorted_entity_ids)
+        sorted_relationships = await self.graph.get_edge_by_indices(sorted_relationship_ids)
+        return sorted_entities, sorted_relationships, soreted_docs

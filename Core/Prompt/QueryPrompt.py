@@ -245,3 +245,36 @@ What evidence do we need to answer the question given the current evidence?"
 Question: {question}
 Evidence: {context}
 """
+
+
+# Used for FastGraphRAG 
+GENERATE_RESPONSE_QUERY_WITH_REFERENCE = """You are a helpful assistant analyzing the given input data to provide an helpful response to the user query.
+
+# INPUT DATA
+{context}
+
+# USER QUERY
+{query}
+
+# INSTRUCTIONS
+Your goal is to provide a response to the user query using the relevant information in the input data:
+- the "Entities" and "Relationships" tables contain high-level information. Use these tables to identify the most important entities and relationships to respond to the query.
+- the "Sources" list contains raw text sources to help answer the query. It may contain noisy data, so pay attention when analyzing it.
+
+Follow these steps:
+1. Read and understand the user query.
+2. Look at the "Entities" and "Relationships" tables to get a general sense of the data and understand which information is the most relevant to answer the query.
+3. Carefully analyze all the "Sources" to get more detailed information. Information could be scattered across several sources, use the identified relevant entities and relationships to guide yourself through the analysis of the sources.
+4. While you write the response, you must include inline references to the all the sources you are using by appending `[<source_id>]` at the end of each sentence, where `source_id` is the corresponding source ID from the "Sources" list.
+5. Write the response to the user query - which must include the inline references - based on the information you have gathered. Be very concise and answer the user query directly. If the response cannot be inferred from the input data, just say no relevant information was found. Do not make anything up or add unrelevant information.
+
+Answer:
+"""
+
+
+COT_SYSTEM_DOC = ('As an advanced reading comprehension assistant, your task is to analyze text passages and corresponding questions meticulously. '
+                          'Your response start after "Thought: ", where you will methodically break down the reasoning process, illustrating how you arrive at conclusions. '
+                          'Conclude with "Answer: " to present a concise, definitive response, devoid of additional elaborations.')
+COT_SYSTEM_NO_DOC  = ('As an advanced reading comprehension assistant, your task is to analyze the questions and then answer them. '
+                                 'Your response start after "Thought: ", where you will methodically break down the reasoning process, illustrating how you arrive at conclusions. '
+                                 'Conclude with "Answer: " to present a concise, definitive response, devoid of additional elaborations.')

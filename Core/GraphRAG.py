@@ -67,9 +67,9 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @model_validator(mode="after")
     def _update_context(cls, data):
-        cls.config = data.context.config
-        cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
-        cls.workspace = Workspace(cls.config.working_dir, cls.config.index_name)  # register workspace
+        # cls.config = data.config
+        cls.ENCODER = tiktoken.encoding_for_model(data.config.token_model)
+        cls.workspace = Workspace(data.config.working_dir, data.config.index_name)  # register workspace
         cls.graph = get_graph(data.config.graph, llm=data.llm, encoder=cls.ENCODER)  # register graph
         cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         cls.time_manager = TimeStatistic()
@@ -171,8 +171,7 @@ class GraphRAG(ContextMixin, BaseModel):
                     config_value = getattr(self, context_name)
                     if context_name == "config":
                         config_value = self.config.retriever
-                    self.retriever_context.register_context(context_name, config_value)
-                    
+                    self.retriever_context.register_context(context_name, config_value)   
             self._querier = get_query(self.config.retriever.query_type, self.config.query, self.retriever_context)
 
         except Exception as e:
@@ -214,14 +213,14 @@ class GraphRAG(ContextMixin, BaseModel):
         """
 
         
-        #  Chunking Stage
+        # Step 1.  Chunking Stage
         self.time_manager.start_stage()
         await self.doc_chunk.build_chunks(docs, True)
         self._update_costs_info("Chunking")
         
         
-        # Building Graph Stage
-        await self.graph.build_graph(await self.doc_chunk.get_chunks(), False)
+        # Step 2. Building Graph Stage
+        await self.graph.build_graph(await self.doc_chunk.get_chunks(), self.config.graph.force)
         self._update_costs_info("Build Graph")
         
         # Index building Stage (Data-driven content should be pre-built offline to ensure efficient online query performance.)
@@ -231,7 +230,7 @@ class GraphRAG(ContextMixin, BaseModel):
             node_metadata = await self.graph.node_metadata()
             if not node_metadata:
                 logger.warning("No node metadata found. Skipping entity indexing.")
-            await self.entities_vdb.build_index(await self.graph.nodes_data(), node_metadata, False)
+            await self.entities_vdb.build_index(await self.graph.nodes_data(), self.config.graph.force)
 
         # Graph Augmentation Stage  (Optional) 
         # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.

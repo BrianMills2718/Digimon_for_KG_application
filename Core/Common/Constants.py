@@ -97,7 +97,7 @@ r = int(hex_color[1:3], 16)
 g = int(hex_color[3:5], 16)
 b = int(hex_color[5:7], 16)
 ANSI_COLOR = f"\033[38;2;{r};{g};{b}m"
-
+TOKEN_TO_CHAR_RATIO = 4
 class Retriever(Enum):
     ENTITY = "entity"
     RELATION = "relationship"
