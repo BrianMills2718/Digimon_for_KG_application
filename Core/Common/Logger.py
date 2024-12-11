@@ -3,11 +3,9 @@
 
 import sys
 from datetime import datetime
-
+import os
 from loguru import logger as _logger
-
-from Core.Common.Constants import GRAPHRAG_ROOT
-
+from Option.Config2 import default_config
 _print_level = "INFO"
 
 
@@ -17,16 +15,24 @@ def define_log_level(print_level="INFO", logfile_level="DEBUG", name: str = None
     _print_level = print_level
 
     current_date = datetime.now()
-    formatted_date = current_date.strftime("%Y%m%d")
-    log_name = f"{name}_{formatted_date}" if name else formatted_date  # name a log with prefix name
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+
+    
+    if name:
+        log_dir = os.path.join(name, "Logs")
+        os.makedirs(log_dir, exist_ok=True)  # 确保目录存在
+        log_name = os.path.join(log_dir, f"{formatted_date}.log")
+    else:
+        log_name = f"Logs/{formatted_date}.log"
+
 
     _logger.remove()
     _logger.add(sys.stderr, level=print_level)
-    _logger.add(f"logs/{log_name}.txt", level=logfile_level)
+    _logger.add(f"{log_name}", level=logfile_level)
     return _logger
 
 
-logger = define_log_level()
+logger = define_log_level(name = os.path.join(default_config.working_dir, default_config.exp_name))
 
 
 def log_llm_stream(msg):

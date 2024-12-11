@@ -305,15 +305,17 @@ class BaseGraph(ABC):
     async def get_node_by_index(self, index):
         return await self._graph.get_node_by_index(index)
     
-
+    async def get_edge_by_index(self, index):
+        return await self._graph.get_edge_by_index(index)
+    
     async def get_node_by_indices(self, node_idxs):
         return await asyncio.gather(
             *[self.get_node_by_index(node_idx) for node_idx in node_idxs]
         )
     
-    async def get_node_by_indices(self, node_idxs):
+    async def get_edge_by_indices(self, edge_idxs):
         return await asyncio.gather(
-            *[self.get_node_by_index(node_idx) for node_idx in node_idxs]
+            *[self.get_edge_by_index(edge_idx) for edge_idx in edge_idxs]
         )
     async def get_edge(self, src, tgt):
         return await self._graph.get_edge(src, tgt)

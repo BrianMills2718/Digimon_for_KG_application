@@ -18,17 +18,7 @@ class YamlModel(BaseModel):
         with open(file_path, "r", encoding=encoding) as file:
             return yaml.safe_load(file)
 
-    @classmethod
-    def from_yaml_file(cls, file_path: Path) -> "YamlModel":
-        """Read yaml file and return a YamlModel instance"""
-        return cls(**cls.read_yaml(file_path))
-
-    def to_yaml_file(self, file_path: Path, encoding: str = "utf-8") -> None:
-        """Dump YamlModel instance to yaml file"""
-        with open(file_path, "w", encoding=encoding) as file:
-            yaml.dump(self.model_dump(), file)
-
-
+   
 class YamlModelWithoutDefault(YamlModel):
     """YamlModel without default values"""
 

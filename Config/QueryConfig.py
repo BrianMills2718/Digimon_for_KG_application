@@ -1,5 +1,3 @@
-from pydantic import field_validator, ConfigDict
-from Core.Common.LLMConfig import LLMConfig
 from Core.Utils.YamlModel import YamlModel
 from dataclasses import field
 
@@ -29,3 +27,6 @@ class QueryConfig(YamlModel):
 
     # For IR-COT
     max_ir_steps: int = 2
+
+    # For Hipporag
+    augmentation_ppr: bool = False

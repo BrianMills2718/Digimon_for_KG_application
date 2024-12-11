@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-@Time    : 2023/5/5 23:08
-@Author  : alexanderwu
-@File    : openai.py
-@Modified By: mashenquan, 2023/11/21. Fix bug: ReadTimeout.
-@Modified By: mashenquan, 2023/12/1. Fix bug: Unclosed connection caused by openai 0.x.
-"""
 from __future__ import annotations
 
 import numpy as np
@@ -23,7 +15,7 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from Core.Common.LLMConfig import LLMConfig, LLMType
+from Config.LLMConfig import LLMConfig, LLMType
 from Core.Common.Constants import USE_CONFIG_TIMEOUT
 from Core.Common.Logger import log_llm_stream, logger
 from Core.Provider.BaseLLM import BaseLLM
@@ -43,10 +35,6 @@ from Core.Utils.TokenCounter import (
         LLMType.OPENAI,
         LLMType.FIREWORKS,
         LLMType.OPEN_LLM,
-        LLMType.MOONSHOT,
-        LLMType.MISTRAL,
-        LLMType.YI,
-        LLMType.OPENROUTER,
     ]
 )
 class OpenAILLM(BaseLLM):

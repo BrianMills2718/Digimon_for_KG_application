@@ -51,8 +51,6 @@ class BaseRetriever(ABC):
     
         
     async def _run_personalized_pagerank(self, query, query_entities):
-        # ✅
-        assert self.config.use_entities_vdb
         # Run Personalized PageRank
         reset_prob_matrix = np.zeros(self.graph.node_num)
 
@@ -74,6 +72,7 @@ class BaseRetriever(ABC):
                     c2e= e2r.dot(r2c).T
                     c2e[c2e.nonzero()] = 1
                     self.entity_chunk_count = c2e.sum(0).T
+
             for entity in query_entities:
                 entity_idx = await self.graph.get_node_index(entity["entity_name"])
                 if self.config.node_specificity:

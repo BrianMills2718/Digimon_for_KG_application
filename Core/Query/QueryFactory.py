@@ -14,17 +14,17 @@ class QueryFactory():
             "ppr": self._create_hippo_query
         }
 
-    def get_query(self, name, retriever) -> BaseQuery:
+    def get_query(self, name, config, retriever) -> BaseQuery:
         """Key is PersistType."""
-        return self.creators[name](retriever)
+        return self.creators[name](config, retriever)
 
     @staticmethod
-    def _create_base_query(retriever):
-        return BasicQuery(retriever)
+    def _create_base_query(config, retriever):
+        return BasicQuery(config, retriever)
 
 
     @staticmethod
-    def _create_hippo_query(retriever):
-        return PPRQuery(retriever)
+    def _create_hippo_query(config, retriever):
+        return PPRQuery(config, retriever)
     
 get_query = QueryFactory().get_query

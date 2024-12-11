@@ -322,3 +322,10 @@ class NetworkXStorage(BaseGraphStorage):
         if self.node_list is None:
             self.node_list = list(self._graph.nodes())
         return await self.get_node(self.node_list[index])
+    
+    
+    async def get_edge_by_index(self, index):
+        if self.edge_list is None:
+            self.edge_list = list(self._graph.edges())
+        
+        return await self.get_edge(self.edge_list[index][0], self.edge_list[index][1])

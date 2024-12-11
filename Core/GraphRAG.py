@@ -1,4 +1,3 @@
-import asyncio
 from typing import Union, Any
 from Core.Index.TFIDFStore import TFIDFIndex
 from Core.Prompt.QueryPrompt import KGP_QUERY_PROMPT
@@ -24,16 +23,13 @@ init(autoreset=True)  # Initialize colorama and reset color after each print
 
 class GraphRAG(ContextMixin, BaseModel):
     """A class representing a Graph-based Retrieval-Augmented Generation system."""
-    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
-    working_dir: str = Field(default="", exclude=True)
+    # model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
-    @field_validator("working_dir", mode="before")
-    @classmethod
-    def check_working_dir(cls, value: str):
-        if value == "":
-            logger.error("Working directory cannot be empty")
-        return value
+    def __init__(self, config):
+        super().__init__(config=config)
+   
+        
 
     @model_validator(mode="before")
     def welcome_message(cls, values):
@@ -73,8 +69,8 @@ class GraphRAG(ContextMixin, BaseModel):
     def _update_context(cls, data):
         cls.config = data.context.config
         cls.ENCODER = tiktoken.encoding_for_model(cls.config.token_model)
-        cls.workspace = Workspace(data.working_dir, cls.config.exp_name)  # register workspace
-        cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
+        cls.workspace = Workspace(cls.config.working_dir, cls.config.index_name)  # register workspace
+        cls.graph = get_graph(data.config.graph, llm=data.llm, encoder=cls.ENCODER)  # register graph
         cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         cls.time_manager = TimeStatistic()
         cls.retriever_context = RetrieverContext()
@@ -92,7 +88,7 @@ class GraphRAG(ContextMixin, BaseModel):
             data.entities_vdb_namespace = data.workspace.make_for("entities_vdb")
         if data.config.use_relations_vdb:
             data.relations_vdb_namespace = data.workspace.make_for("relations_vdb")
-        if data.config.use_community:
+        if data.config.graph.use_community:
             data.community_namespace = data.workspace.make_for("community_storage")
         if data.config.use_entity_link_chunk:
             data.e2r_namespace = data.workspace.make_for("map_e2r")
@@ -114,9 +110,9 @@ class GraphRAG(ContextMixin, BaseModel):
 
     @classmethod
     def _register_community(cls, data):
-        if data.config.use_community:
-            cls.community = get_community(data.config.graph_cluster_algorithm,
-                                          enforce_sub_communities=data.config.enforce_sub_communities, llm=data.llm,namespace = data.community_namespace
+        if data.config.graph.use_community:
+            cls.community = get_community(data.config.graph.graph_cluster_algorithm,
+                                          enforce_sub_communities=data.config.graph.enforce_sub_communities, llm=data.llm,namespace = data.community_namespace
                                          )
 
         return data
@@ -154,7 +150,7 @@ class GraphRAG(ContextMixin, BaseModel):
             "llm": True,
             "entities_vdb": data.config.use_entities_vdb,
             "relations_vdb": data.config.use_relations_vdb,
-            "community": data.config.use_community,
+            "community": data.config.graph.use_community,
             "relationships_to_chunks": data.config.use_entity_link_chunk,
             "entities_to_relationships": data.config.use_entity_link_chunk,
         }
@@ -172,9 +168,12 @@ class GraphRAG(ContextMixin, BaseModel):
         try:
             for context_name, use_context in self._retriever_context.items():
                 if use_context:
-                    self.retriever_context.register_context(context_name, getattr(self, context_name))
+                    config_value = getattr(self, context_name)
+                    if context_name == "config":
+                        config_value = self.config.retriever
+                    self.retriever_context.register_context(context_name, config_value)
                     
-            self._querier = get_query(self.config.query_type, self.retriever_context)
+            self._querier = get_query(self.config.retriever.query_type, self.config.query, self.retriever_context)
 
         except Exception as e:
             logger.error(f"Failed to build retriever context: {e}")
@@ -255,11 +254,11 @@ class GraphRAG(ContextMixin, BaseModel):
             await self.relations_vdb.build_index(await self.graph.edges_data(), edge_metadata, force=False)
 
           
-        if self.config.use_community:
+        if self.config.graph.use_community:
 
             await self.community.cluster(largest_cc=await self.graph.stable_largest_cc(),
-                                         max_cluster_size=self.config.max_graph_cluster_size,
-                                         random_seed=self.config.graph_cluster_seed, force = False)
+                                         max_cluster_size=self.config.graph.max_graph_cluster_size,
+                                         random_seed=self.config.graph.graph_cluster_seed, force = False)
 
             await self.community.generate_community_report(self.graph, False)
          

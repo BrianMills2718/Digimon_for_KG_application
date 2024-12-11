@@ -12,10 +12,10 @@ from llama_index.core.embeddings import BaseEmbedding
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 
-from Core.Common.EmbConfig import EmbeddingType
-from Core.Common.LLMConfig import LLMType
+from Config.EmbConfig import EmbeddingType
+from Config.LLMConfig import LLMType
 from Core.Common.BaseFactory import GenericFactory
-from Core.Config2 import Config
+from Option.Config2 import Config
 
 class RAGEmbeddingFactory(GenericFactory):
     """Create LlamaIndex Embedding with MetaGPT's embedding config."""

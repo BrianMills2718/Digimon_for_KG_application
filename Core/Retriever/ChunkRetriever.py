@@ -116,8 +116,6 @@ class ChunkRetriever(BaseRetriever):
         # 
         entity_to_edge_mat = await self.entities_to_relationships.get()
         relationship_to_chunk_mat = await self.relationships_to_chunks.get()
-        import pdb
-        pdb.set_trace()
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
         node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
         edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
@@ -129,3 +127,22 @@ class ChunkRetriever(BaseRetriever):
         top_k = self.config.top_k
         soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
         return soreted_docs, sorted_scores[:top_k]
+    
+    @register_retriever_method(type = "chunk", method_name="aug_ppr")
+    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict]):
+        # 
+        entity_to_edge_mat = await self.entities_to_relationships.get()
+        relationship_to_chunk_mat = await self.relationships_to_chunks.get()
+        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+        node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
+        ppr_chunk_prob = relationship_to_chunk_mat.T.dot(edge_prob)
+        # Return top k documents
+        sorted_doc_ids = np.argsort(ppr_chunk_prob, kind='mergesort')[::-1]
+        sorted_entity_ids = np.argsort(node_ppr_matrix, kind='mergesort')[::-1]
+        sorted_relationship_ids = np.argsort(edge_prob, kind='mergesort')[::-1]
+
+        soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids)
+        sorted_entities = await self.graph.get_node_data_by_indices(sorted_entity_ids)
+        sorted_relationships = await self.graph.get_edge_data_by_indices(sorted_relationship_ids)
+        return soreted_docs,

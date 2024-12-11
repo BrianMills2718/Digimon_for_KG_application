@@ -4,8 +4,8 @@ from Core.Common.Constants import Retriever
 from Core.Common.Utils import list_to_quoted_csv_string, truncate_list_by_token_size, combine_contexts
 from Core.Prompt import QueryPrompt 
 class BasicQuery(BaseQuery):
-    def __init__(self, retirever_context):
-        super().__init__(retirever_context)
+    def __init__(self, config, retirever_context):
+        super().__init__(config, retirever_context)
 
     
     async def _retrieve_relevant_contexts(self, query):

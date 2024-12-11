@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from Core.Config2 import Config
+from Option.Config2 import Config
 from Core.Common.Context import Context
 from Core.Provider.BaseLLM import BaseLLM
 
@@ -24,6 +24,7 @@ class ContextMixin(BaseModel):
 
     @model_validator(mode="after")
     def validate_context_mixin_extra(self):
+
         self._process_context_mixin_extra()
         return self
 
@@ -82,6 +83,7 @@ class ContextMixin(BaseModel):
         """Role llm: if not existed, init from role.config"""
         # print(f"class:{self.__class__.__name__}({self.name}), llm: {self._llm}, llm_config: {self._llm_config}")
         if not self.private_llm:
+      
             self.private_llm = self.context.llm_with_cost_manager_from_llm_config(self.config.llm)
         return self.private_llm
 

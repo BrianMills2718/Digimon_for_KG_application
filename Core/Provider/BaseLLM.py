@@ -22,7 +22,7 @@ from tenacity import (
 )
 
 
-from Core.Common.LLMConfig import LLMConfig
+from Config.LLMConfig import LLMConfig
 from Core.Common.Constants import LLM_API_TIMEOUT, USE_CONFIG_TIMEOUT
 from Core.Common.Logger import logger
 from Core.Schema.Message import Message

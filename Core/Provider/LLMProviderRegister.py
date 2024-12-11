@@ -7,7 +7,7 @@
 @Ref     : Based on the MetaGpt 
 """
 
-from Core.Common.LLMConfig import LLMConfig, LLMType
+from Config.LLMConfig import LLMConfig, LLMType
 from Core.Provider.BaseLLM import BaseLLM
 
 

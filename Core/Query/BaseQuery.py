@@ -7,9 +7,9 @@ from Core.Common.Utils import clean_str, prase_json_from_response, truncate_list
 from Core.Common.Logger import logger
 
 class BaseQuery(ABC):
-    def __init__(self, retirever_context):
+    def __init__(self, config, retirever_context):
         self._retirever = MixRetriever(retirever_context)
-        self.config = self._retirever.config
+        self.config = config
         self.llm = self._retirever.llm
     
     @abstractmethod
