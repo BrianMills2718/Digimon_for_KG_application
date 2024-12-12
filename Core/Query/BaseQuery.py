@@ -27,9 +27,12 @@ class BaseQuery(ABC):
         return response
     
     @abstractmethod
-    async def generation(self, context):
+    async def generation_summary(self, query, context):
         pass
     
+    @abstractmethod
+    async def generation_qa(self, query, context):
+        pass
     
     async def extract_query_entities(self, query):
         entities = []

@@ -18,15 +18,18 @@ digimon = GraphRAG(config=opt)
 
 
 def check_dirs(opt):
+    # For each query, save the results in a separate directory
     result_dir = os.path.join(
         opt.working_dir, opt.exp_name, "Results"
-    )  # For each query, save the results in a separate directory
+    )  
+    # Save the current used config in a separate directory
     config_dir = os.path.join(
         opt.working_dir, opt.exp_name, "Configs"
-    )  # Save the current used config in a separate directory
+    )  
+    # Save the metrics of entire experiment in a separate directory
     metric_dir = os.path.join(
         opt.working_dir, opt.exp_name, "Metrics"
-    )  # Save the metrics of entire experiment in a separate directory
+    )  
     os.makedirs(result_dir, exist_ok=True)
     os.makedirs(config_dir, exist_ok=True)
     os.makedirs(metric_dir, exist_ok=True)
@@ -36,7 +39,8 @@ def check_dirs(opt):
     copyfile(basic_name, os.path.join(config_dir, "Config2.yaml"))
 
 check_dirs(opt)
-# query_dataset = RAGQueryDataset()
+# 
+query_dataset = RAGQueryDataset(data_dir = os.path.join(opt.data_root, opt.dataset_name))
 # corpus = query_dataset.get_corpus()
 # print(f"length of corpus: {len(corpus)}")
 # corpus = corpus[:10]

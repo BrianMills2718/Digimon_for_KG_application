@@ -4,6 +4,7 @@ Query Factory.
 from Core.Query.BaseQuery import BaseQuery
 from Core.Query.BasicQuery import BasicQuery
 from Core.Query.PPRQuery import PPRQuery
+from Core.Query.KGQuery import KGQuery
 
 
 
@@ -11,7 +12,8 @@ class QueryFactory():
     def __init__(self):
         self.creators = {
             "basic": self._create_base_query,
-            "ppr": self._create_hippo_query
+            "ppr": self._create_hippo_query,
+            "kgp": self._create_kgp_query,
         }
 
     def get_query(self, name, config, retriever) -> BaseQuery:

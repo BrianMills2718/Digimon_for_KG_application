@@ -205,18 +205,22 @@ class BasicQuery(BaseQuery):
  
     
         
-
-      
-    
-
-    async def generation(self, query, context):
-
+    async def generation_qa(self, query, context):
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
        
         if self.config.tree_search:
-            import pdb
-            pdb.set_trace()
+            instruction = f"Given Context: {context} Give the best full answer amongst the option to question {query}"
+            response = await self.llm.aask(msg = instruction)
+            return response
+      
+    
+
+    async def generation_summary(self, query, context):
+
+        if context is None:
+            return QueryPrompt.FAIL_RESPONSE
+    
         if self.config.community_information and self.config.use_global_query:
             sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
         elif not self.config.community_information and self.config.use_keywords:
