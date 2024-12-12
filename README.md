@@ -53,3 +53,81 @@ The criteria for the classification of graph types are as follows:
 |Relation Description|❌| ❌| ❌|✅|✅|
 |Edge Weight| ❌|❌|✅|✅|✅|
 
+##  Operators in the Retrieve Stage 
+> The retrieval stage lies the **key role** ‼️ in the entire GraphRAG process. ✨ The goal is to identify query-relevant content that supports the generation phase, enabling the LLM to provide more **accurate** responses.
+
+
+💡💡💡 After thoroughly reviewing all implementations, we've distilled them into a set of 16 operators 🧩🧩. Each method then constructs its retrieval module by combining one or more of these operators 🧩.
+
+### Five Types of Operators
+
+> We classify the operators into five categories, each offering a different way to retrieve and structure relevant information from graph-based data.
+
+#### 📄 Chunk Operators
+> retrieve the most relevant text segments (chunks) related to the query.
+
+                                      
+| Name               | Description                                                    | Example Methods              |
+|--------------------|----------------------------------------------------------------|------------------------------|
+| **by_ppr**          | Uses Personalized PageRank to identify relevant chunks.         | HippoRAG                     |
+| **by_relationship** | Finds chunks that contain specified relationships.       | LightRAG                     |
+| **entity_occurrence** | Retrieves chunks where both entities of an edge frequently appear together. | Local Search for MS GraphRAG |
+
+
+
+#### ⭕️ Entity Operators
+> retrieve entities (e.g., people, places, organizations) that are most relevant to the given query.
+
+| Name            | Description                                                                        | Example Methods            |
+|-----------------|------------------------------------------------------------------------------------|----------------------------|
+| **by_relationship** | Use key relationships to retrieve relevant entities | LightRAG                   |
+| **by_vdb**       | Find entities by vector-database  | G-retriever、 MedicalRAG、RAPTOR、KGP |
+| **by_agent**     | Utilizes LLM to find the useful entities| TOG                       |
+| **by_ppr**       | Use PPR to retrieve entities | FastGraphRAG     |                  |
+
+
+
+#### ➡️ Relationship Operators
+> extracting useful relationships for the given query.
+
+| Name            | Description                                                                        | Example Methods            |
+|-------------|-------------------------------------------------|--------------------------------------------------------|
+| **by_vdb**         | Retrieve relationships by vector-database      | LightRAG、G-retriever |
+| **by_agent**        | Utilizes LLM to find the useful entities| TOG       |
+| **by_entity**       | One-hot neighbors of the key entities                         | Local Search for MS GraphRAG                          |
+| **by_ppr**       | Use  PPR to retrieve relationships | FastGraphRAG     |                  |
+
+
+#### 🔗 Community Operators
+> Identify high-level information, which is only used for MS GraphRAG.
+
+
+| **Example Methods** | **Description**                                      | **Application**                                  |
+|----------------------|-----------------------------------------------------|-------------------------------------------------|
+| **by_entity**        | Detects communities containing specified entities   | Local Search for MS GraphRAG                   |
+| **by_level**         | Returns all communities below a specified level     | Global Search for MS GraphRAG                  | 
+
+
+#### 📈 Subgraph Operators
+> Extract a relevant subgraph for the given query
+
+| Name              | Description                                                             | Example Methods |
+|-------------------|-------------------------------------------------------------------------|-----------------|
+| **by_path**        | Retrieves a path | DALK            |
+| **by_Steiner Tree** | Constructs a minimal connecting subgraph (Steiner tree)  | G-retriever     |
+| **induced_subgraph** | Extracts a subgraph induced by a set of entities and relationships.           | TOG             |
+
+
+
+You can freely 🪽 combine those operators 🧩 to create more and more GraphRAG methods. 
+
+
+#### 🌰 Examples 
+> Below, we present some examples illustrating how existing algorithms leverage these operators.
+
+
+| Name             | Operators                                                                                           |
+|------------------|-----------------------------------------------------------------------------------------------------|
+| **HippoRAG**     | Chunk (by_ppr)                                                                                      |
+| **LightRAG**     | Chunk (by_relationship) + Entity (by_relationship) + Relationship (by_vdb)                          |
+| **FastGraphRAG** | Chunk (by_ppr) + Entity (by_ppr) + Relationship (by_ppr)                                           |
