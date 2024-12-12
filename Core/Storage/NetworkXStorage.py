@@ -329,3 +329,6 @@ class NetworkXStorage(BaseGraphStorage):
             self.edge_list = list(self._graph.edges())
         
         return await self.get_edge(self.edge_list[index][0], self.edge_list[index][1])
+    
+    def clear(self):
+        self._graph = nx.Graph()

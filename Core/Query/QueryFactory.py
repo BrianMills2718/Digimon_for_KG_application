@@ -4,7 +4,7 @@ Query Factory.
 from Core.Query.BaseQuery import BaseQuery
 from Core.Query.BasicQuery import BasicQuery
 from Core.Query.PPRQuery import PPRQuery
-from Core.Query.KGQuery import KGQuery
+from Core.Query.KGPQuery import KGPQuery
 
 
 
@@ -28,5 +28,9 @@ class QueryFactory():
     @staticmethod
     def _create_hippo_query(config, retriever):
         return PPRQuery(config, retriever)
+    
+    @staticmethod
+    def _create_kgp_query(config, retriever):
+        return KGPQuery(config, retriever)
     
 get_query = QueryFactory().get_query

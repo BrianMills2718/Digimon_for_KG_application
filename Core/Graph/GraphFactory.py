@@ -27,12 +27,12 @@ class GraphFactory():
     @staticmethod
     def _create_er_graph(config, **kwargs):
         return ERGraph(
-            config, **kwargs
+            config.graph, **kwargs
         )
 
     @staticmethod
     def _create_rkg_graph(config, **kwargs):
-        return RKGraph(config, **kwargs)
+        return RKGraph(config.graph, **kwargs)
 
     @staticmethod
     def _create_tree_graph(config, **kwargs):
@@ -40,7 +40,7 @@ class GraphFactory():
 
     @staticmethod
     def _crease_passage_graph(config, **kwargs):
-        return PassageGraph(config, **kwargs)
+        return PassageGraph(config.graph, **kwargs)
 
 
 get_graph = GraphFactory().get_graph

@@ -4,14 +4,14 @@ import numpy as np
 import asyncio
 from collections import defaultdict
 from Core.Common.Utils import truncate_list_by_token_size
-
+from Core.Index.TFIDFStore import TFIDFIndex
 from Core.Retriever.RetrieverFactory import register_retriever_method
 class EntityRetriever(BaseRetriever):
     def __init__(self, **kwargs):
 
         config = kwargs.pop("config")
         super().__init__(config)
-        self.mode_list = ["ppr", "vdb", "from_relation"]
+        self.mode_list = ["ppr", "vdb", "from_relation", "tf_df", "all"]
         self.type = "entity"
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -54,12 +54,37 @@ class EntityRetriever(BaseRetriever):
         except Exception as e:
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
     
+    @register_retriever_method(type = "entity", method_name = "tf_df")    
+    async def _find_relevant_entities_tf_df(self, seed, corpus, candidates_idx):
+        try:           
+            graph_nodes = list(await self.graph.get_nodes())
+            import pdb
+            pdb.set_trace()
+            corpus = dict({id: (await self.graph.get_node(id))['description'] for id in graph_nodes})
+            candidates_idx = list(id for id in graph_nodes)
+            index = TFIDFIndex()
+           
+            index._build_index_from_list([corpus[_] for _ in candidates_idx])
+            idxs = index.query(query_str = seed, top_k = self.config.top_k // self.config.nei_k)
 
+            new_candidates_idx = [candidates_idx[_] for _ in idxs]      
+            cur_contexts = [corpus[_] for _ in new_candidates_idx]
+            import pdb
+            pdb.set_trace()
+            return cur_contexts, new_candidates_idx
+            
+        except Exception as e:
+            logger.exception(f"Failed to find relevant entities_vdb: {e}")
    
     
    
+    @register_retriever_method(type = "entity", method_name = "all")    
+    async def _find_relevant_entities_all(self, key):
+        graph_nodes = list(await self.graph.get_nodes())
+        corpus = dict({id: (await self.graph.get_node(id))[key] for id in graph_nodes})
+        candidates_idx = list(id for id in graph_nodes)
+        return corpus, candidates_idx
     
-
     async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
                                                         relations_dict: defaultdict[list], width=3):
         """

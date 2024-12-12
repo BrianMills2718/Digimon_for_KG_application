@@ -43,6 +43,7 @@ class BaseGraph(ABC):
 
         is_exist = await self._load_graph(force)
         if force or not is_exist:
+            await self._clear()
             # Build the graph based on the input chunks
             await self._build_graph(chunks)
             # Persist the graph into file
@@ -84,6 +85,7 @@ class BaseGraph(ABC):
         merge_description = (MergeEntity.merge_descriptions(existing_data["description"],
                                                             upsert_nodes_data[
                                                                 "description"]) if self.config.enable_entity_description else None)
+       
         description = (
             await self._handle_entity_relation_summary(entity_name, merge_description)
             if merge_description
@@ -433,3 +435,6 @@ class BaseGraph(ABC):
     
     async def get_nodes(self):
         return await self._graph.nodes()
+    
+    async def _clear(self):
+        await self.graph.clear()

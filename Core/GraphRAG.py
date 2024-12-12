@@ -69,7 +69,7 @@ class GraphRAG(ContextMixin, BaseModel):
         cls.ENCODER = tiktoken.encoding_for_model(data.config.token_model)
         cls.workspace = Workspace(data.config.working_dir, data.config.index_name)  # register workspace
         cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
-        cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
+        cls.doc_chunk = DocChunk(data.config.chunk, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         cls.time_manager = TimeStatistic()
         cls.retriever_context = RetrieverContext()
         data = cls._init_storage_namespace(data)

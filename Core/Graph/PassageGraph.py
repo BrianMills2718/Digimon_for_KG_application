@@ -111,3 +111,6 @@ class PassageGraph(BaseGraph):
                 kw2chunk[wiki.wiki_title].add(chunk_key)
 
         return dict(kw2chunk)
+    @property
+    def entity_metakey(self):
+        return "entity_name"

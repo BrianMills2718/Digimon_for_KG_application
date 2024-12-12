@@ -8,8 +8,9 @@ from typing import List, Union
 
 
 class DocChunk:
-    def __init__(self, chunk_method_name, token_model, namesapce):
-        self.chunk_method = create_chunk_method(chunk_method_name)
+    def __init__(self, config, token_model, namesapce):
+        self.config = config
+        self.chunk_method = create_chunk_method(self.config.chunk_method)
         self._chunk = ChunkKVStorage(namespace=namesapce)
         self.token_model = token_model
 
@@ -60,6 +61,9 @@ class DocChunk:
                 doc_keys=doc_keys,
                 tiktoken_model=self.token_model,
                 title_list=title_list,
+                overlap_token_size=self.config.chunk_overlap_token_size,
+                max_token_size=self.config.chunk_token_size
+,
             )
 
             for chunk in chunks:

@@ -37,13 +37,17 @@ class Config(WorkingParams, YamlModel):
     use_entities_vdb: bool = True
     use_relations_vdb: bool = True  # Only set True for LightRAG
     vdb_type: str = "vector"  # vector/colbert
-
-    # Chunking
-    chunk_token_size: int = 1200
-    chunk_overlap_token_size: int = 100
     token_model: str = "gpt-3.5-turbo"
+    
+    
+    # Chunking
+    chunk: ChunkConfig = ChunkConfig()
+    # chunk_token_size: int = 1200
+    # chunk_overlap_token_size: int = 100
+    # chunk_method: str = "chunking_by_token_size"
+   
     llm_model_max_token_size: int = 32768
-    chunk_method: str = "chunking_by_token_size"
+  
     use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
     
     # Graph Config

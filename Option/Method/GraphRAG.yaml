@@ -64,6 +64,7 @@ retriever:
     top_k: 5
 
 query: 
+    query_type: qa
     only_need_context: False
     enable_hybrid_query: True
     augmentation_ppr: True
