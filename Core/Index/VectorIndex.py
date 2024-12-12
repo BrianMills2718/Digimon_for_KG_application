@@ -11,6 +11,7 @@ import asyncio
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core.schema import QueryBundle
 import numpy as np
+
 class VectorIndex(BaseIndex):
     """VectorIndex is designed to be simple and straightforward.
 
@@ -19,11 +20,10 @@ class VectorIndex(BaseIndex):
 
     def __init__(self, config):
         super().__init__(config)
-
     async def retrieval(self, query, top_k):
         if top_k is None:
             top_k = self._get_retrieve_top_k()
-        retriever = self._index.as_retriever(similarity_top_k=top_k, embed_model=self.config.embed_model)
+        retriever = self._index.as_retriever(similarity_top_k=top_k, embed_model=self.config.embed_model )
         query_bundle = QueryBundle(query_str=query)
         
         return await retriever.aretrieve(query_bundle)
@@ -61,7 +61,7 @@ class VectorIndex(BaseIndex):
 
     async def _load_index(self) -> bool:
         try:
-            Settings.embed_model = self.config.embed_model
+            Settings.embed_model = self.config.embed_model 
 
             storage_context = StorageContext.from_defaults(persist_dir=self.config.persist_path)
             self._index = load_index_from_storage(storage_context)
@@ -89,7 +89,9 @@ class VectorIndex(BaseIndex):
         logger.info("refresh index size is {}".format(len([True for doc in refreshed_docs if doc])))
 
     def _get_index(self):
-        Settings.embed_model = self.config.embed_model
+        Settings.embed_model =  self.config.embed_model
+
+        # self.config.embed_model
         return VectorStoreIndex([])
 
     async def _similarity_score(self, object_q, object_d):

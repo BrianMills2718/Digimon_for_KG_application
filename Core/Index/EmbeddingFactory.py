@@ -11,7 +11,10 @@ from typing import Any
 from llama_index.core.embeddings import BaseEmbedding
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
-
+try:
+    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+except ImportError:
+    print("HuggingFaceEmbedding not found, please install it by `pip install huggingface_hub`")
 from Config.EmbConfig import EmbeddingType
 from Config.LLMConfig import LLMType
 from Core.Common.BaseFactory import GenericFactory
@@ -24,6 +27,7 @@ class RAGEmbeddingFactory(GenericFactory):
         creators = {
             EmbeddingType.OPENAI: self._create_openai,
             EmbeddingType.OLLAMA: self._create_ollama,
+            EmbeddingType.HF: self._create_hf,
         }
         super().__init__(creators)
 
@@ -42,8 +46,6 @@ class RAGEmbeddingFactory(GenericFactory):
         if config.embedding.api_type:
             return config.embedding.api_type
 
-        if config.llm.api_type in [LLMType.OPENAI, LLMType.AZURE]:
-            return config.llm.api_type
 
         raise TypeError("To use RAG, please set your embedding in Config2.yaml.")
 
@@ -63,10 +65,19 @@ class RAGEmbeddingFactory(GenericFactory):
             base_url=config.embedding.base_url,
         )
 
-        self._try_set_model_and_batch_size(params)
+        self._try_set_model_and_batch_size(params, config)
 
         return OllamaEmbedding(**params)
 
+    def _create_hf(self, config) -> HuggingFaceEmbedding:
+        
+        # For huggingface-hub embedding model, we only need to set the model_name
+        params = dict(
+            model_name=config.embedding.model,
+        )
+
+        return HuggingFaceEmbedding(**params)
+    
     @staticmethod
     def _try_set_model_and_batch_size(params: dict, config):
   

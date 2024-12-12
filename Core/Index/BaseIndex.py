@@ -11,12 +11,13 @@ class BaseIndex(ABC):
 
     async def build_index(self, elements, meta_data, force=False):
         logger.info("Starting insert elements of the given graph into vector database")
-
+ 
         from_load = False
         if self.exist_index() and not force:
             logger.info("Loading index from the file {}".format(self.config.persist_path))
             from_load = await self._load_index()
         else:
+        
             self._index = self._get_index()
         if not from_load:
             # Note: When you successfully load the index from a file, you don't need to rebuild it.

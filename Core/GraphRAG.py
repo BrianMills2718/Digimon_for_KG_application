@@ -230,7 +230,8 @@ class GraphRAG(ContextMixin, BaseModel):
             node_metadata = await self.graph.node_metadata()
             if not node_metadata:
                 logger.warning("No node metadata found. Skipping entity indexing.")
-            await self.entities_vdb.build_index(await self.graph.nodes_data(), self.config.graph.force)
+          
+            await self.entities_vdb.build_index(await self.graph.nodes_data(),node_metadata, True)
 
         # Graph Augmentation Stage  (Optional) 
         # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.

@@ -31,5 +31,5 @@ class IndexConfigFactory:
         return ColBertIndexConfig(persist_path=persist_path, index_name="nbits_2",
                                   model_name=config.colbert_checkpoint_path, nbits=2)
 
-
+  
 get_index_config = IndexConfigFactory().get_config
