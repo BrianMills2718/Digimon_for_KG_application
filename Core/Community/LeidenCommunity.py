@@ -39,7 +39,9 @@ class LeidenCommunity(BaseCommunity):
         await self._clustering(largest_cc, max_cluster_size, random_seed)
 
     async def _clustering(self, largest_cc, max_cluster_size, random_seed):
-
+        if largest_cc is None:
+            logger.warning("No largest connected component found, skipping Leiden clustering; Please check the input graph.")
+            return None
         community_mapping = hierarchical_leiden(
             largest_cc,
             max_cluster_size=max_cluster_size,
@@ -71,7 +73,9 @@ class LeidenCommunity(BaseCommunity):
         await er_graph.cluster_data_to_subgraphs(self._community_node_map.json_data)
         # Fetch community schema
         self._communities_schema = await er_graph.community_schema()
-
+        if self._communities_schema is None:
+            logger.warning("No community schema found, skipping community report generation.")
+            return None
         community_keys, community_values = list(self._communities_schema.keys()), list(self._communities_schema.values())
         # Generate reports by community levels
         levels = sorted(set([c.level for c in community_values]), reverse=True)

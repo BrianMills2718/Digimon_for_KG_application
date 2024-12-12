@@ -30,14 +30,17 @@ class EntityRetriever(BaseRetriever):
         return nodes, ppr_node_matrix
     
     @register_retriever_method(type = "entity", method_name = "vdb")    
-    async def _find_relevant_entities_vdb(self, seed):
+    async def _find_relevant_entities_vdb(self, seed, tree_node = False):
         try:           
-            node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph)
+            node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph, tree_node = tree_node)
                     
             if not len(node_datas):
                 return None
             if not all([n is not None for n in node_datas]):
                 logger.warning("Some nodes are missing, maybe the storage is damaged")
+            if tree_node:
+                node_datas = [node.text for node in node_datas]
+                return node_datas
             node_degrees = await asyncio.gather(
                 *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )
@@ -52,7 +55,8 @@ class EntityRetriever(BaseRetriever):
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
     
 
-
+   
+    
    
     
 

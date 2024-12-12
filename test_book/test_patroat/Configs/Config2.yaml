@@ -1,0 +1,28 @@
+llm:
+  api_type: open_llm
+  base_url: 'http://0.0.0.0:30000/v1'
+  model: 'llama3-8b'
+  # api_type: "openai"  # or ollama  etc.
+  # base_url: "https://cfcus02.opapi.win/v1"  # or forward url / other llm url
+  api_key: "sk-XVBaWFFC3af98090Dc32T3BLbkFJ0Ba9481790144B1eaA6B"
+  # model: "gpt-3.5-turbo"
+
+
+embedding:
+  api_type: "hf"  # or  ollama / etc.
+  base_url: "https://cfcus02.opapi.win/v1"  # or forward url / other llm url
+  # api_key: "sk-XVBaWFFC3af98090Dc32T3BLbkFJ0Ba9481790144B1eaA6B"
+  api_key: "dsdsd"
+  model: "BAAI/bge-m3"
+  dimensions: 128
+  max_token_size: 8102
+  embed_batch_size: 128
+  embedding_func_max_async: 16
+
+# Data
+working_dir: ./test_book # Result directory for the experiment
+index_name: tree_graph
+exp_name: test_patroat # Experiment name
+vdb_type: vector  # vector/colbert
+data_root: ./Data # Root directory for data
+dataset_name: HotpotQA # Dataset name

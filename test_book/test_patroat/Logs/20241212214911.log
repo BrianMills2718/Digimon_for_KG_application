@@ -1,0 +1,151 @@
+2024-12-12 21:49:36.502 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:125 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2024-12-12 21:49:36.504 | INFO     | Core.Chunk.DocChunk:build_chunks:23 - Starting chunk the given documents
+2024-12-12 21:49:36.519 | INFO     | Core.Chunk.DocChunk:build_chunks:45 - ✅ Finished the chunking stage
+2024-12-12 21:49:36.519 | INFO     | Core.GraphRAG:_update_costs_info:198 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 21:49:36.519 | INFO     | Core.GraphRAG:_update_costs_info:200 - Chunking time(s): 0.02
+2024-12-12 21:49:36.519 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-12 21:49:36.520 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl
+2024-12-12 21:49:36.520 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:38 - Successfully loaded tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl with 13 nodes and 2 layers
+2024-12-12 21:49:36.520 | INFO     | Core.Graph.BaseGraph:build_graph:50 - ✅ Finished the graph building stage
+2024-12-12 21:49:36.520 | INFO     | Core.GraphRAG:_update_costs_info:198 - Build Graph stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 21:49:36.520 | INFO     | Core.GraphRAG:_update_costs_info:200 - Build Graph time(s): 0.00
+2024-12-12 21:49:36.521 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting insert elements of the given graph into vector database
+2024-12-12 21:49:37.227 | INFO     | Core.Index.BaseIndex:build_index:25 - Building index for input elements
+2024-12-12 21:49:39.121 | INFO     | Core.Index.VectorIndex:_update_index:63 - refresh index size is 21
+2024-12-12 21:49:39.195 | INFO     | Core.Index.BaseIndex:build_index:28 - Index successfully built and stored.
+2024-12-12 21:49:39.195 | INFO     | Core.Index.BaseIndex:build_index:29 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-12 21:49:39.195 | ERROR    | Core.Graph.BaseGraph:stable_largest_cc:295 - **Only NETWORKX is supported for finding the largest connected component.** 
+NoneType: None
+2024-12-12 21:49:39.196 | INFO     | Core.Community.BaseCommunity:cluster:46 - Starting build community of the given graph
+2024-12-12 21:49:39.201 | INFO     | Core.Storage.JsonKVStorage:load:33 - Load KV ./test_book/tree_graph/community_storage_community_node_map.json with 0 data
+2024-12-12 21:49:39.201 | ERROR    | Core.Community.LeidenCommunity:_load_cluster_map:277 - ❌ Failed to load community <-> node map.
+2024-12-12 21:49:39.201 | WARNING  | Core.Community.LeidenCommunity:_clustering:43 - No largest connected component found, skipping Leiden clustering; Please check the input graph.
+2024-12-12 21:49:39.201 | INFO     | Core.Storage.JsonKVStorage:persist:29 - Write KV ./test_book/tree_graph/community_storage_community_node_map.json with 0 data
+2024-12-12 21:49:39.201 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2024-12-12 21:49:39.202 | INFO     | Core.Storage.JsonKVStorage:load:33 - Load KV ./test_book/tree_graph/community_storage_community_report.json with 0 data
+2024-12-12 21:49:39.202 | ERROR    | Core.Community.LeidenCommunity:_load_community_report:260 - Failed to load community report.
+2024-12-12 21:49:39.202 | ERROR    | Core.Graph.BaseGraph:cluster_data_to_subgraphs:303 - **Only NETWORKX is supported for constructing the cluster <-> node mapping.** 
+NoneType: None
+2024-12-12 21:49:39.202 | WARNING  | Core.Community.LeidenCommunity:_generate_community_report:77 - No community schema found, skipping community report generation.
+2024-12-12 21:49:39.202 | INFO     | Core.Storage.JsonKVStorage:persist:29 - Write KV ./test_book/tree_graph/community_storage_community_report.json with 0 data
+2024-12-12 21:49:39.203 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2024-12-12 21:49:39.203 | INFO     | Core.GraphRAG:_build_retriever_context:169 - Building retriever context for the current execution
+2024-12-12 21:49:39.222 | ERROR    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_tree_vdb:73 - Failed to find relevant entities_vdb: 'TreeGraph' object has no attribute 'metakey'
+Traceback (most recent call last):
+
+  File "/home/yingli/GraphRAG/main.py", line 41, in <module>
+    asyncio.run(digimon.query("Who is Scrooge?"))
+    │       │   │       └ <function GraphRAG.query at 0x74e5809df6a0>
+    │       │   └ GraphRAG(private_context=None, private_config=Config(extra_fields=None, working_dir='./test_book', exp_name='test_patroat', d...
+    │       └ <function run at 0x74e7a3dd84a0>
+    └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object GraphRAG.query at 0x74e55860ce40>
+           │      └ <function Runner.run at 0x74e7a1354ae0>
+           └ <asyncio.runners.Runner object at 0x74e551c82e50>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-17' coro=<GraphRAG.query() running at /home/yingli/GraphRAG/Core/GraphRAG.py:279> cb=[_run_until_com...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x74e7a1352700>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x74e551c82e50>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x74e7a1352660>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x74e7a13544a0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x74e7a3dd8d60>
+    └ <Handle <TaskStepMethWrapper object at 0x74e580e4e650>()>
+  File "/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x74e580e4e650>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x74e580e4e650>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x74e580e4e650>()>
+
+  File "/home/yingli/GraphRAG/Core/GraphRAG.py", line 279, in query
+    response = await self._querier.query(query)
+                     │    │        │     └ 'Who is Scrooge?'
+                     │    │        └ <function BasicQuery.query at 0x74e5809f00e0>
+                     │    └ <Core.Query.BasicQuery.BasicQuery object at 0x74e56d529110>
+                     └ GraphRAG(private_context=None, private_config=Config(extra_fields=None, working_dir='./test_book', exp_name='test_patroat', d...
+
+  File "/home/yingli/GraphRAG/Core/Query/BasicQuery.py", line 210, in query
+    context = await self._retrieve_relevant_contexts(query)
+                    │    │                           └ 'Who is Scrooge?'
+                    │    └ <function BasicQuery._retrieve_relevant_contexts at 0x74e5809f1440>
+                    └ <Core.Query.BasicQuery.BasicQuery object at 0x74e56d529110>
+
+  File "/home/yingli/GraphRAG/Core/Query/BasicQuery.py", line 14, in _retrieve_relevant_contexts
+    return await self._retirever.retrieve_relevant_content(seed = query, type = Retriever.ENTITY, mode = "tree_vdb")
+                 │    │          │                                │             │         └ <Retriever.ENTITY: 'entity'>
+                 │    │          │                                │             └ <enum 'Retriever'>
+                 │    │          │                                └ 'Who is Scrooge?'
+                 │    │          └ <function MixRetriever.retrieve_relevant_content at 0x74e5809f2520>
+                 │    └ <Core.Retriever.MixRetriever.MixRetriever object at 0x74e56d5a3150>
+                 └ <Core.Query.BasicQuery.BasicQuery object at 0x74e56d529110>
+
+  File "/home/yingli/GraphRAG/Core/Retriever/MixRetriever.py", line 18, in retrieve_relevant_content
+    return await self.retrievers[type].retrieve_relevant_content(mode = mode, **kwargs)
+                 │    │          │                                      │       └ {'seed': 'Who is Scrooge?'}
+                 │    │          │                                      └ 'tree_vdb'
+                 │    │          └ <Retriever.ENTITY: 'entity'>
+                 │    └ {<Retriever.ENTITY: 'entity'>: <Core.Retriever.EntitiyRetriever.EntityRetriever object at 0x74e56c0a0210>, <Retriever.COMMUNI...
+                 └ <Core.Retriever.MixRetriever.MixRetriever object at 0x74e56d5a3150>
+
+  File "/home/yingli/GraphRAG/Core/Retriever/BaseRetriever.py", line 27, in retrieve_relevant_content
+    return await retrieve_fun(self, **kwargs)
+                 │            │       └ {'seed': 'Who is Scrooge?'}
+                 │            └ <Core.Retriever.EntitiyRetriever.EntityRetriever object at 0x74e56c0a0210>
+                 └ <function EntityRetriever._find_relevant_entities_tree_vdb at 0x74e5809ebba0>
+
+> File "/home/yingli/GraphRAG/Core/Retriever/EntitiyRetriever.py", line 58, in _find_relevant_entities_tree_vdb
+    node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph, tree_node = True)
+                       │    │            │               │     │    │      │      │    └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                       │    │            │               │     │    │      │      └ <Core.Retriever.EntitiyRetriever.EntityRetriever object at 0x74e56c0a0210>
+                       │    │            │               │     │    │      └ 5
+                       │    │            │               │     │    └ RetrieverConfig(query_type='basic', enable_local=False, use_entity_similarity_for_ppr=True, top_k_entity_for_ppr=8, node_spec...
+                       │    │            │               │     └ <Core.Retriever.EntitiyRetriever.EntityRetriever object at 0x74e56c0a0210>
+                       │    │            │               └ 'Who is Scrooge?'
+                       │    │            └ <function VectorIndex.retrieval_nodes at 0x74e583c3b1a0>
+                       │    └ <Core.Index.VectorIndex.VectorIndex object at 0x74e58086ec10>
+                       └ <Core.Retriever.EntitiyRetriever.EntityRetriever object at 0x74e56c0a0210>
+
+  File "/home/yingli/GraphRAG/Core/Index/VectorIndex.py", line 35, in retrieval_nodes
+    return await result.get_tree_node_data(graph, need_score)
+                 │      │                  │      └ False
+                 │      │                  └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                 │      └ <function VectorIndexNodeResult.get_tree_node_data at 0x74e583c39580>
+                 └ <Core.Schema.VdbResult.VectorIndexNodeResult object at 0x74e5812b9a10>
+
+  File "/home/yingli/GraphRAG/Core/Schema/VdbResult.py", line 36, in get_tree_node_data
+    nodes = await asyncio.gather( *[ graph.get_node(r.metadata[graph.metakey]) for r in self.results])
+                  │       │          │     │                   │                        │    └ [NodeWithScore(node=TextNode(id_='466d380f-56eb-48ab-9dea-285c3ac513f6', embedding=None, metadata={'index': 3}, excluded_embe...
+                  │       │          │     │                   │                        └ <Core.Schema.VdbResult.VectorIndexNodeResult object at 0x74e5812b9a10>
+                  │       │          │     │                   └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                  │       │          │     └ <function BaseGraph.get_node at 0x74e723d09080>
+                  │       │          └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                  │       └ <function gather at 0x74e7a13419e0>
+                  └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+  File "/home/yingli/GraphRAG/Core/Schema/VdbResult.py", line 36, in <listcomp>
+    nodes = await asyncio.gather( *[ graph.get_node(r.metadata[graph.metakey]) for r in self.results])
+                  │       │          │     │        │ │        │                   └ NodeWithScore(node=TextNode(id_='466d380f-56eb-48ab-9dea-285c3ac513f6', embedding=None, metadata={'index': 3}, excluded_embed...
+                  │       │          │     │        │ │        └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                  │       │          │     │        │ └ <property object at 0x74e6891be660>
+                  │       │          │     │        └ NodeWithScore(node=TextNode(id_='466d380f-56eb-48ab-9dea-285c3ac513f6', embedding=None, metadata={'index': 3}, excluded_embed...
+                  │       │          │     └ <function BaseGraph.get_node at 0x74e723d09080>
+                  │       │          └ <Core.Graph.TreeGraph.TreeGraph object at 0x74e58087b590>
+                  │       └ <function gather at 0x74e7a13419e0>
+                  └ <module 'asyncio' from '/home/yingli/anaconda3/envs/graphrag/lib/python3.11/asyncio/__init__.py'>
+
+AttributeError: 'TreeGraph' object has no attribute 'metakey'

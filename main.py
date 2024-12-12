@@ -35,19 +35,21 @@ def check_dirs(opt):
     copyfile(args.opt, os.path.join(config_dir, opt_name))
     copyfile(basic_name, os.path.join(config_dir, "Config2.yaml"))
 
-
-# corpus = read_corpus()
-# dataloader = crate_dataloader(opt.dataset_name)
+check_dirs(opt)
+# query_dataset = RAGQueryDataset()
+# corpus = query_dataset.get_corpus()
+# print(f"length of corpus: {len(corpus)}")
+# corpus = corpus[:10]
+# asyncio.run(digimon.insert(corpus))
 
 if __name__ == "__main__":
-    check_dirs(opt)
-    query_dataset = RAGQueryDataset()
-    corpus = query_dataset.get_corpus()
-    print(f"length of corpus: {len(corpus)}")
-    corpus = corpus[:10]
-    asyncio.run(digimon.insert(corpus))
-    # asyncio.run(digimon.insert([doc]))
-
+  
+  
+    with open("./book.txt") as f:
+        doc = f.read()
+    
+    asyncio.run(digimon.insert([doc]))
+    
     # for train_item in dataloader:
-
+        
     asyncio.run(digimon.query("Who is Scrooge?"))

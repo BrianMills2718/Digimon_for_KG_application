@@ -9,6 +9,9 @@ class BasicQuery(BaseQuery):
 
     
     async def _retrieve_relevant_contexts(self, query):
+        if self.config.tree_search:
+            # For RAPTOR
+            return await self._retirever.retrieve_relevant_content(seed = query, tree_node = True, type = Retriever.ENTITY, mode = "vdb")
         
         entities_context, relations_context, text_units_context, communities_context = None, None, None, None
         if self.config.use_global_query and self.config.use_community:
@@ -202,23 +205,23 @@ class BasicQuery(BaseQuery):
  
     
         
-    async def query(self, query):
 
-        context = await self._retrieve_relevant_contexts(query)
-        response = await self.generation(query, context)
-        return response
+      
     
 
     async def generation(self, query, context):
 
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
-
-        if self.config.use_community and self.config.use_global_query:
+       
+        if self.config.tree_search:
+            import pdb
+            pdb.set_trace()
+        if self.config.community_information and self.config.use_global_query:
             sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
-        elif not self.config.use_community and self.config.use_keywords:
+        elif not self.config.community_information and self.config.use_keywords:
             sys_prompt_temp = QueryPrompt.RAG_RESPONSE
-        elif self.config.use_community and not self.config.use_keywords and self.config.enable_local:
+        elif self.config.community_information and not self.config.use_keywords and self.config.enable_local:
             sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
         else:
             logger.error("Invalid query configuration")

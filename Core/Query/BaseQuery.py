@@ -16,9 +16,15 @@ class BaseQuery(ABC):
     async def _retrieve_relevant_contexts(self):
         pass
     
-    @abstractmethod
     async def query(self, query):
-        pass
+        context = await self._retrieve_relevant_contexts(query)
+        if self.config.query_type == "summary":
+            response = await self.generation_summary(query, context)
+        elif self.config.query_type == "qa":
+            response = await self.generation_qa(query, context)
+        else:
+            logger.error("Invalid query type")
+        return response
     
     @abstractmethod
     async def generation(self, context):

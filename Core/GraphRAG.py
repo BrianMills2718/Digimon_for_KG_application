@@ -1,11 +1,9 @@
 from typing import Union, Any
-from Core.Index.TFIDFStore import TFIDFIndex
-from Core.Prompt.QueryPrompt import KGP_QUERY_PROMPT
 from pyfiglet import Figlet
 from Core.Chunk.DocChunk import DocChunk
 from Core.Common.Logger import logger
 import tiktoken
-from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
+from pydantic import BaseModel, model_validator
 from Core.Common.ContextMixin import ContextMixin
 from Core.Schema.RetrieverContext import RetrieverContext
 from Core.Common.TimeStatistic import TimeStatistic
@@ -70,7 +68,7 @@ class GraphRAG(ContextMixin, BaseModel):
         # cls.config = data.config
         cls.ENCODER = tiktoken.encoding_for_model(data.config.token_model)
         cls.workspace = Workspace(data.config.working_dir, data.config.index_name)  # register workspace
-        cls.graph = get_graph(data.config.graph, llm=data.llm, encoder=cls.ENCODER)  # register graph
+        cls.graph = get_graph(data.config, llm=data.llm, encoder=cls.ENCODER)  # register graph
         cls.doc_chunk = DocChunk(data.config.chunk_method, cls.ENCODER, data.workspace.make_for("chunk_storage"))
         cls.time_manager = TimeStatistic()
         cls.retriever_context = RetrieverContext()
@@ -123,6 +121,10 @@ class GraphRAG(ContextMixin, BaseModel):
         # Entity Matrix: Represents the entities in the dataset.
         # Chunk Matrix: Represents the chunks associated with the entities.
         # These matrices facilitate the entity -> relationship -> chunk linkage, which is integral to the HippoRAG and FastGraphRAG models.
+        if  data.config.graph.graph_type == "tree_graph":
+            logger.warning("Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.")
+            data.config.use_entity_link_chunk = False # Disable entity-link-chunk mapping if tree graph is used.
+            return data
         if data.config.use_entity_link_chunk:
             cls.entities_to_relationships = PickleBlobStorage(
                 namespace=data.e2r_namespace, config=None

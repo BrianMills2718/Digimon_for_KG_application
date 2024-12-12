@@ -64,6 +64,13 @@ class BaseGraph(ABC):
     def namespace(self, namespace):
         self._graph.namespace = namespace
 
+    
+    
+    @property
+    @abstractmethod
+    def entity_metakey(self):
+        pass
+    
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
 

@@ -1,0 +1,11 @@
+2024-12-11 23:45:39.442 | INFO     | Core.Chunk.DocChunk:build_chunks:23 - Starting chunk the given documents
+2024-12-11 23:45:39.455 | INFO     | Core.Chunk.DocChunk:build_chunks:45 - ✅ Finished the chunking stage
+2024-12-11 23:45:39.455 | INFO     | Core.GraphRAG:_update_costs_info:196 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-11 23:45:39.455 | INFO     | Core.GraphRAG:_update_costs_info:198 - Chunking time(s): 0.01
+2024-12-11 23:45:39.455 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-11 23:45:39.456 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:27 - Attempting to load the graph from: ./test_book/rkg_graph_without_keywords/graph_storage_nx_data.graphml
+2024-12-11 23:45:39.459 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:31 - Successfully loaded graph from: ./test_book/rkg_graph_without_keywords/graph_storage_nx_data.graphml with 109 nodes and 62 edges
+2024-12-11 23:45:39.460 | INFO     | Core.Graph.BaseGraph:build_graph:50 - ✅ Finished the graph building stage
+2024-12-11 23:45:39.460 | INFO     | Core.GraphRAG:_update_costs_info:196 - Build Graph stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-11 23:45:39.460 | INFO     | Core.GraphRAG:_update_costs_info:198 - Build Graph time(s): 0.00
+2024-12-11 23:45:39.461 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting insert elements of the given graph into vector database

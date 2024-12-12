@@ -22,6 +22,7 @@ class TreeGraph(BaseGraph):
         super().__init__(config, llm, encoder)
         self._graph: TreeGraphStorage = TreeGraphStorage()  # Tree index
         self.embedding_model = get_rag_embedding(config.embedding.api_type, config)  # Embedding model
+        self.config = config.graph # Only keep the graph config
         random.seed(self.config.random_seed)
 
     def _GMM_cluster(self, embeddings: np.ndarray, threshold: float, random_state: int = 0):
@@ -211,4 +212,6 @@ class TreeGraph(BaseGraph):
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
         
-    
+    @property
+    def entity_metakey(self):
+        return "index"

@@ -25,14 +25,10 @@ class PPRQuery(BaseQuery):
         for passage in passages:
             prompt_user += f'{passage}\n\n'
         prompt_user += f'Question: {query} \n Thought:' + ' '.join(thoughts)
-        import pdb
-            
-        pdb.set_trace()
 
         try:
             response_content = await self.llm.aask(msg = prompt_demo + prompt_user, system_msgs = [QueryPrompt.IRCOT_REASON_INSTRUCTION])
-            import pdb
-            pdb.set_trace()
+        
         except Exception as e:
             print(e)
             return ''
@@ -104,25 +100,12 @@ class PPRQuery(BaseQuery):
             msg = QueryPrompt.GENERATE_RESPONSE_QUERY_WITH_REFERENCE.format(query=query, context=context)
             return await self.llm.aask(msg=msg)
         else:
-            # For HippoRAG. Note that 10 is the default number of passages to retrieve for HippoRAG souce code
+            # For HippoRAG. Note that 5 is the default number of passages to retrieve for HippoRAG souce code
             # Please refer to: https://github.com/OSU-NLP-Group/HippoRAG/blob/main/src/ircot_hipporag.py#L289 
-            retrieved_passages = context[:10]
+            retrieved_passages = context[:self.config.num_doc]
             working_memory = Memory()
             instruction = QueryPrompt.COT_SYSTEM_DOC if len(retrieved_passages) else QueryPrompt.COT_SYSTEM_NO_DOC
             working_memory.add(Message(conent = instruction, role = 'system'))
-            if few_shot:
-                for sample in few_shot:
-                    if 'document' in sample:  # document and question from user
-                        cur_sample = f'{sample["document"]}\n\nQuestion: {sample["question"]}'
-                    else:  # no document, only question from user
-                        cur_sample = f'Question: {sample["question"]}'
-                    if 'thought' in sample:  # Chain-of-Thought
-                        working_memory.add(Message( content= cur_sample + '\nThought: ', role = 'user'))
-                        working_memory.add(Message(content= f'{sample["thought"]}\nAnswer: {sample["answer"]}', role ='assistant'))
-                    else:  # No Chain-of-Thought, directly answer the question
-                        working_memory.add(Message(content= cur_sample + '\nAnswer: ', role = 'user'))
-                        working_memory.add(Message(content = f'Answer: {sample["answer"]}', role = 'assistant'))
-
             user_prompt = ''
             for passage in retrieved_passages:
                 user_prompt += f' {passage}\n\n'

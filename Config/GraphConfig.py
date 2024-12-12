@@ -7,6 +7,7 @@ class GraphConfig(BaseModel):
     # Building graph
     extract_two_step: bool = True
     max_gleaning: int = 1
+    force: bool = False
     enable_entity_description: bool = True
     enable_entity_type: bool = False
     enable_edge_description: bool = True

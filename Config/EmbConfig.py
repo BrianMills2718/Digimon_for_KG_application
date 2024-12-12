@@ -8,8 +8,7 @@ from Core.Utils.YamlModel import YamlModel
 
 class EmbeddingType(Enum):
     OPENAI = "openai"
-    AZURE = "azure"
-    GEMINI = "gemini"
+    HF = "hf"
     OLLAMA = "ollama"
 
 

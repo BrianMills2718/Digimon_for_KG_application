@@ -1,0 +1,32 @@
+2024-12-12 19:54:36.641 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:125 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2024-12-12 19:54:36.642 | INFO     | Core.Chunk.DocChunk:build_chunks:23 - Starting chunk the given documents
+2024-12-12 19:54:36.657 | INFO     | Core.Chunk.DocChunk:build_chunks:45 - ✅ Finished the chunking stage
+2024-12-12 19:54:36.658 | INFO     | Core.GraphRAG:_update_costs_info:198 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 19:54:36.658 | INFO     | Core.GraphRAG:_update_costs_info:200 - Chunking time(s): 0.02
+2024-12-12 19:54:36.658 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-12 19:54:36.658 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl
+2024-12-12 19:54:36.659 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:38 - Successfully loaded tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl with 13 nodes and 2 layers
+2024-12-12 19:54:36.659 | INFO     | Core.Graph.BaseGraph:build_graph:50 - ✅ Finished the graph building stage
+2024-12-12 19:54:36.659 | INFO     | Core.GraphRAG:_update_costs_info:198 - Build Graph stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 19:54:36.659 | INFO     | Core.GraphRAG:_update_costs_info:200 - Build Graph time(s): 0.00
+2024-12-12 19:54:36.659 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting insert elements of the given graph into vector database
+2024-12-12 19:54:37.357 | INFO     | Core.Index.BaseIndex:build_index:25 - Building index for input elements
+2024-12-12 19:54:39.239 | INFO     | Core.Index.VectorIndex:_update_index:60 - refresh index size is 21
+2024-12-12 19:54:39.313 | INFO     | Core.Index.BaseIndex:build_index:28 - Index successfully built and stored.
+2024-12-12 19:54:39.313 | INFO     | Core.Index.BaseIndex:build_index:29 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-12 19:54:39.313 | ERROR    | Core.Graph.BaseGraph:stable_largest_cc:288 - **Only NETWORKX is supported for finding the largest connected component.** 
+NoneType: None
+2024-12-12 19:54:39.314 | INFO     | Core.Community.BaseCommunity:cluster:46 - Starting build community of the given graph
+2024-12-12 19:54:39.319 | INFO     | Core.Storage.JsonKVStorage:load:33 - Load KV ./test_book/tree_graph/community_storage_community_node_map.json with 0 data
+2024-12-12 19:54:39.319 | ERROR    | Core.Community.LeidenCommunity:_load_cluster_map:277 - ❌ Failed to load community <-> node map.
+2024-12-12 19:54:39.319 | WARNING  | Core.Community.LeidenCommunity:_clustering:43 - No largest connected component found, skipping Leiden clustering; Please check the input graph.
+2024-12-12 19:54:39.319 | INFO     | Core.Storage.JsonKVStorage:persist:29 - Write KV ./test_book/tree_graph/community_storage_community_node_map.json with 0 data
+2024-12-12 19:54:39.319 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2024-12-12 19:54:39.319 | INFO     | Core.Storage.JsonKVStorage:load:33 - Load KV ./test_book/tree_graph/community_storage_community_report.json with 0 data
+2024-12-12 19:54:39.320 | ERROR    | Core.Community.LeidenCommunity:_load_community_report:260 - Failed to load community report.
+2024-12-12 19:54:39.320 | ERROR    | Core.Graph.BaseGraph:cluster_data_to_subgraphs:296 - **Only NETWORKX is supported for constructing the cluster <-> node mapping.** 
+NoneType: None
+2024-12-12 19:54:39.320 | WARNING  | Core.Community.LeidenCommunity:_generate_community_report:77 - No community schema found, skipping community report generation.
+2024-12-12 19:54:39.320 | INFO     | Core.Storage.JsonKVStorage:persist:29 - Write KV ./test_book/tree_graph/community_storage_community_report.json with 0 data
+2024-12-12 19:54:39.320 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2024-12-12 19:54:39.321 | INFO     | Core.GraphRAG:_build_retriever_context:169 - Building retriever context for the current execution

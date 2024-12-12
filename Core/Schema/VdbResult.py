@@ -29,7 +29,16 @@ class VectorIndexNodeResult(EntityResult):
             return nodes, [r.score for r in self.results]
         else:
             return nodes
-        
+    
+    
+    async def get_tree_node_data(self, graph, score = False):
+  
+        nodes = await asyncio.gather( *[ graph.get_node(r.metadata[graph.entity_metakey]) for r in self.results])
+        if score:
+
+            return nodes, [r.score for r in self.results]
+        else:
+            return nodes
 class RelationResult(ABC):
     @abstractmethod
     def get_edge_data(self):

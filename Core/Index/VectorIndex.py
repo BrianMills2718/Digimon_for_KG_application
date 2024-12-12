@@ -28,10 +28,13 @@ class VectorIndex(BaseIndex):
         
         return await retriever.aretrieve(query_bundle)
 
-    async def retrieval_nodes(self, query, top_k, graph, need_score = False):
+    async def retrieval_nodes(self, query, top_k, graph, need_score = False, tree_node = False):
         results = await self.retrieval(query, top_k)
         result =  VectorIndexNodeResult(results)
-        return await result.get_node_data(graph, need_score)
+        if tree_node:
+            return await result.get_tree_node_data(graph, need_score)
+        else:
+            return await result.get_node_data(graph, need_score)
     
 
     async def retrieval_edges(self, query, top_k, graph, need_score = False):

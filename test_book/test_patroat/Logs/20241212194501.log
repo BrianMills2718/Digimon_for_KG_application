@@ -1,0 +1,17 @@
+2024-12-12 19:45:25.657 | INFO     | Core.Chunk.DocChunk:build_chunks:23 - Starting chunk the given documents
+2024-12-12 19:45:25.672 | INFO     | Core.Chunk.DocChunk:build_chunks:45 - ✅ Finished the chunking stage
+2024-12-12 19:45:25.672 | INFO     | Core.GraphRAG:_update_costs_info:194 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 19:45:25.672 | INFO     | Core.GraphRAG:_update_costs_info:196 - Chunking time(s): 0.01
+2024-12-12 19:45:25.672 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-12 19:45:25.672 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl
+2024-12-12 19:45:25.673 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:38 - Successfully loaded tree from: ./test_book/tree_graph/graph_storage_tree_data.pkl with 13 nodes and 2 layers
+2024-12-12 19:45:25.673 | INFO     | Core.Graph.BaseGraph:build_graph:50 - ✅ Finished the graph building stage
+2024-12-12 19:45:25.673 | INFO     | Core.GraphRAG:_update_costs_info:194 - Build Graph stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-12 19:45:25.673 | INFO     | Core.GraphRAG:_update_costs_info:196 - Build Graph time(s): 0.00
+2024-12-12 19:45:25.673 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting insert elements of the given graph into vector database
+2024-12-12 19:45:26.381 | INFO     | Core.Index.BaseIndex:build_index:25 - Building index for input elements
+2024-12-12 19:45:28.434 | INFO     | Core.Index.VectorIndex:_update_index:60 - refresh index size is 21
+2024-12-12 19:45:28.508 | INFO     | Core.Index.BaseIndex:build_index:28 - Index successfully built and stored.
+2024-12-12 19:45:28.508 | INFO     | Core.Index.BaseIndex:build_index:29 - ✅ Finished starting insert entities of the given graph into vector database
+2024-12-12 19:45:28.508 | INFO     | Core.GraphRAG:build_e2r_r2c_maps:182 - Starting build two maps: 1️⃣ entity <-> relationship; 2️⃣ relationship <-> chunks 
+2024-12-12 19:45:28.509 | INFO     | Core.Storage.PickleBlobStorage:load:21 - Forcing rebuild the mapping for: ./test_book/tree_graph/map_e2r_blob_data.pkl.
