@@ -57,7 +57,7 @@ The criteria for the classification of graph types are as follows:
 > The retrieval stage lies the **key role** ‼️ in the entire GraphRAG process. ✨ The goal is to identify query-relevant content that supports the generation phase, enabling the LLM to provide more **accurate** responses.
 
 
-💡💡💡 After thoroughly reviewing all implementations, we've distilled them into a set of 16 operators 🧩🧩. Each method then constructs its retrieval module by combining one or more of these operators 🧩.
+💡💡💡 After thoroughly reviewing all implementations, we've distilled them into a set of **16** operators 🧩🧩. Each method then constructs its retrieval module by combining one or more of these operators 🧩.
 
 ### Five Types of Operators
 
