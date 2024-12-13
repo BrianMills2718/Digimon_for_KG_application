@@ -102,7 +102,7 @@ The criteria for the classification of graph types are as follows:
 > Identify high-level information, which is only used for MS GraphRAG.
 
 
-| **Example Methods** | **Description**                                      | **Application**                                  |
+| **Name** | **Description**                                      | **Example Methods**                                  |
 |----------------------|-----------------------------------------------------|-------------------------------------------------|
 | **by_entity**        | Detects communities containing specified entities   | Local Search for MS GraphRAG                   |
 | **by_level**         | Returns all communities below a specified level     | Global Search for MS GraphRAG                  | 

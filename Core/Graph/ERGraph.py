@@ -156,6 +156,3 @@ class ERGraph(BaseGraph):
             maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)
-    @property
-    def entity_metakey(self):
-        return "entity_name"

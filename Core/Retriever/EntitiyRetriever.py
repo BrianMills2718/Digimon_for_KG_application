@@ -60,8 +60,6 @@ class EntityRetriever(BaseRetriever):
     async def _find_relevant_entities_tf_df(self, seed, corpus, top_k, candidates_idx):
         try:           
             graph_nodes = list(await self.graph.get_nodes())
-            import pdb
-            pdb.set_trace()
             corpus = dict({id: (await self.graph.get_node(id))['description'] for id in graph_nodes})
             candidates_idx = list(id for id in graph_nodes)
             index = TFIDFIndex()

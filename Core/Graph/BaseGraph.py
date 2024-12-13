@@ -70,7 +70,8 @@ class BaseGraph(ABC):
     @property
     @abstractmethod
     def entity_metakey(self):
-        pass
+        # For almost of graph, entity_metakey is "entity_name"
+        return "entity_name"
     
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
@@ -438,3 +439,4 @@ class BaseGraph(ABC):
     
     async def _clear(self):
         self._graph.clear()
+

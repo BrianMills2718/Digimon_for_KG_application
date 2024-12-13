@@ -1,11 +1,8 @@
 from Core.Query.BaseQuery import BaseQuery
 from Core.Common.Logger import logger
 from Core.Common.Constants import Retriever
-from Core.Common.Utils import to_str_by_maxtokens
 from Core.Prompt import QueryPrompt 
-from Core.Common.Memory import Memory
-from Core.Schema.Message import Message
-from Core.Common.Constants import TOKEN_TO_CHAR_RATIO   
+
 class KGPQuery(BaseQuery):
     def __init__(self, config, retirever_context):
         super().__init__(config, retirever_context)
@@ -41,7 +38,6 @@ class KGPQuery(BaseQuery):
         
 
         answer = await self.llm.aask(QueryPrompt.KGP_QUERY_PROMPT.format(question=query, context=context_str))
-        pdb.set_trace()
         return answer
     async def generation_summary(self, query, context):
 
