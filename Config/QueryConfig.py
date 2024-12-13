@@ -4,11 +4,12 @@ from dataclasses import field
 
 class QueryConfig(YamlModel):
     # model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
-
+    query_type: str = "qa"
     only_need_context: bool = False
     response_type: str = "Multiple Paragraphs"
     level: int = 2
     top_k: int = 20
+    nei_k: int = 3
     num_doc: int = 5 # Deafult parameter for the HippoRAG
     # naive search
     naive_max_token_for_text_unit: int = 12000

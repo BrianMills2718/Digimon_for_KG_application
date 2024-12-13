@@ -1,7 +1,5 @@
-from typing import Optional
-from pydantic import BaseModel, Field
-
-class RetrieverConfig(BaseModel):
+from Core.Utils.YamlModel import YamlModel
+class RetrieverConfig(YamlModel):
   # Retrieval Config
     query_type: str = "ppr"
     enable_local: bool = False
@@ -10,5 +8,6 @@ class RetrieverConfig(BaseModel):
     node_specificity: bool = True
     damping: float = 0.1
     top_k: int = 5
+    k_nei:int =  3
     node_specificity: bool = True
     damping: float = 0.1
