@@ -1,4 +1,10 @@
 ################################# Working settings  #################################
+# Data
+index_name: tree_graph
+
+vdb_type: vector  # vector/colbert
+
+
 # Basic Config
 use_entities_vdb: True
 use_relations_vdb: False  # Only set True for LightRAG
@@ -26,10 +32,10 @@ graph:
 # Retrieval Config 
 retriever:
     query_type: kgp    
-    top_k: 30
-    k_nei: 3
+
 
 query: 
     query_type: qa
-   
+    top_k: 30
+    k_nei: 3
  

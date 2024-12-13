@@ -6,7 +6,13 @@ llm_model_max_token_size: 32768
 use_entity_link_chunk: True  # Only set True for HippoRAG and FastGraphRAG
 enable_graph_augmentation: True
 gpu_ids: [0]
+# Data
 
+index_name: tree_graph
+
+vdb_type: vector  # vector/colbert
+data_root: ./Data # Root directory for data
+dataset_name: HotpotQA # Dataset name
 # Chunk Config 
 chunk:
   chunk_token_size: 1200
