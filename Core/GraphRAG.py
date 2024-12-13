@@ -239,11 +239,11 @@ class GraphRAG(ContextMixin, BaseModel):
         # For HippoRAG and MedicalRAG, similarities between entities are utilized to create additional edges.
         # These edges represent similarity types and are leveraged in subsequent processes.
 
-        # if self.config.enable_graph_augmentation:
-        #     logger.info("Starting augment the existing graph with similariy edges")
+        if self.config.enable_graph_augmentation:
+            logger.info("Starting augment the existing graph with similariy edges")
 
-        #     await self.graph.augment_graph_by_similrity_search()
-        #     logger.info("✅ Finished augment the existing graph with similariy edges")
+            await self.graph.augment_graph_by_similarity_search()
+            logger.info("✅ Finished augment the existing graph with similariy edges")
 
         if self.config.use_entity_link_chunk:
             await self.build_e2r_r2c_maps(True)

@@ -77,6 +77,6 @@ class BaseIndex(ABC):
     async def retrieval_nodes(self, query, top_k, graph):
         pass
 
-    @abstractmethod
+
     async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
         pass

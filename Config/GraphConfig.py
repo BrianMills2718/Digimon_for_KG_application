@@ -39,3 +39,7 @@ class GraphConfig(YamlModel):
     verbose: bool = False
     random_seed: int = 224
     enforce_sub_communities: bool = False
+
+    # For graph augmentation
+    similarity_threshold: float = 0.8
+    similarity_top_k: int = 100

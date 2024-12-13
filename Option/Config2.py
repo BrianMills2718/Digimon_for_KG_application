@@ -80,7 +80,7 @@ class Config(WorkingParams, YamlModel):
         return Config(**opt)
 
     @classmethod
-    def parse(cls, _path):
+    def parse(cls, _path, dataset_name):
         """Parse config from yaml file"""
         opt = [parse(_path)]
 
@@ -89,8 +89,9 @@ class Config(WorkingParams, YamlModel):
             CONFIG_ROOT / "Config2.yaml",
         ]
         opt += [Config.read_yaml(path) for path in default_config_paths]
+    
         final = merge_dict(opt)
-
+        final["dataset_name"] = dataset_name
         return Config(**final)
     
     @classmethod
@@ -125,11 +126,12 @@ class Config(WorkingParams, YamlModel):
             return self.llm
         return None
 def parse(opt_path):
+    
         with open(opt_path, mode='r') as f:
             opt = YamlModel.read_yaml(opt_path)
         # export CUDA_VISIBLE_DEVICES
-        gpu_list = ','.join(str(x) for x in opt['gpu_ids'])
-        os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
+        # gpu_list = ','.join(str(x) for x in opt['gpu_ids'])
+        # os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
         return opt
 def merge_dict(dicts: Iterable[Dict]) -> Dict:
     """Merge multiple dicts into one, with the latter dict overwriting the former"""

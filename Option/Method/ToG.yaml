@@ -1,16 +1,17 @@
 ################################# Working settings  #################################
 # Basic Config
 use_entities_vdb: True
-use_relations_vdb: False  # Only set True for LightRAG
+use_relations_vdb: True  # Only set True for LightRAG
 llm_model_max_token_size: 32768
 use_entity_link_chunk: False  # Only set True for HippoRAG and FastGraphRAG
 enable_graph_augmentation: False
 
 # Data
 
-index_name: kg_graph
+index_name: er_graph_vector
 
 vdb_type: vector  # vector/colbert
+
 # Chunk Config 
 chunk:
   chunk_token_size: 1200
@@ -22,28 +23,16 @@ chunk:
 graph:
   # enable LightRAG
     enable_edge_keywords: False
-    graph_type: rkg_graph # rkg_graph/er_graph/tree_graph/passage_graph
+    graph_type: er_graph # rkg_graph/er_graph/tree_graph/passage_graph
     force: True
     # Building graph
     extract_two_step: True
-    max_gleaning: 1
-    enable_entity_description: True
+    enable_entity_description: False
     enable_entity_type: False
-    enable_edge_description: True
+    enable_edge_description: False
     enable_edge_name: True
     prior_prob:  0.8
     
-    # Graph clustering
-    use_community: True
-    graph_cluster_algorithm: leiden
-    max_graph_cluster_size: 10
-    graph_cluster_seed: 0xDEADBEEF
-    summary_max_tokens: 500
-
-
-    random_seed: 224
-    enforce_sub_communities: False
-
     
 
 

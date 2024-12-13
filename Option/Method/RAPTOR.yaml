@@ -8,9 +8,10 @@ enable_graph_augmentation: False
 
 # Data
 
-index_name: kg_graph
+index_name: tree_graph
 
 vdb_type: vector  # vector/colbert
+
 # Chunk Config 
 chunk:
   chunk_token_size: 1200
@@ -22,25 +23,20 @@ chunk:
 graph:
   # enable LightRAG
     enable_edge_keywords: False
-    graph_type: rkg_graph # rkg_graph/er_graph/tree_graph/passage_graph
+    graph_type: tree_graph # rkg_graph/er_graph/tree_graph/passage_graph
     force: True
-    # Building graph
-    extract_two_step: True
-    max_gleaning: 1
-    enable_entity_description: True
-    enable_entity_type: False
-    enable_edge_description: True
-    enable_edge_name: True
-    prior_prob:  0.8
-    
-    # Graph clustering
-    use_community: True
-    graph_cluster_algorithm: leiden
-    max_graph_cluster_size: 10
-    graph_cluster_seed: 0xDEADBEEF
-    summary_max_tokens: 500
 
-
+    # Tree Config
+    reduction_dimension:  5
+    summarization_length: 100
+    num_layers:  10
+    top_k: 5
+    start_layer: 5
+    selection_mode: top_k
+    max_length_in_cluster: 3500
+    threshold: 0.1
+    cluster_metric: cosine
+    verbose: False
     random_seed: 224
     enforce_sub_communities: False
 

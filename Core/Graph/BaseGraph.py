@@ -66,7 +66,6 @@ class BaseGraph(ABC):
         self._graph.namespace = namespace
 
     @property
-    @abstractmethod
     def entity_metakey(self):
         # For almost of graph, entity_metakey is "entity_name"
         return "entity_name"
@@ -174,20 +173,27 @@ class BaseGraph(ABC):
         """
         pass
 
-    async def augment_graph_by_similrity_search(self, entity_vdb, duplicate=True):
-        pass
+    async def augment_graph_by_similarity_search(self, entity_vdb, duplicate=True):
+        ranking = asyncio.gather(
+            *{node: entity_vdb.retrieval_nodes(query=node, top_k=self.config.similarity_top_k) for node in
+              self._graph.nodes()})
+        import  pdb
 
-    async def _augment_graph(self, entity_vdb, similarity_threshold=0.8, similarity_top_k=100, duplicate=True):
+        pdb.set_trace()
+    async def _augment_graph(self, entity_vdb, duplicate=True):
         """
         For each entity in the graph, get its synonyms from the knowledge base
         queries: list of entity names
         """
 
-        ranking = await entity_vdb.retrieve_batch(queries, top_k=similarity_top_k)
-        entity_names = list(queries.values())
+        ranking = asyncio.gather(
+            *{node: entity_vdb.retrieval_nodes(query=node, top_k=self.config.similarity_top_k) for node in
+              self._graph.nodes()})
+        import  pdb
+
+        pdb.set_trace()
         kb_similarity = {}
-        for key, entity_name in queries.items():
-            rank = ranking.data[key]
+        for key, entity_name in ranking.items():
             filtered_rank = rank[1:] if duplicate else rank
             kb_similarity[entity_name] = (
                 [entity_names[r[0]] for r in filtered_rank],
