@@ -5,10 +5,8 @@ from Core.Community.LeidenCommunity import (
  LeidenCommunity
 )
 
-from Core.Community.RaptorClustering import (RaptorClustering)
 
 
 _ = (
-    LeidenCommunity,
-    RaptorClustering
-)  # Avoid pre-commit error
+    LeidenCommunity
+    )  # Avoid pre-commit error

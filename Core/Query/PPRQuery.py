@@ -34,11 +34,12 @@ class PPRQuery(BaseQuery):
             return ''
         return response_content
     async def _retrieve_relevant_contexts(self, query):
-        
+        #NOTE: link-entity and extract entity are different 
+    
         entities = await self.extract_query_entities(query)
         if not self.config.augmentation_ppr:
             # For HippoRAG 
-            retrieved_passages, scores = await self._retirever.retrieve_relevant_content(query = query, seed_entities = entities, type = Retriever.CHUNK, mode = "ppr")
+            retrieved_passages, scores = await self._retirever.retrieve_relevant_content(query = query, seed_entities = entities, link_entity = True, type = Retriever.CHUNK, mode = "ppr")
             thoughts = []
         
             passage_scores = {passage: score for passage, score in zip(retrieved_passages, scores)}

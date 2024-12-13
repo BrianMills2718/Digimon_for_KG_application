@@ -70,7 +70,8 @@ class BaseQuery(ABC):
 
         return keywords
 
-    
+
+
     async def _map_global_communities(
             self,
             query: str,

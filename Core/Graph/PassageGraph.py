@@ -98,7 +98,7 @@ class PassageGraph(BaseGraph):
                 edge_data = Relationship(src_id=src_id, tgt_id=tgt_id, relation_name=wiki_key,
                                          source_id=GRAPH_FIELD_SEP.join([chunk1, chunk2]))
                 maybe_edges[(src_id, tgt_id)].append(edge_data)
- 
+   
         # Asynchronously merge and upsert nodes
         await asyncio.gather(*[self._merge_nodes_then_upsert(k, v) for k, v in maybe_nodes.items()])
         # Asynchronously merge and upsert edges

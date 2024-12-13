@@ -1,12 +1,13 @@
 import pandas as pd
 from torch.utils.data import Dataset
-
+import os
 
 class RAGQueryDataset(Dataset):
-    def __init__(self, corpus_path, qa_path):
+    def __init__(self,data_dir):
         super().__init__()
-        self.corpus_path = corpus_path
-        self.qa_path = qa_path
+      
+        self.corpus_path = os.path.join(data_dir, "Corpus.json")
+        self.qa_path = os.path.join(data_dir, "Question.json")
         self.dataset = pd.read_json(self.qa_path, lines=True, orient="records")
 
     def get_corpus(self):

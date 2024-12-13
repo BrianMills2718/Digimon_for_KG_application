@@ -34,7 +34,7 @@ def check_dirs(opt):
     os.makedirs(config_dir, exist_ok=True)
     os.makedirs(metric_dir, exist_ok=True)
     opt_name = args.opt[args.opt.rindex("/") + 1 :]
-    basic_name = os.path.join(os.path.dirname(args.opt), "Config2.yaml")
+    basic_name = os.path.join(args.opt.split("/")[0], "Config2.yaml")
     copyfile(args.opt, os.path.join(config_dir, opt_name))
     copyfile(basic_name, os.path.join(config_dir, "Config2.yaml"))
 

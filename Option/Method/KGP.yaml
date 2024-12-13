@@ -19,9 +19,10 @@ graph:
     # Building graph
     enable_entity_description: True
     graph_type: passage_graph # passage_graph/er_graph/tree_graph/passage_graph
-    force: True
+    force: False    
     prior_prob: 0.8
-
+    summary_max_tokens: 500
+    llm_model_max_token_size: 32768
 # Retrieval Config 
 retriever:
     query_type: kgp    

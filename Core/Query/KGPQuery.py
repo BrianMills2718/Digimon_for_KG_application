@@ -22,7 +22,9 @@ class KGPQuery(BaseQuery):
         visited = []
 
         for idx, next_reason in zip(idxs, next_reasons):
-            nei_candidates_idx = list(await self.graph.get_neighbors(idx))
+            nei_candidates_idx = await self._retirever.retrieve_relevant_content(seed = idx, type = Retriever.ENTITY, mode = "by_neighbors")
+            import pdb
+            pdb.set_trace()
             nei_candidates_idx = [_ for _ in nei_candidates_idx if _ not in visited]
             if (nei_candidates_idx == []):
                 continue

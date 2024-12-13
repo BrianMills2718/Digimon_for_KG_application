@@ -87,4 +87,13 @@ class BaseRetriever(ABC):
         # Transform the graph to igraph format 
         return await self.graph.personalized_pagerank([reset_prob_matrix])
         
-    
+        
+    async def link_query_entities(self, query_entities):
+
+        entities = []
+        for query_entity in query_entities: 
+            node_datas = await self.entities_vdb.retrieval_nodes(query_entity, top_k=1, graph = self.graph)
+            # For entity link, we only consider the top-ranked entity
+            entities.append(node_datas[0]) 
+ 
+        return entities
