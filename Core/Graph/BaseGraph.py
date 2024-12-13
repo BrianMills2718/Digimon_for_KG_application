@@ -85,9 +85,7 @@ class BaseGraph(ABC):
         merge_description = (MergeEntity.merge_descriptions(existing_data["description"],
                                                             upsert_nodes_data[
                                                                 "description"]) if self.config.enable_entity_description else None)
-        import pdb
-        
-        pdb.set_trace()
+
         description = (
             await self._handle_entity_relation_summary(entity_name, merge_description)
             if merge_description

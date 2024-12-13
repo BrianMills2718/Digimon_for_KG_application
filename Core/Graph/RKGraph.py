@@ -147,3 +147,7 @@ class RKGraph(BaseGraph):
             entity_types=",".join(DEFAULT_ENTITY_TYPES),
             input_text=content
         )
+        
+    @property
+    def entity_metakey(self):
+        return "entity_name"

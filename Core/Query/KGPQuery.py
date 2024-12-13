@@ -13,9 +13,9 @@ class KGPQuery(BaseQuery):
 
     async def _retrieve_relevant_contexts(self, query):
         corpus, candidates_idx = await self._retirever.retrieve_relevant_content(key = "description", type=Retriever.ENTITY, mode="all")
-        cur_contexts, idxs = await self._retirever.retrieve_relevant_content(seed = query, corpus = corpus, candidates_idx = candidates_idx,  type = Retriever.ENTITY, mode = "tf_df")  
+        cur_contexts, idxs = await self._retirever.retrieve_relevant_content(seed = query, corpus = corpus, candidates_idx = candidates_idx, top_k = self.config.top_k // self.config.nei_k, type = Retriever.ENTITY, mode = "tf_df")  
         contexts = []
-        next_reasons = [query + '\n' + (await self.llm.aask(QueryPrompt.KGP_QUERY_PROMPT.format(question=query, context=context))) for context in cur_contexts]
+        next_reasons = [query + '\n' + (await self.llm.aask(QueryPrompt.KGP_REASON_PROMPT.format(question=query, context=context))) for context in cur_contexts]
 
         logger.info("next_reasons: {next_reasons}".format(next_reasons=next_reasons))
 
@@ -23,25 +23,26 @@ class KGPQuery(BaseQuery):
 
         for idx, next_reason in zip(idxs, next_reasons):
             nei_candidates_idx = await self._retirever.retrieve_relevant_content(seed = idx, type = Retriever.ENTITY, mode = "by_neighbors")
-            import pdb
-            pdb.set_trace()
             nei_candidates_idx = [_ for _ in nei_candidates_idx if _ not in visited]
             if (nei_candidates_idx == []):
-                continue
+                continue 
 
-            next_contexts = await self.tf_idf(next_reason, nei_candidates_idx, corpus, k = self.k_nei)
-            contexts.extend([corpus[idx] + '\n' + corpus[_] for _ in next_contexts if corpus[_] != corpus[idx]])
+            next_contexts, next_idxs = await self._retirever.retrieve_relevant_content(seed = next_reason, corpus = corpus, candidates_idx = nei_candidates_idx, top_k = self.config.nei_k, type = Retriever.ENTITY, mode = "tf_df")  
+            contexts.extend([corpus[idx] + '\n' + corpus[_] for _ in next_idxs if corpus[_] != corpus[idx]])
             visited.append(idx)
-            visited.extend([_ for _ in next_contexts])
+            visited.extend([_ for _ in next_idxs])
         return contexts
         
 
     async def generation_qa(self, query, context):
-        import pdb
-        pdb.set_trace()
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
-    
+        context_str = '\n'.join('{index}: {context}'.format(index = i, context = c) for i, c in enumerate(context, start=1))
+        
+
+        answer = await self.llm.aask(QueryPrompt.KGP_QUERY_PROMPT.format(question=query, context=context_str))
+        pdb.set_trace()
+        return answer
     async def generation_summary(self, query, context):
 
         if context is None:

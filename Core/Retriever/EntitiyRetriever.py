@@ -57,7 +57,7 @@ class EntityRetriever(BaseRetriever):
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
     
     @register_retriever_method(type = "entity", method_name = "tf_df")    
-    async def _find_relevant_entities_tf_df(self, seed, corpus, candidates_idx):
+    async def _find_relevant_entities_tf_df(self, seed, corpus, top_k, candidates_idx):
         try:           
             graph_nodes = list(await self.graph.get_nodes())
             import pdb
@@ -67,12 +67,11 @@ class EntityRetriever(BaseRetriever):
             index = TFIDFIndex()
            
             index._build_index_from_list([corpus[_] for _ in candidates_idx])
-            idxs = index.query(query_str = seed, top_k = self.config.top_k // self.config.k_nei)
+            idxs = index.query(query_str = seed, top_k = top_k)
 
             new_candidates_idx = [candidates_idx[_] for _ in idxs]      
             cur_contexts = [corpus[_] for _ in new_candidates_idx]
-            import pdb
-            pdb.set_trace()
+
             return cur_contexts, new_candidates_idx
             
         except Exception as e:

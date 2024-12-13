@@ -240,12 +240,17 @@ def prompt_qac_wiki(context):
 
     return start + '\n=========\n' + 'QUESTION: {question}' + '\n=========\n' + 'CONTEXT:\n' + context + '\n=========\n' + 'QUESTION: {question}' + '\n=========\n' + 'ANSWER: please answer less than 6 words.'
 
-KGP_QUERY_PROMPT = """
+KGP_REASON_PROMPT = """
 What evidence do we need to answer the question given the current evidence?"
 Question: {question}
 Evidence: {context}
 """
 
+KGP_QUERY_PROMPT = """
+"Given the following guestion and contexts, create a final answer to the question.
+Question: {question}
+Contexts: {context}
+"""
 
 # Used for FastGraphRAG 
 GENERATE_RESPONSE_QUERY_WITH_REFERENCE = """You are a helpful assistant analyzing the given input data to provide an helpful response to the user query.
