@@ -3,14 +3,9 @@
 import os
 from dataclasses import field
 from pathlib import Path
-from typing import Dict, Iterable, List, Literal, Optional
-import yaml
-
-from pydantic import BaseModel, model_validator
-
-# from Config.EmbConfig import EmbeddingConfig
+from typing import Dict, Iterable, List, Optional
+from pydantic import BaseModel
 from Config import *
-# from Config.LLMConfig import LLMConfig, LLMType
 from Core.Common.Constants import CONFIG_ROOT, GRAPHRAG_ROOT
 from Core.Utils.YamlModel import YamlModel
 
@@ -92,6 +87,7 @@ class Config(WorkingParams, YamlModel):
     
         final = merge_dict(opt)
         final["dataset_name"] = dataset_name
+        final["working_dir"] = os.path.join(opt.working_dir, dataset_name)
         return Config(**final)
     
     @classmethod

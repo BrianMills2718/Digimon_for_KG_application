@@ -145,7 +145,7 @@ class OpenAILLM(BaseLLM):
         wait=wait_random_exponential(min=1, max=60),
         stop=stop_after_attempt(6),
         after=after_log(logger, logger.level("WARNING").name),
-        retry=retry_if_exception_type(APIConnectionError),
+        retry=retry_if_exception_type(Exception),
         retry_error_callback=log_and_reraise,
     )
     async def acompletion_text(self, messages: list[dict], stream=False, timeout=USE_CONFIG_TIMEOUT, max_tokens = None) -> str:
@@ -154,7 +154,7 @@ class OpenAILLM(BaseLLM):
             return await self._achat_completion_stream(messages, timeout=timeout, max_tokens = max_tokens)
 
         rsp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
-        
+
         return self.get_choice_text(rsp)
 
 
