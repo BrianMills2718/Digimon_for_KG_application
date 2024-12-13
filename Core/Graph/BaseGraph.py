@@ -65,14 +65,12 @@ class BaseGraph(ABC):
     def namespace(self, namespace):
         self._graph.namespace = namespace
 
-    
-    
     @property
     @abstractmethod
     def entity_metakey(self):
         # For almost of graph, entity_metakey is "entity_name"
         return "entity_name"
-    
+
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
         existing_node = await self._graph.get_node(entity_name)
 
@@ -100,7 +98,7 @@ class BaseGraph(ABC):
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
-       
+
         # Upsert the node with the merged data
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
@@ -175,7 +173,7 @@ class BaseGraph(ABC):
         This method should be implemented by subclasses to define how the graph is built from the input chunks.
         """
         pass
-    
+
     async def augment_graph_by_similrity_search(self, entity_vdb, duplicate=True):
         pass
 
@@ -184,7 +182,7 @@ class BaseGraph(ABC):
         For each entity in the graph, get its synonyms from the knowledge base
         queries: list of entity names
         """
-    
+
         ranking = await entity_vdb.retrieve_batch(queries, top_k=similarity_top_k)
         entity_names = list(queries.values())
         kb_similarity = {}
@@ -290,7 +288,7 @@ class BaseGraph(ABC):
 
     async def edge_metadata(self):
         return await self._graph.get_edge_metadata()
-    
+
     async def stable_largest_cc(self):
         if isinstance(self._graph, NetworkXStorage):
             return await self._graph.get_stable_largest_cc()
@@ -300,7 +298,7 @@ class BaseGraph(ABC):
 
     async def cluster_data_to_subgraphs(self, cluster_data: dict):
         if isinstance(self._graph, NetworkXStorage):
-            
+
             await self._graph.cluster_data_to_subgraphs(cluster_data)
         else:
             logger.exception("**Only NETWORKX is supported for constructing the cluster <-> node mapping.** ")
@@ -314,19 +312,20 @@ class BaseGraph(ABC):
 
     async def get_node_by_index(self, index):
         return await self._graph.get_node_by_index(index)
-    
+
     async def get_edge_by_index(self, index):
         return await self._graph.get_edge_by_index(index)
-    
+
     async def get_node_by_indices(self, node_idxs):
         return await asyncio.gather(
             *[self.get_node_by_index(node_idx) for node_idx in node_idxs]
         )
-    
+
     async def get_edge_by_indices(self, edge_idxs):
         return await asyncio.gather(
             *[self.get_edge_by_index(edge_idx) for edge_idx in edge_idxs]
         )
+
     async def get_edge(self, src, tgt):
         return await self._graph.get_edge(src, tgt)
 
@@ -377,20 +376,17 @@ class BaseGraph(ABC):
 
         # Get the number of nodes and edges
         node_count = self.node_num
-        edge_count = self.edge_num 
+        edge_count = self.edge_num
         # Construct the CSR matrix
         return csr_from_indices(data, shape=(node_count, edge_count))
-
 
     async def get_relationships_attrs(self, key):
         if self.edge_num == 0:
             return []
         lists_of_attrs = []
         for edge in await self.edges_data(False):
-     
             lists_of_attrs.append(edge[key])
         return lists_of_attrs
-    
 
     async def get_relationships_to_chunks_map(self, doc_chunk):
         raw_relationships_to_chunks = await self.get_relationships_attrs(key="source_id")
@@ -401,42 +397,41 @@ class BaseGraph(ABC):
             for chunk_ids in raw_relationships_to_chunks
         ]
         return csr_from_indices_list(
-                raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await doc_chunk.size)
-            )
+            raw_relationships_to_chunks, shape=(len(raw_relationships_to_chunks), await doc_chunk.size)
+        )
 
     async def get_edge_weight(self, src_id: str, tgt_id: str):
         return await self._graph.get_edge_weight(src_id, tgt_id)
-    
+
     async def get_node_index(self, node_key):
         return await self._graph.get_node_index(node_key)
-
 
     async def get_node_indices(self, node_keys):
         return await asyncio.gather(
             *[self.get_node_index(node_key) for node_key in node_keys]
         )
-    async def personalized_pagerank(self, reset_prob_chunk, damping:float = 0.1):
+
+    async def personalized_pagerank(self, reset_prob_chunk, damping: float = 0.1):
         pageranked_probabilities = []
         igraph_ = ig.Graph.from_networkx(self._graph.graph)
         igraph_.es['weight'] = [await self.get_edge_weight(edge[0], edge[1]) for edge in list(await self.edges())]
 
         for reset_prob in reset_prob_chunk:
-            pageranked_probs = igraph_.personalized_pagerank(vertices=range(self.node_num), damping=damping, directed=False,
-                                                            weights='weight', reset=reset_prob, implementation='prpack')
+            pageranked_probs = igraph_.personalized_pagerank(vertices=range(self.node_num), damping=damping,
+                                                             directed=False,
+                                                             weights='weight', reset=reset_prob,
+                                                             implementation='prpack')
 
             pageranked_probabilities.append(np.array(pageranked_probs))
         pageranked_probabilities = np.array(pageranked_probabilities)
-        
+
         return pageranked_probabilities[0]
-    
- 
-    
+
     async def get_neighbors(self, node_id: str):
         return await self._graph.neighbors(node_id)
-    
+
     async def get_nodes(self):
         return await self._graph.nodes()
-    
+
     async def _clear(self):
         self._graph.clear()
-

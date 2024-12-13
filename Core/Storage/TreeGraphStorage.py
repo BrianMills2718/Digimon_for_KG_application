@@ -16,7 +16,7 @@ class TreeGraphStorage(BaseGraphStorage):
     _tree: TreeSchema = TreeSchema()
 
     def clear(self):
-        self._tree = TreeSchema() 
+        self._tree = TreeSchema()
 
     async def _persist(self, force):
         if (os.path.exists(self.tree_pkl_file) and not force):
@@ -100,22 +100,22 @@ class TreeGraphStorage(BaseGraphStorage):
 
     async def get_node_metadata(self):
         return ["index"]
-    
+
     def get_node_num(self):
         return self.num_nodes
-    
+
     async def nodes(self):
         return self.tree.all_nodes
-    
+
     async def neighbors(self, node):
-       
+
         if not node.children:
             return []
         else:
             [self.tree.all_nodes[node_idx] for node_idx in node.children]
-    
+
     async def get_community_schema(self):
         return None
-    
+
     async def get_node(self, node_id):
         return self.tree.all_nodes[node_id]

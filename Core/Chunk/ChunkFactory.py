@@ -26,7 +26,7 @@ class ChunkingFactory:
 
 
 # Registry instance
-CHUNKING_REGISTY = ChunkingFactory()
+CHUNKING_REGISTRY = ChunkingFactory()
 
 
 def register_chunking_method(method_name):
@@ -43,13 +43,11 @@ def register_chunking_method(method_name):
 
     def decorator(func):
         """ Register a new chunking method """
-        CHUNKING_REGISTY.register_chunking_method(method_name, func)
+        CHUNKING_REGISTRY.register_chunking_method(method_name, func)
 
     return decorator
 
 
 def create_chunk_method(method_name):
-    chunking_method = CHUNKING_REGISTY.get_method(method_name)
+    chunking_method = CHUNKING_REGISTRY.get_method(method_name)
     return chunking_method
-
-

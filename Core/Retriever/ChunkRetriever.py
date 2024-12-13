@@ -1,12 +1,11 @@
 from Core.Common.Logger import logger
 from Core.Retriever.BaseRetriever import BaseRetriever
 import asyncio
-import json
 import numpy as np
 from Core.Common.Utils import truncate_list_by_token_size, split_string_by_multi_markers, min_max_normalize
-from collections import defaultdict, Counter
 from Core.Retriever.RetrieverFactory import register_retriever_method
 from Core.Common.Constants import GRAPH_FIELD_SEP
+
 
 class ChunkRetriever(BaseRetriever):
     def __init__(self, **kwargs):
@@ -17,10 +16,10 @@ class ChunkRetriever(BaseRetriever):
         self.type = "chunk"
         for key, value in kwargs.items():
             setattr(self, key, value)
-            
-    @register_retriever_method(type = "chunk", method_name="entity_occurrence")       
-    async def _find_relevant_chunks_from_entitiy_occurrence(self, node_datas: list[dict]):
-        
+
+    @register_retriever_method(type="chunk", method_name="entity_occurrence")
+    async def _find_relevant_chunks_from_entity_occurrence(self, node_datas: list[dict]):
+
         if len(node_datas) == 0:
             return None
         text_units = [
@@ -65,7 +64,7 @@ class ChunkRetriever(BaseRetriever):
             logger.warning("Text chunks are missing, maybe the storage is damaged")
         all_text_units = [
             {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-        ]   
+        ]
         # for node_data in node_datas:
         all_text_units = sorted(
             all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
@@ -79,39 +78,39 @@ class ChunkRetriever(BaseRetriever):
 
         return all_text_units
 
-    @register_retriever_method(type = "chunk", method_name="from_relation")
+    @register_retriever_method(type="chunk", method_name="from_relation")
     async def _find_relevant_chunks_from_relationships(self, seed: list[dict]):
-            text_units = [
-                split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
-                for dp in seed
-            ]
+        text_units = [
+            split_string_by_multi_markers(dp["source_id"], [GRAPH_FIELD_SEP])
+            for dp in seed
+        ]
 
-            all_text_units_lookup = {}
+        all_text_units_lookup = {}
 
-            for index, unit_list in enumerate(text_units):
-                for c_id in unit_list:
-                    if c_id not in all_text_units_lookup:
-                        all_text_units_lookup[c_id] = {
-                            "data": await self.doc_chunk.get_data_by_key(c_id),
-                            "order": index,
-                        }
+        for index, unit_list in enumerate(text_units):
+            for c_id in unit_list:
+                if c_id not in all_text_units_lookup:
+                    all_text_units_lookup[c_id] = {
+                        "data": await self.doc_chunk.get_data_by_key(c_id),
+                        "order": index,
+                    }
 
-            if any([v is None for v in all_text_units_lookup.values()]):
-                logger.warning("Text chunks are missing, maybe the storage is damaged")
-            all_text_units = [
-                {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
-            ]
-            all_text_units = sorted(all_text_units, key=lambda x: x["order"])
-            all_text_units = truncate_list_by_token_size(
-                all_text_units,
-                key=lambda x: x["data"],
-                max_token_size = self.config.max_token_for_text_unit,
-            )
-            all_text_units = [t["data"] for t in all_text_units]
+        if any([v is None for v in all_text_units_lookup.values()]):
+            logger.warning("Text chunks are missing, maybe the storage is damaged")
+        all_text_units = [
+            {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
+        ]
+        all_text_units = sorted(all_text_units, key=lambda x: x["order"])
+        all_text_units = truncate_list_by_token_size(
+            all_text_units,
+            key=lambda x: x["data"],
+            max_token_size=self.config.max_token_for_text_unit,
+        )
+        all_text_units = [t["data"] for t in all_text_units]
 
-            return all_text_units
-        
-    @register_retriever_method(type = "chunk", method_name="ppr")
+        return all_text_units
+
+    @register_retriever_method(type="chunk", method_name="ppr")
     async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict]):
         # 
         entity_to_edge_mat = await self.entities_to_relationships.get()
@@ -125,10 +124,10 @@ class ChunkRetriever(BaseRetriever):
         sorted_doc_ids = np.argsort(ppr_chunk_prob, kind='mergesort')[::-1]
         sorted_scores = ppr_chunk_prob[sorted_doc_ids]
         top_k = self.config.top_k
-        soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
-        return soreted_docs, sorted_scores[:top_k]
-    
-    @register_retriever_method(type = "chunk", method_name="aug_ppr")
+        sorted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids[:top_k])
+        return sorted_docs, sorted_scores[:top_k]
+
+    @register_retriever_method(type="chunk", method_name="aug_ppr")
     async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict]):
         # 
         entity_to_edge_mat = await self.entities_to_relationships.get()
@@ -142,7 +141,7 @@ class ChunkRetriever(BaseRetriever):
         sorted_entity_ids = np.argsort(node_ppr_matrix, kind='mergesort')[::-1]
         sorted_relationship_ids = np.argsort(edge_prob, kind='mergesort')[::-1]
 
-        soreted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids)
+        sorted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids)
         sorted_entities = await self.graph.get_node_by_indices(sorted_entity_ids)
         sorted_relationships = await self.graph.get_edge_by_indices(sorted_relationship_ids)
-        return sorted_entities, sorted_relationships, soreted_docs
+        return sorted_entities, sorted_relationships, sorted_docs

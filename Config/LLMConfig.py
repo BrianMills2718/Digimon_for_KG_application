@@ -13,24 +13,12 @@ from Core.Utils.YamlModel import YamlModel
 
 class LLMType(Enum):
     OPENAI = "openai"
-    ANTHROPIC = "anthropic"
-    CLAUDE = "claude"  # alias name of anthropic
-    SPARK = "spark"
-    ZHIPUAI = "zhipuai"
     FIREWORKS = "fireworks"
     OPEN_LLM = "open_llm"
-    GEMINI = "gemini"
-    METAGPT = "metagpt"
-    AZURE = "azure"
     OLLAMA = "ollama"  # /chat at ollama api
     OLLAMA_GENERATE = "ollama.generate"  # /generate at ollama api
     OLLAMA_EMBEDDINGS = "ollama.embeddings"  # /embeddings at ollama api
     OLLAMA_EMBED = "ollama.embed"  # /embed at ollama api
-    QIANFAN = "qianfan"  # Baidu BCE
-    DASHSCOPE = "dashscope"  # Aliyun LingJi DashScope
-    MOONSHOT = "moonshot"
-    MISTRAL = "mistral"
-    YI = "yi"  # lingyiwanwu
     OPENROUTER = "openrouter"
     BEDROCK = "bedrock"
     ARK = "ark"  # https://www.volcengine.com/docs/82379/1263482#python-sdk
@@ -76,7 +64,7 @@ class LLMConfig(YamlModel):
     frequency_penalty: float = 0.0
     best_of: Optional[int] = None
     n: Optional[int] = None
-    stream: bool = False # Default True
+    stream: bool = False  # Default True
     seed: Optional[int] = None
     # https://cookbook.openai.com/examples/using_logprobs
     logprobs: Optional[bool] = None

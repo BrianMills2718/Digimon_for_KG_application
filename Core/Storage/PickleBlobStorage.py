@@ -27,10 +27,10 @@ class PickleBlobStorage(BaseBlobStorage):
                 try:
                     with open(data_file_name, "rb") as f:
                         self._data = pickle.load(f)
-                    logger.info("Successfully loaded data file for blob storage {data_file_name}." )
+                    logger.info("Successfully loaded data file for blob storage {data_file_name}.")
                     return True
                 except Exception as e:
-                    logger.error(f"Error loading data file for blob storage {data_file_name}: {e}")   
+                    logger.error(f"Error loading data file for blob storage {data_file_name}: {e}")
                     return False
             else:
                 logger.info(f"No data file found for blob storage {data_file_name}. Loading empty storage.")
@@ -52,5 +52,3 @@ class PickleBlobStorage(BaseBlobStorage):
                 )
             except Exception as e:
                 logger.error(f"Error saving data file for blob storage {data_file_name}: {e}")
-
-   

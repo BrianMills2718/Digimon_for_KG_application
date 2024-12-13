@@ -4,6 +4,8 @@ from Core.Retriever.BaseRetriever import BaseRetriever
 from Core.Retriever.RetrieverFactory import register_retriever_method
 from Core.Common.Logger import logger
 import numpy as np
+
+
 class RelationshipRetriever(BaseRetriever):
     def __init__(self, **kwargs):
         config = kwargs.pop("config")
@@ -12,40 +14,36 @@ class RelationshipRetriever(BaseRetriever):
         self.type = "relationship"
         for key, value in kwargs.items():
             setattr(self, key, value)
-    
-   
-            
-    @register_retriever_method(type = "relationship", method_name= "ppr")         
-         
+
+    @register_retriever_method(type="relationship", method_name="ppr")
     async def _find_relevant_relationships_by_ppr(self, query, seed_entities: list[dict], node_ppr_matrix=None):
         #
         entity_to_edge_mat = await self._entities_to_relationships.get()
         if node_ppr_matrix is None:
-        # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
+            # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
             node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
         edge_prob_matrix = entity_to_edge_mat.T.dot(node_ppr_matrix)
         topk_indices = np.argsort(edge_prob_matrix)[-self.config.top_k:]
-        edges =  await self.graph.get_edge_by_indices(topk_indices)
+        edges = await self.graph.get_edge_by_indices(topk_indices)
 
         return await self._construct_relationship_context(edges)
-    
-    @register_retriever_method(type = "relationship", method_name= "vdb")       
+
+    @register_retriever_method(type="relationship", method_name="vdb")
     async def _find_relevant_relations_vdb(self, seed):
         try:
             if seed is None: return None
             assert self.config.use_relations_vdb
-            edge_datas = await self.relations_vdb.retrieval_edges(seed, top_k=self.config.top_k, graph = self.graph)
-        
+            edge_datas = await self.relations_vdb.retrieval_edges(seed, top_k=self.config.top_k, graph=self.graph)
+
             if not len(edge_datas):
                 return None
-     
+
             edge_datas = await self._construct_relationship_context(edge_datas)
             return edge_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant relationships: {e}")
-            
-            
-    @register_retriever_method(type = "relationship", method_name= "from_entity")         
+
+    @register_retriever_method(type="relationship", method_name="from_entity")
     async def _find_relevant_relationships_from_entities(self, seed: list[dict]):
         all_related_edges = await asyncio.gather(
             *[self.graph.get_node_edges(node["entity_name"]) for node in seed]
@@ -75,8 +73,7 @@ class RelationshipRetriever(BaseRetriever):
         )
         return all_edges_data
 
-
-    #TODO: For yaodong to achieve this function
+    # TODO: For yaodong to achieve this function
     async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
                                                        pre_head=None, width=3):
         """
@@ -129,7 +126,7 @@ class RelationshipRetriever(BaseRetriever):
 
             # agent
             prompt = extract_relation_prompt % (
-            width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
+                width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
                 total_relations) + ';' + "\nA: "
             result = await self.llm.aask(msg=[
                 {"role": "user",

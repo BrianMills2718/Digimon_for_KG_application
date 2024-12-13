@@ -2,29 +2,35 @@ from Core.Query.BaseQuery import BaseQuery
 from Core.Common.Logger import logger
 from Core.Common.Constants import Retriever
 from Core.Common.Utils import list_to_quoted_csv_string, truncate_list_by_token_size, combine_contexts
-from Core.Prompt import QueryPrompt 
-class BasicQuery(BaseQuery):
-    def __init__(self, config, retirever_context):
-        super().__init__(config, retirever_context)
+from Core.Prompt import QueryPrompt
 
-    
+
+class BasicQuery(BaseQuery):
+    def __init__(self, config, retriever_context):
+        super().__init__(config, retriever_context)
+
     async def _retrieve_relevant_contexts(self, query):
         if self.config.tree_search:
             # For RAPTOR
-            return await self._retirever.retrieve_relevant_content(seed = query, tree_node = True, type = Retriever.ENTITY, mode = "vdb")
-        
+            return await self._retriever.retrieve_relevant_content(seed=query, tree_node=True, type=Retriever.ENTITY,
+                                                                   mode="vdb")
+
         entities_context, relations_context, text_units_context, communities_context = None, None, None, None
         if self.config.use_global_query and self.config.use_community:
             return await self._retrieve_relevant_contexts_global(query)
         if self.config.use_keywords and self.config.use_global_query:
-            entities_context, relations_context, text_units_context = await self._retrieve_relevant_contexts_global_keywords(query)
+            entities_context, relations_context, text_units_context = await self._retrieve_relevant_contexts_global_keywords(
+                query)
         if self.config.enable_local or self.config.enable_hybrid_query:
-            entities_context, relations_context, text_units_context, communities_context = await self._retrieve_relevant_contexts_local(query)
+            entities_context, relations_context, text_units_context, communities_context = await self._retrieve_relevant_contexts_local(
+                query)
         if self.config.enable_hybrid_query:
-
-            hl_entities_context, hl_relations_context, hl_text_units_context = await self._retrieve_relevant_contexts_global_keywords(query)
-            entities_context, relations_context, text_units_context = combine_contexts(entities = [entities_context, hl_entities_context], relations = [relations_context, hl_relations_context], text_units = [text_units_context, hl_text_units_context], sources= [communities_context])
-        results =  f"""
+            hl_entities_context, hl_relations_context, hl_text_units_context = await self._retrieve_relevant_contexts_global_keywords(
+                query)
+            entities_context, relations_context, text_units_context = combine_contexts(
+                entities=[entities_context, hl_entities_context], relations=[relations_context, hl_relations_context],
+                text_units=[text_units_context, hl_text_units_context], sources=[communities_context])
+        results = f"""
             -----Entities-----
             ```csv
             {entities_context}
@@ -38,7 +44,7 @@ class BasicQuery(BaseQuery):
             {text_units_context}
             ```
             """
-    
+
         if self.config.use_community and communities_context is not None:
             results = f"""
             -----Communities-----
@@ -46,9 +52,9 @@ class BasicQuery(BaseQuery):
             {communities_context}
             ```
             {results}
-            """  
-        return results  
-    
+            """
+        return results
+
     async def _retrieve_relevant_contexts_local(self, query):
         """
         Local query for GraphRAG and lightRAG 
@@ -56,14 +62,17 @@ class BasicQuery(BaseQuery):
         if self.config.use_keywords:
             query = await self.extract_query_keywords(query)
 
-        node_datas = await self._retirever.retrieve_relevant_content(seed = query, type = Retriever.ENTITY, mode = "vdb")
- 
+        node_datas = await self._retriever.retrieve_relevant_content(seed=query, type=Retriever.ENTITY, mode="vdb")
+
         if self.config.use_community:
-            use_communities = await self._retirever.retrieve_relevant_content(seed = node_datas, type = Retriever.COMMUNITY, mode = "from_entity")
-        use_relations = await self._retirever.retrieve_relevant_content(seed = node_datas, type = Retriever.RELATION, mode = "from_entity")
-        use_text_units = await self._retirever.retrieve_relevant_content(node_datas = node_datas, type = Retriever.CHUNK, mode = "entity_occurrence")
+            use_communities = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.COMMUNITY,
+                                                                              mode="from_entity")
+        use_relations = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.RELATION,
+                                                                        mode="from_entity")
+        use_text_units = await self._retriever.retrieve_relevant_content(node_datas=node_datas, type=Retriever.CHUNK,
+                                                                         mode="entity_occurrence")
         logger.info(
-            f"Using {len(node_datas)} entites, {len(use_relations)} relations, {len(use_text_units)} text units"
+            f"Using {len(node_datas)} entities, {len(use_relations)} relations, {len(use_text_units)} text units"
         )
 
         if self.config.use_community:
@@ -84,8 +93,6 @@ class BasicQuery(BaseQuery):
         relations_section_list = [
             ["id", "source", "target", "description", "weight", "rank"]
         ] if not self.config.use_keywords else ["id", "source", "target", "keywords", "description", "weight", "rank"]
-        
-
 
         for i, e in enumerate(use_relations):
             row = [
@@ -99,8 +106,6 @@ class BasicQuery(BaseQuery):
             row.extend([e["weight"], e["rank"]])
             relations_section_list.append(row)
 
-            
-   
         relations_context = list_to_quoted_csv_string(relations_section_list)
         communities_context = None
         if self.config.use_community:
@@ -108,18 +113,17 @@ class BasicQuery(BaseQuery):
             for i, c in enumerate(use_communities):
                 communities_section_list.append([i, c["report_string"]])
             communities_context = list_to_quoted_csv_string(communities_section_list)
- 
+
         text_units_section_list = [["id", "content"]]
         for i, t in enumerate(use_text_units):
             text_units_section_list.append([i, t])
         text_units_context = list_to_quoted_csv_string(text_units_section_list)
-        
+
         return entities_context, relations_context, text_units_context, communities_context
-     
-      
+
     async def _retrieve_relevant_contexts_global(self, query):
-        
-        community_datas = await self._retirever.retrieve_relevant_content(type = Retriever.COMMUNITY, mode = "from_level")
+
+        community_datas = await self._retriever.retrieve_relevant_content(type=Retriever.COMMUNITY, mode="from_level")
         map_communities_points = await self._map_global_communities(
             query, community_datas
         )
@@ -156,15 +160,16 @@ class BasicQuery(BaseQuery):
             )
         points_context = "\n".join(points_context)
         return points_context
-           
-    
+
     async def _retrieve_relevant_contexts_global_keywords(self, query):
         query = await self.extract_query_keywords(query, "high")
-        edge_datas = await self._retirever.retrieve_relevant_content(seed = query, type = Retriever.RELATION, mode = "vdb")
-        use_entities = await self._retirever.retrieve_relevant_content(seed = edge_datas, type = Retriever.ENTITY, mode = "from_relation")
-        use_text_units = await self._retirever.retrieve_relevant_content(seed = edge_datas, type = Retriever.CHUNK, mode = "from_relation")
+        edge_datas = await self._retriever.retrieve_relevant_content(seed=query, type=Retriever.RELATION, mode="vdb")
+        use_entities = await self._retriever.retrieve_relevant_content(seed=edge_datas, type=Retriever.ENTITY,
+                                                                       mode="from_relation")
+        use_text_units = await self._retriever.retrieve_relevant_content(seed=edge_datas, type=Retriever.CHUNK,
+                                                                         mode="from_relation")
         logger.info(
-            f"Global query uses {len(use_entities)} entites, {len(edge_datas)} relations, {len(use_text_units)} text units"
+            f"Global query uses {len(use_entities)} entities, {len(edge_datas)} relations, {len(use_text_units)} text units"
         )
         relations_section_list = [
             ["id", "source", "target", "description", "keywords", "weight", "rank"]
@@ -201,26 +206,21 @@ class BasicQuery(BaseQuery):
             text_units_section_list.append([i, t])
         text_units_context = list_to_quoted_csv_string(text_units_section_list)
         return entities_context, relations_context, text_units_context
- 
- 
-    
-        
+
     async def generation_qa(self, query, context):
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
-       
+
         if self.config.tree_search:
             instruction = f"Given Context: {context} Give the best full answer amongst the option to question {query}"
-            response = await self.llm.aask(msg = instruction)
+            response = await self.llm.aask(msg=instruction)
             return response
-      
-    
 
     async def generation_summary(self, query, context):
 
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
-    
+
         if self.config.community_information and self.config.use_global_query:
             sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
         elif not self.config.community_information and self.config.use_keywords:
@@ -232,8 +232,8 @@ class BasicQuery(BaseQuery):
             return QueryPrompt.FAIL_RESPONSE
         response = await self.llm.aask(
             query,
-            system_msgs= [sys_prompt_temp.format(
-                report_data=context, response_type=self.query_config.response_type
+            system_msgs=[sys_prompt_temp.format(
+                report_data=context, response_type=self.config.response_type
             )],
-        )  
+        )
         return response

@@ -10,7 +10,7 @@ class QueryConfig(YamlModel):
     level: int = 2
     top_k: int = 20
     nei_k: int = 3
-    num_doc: int = 5 # Deafult parameter for the HippoRAG
+    num_doc: int = 5  # Default parameter for the HippoRAG
     # naive search
     naive_max_token_for_text_unit: int = 12000
     # local search
@@ -18,7 +18,7 @@ class QueryConfig(YamlModel):
     max_token_for_local_context: int = 4800  # 12000 * 0.4
     local_max_token_for_community_report: int = 3200  # 12000 * 0.27
     local_community_single_one: bool = False
-    community_information: bool = False # Open for MS-GraphRAG based method 
+    community_information: bool = False  # Open for MS-GraphRAG based method
     # global search
     global_min_community_rating: float = 0
     global_max_consider_community: float = 512
@@ -33,8 +33,8 @@ class QueryConfig(YamlModel):
 
     # For Hipporag
     augmentation_ppr: bool = False
-    entities_max_tokens: int =  2000
-    relationships_max_tokens:int =  2000
-    
+    entities_max_tokens: int = 2000
+    relationships_max_tokens: int = 2000
+
     # For RAPTOR
     tree_search: bool = False

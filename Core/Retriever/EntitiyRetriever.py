@@ -6,6 +6,8 @@ from collections import defaultdict
 from Core.Common.Utils import truncate_list_by_token_size
 from Core.Index.TFIDFStore import TFIDFIndex
 from Core.Retriever.RetrieverFactory import register_retriever_method
+
+
 class EntityRetriever(BaseRetriever):
     def __init__(self, **kwargs):
 
@@ -15,11 +17,10 @@ class EntityRetriever(BaseRetriever):
         self.type = "entity"
         for key, value in kwargs.items():
             setattr(self, key, value)
-           
-    
-    @register_retriever_method(type = "entity", method_name = "ppr")    
-    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict], link_entity = False):
- 
+
+    @register_retriever_method(type="entity", method_name="ppr")
+    async def _find_relevant_entities_by_ppr(self, query, seed_entities: list[dict], link_entity=False):
+
         if len(seed_entities) == 0:
             return None
         if link_entity:
@@ -28,14 +29,15 @@ class EntityRetriever(BaseRetriever):
         ppr_node_matrix = await self._run_personalized_pagerank(query, seed_entities)
         topk_indices = np.argsort(ppr_node_matrix)[-self.config.top_k:]
         nodes = await self.graph.get_node_by_indices(topk_indices)
- 
+
         return nodes, ppr_node_matrix
-    
-    @register_retriever_method(type = "entity", method_name = "vdb")    
-    async def _find_relevant_entities_vdb(self, seed, tree_node = False):
-        try:           
-            node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph, tree_node = tree_node)
-                    
+
+    @register_retriever_method(type="entity", method_name="vdb")
+    async def _find_relevant_entities_vdb(self, seed, tree_node=False):
+        try:
+            node_datas = await self.entities_vdb.retrieval_nodes(seed, self.config.top_k, self.graph,
+                                                                 tree_node=tree_node)
+
             if not len(node_datas):
                 return None
             if not all([n is not None for n in node_datas]):
@@ -48,42 +50,40 @@ class EntityRetriever(BaseRetriever):
             )
             node_datas = [
                 {**n, "entity_name": n["entity_name"], "rank": d}
-                for n, d in zip( node_datas, node_degrees)
+                for n, d in zip(node_datas, node_degrees)
                 if n is not None
             ]
-  
+
             return node_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
-    
-    @register_retriever_method(type = "entity", method_name = "tf_df")    
+
+    @register_retriever_method(type="entity", method_name="tf_df")
     async def _find_relevant_entities_tf_df(self, seed, corpus, top_k, candidates_idx):
-        try:           
+        try:
             graph_nodes = list(await self.graph.get_nodes())
             corpus = dict({id: (await self.graph.get_node(id))['description'] for id in graph_nodes})
             candidates_idx = list(id for id in graph_nodes)
             index = TFIDFIndex()
-           
-            index._build_index_from_list([corpus[_] for _ in candidates_idx])
-            idxs = index.query(query_str = seed, top_k = top_k)
 
-            new_candidates_idx = [candidates_idx[_] for _ in idxs]      
+            index._build_index_from_list([corpus[_] for _ in candidates_idx])
+            idxs = index.query(query_str=seed, top_k=top_k)
+
+            new_candidates_idx = [candidates_idx[_] for _ in idxs]
             cur_contexts = [corpus[_] for _ in new_candidates_idx]
 
             return cur_contexts, new_candidates_idx
-            
+
         except Exception as e:
             logger.exception(f"Failed to find relevant entities_vdb: {e}")
-   
-    
-   
-    @register_retriever_method(type = "entity", method_name = "all")    
+
+    @register_retriever_method(type="entity", method_name="all")
     async def _find_relevant_entities_all(self, key):
         graph_nodes = list(await self.graph.get_nodes())
         corpus = dict({id: (await self.graph.get_node(id))[key] for id in graph_nodes})
         candidates_idx = list(id for id in graph_nodes)
         return corpus, candidates_idx
-    
+
     async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
                                                         relations_dict: defaultdict[list], width=3):
         """
@@ -102,7 +102,7 @@ class EntityRetriever(BaseRetriever):
         """
         # ✅
         try:
-            from Core.Prompt.TogPrompt import  score_entity_candidates_prompt
+            from Core.Prompt.TogPrompt import score_entity_candidates_prompt
             total_candidates = []
             total_scores = []
             total_relations = []
@@ -172,9 +172,8 @@ class EntityRetriever(BaseRetriever):
             return True, cluster_chain_of_entities, candidates, relations, heads
         except Exception as e:
             logger.exception(f"Failed to find relevant entities by relation agent: {e}")
-      
-     
-    @register_retriever_method(type = "entity", method_name = "from_relation")    
+
+    @register_retriever_method(type="entity", method_name="from_relation")
     async def _find_relevant_entities_by_relationships(self, seed):
         entity_names = set()
         for e in seed:
@@ -196,16 +195,11 @@ class EntityRetriever(BaseRetriever):
         node_datas = truncate_list_by_token_size(
             node_datas,
             key=lambda x: x["description"],
-            max_token_size = self.config.max_token_for_local_context,
+            max_token_size=self.config.max_token_for_local_context,
         )
 
-        return node_datas 
-    
-    
-   
-    @register_retriever_method(type = "entity", method_name = "by_neighbors")    
+        return node_datas
+
+    @register_retriever_method(type="entity", method_name="by_neighbors")
     async def _find_relevant_entities_by_neighbor(self, seed):
         return list(await self.graph.get_neighbors(seed))
-
-
-

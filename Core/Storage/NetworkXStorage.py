@@ -153,7 +153,7 @@ class NetworkXStorage(BaseGraphStorage):
         self._graph.add_edge(source_node_id, target_node_id, **edge_data)
 
     async def _cluster_data_to_subgraphs(self, cluster_data: dict[str, list[dict[str, str]]]):
-     
+
         for node_id, clusters in cluster_data.items():
             self._graph.nodes[node_id]["clusters"] = json.dumps(clusters)
         logger.info(f"Rewrite the graph with cluster data")
@@ -181,29 +181,34 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def persist(self, force):
         return await self._persist(force)
+
     async def get_nodes(self):
         return self._graph.nodes()
-    #TODO: remove to the basegraph class 
+
+    # TODO: remove to the basegraph class
     async def get_nodes_data(self):
         node_list = list(self._graph.nodes())
-        
+
         async def get_node_data(node_id):
-   
+
             node_data = await self.get_node(node_id)
-            if "entity_name" not in node_data: node_data["entity_name"] = ""
+            if "entity_name" not in node_data:
+                node_data["entity_name"] = ""
             elif node_data.get("description", "") == "":
                 node_data["content"] = node_data["entity_name"]
             else:
                 node_data["content"] = "{entity}: {description}".format(entity=node_data["entity_name"],
                                                                         description=node_data["description"])
             return node_data
+
         nodes = await asyncio.gather(*[get_node_data(node) for node in node_list])
 
         return nodes
 
-    async def get_edges_data(self, need_content = True):
+    async def get_edges_data(self, need_content=True):
         edge_list = list(self._graph.edges())
         edges = []
+
         async def get_edge_data(edge_id):
             edge_data = await self.get_edge(edge_id[0], edge_id[1])
             if need_content:
@@ -217,7 +222,8 @@ class NetworkXStorage(BaseGraphStorage):
                         keywords=keywords, src_id=edge_data["src_id"], tgt_id=edge_data["tgt_id"],
                         description=description)
             edges.append(edge_data)
-        await asyncio.gather(*[get_edge_data(edge) for edge in edge_list])  
+
+        await asyncio.gather(*[get_edge_data(edge) for edge in edge_list])
         return edges
 
     async def get_stable_largest_cc(self):
@@ -276,8 +282,9 @@ class NetworkXStorage(BaseGraphStorage):
         return ["entity_name"]
 
     async def get_edge_metadata(self) -> list[str]:
-        relation_metadata =  ["src_id", "tgt_id"]
+        relation_metadata = ["src_id", "tgt_id"]
         return relation_metadata
+
     def get_node_num(self):
         return self._graph.number_of_nodes()
 
@@ -318,17 +325,16 @@ class NetworkXStorage(BaseGraphStorage):
         except ValueError:
             logger.error(f"Node {node_id} not in graph")
 
-    async def get_node_by_index(self, index): 
+    async def get_node_by_index(self, index):
         if self.node_list is None:
             self.node_list = list(self._graph.nodes())
         return await self.get_node(self.node_list[index])
-    
-    
+
     async def get_edge_by_index(self, index):
         if self.edge_list is None:
             self.edge_list = list(self._graph.edges())
-        
+
         return await self.get_edge(self.edge_list[index][0], self.edge_list[index][1])
-    
+
     def clear(self):
         self._graph = nx.Graph()

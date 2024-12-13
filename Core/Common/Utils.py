@@ -342,6 +342,7 @@ def csr_from_indices_list(data: List[List[int]], shape: Tuple[int, int]) -> csr_
     # Create the CSR matrix
     return csr_matrix((values, (row_indices, col_indices)), shape=shape)
 
+
 def clean_storage(path):
     try:
         if os.path.exists(path):
@@ -357,13 +358,14 @@ def clean_storage(path):
             print(f"The path {path} does not exist.")
     except Exception as e:
         print(f"An error occurred while deleting {path}: {e}")
-        
+
+
 def csv_string_to_list(csv_string: str) -> List[List[str]]:
     output = io.StringIO(csv_string)
     reader = csv.reader(output)
     return [row for row in reader]
 
-       
+
 def process_combine_contexts(hl, ll):
     header = None
     list_hl = csv_string_to_list(hl.strip())
@@ -400,9 +402,8 @@ def process_combine_contexts(hl, ll):
 
     return combined_sources_result
 
-        
-def combine_contexts(entities, relationships, sources):
 
+def combine_contexts(entities, relationships, sources):
     # Function to extract entities, relationships, and sources from context strings
     hl_entities, ll_entities = entities[0], entities[1]
     hl_relationships, ll_relationships = relationships[0], relationships[1]
@@ -417,14 +418,16 @@ def combine_contexts(entities, relationships, sources):
 
     # Combine and deduplicate the sources
     combined_sources = process_combine_contexts(hl_sources, ll_sources)
-    
+
     return combined_entities, combined_relationships, combined_sources
+
+
 def dump_to_csv(
-    data: Iterable[object],
-    fields: List[str],
-    separator: str = "\t",
-    with_header: bool = False,
-    **values: Dict[str, List[Any]],
+        data: Iterable[object],
+        fields: List[str],
+        separator: str = "\t",
+        with_header: bool = False,
+        **values: Dict[str, List[Any]],
 ) -> List[str]:
     rows = list(
         chain(
@@ -446,83 +449,83 @@ def dump_to_csv(
 def dump_to_reference_list(data: Iterable[object], separator: str = "\n=====\n\n"):
     return [f"[{i + 1}]  {d}{separator}" for i, d in enumerate(data)]
 
+
 def to_str_by_maxtokens(max_chars, entities, relationships, chunks) -> str:
-        """Convert the context to a string representation."""
+    """Convert the context to a string representation."""
 
-        csv_tables = {
-            "entities": dump_to_csv([e for e in entities], ["entity_name", "content"], with_header=True),
-            "relationships": dump_to_csv(
-                [r for r in relationships], ["src_id", "tgt_id", "description"], with_header=True
-            ),
-            
- 
-            "chunks": dump_to_reference_list([str(c) for c in chunks]),
-        }
-        csv_tables_row_length = {k: [len(row) for row in table] for k, table in csv_tables.items()}
+    csv_tables = {
+        "entities": dump_to_csv([e for e in entities], ["entity_name", "content"], with_header=True),
+        "relationships": dump_to_csv(
+            [r for r in relationships], ["src_id", "tgt_id", "description"], with_header=True
+        ),
 
-        include_up_to = {
-            "entities": 0,
-            "relationships": 0,
-            "chunks": 0,
-        }
+        "chunks": dump_to_reference_list([str(c) for c in chunks]),
+    }
+    csv_tables_row_length = {k: [len(row) for row in table] for k, table in csv_tables.items()}
 
-        # Truncate each csv to the maximum number of assigned tokens
-        chars_remainder = 0
-        while True:
-            last_char_remainder = chars_remainder
-            # Keep augmenting the context until feasible
-            for table in csv_tables:
-                for i in range(include_up_to[table], len(csv_tables_row_length[table])):
-                    length = csv_tables_row_length[table][i] + 1  # +1 for the newline character
-                    if length <= chars_remainder:  # use up the remainder
-                        include_up_to[table] += 1
-                        chars_remainder -= length
-                    elif length <= max_chars[table]:  # use up the assigned tokens
-                        include_up_to[table] += 1
-                        max_chars[table] -= length
-                    else:
-                        break
+    include_up_to = {
+        "entities": 0,
+        "relationships": 0,
+        "chunks": 0,
+    }
 
-                if max_chars[table] >= 0:  # if the assigned tokens are not used up store in the remainder
-                    chars_remainder += max_chars[table]
-                    max_chars[table] = 0
+    # Truncate each csv to the maximum number of assigned tokens
+    chars_remainder = 0
+    while True:
+        last_char_remainder = chars_remainder
+        # Keep augmenting the context until feasible
+        for table in csv_tables:
+            for i in range(include_up_to[table], len(csv_tables_row_length[table])):
+                length = csv_tables_row_length[table][i] + 1  # +1 for the newline character
+                if length <= chars_remainder:  # use up the remainder
+                    include_up_to[table] += 1
+                    chars_remainder -= length
+                elif length <= max_chars[table]:  # use up the assigned tokens
+                    include_up_to[table] += 1
+                    max_chars[table] -= length
+                else:
+                    break
 
-            # Truncate the csv
-            if chars_remainder == last_char_remainder:
-                break
+            if max_chars[table] >= 0:  # if the assigned tokens are not used up store in the remainder
+                chars_remainder += max_chars[table]
+                max_chars[table] = 0
 
-        data: List[str] = []
-        if len(entities):
-            data.extend(
-                [
-                    "\n## Entities",
-                    "```csv",
-                    *csv_tables["entities"][: include_up_to["entities"]],
-                    "```",
-                ]
-            )
-        else:
-            data.append("\n#Entities: None\n")
+        # Truncate the csv
+        if chars_remainder == last_char_remainder:
+            break
 
-        if len(relationships):
-            data.extend(
-                [
-                    "\n## Relationships",
-                    "```csv",
-                    *csv_tables["relationships"][: include_up_to["relationships"]],
-                    "```",
-                ]
-            )
-        else:
-            data.append("\n## Relationships: None\n")
+    data: List[str] = []
+    if len(entities):
+        data.extend(
+            [
+                "\n## Entities",
+                "```csv",
+                *csv_tables["entities"][: include_up_to["entities"]],
+                "```",
+            ]
+        )
+    else:
+        data.append("\n#Entities: None\n")
 
-        if len(chunks):
-            data.extend(
-                [
-                    "\n## Sources\n",
-                    *csv_tables["chunks"][: include_up_to["chunks"]],
-                ]
-            )
-        else:
-            data.append("\n## Sources: None\n")
-        return "\n".join(data)
+    if len(relationships):
+        data.extend(
+            [
+                "\n## Relationships",
+                "```csv",
+                *csv_tables["relationships"][: include_up_to["relationships"]],
+                "```",
+            ]
+        )
+    else:
+        data.append("\n## Relationships: None\n")
+
+    if len(chunks):
+        data.extend(
+            [
+                "\n## Sources\n",
+                *csv_tables["chunks"][: include_up_to["chunks"]],
+            ]
+        )
+    else:
+        data.append("\n## Sources: None\n")
+    return "\n".join(data)

@@ -125,7 +125,6 @@ async def chunking_by_seperators(tokens_list: list[list[int]], doc_keys, tiktoke
         # here somehow tricky, since the whole chunk tokens is list[list[list[int]]] for corpus(doc(chunk)),so it can't be decode entirely
         chunk_token = tiktoken_model.decode_batch(chunk_token)
         for i, chunk in enumerate(chunk_token):
-   
             results.append(
                 {
                     "tokens": lengths[i],
