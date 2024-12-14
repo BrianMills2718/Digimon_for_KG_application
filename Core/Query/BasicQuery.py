@@ -10,6 +10,7 @@ class BasicQuery(BaseQuery):
         super().__init__(config, retriever_context)
 
     async def _retrieve_relevant_contexts(self, query):
+
         if self.config.tree_search:
             # For RAPTOR
             return await self._retriever.retrieve_relevant_content(seed=query, tree_node=True, type=Retriever.ENTITY,
@@ -64,7 +65,7 @@ class BasicQuery(BaseQuery):
 
         node_datas = await self._retriever.retrieve_relevant_content(seed=query, type=Retriever.ENTITY, mode="vdb")
 
-        if self.config.use_community:
+        if self.config.use_communiy_info:
             use_communities = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.COMMUNITY,
                                                                               mode="from_entity")
         use_relations = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.RELATION,
@@ -75,7 +76,7 @@ class BasicQuery(BaseQuery):
             f"Using {len(node_datas)} entities, {len(use_relations)} relations, {len(use_text_units)} text units"
         )
 
-        if self.config.use_community:
+        if self.config.use_communiy_info:
             logger.info(f"Using {len(use_communities)} communities")
         entites_section_list = [["id", "entity", "type", "description", "rank"]]
         for i, n in enumerate(node_datas):

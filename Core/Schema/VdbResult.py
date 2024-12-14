@@ -12,11 +12,21 @@ class ColbertNodeResult(EntityResult):
         self.ranks = ranks
         self.scores = scores
 
-    async def get_node_data(self, graph):
-        return await asyncio.gather(
-            *[(graph.get_node_by_index(node_idx), self.scores[idx]) for idx, node_idx in enumerate(self.node_idxs)]
-        )
-    
+    async def get_node_data(self, graph, score = False):
+        nodes =  await asyncio.gather(*[graph.get_node_by_index(node_idx) for node_idx in self.node_idxs])
+        if score:
+
+            return nodes, [r for r in self.scores]
+        else:
+            return nodes
+    async def get_tree_node_data(self, graph, score = False):
+  
+        nodes = await asyncio.gather( *[ graph.get_node(node_idx) for node_idx in self.node_idxs])
+        if score:
+
+            return nodes, [r for r in self.scores]
+        else:
+            return nodes
 class VectorIndexNodeResult(EntityResult):
     def __init__(self, results):
         self.results = results

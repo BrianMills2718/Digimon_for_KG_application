@@ -56,7 +56,8 @@ retriever:
     node_specificity: True
     damping: 0.1
     top_k: 5
-
+    max_token_for_local_context: 4800  # 12000 * 0.4
+    
 query: 
     query_type: qa
     only_need_context: False
@@ -76,7 +77,6 @@ query:
     relationships_max_tokens: 2000
 
 
-    max_token_for_local_context: 4800  # 12000 * 0.4
     local_max_token_for_community_report: 3200  # 12000 * 0.27
     local_community_single_one: False
     # global search

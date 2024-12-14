@@ -116,6 +116,5 @@ class BaseQuery(ABC):
 
         logger.info(f"Grouping to {len(community_groups)} groups for global search")
         responses = await asyncio.gather(*[_process(c) for c in community_groups])
-        import pdb
-        pdb.set_trace()
+
         return responses

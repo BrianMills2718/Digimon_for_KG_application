@@ -13,9 +13,13 @@ class QueryConfig(YamlModel):
     num_doc: int = 5  # Default parameter for the HippoRAG
     # naive search
     naive_max_token_for_text_unit: int = 12000
+    use_keywords: bool = False
+    use_communiy_info: bool = False
     # local search
+    
+    enable_local: bool = False
     local_max_token_for_text_unit: int = 4000  # 12000 * 0.33
-    max_token_for_local_context: int = 4800  # 12000 * 0.4
+
     local_max_token_for_community_report: int = 3200  # 12000 * 0.27
     local_community_single_one: bool = False
     community_information: bool = False  # Open for MS-GraphRAG based method
@@ -27,7 +31,8 @@ class QueryConfig(YamlModel):
     global_special_community_map_llm_kwargs: dict = field(
         default_factory=lambda: {"response_format": {"type": "json_object"}}
     )
-
+    use_global_query: bool = False # For LightRAG and GraphRAG
+    enable_hybrid_query: bool = False # For LightRAG 
     # For IR-COT
     max_ir_steps: int = 2
 

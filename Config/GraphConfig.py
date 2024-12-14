@@ -43,3 +43,4 @@ class GraphConfig(YamlModel):
     # For graph augmentation
     similarity_threshold: float = 0.8
     similarity_top_k: int = 100
+    similarity_max: float = 1.0

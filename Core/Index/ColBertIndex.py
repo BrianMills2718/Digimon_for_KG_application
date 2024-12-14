@@ -72,10 +72,14 @@ class ColBertIndex(BaseIndex):
         return results
 
 
-    async def retrieval_nodes(self, query, top_k, graph):
+    async def retrieval_nodes(self, query, top_k, graph, need_score = False, tree_node = False):
 
         result =  ColbertNodeResult(*(await self.retrieval(query, top_k)))
-        return await result.get_node_data(graph)
+        
+        if tree_node:
+            return await result.get_tree_node_data(graph, need_score)
+        else:
+            return await result.get_node_data(graph, need_score)
 
     async def retrieval_edges(self, query, top_k, graph, need_score = False):
         results = await self.retrieval(query, top_k)

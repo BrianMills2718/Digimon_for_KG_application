@@ -173,39 +173,30 @@ class BaseGraph(ABC):
         """
         pass
 
-    async def augment_graph_by_similarity_search(self, entity_vdb, duplicate=True):
-        ranking = asyncio.gather(
-            *{node: entity_vdb.retrieval_nodes(query=node, top_k=self.config.similarity_top_k) for node in
-              self._graph.nodes()})
-        import  pdb
+    async def augment_graph_by_similarity_search(self, entity_vdb, duplicate=False):
+        logger.info("Starting augment the existing graph with similariy edges")
 
-        pdb.set_trace()
-    async def _augment_graph(self, entity_vdb, duplicate=True):
-        """
-        For each entity in the graph, get its synonyms from the knowledge base
-        queries: list of entity names
-        """
+        ranking = {node: await entity_vdb.retrieval_nodes(query=node, graph = self._graph, top_k=self.config.similarity_top_k, need_score = True) for node in
+              await self._graph.nodes()}
 
-        ranking = asyncio.gather(
-            *{node: entity_vdb.retrieval_nodes(query=node, top_k=self.config.similarity_top_k) for node in
-              self._graph.nodes()})
-        import  pdb
-
-        pdb.set_trace()
-        kb_similarity = {}
-        for key, entity_name in ranking.items():
-            filtered_rank = rank[1:] if duplicate else rank
-            kb_similarity[entity_name] = (
-                [entity_names[r[0]] for r in filtered_rank],
-                [r[2] / rank[0][2] for r in filtered_rank]
-            )
+        kb_similarity = defaultdict(list)
+        for key, rank in ranking.items():
+            max_score = 0
+    
+            for idx, (ns, score) in enumerate(zip(rank[0], rank[1])):
+                if idx == 0:
+                    max_score = score
+                if not duplicate and idx == 0:
+                    continue
+                kb_similarity[key].append((ns['entity_name'], score / max_score))
 
         maybe_edges = defaultdict(list)
         # Refactored second part using dictionary iteration and enumerate
         for src_id, nns in kb_similarity.items():
-            processed_nns = [clean_str(nn) for nn in nns[0]]
-            for idx, (nn, score) in enumerate(zip(processed_nns, nns[1])):
-                if score < similarity_threshold or idx >= similarity_top_k:
+    
+            for idx, (nn, score) in enumerate(nns):
+       
+                if score < self.config.similarity_threshold or idx >= self.config.similarity_top_k:
                     break
                 if nn == src_id:
                     continue
@@ -222,8 +213,12 @@ class BaseGraph(ABC):
         maybe_edges_aug = defaultdict(list)
         for k, v in maybe_edges.items():
             maybe_edges_aug[tuple(sorted(k))].extend(v)
-
+        logger.info(f"Augmenting graph with {len(maybe_edges_aug)} edges")
+     
         await asyncio.gather(*[self._merge_edges_then_upsert(k[0], k[1], v) for k, v in maybe_edges.items()])
+        await self._persist_graph()
+        logger.info("✅ Finished augment the existing graph with similariy edges")
+
 
     async def __graph__(self, elements: list):
         """
@@ -280,7 +275,7 @@ class BaseGraph(ABC):
         # Asynchronously generate the summary using the language model
         return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
 
-    async def _persist_graph(self, force):
+    async def _persist_graph(self, force = False):
         await self._graph.persist(force)
 
     async def nodes_data(self):

@@ -240,10 +240,8 @@ class GraphRAG(ContextMixin, BaseModel):
         # These edges represent similarity types and are leveraged in subsequent processes.
 
         if self.config.enable_graph_augmentation:
-            logger.info("Starting augment the existing graph with similariy edges")
 
-            await self.graph.augment_graph_by_similarity_search()
-            logger.info("✅ Finished augment the existing graph with similariy edges")
+            await self.graph.augment_graph_by_similarity_search(self.entities_vdb)
 
         if self.config.use_entity_link_chunk:
             await self.build_e2r_r2c_maps(True)

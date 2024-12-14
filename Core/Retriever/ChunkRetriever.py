@@ -2,11 +2,9 @@ from Core.Common.Logger import logger
 from Core.Retriever.BaseRetriever import BaseRetriever
 import asyncio
 import numpy as np
-from Core.Common.Utils import truncate_list_by_token_size, split_string_by_multi_markers, min_max_normalize
+from Core.Common.Utils import truncate_list_by_token_size, split_string_by_multi_markers, min_max_normalize, to_str_by_maxtokens
 from Core.Retriever.RetrieverFactory import register_retriever_method
-from Core.Common.Constants import GRAPH_FIELD_SEP
-
-
+from Core.Common.Constants import GRAPH_FIELD_SEP,TOKEN_TO_CHAR_RATIO
 class ChunkRetriever(BaseRetriever):
     def __init__(self, **kwargs):
 
@@ -111,8 +109,10 @@ class ChunkRetriever(BaseRetriever):
         return all_text_units
 
     @register_retriever_method(type="chunk", method_name="ppr")
-    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict]):
+    async def _find_relevant_chunks_by_ppr(self, query, seed_entities: list[dict], link_entity=False):
         # 
+        if link_entity:
+            seed_entities = await self.link_query_entities(seed_entities) 
         entity_to_edge_mat = await self.entities_to_relationships.get()
         relationship_to_chunk_mat = await self.relationships_to_chunks.get()
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
@@ -144,4 +144,9 @@ class ChunkRetriever(BaseRetriever):
         sorted_docs = await self.doc_chunk.get_data_by_indices(sorted_doc_ids)
         sorted_entities = await self.graph.get_node_by_indices(sorted_entity_ids)
         sorted_relationships = await self.graph.get_edge_by_indices(sorted_relationship_ids)
-        return sorted_entities, sorted_relationships, sorted_docs
+        sorted_entities, sorted_relationships, sorted_docs
+        return to_str_by_maxtokens(max_chars={
+                "entities": self.config.entities_max_tokens * TOKEN_TO_CHAR_RATIO,
+                "relationships": self.config.relationships_max_tokens * TOKEN_TO_CHAR_RATIO,
+                "chunks": self.config.local_max_token_for_text_unit * TOKEN_TO_CHAR_RATIO,
+            }, entities=sorted_entities, relationships=sorted_relationships, chunks=sorted_docs)

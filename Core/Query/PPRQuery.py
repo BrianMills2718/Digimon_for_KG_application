@@ -1,11 +1,10 @@
 from Core.Query.BaseQuery import BaseQuery
 from Core.Common.Logger import logger
 from Core.Common.Constants import Retriever
-from Core.Common.Utils import to_str_by_maxtokens
 from Core.Prompt import QueryPrompt
 from Core.Common.Memory import Memory
 from Core.Schema.Message import Message
-from Core.Common.Constants import TOKEN_TO_CHAR_RATIO
+
 
 
 class PPRQuery(BaseQuery):
@@ -67,6 +66,7 @@ class PPRQuery(BaseQuery):
                 # Retrieve new passages based on the new thought
                 new_passages, new_scores = await self._retriever.retrieve_relevant_content(query=query,
                                                                                            seed_entities=thoughts,
+                                                                                            link_entity=True,
                                                                                            type=Retriever.CHUNK,
                                                                                            mode="ppr")
 
@@ -89,18 +89,8 @@ class PPRQuery(BaseQuery):
             return await self._retriever.retrieve_relevant_content(query=query, seed_entities=entities,
                                                                    type=Retriever.CHUNK, mode="aug_ppr")
 
-    async def query(self, query):
-        context = await self._retrieve_relevant_contexts(query)
-        if isinstance(context, tuple):
-            context = to_str_by_maxtokens(max_chars={
-                "entities": self.config.entities_max_tokens * TOKEN_TO_CHAR_RATIO,
-                "relationships": self.config.relationships_max_tokens * TOKEN_TO_CHAR_RATIO,
-                "chunks": self.config.local_max_token_for_text_unit * TOKEN_TO_CHAR_RATIO,
-            }, entities=context[0], relationships=context[1], chunks=context[2])
-        response = await self.generation(query, context)
-        return response
 
-    async def generation(self, query, context):
+    async def generation_qa(self, query, context):
 
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
@@ -128,3 +118,6 @@ class PPRQuery(BaseQuery):
                 print('QA read exception', e)
                 return ''
         return response
+    
+    async def generation_summary(self, query, context):
+        pass

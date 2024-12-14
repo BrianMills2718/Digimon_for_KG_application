@@ -73,6 +73,7 @@ class BaseRetriever(ABC):
                 self.entity_chunk_count = c2e.sum(0).T
 
             for entity in query_entities:
+    
                 entity_idx = await self.graph.get_node_index(entity["entity_name"])
                 if self.config.node_specificity:
                     if self.entity_chunk_count[entity_idx] == 0:

@@ -87,7 +87,7 @@ class Config(WorkingParams, YamlModel):
     
         final = merge_dict(opt)
         final["dataset_name"] = dataset_name
-        final["working_dir"] = os.path.join(opt.working_dir, dataset_name)
+        final["working_dir"] = os.path.join(final["working_dir"], dataset_name)
         return Config(**final)
     
     @classmethod

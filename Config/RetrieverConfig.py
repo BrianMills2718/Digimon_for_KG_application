@@ -13,3 +13,4 @@ class RetrieverConfig(YamlModel):
     k_nei: int = 3
     node_specificity: bool = True
     damping: float = 0.1
+    max_token_for_local_context: int = 4800  # 12000 * 0.4
