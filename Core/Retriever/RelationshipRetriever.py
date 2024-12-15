@@ -10,7 +10,7 @@ class RelationshipRetriever(BaseRetriever):
     def __init__(self, **kwargs):
         config = kwargs.pop("config")
         super().__init__(config)
-        self.mode_list = ["entity_occurrence", "from_entity", "ppr", "vdb"]
+        self.mode_list = ["entity_occurrence", "from_entity", "ppr", "vdb", "from_entity_by_agent", "get_all"]
         self.type = "relationship"
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -29,16 +29,18 @@ class RelationshipRetriever(BaseRetriever):
         return await self._construct_relationship_context(edges)
 
     @register_retriever_method(type="relationship", method_name="vdb")
-    async def _find_relevant_relations_vdb(self, seed):
+    async def _find_relevant_relations_vdb(self, seed, need_score=False, need_context=True):
         try:
             if seed is None: return None
             assert self.config.use_relations_vdb
-            edge_datas = await self.relations_vdb.retrieval_edges(seed, top_k=self.config.top_k, graph=self.graph)
+            edge_datas = await self.relations_vdb.retrieval_edges(seed, top_k=self.config.top_k, graph=self.graph,
+                                                                  need_score=need_score)
 
             if not len(edge_datas):
                 return None
 
-            edge_datas = await self._construct_relationship_context(edge_datas)
+            if need_context:
+                edge_datas = await self._construct_relationship_context(edge_datas)
             return edge_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant relationships: {e}")
@@ -73,7 +75,7 @@ class RelationshipRetriever(BaseRetriever):
         )
         return all_edges_data
 
-    # TODO: For yaodong to achieve this function
+    @register_retriever_method(type="relationship", method_name="from_entity_by_agent")
     async def _find_relevant_relations_by_entity_agent(self, query: str, entity: str, pre_relations_name=None,
                                                        pre_head=None, width=3):
         """
@@ -124,13 +126,18 @@ class RelationshipRetriever(BaseRetriever):
             total_relations = head_relations + tail_relations
             total_relations.sort()  # make sure the order in prompt is always equal
 
+            head_relations = set(head_relations)
+
             # agent
-            prompt = extract_relation_prompt % (
-                width, width) + query + '\nTopic Entity: ' + entity + '\nRelations: ' + '; '.join(
+            prompt = extract_relation_prompt % (str(width), str(width),
+                                                str(width)) + query + '\nTopic Entity: ' + entity + '\nRelations: There are %s relations provided in total, seperated by ;.' % str(
+                len(
+                    total_relations)) + '; '.join(
                 total_relations) + ';' + "\nA: "
+
             result = await self.llm.aask(msg=[
-                {"role": "user",
-                 "content": prompt}
+                {"role": "system", "content": "You are an AI assistant that helps people find information."},
+                {"role": "user", "content": prompt}
             ])
 
             # clean
@@ -166,3 +173,8 @@ class RelationshipRetriever(BaseRetriever):
                 return [], relations_dict
         except Exception as e:
             logger.exception(f"Failed to find relevant relations by entity agent: {e}")
+
+    @register_retriever_method(type="relationship", method_name="get_all")
+    async def _get_all_relationships(self):
+        edges = await self.graph._graph.get_edges_data()
+        return edges

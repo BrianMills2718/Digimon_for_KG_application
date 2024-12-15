@@ -24,7 +24,7 @@ class Config(WorkingParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug_fastgraph"
+    exp_name: str = "debug_yaodong"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 

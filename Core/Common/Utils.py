@@ -225,6 +225,20 @@ def encode_string_by_tiktoken(content: str, model_name: str = "cl100k_base"):
     tokens = ENCODER.encode(content)
     return tokens
 
+def decode_string_by_tiktoken(tokens: list[int], model_name: str = "cl100k_base"):
+    ENCODER = tiktoken.get_encoding(model_name)
+    string = ENCODER.decode(tokens)
+    return string
+
+def truncate_str_by_token_size(input_str: str, max_token_size: int):
+    """Truncate the input string based on the token size."""
+    # Default: cl100k_base
+    if max_token_size <= 0:
+        return None
+    tokens = encode_string_by_tiktoken(input_str)
+    min_token = min(len(tokens), max_token_size)
+    output_str = decode_string_by_tiktoken(tokens[:min_token])
+    return output_str
 
 def truncate_list_by_token_size(list_data: list, key: callable, max_token_size: int):
     """Truncate a list of data based on the token size."""

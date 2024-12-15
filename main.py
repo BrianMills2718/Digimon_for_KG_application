@@ -56,4 +56,6 @@ if __name__ == "__main__":
 
     # for train_item in dataloader:
 
-    asyncio.run(digimon.query("Who is Scrooge?"))
+    a = asyncio.run(digimon.query("Who is Fred Gehrke?"))
+
+    print(a)
