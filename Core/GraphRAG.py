@@ -275,7 +275,8 @@ class GraphRAG(ContextMixin, BaseModel):
             Returns:
         """
         response = await self._querier.query(query)
-        
+
+        return response
         
 
 

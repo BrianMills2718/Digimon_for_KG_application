@@ -13,7 +13,7 @@ class EntityRetriever(BaseRetriever):
 
         config = kwargs.pop("config")
         super().__init__(config)
-        self.mode_list = ["ppr", "vdb", "from_relation", "tf_df", "all", "by_neighbors"]
+        self.mode_list = ["ppr", "vdb", "from_relation", "tf_df", "all", "by_neighbors", "link_entity", "get_all", "from_relation_by_agent"]
         self.type = "entity"
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -84,14 +84,31 @@ class EntityRetriever(BaseRetriever):
         candidates_idx = list(id for id in graph_nodes)
         return corpus, candidates_idx
 
-    async def _find_relevant_entities_by_relation_agent(self, query: str, current_entity_relations_list: list[dict],
-                                                        relations_dict: defaultdict[list], width=3):
+    @register_retriever_method(type="entity", method_name="link_entity")
+    async def _link_entities(self, query_entities):
+        # For entity link, we only consider the top-ranked entity
+        entities = await asyncio.gather(
+            *[self.entities_vdb.retrieval_nodes(query_entity, top_k=1, graph=self.graph) for query_entity in
+              query_entities]
+        )
+        entities = list(map(lambda x: x[0], entities))
+        return entities
+
+    @register_retriever_method(type="entity", method_name="get_all")
+    async def _get_all_entities(self):
+        nodes = await self.graph._graph.get_nodes_data()
+
+        return nodes
+
+    @register_retriever_method(type="entity", method_name="from_relation_by_agent")
+    async def _find_relevant_entities_by_relationships_agent(self, query: str, total_entity_relation_list: list[dict],
+                                                             total_relations_dict: defaultdict[list], width=3):
         """
         Use agent to select the top-K relations based on the input query and entities
         Args:
             query: str, the query to be processed.
-            current_entity_relations_list: list,  whose element is {"entity": entity_name, "relation": relation, "score": score, "head": bool}
-            relations_dict: defaultdict[list], key is (src, rel), value is tar
+            total_entity_relation_list: list,  whose element is {"entity": entity_name, "relation": relation, "score": score, "head": bool}
+            total_relations_dict: defaultdict[list], key is (src, rel), value is tar
         Returns:
             flag: bool,  indicator that shows whether to reason or not
             relations, heads
@@ -109,8 +126,8 @@ class EntityRetriever(BaseRetriever):
             total_topic_entities = []
             total_head = []
 
-            for index, entity in enumerate(current_entity_relations_list):
-                candidate_list = relations_dict[(entity["entity"], entity["relation"])]
+            for index, entity in enumerate(total_entity_relation_list):
+                candidate_list = total_relations_dict[(entity["entity"], entity["relation"])]
 
                 # score these candidate entities
                 if len(candidate_list) == 1:
@@ -146,30 +163,22 @@ class EntityRetriever(BaseRetriever):
                 total_topic_entities.extend(topic_entities)
                 total_head.extend(head_num)
 
-            # entity_prune
+            # entity_prune according to width
             zipped = list(zip(total_relations, total_candidates, total_topic_entities, total_head, total_scores))
             sorted_zipped = sorted(zipped, key=lambda x: x[4], reverse=True)
-            sorted_relations = list(map(lambda x: x[0], sorted_zipped))
-            sorted_candidates = list(map(lambda x: x[1], sorted_zipped))
-            sorted_topic_entities = list(map(lambda x: x[2], sorted_zipped))
-            sorted_head = list(map(lambda x: x[3], sorted_zipped))
-            sorted_scores = list(map(lambda x: x[4], sorted_zipped))
-
-            # prune according to width
-            relations = sorted_relations[:width]
-            candidates = sorted_candidates[:width]
-            topics = sorted_topic_entities[:width]
-            heads = sorted_head[:width]
-            scores = sorted_scores[:width]
+            relations = list(map(lambda x: x[0], sorted_zipped))[:width]
+            candidates = list(map(lambda x: x[1], sorted_zipped))[:width]
+            topics = list(map(lambda x: x[2], sorted_zipped))[:width]
+            heads = list(map(lambda x: x[3], sorted_zipped))[:width]
+            scores = list(map(lambda x: x[4], sorted_zipped))[:width]
 
             # merge and output
             merged_list = list(zip(relations, candidates, topics, heads, scores))
             filtered_list = [(rel, ent, top, hea, score) for rel, ent, top, hea, score in merged_list if score != 0]
             if len(filtered_list) == 0:
-                return False, [], [], [], []
-            relations, candidates, tops, heads, scores = map(list, zip(*filtered_list))
-            cluster_chain_of_entities = [[(tops[i], relations[i], candidates[i]) for i in range(len(candidates))]]
-            return True, cluster_chain_of_entities, candidates, relations, heads
+                return False, []
+            else:
+                return True, filtered_list
         except Exception as e:
             logger.exception(f"Failed to find relevant entities by relation agent: {e}")
 

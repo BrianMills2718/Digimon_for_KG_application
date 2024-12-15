@@ -43,3 +43,12 @@ class QueryConfig(YamlModel):
 
     # For RAPTOR
     tree_search: bool = False
+
+    # For TOG
+    depth: int = 3
+    width: int = 3
+
+    # For G-Retriever (GR)
+    max_txt_len: int = 512
+    topk_e: int = 3
+    cost_e: float = 0.5

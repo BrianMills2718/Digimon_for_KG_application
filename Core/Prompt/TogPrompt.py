@@ -1,4 +1,4 @@
-extract_relation_prompt = """Please retrieve %s relations (separated by semicolon) that contribute to the question and rate their contribution on a scale from 0 to 1 (the sum of the scores of %s relations is 1). If the number of given relations is not enough, please return all these relations with the sum of their scores equals to 1.
+extract_relation_prompt = """Please retrieve %s relations (separated by semicolon) that contribute to the question and rate their contribution on a scale from 0 to 1 (the sum of the scores of %s relations is 1). If the number of given relations is less than %s, please return all these relations with the sum of their scores equals to 1.
 Q: Name the president of the country whose main spoken language was Brahui in 1980?
 Topic Entity: Brahui Language
 Relations: language.human_language.main_country; language.human_language.language_family; language.human_language.iso_639_3_code; base.rosetta.languoid.parent; language.human_language.writing_system; base.rosetta.languoid.languoid_class; language.human_language.countries_spoken_in; kg.object_profile.prominent_type; base.rosetta.languoid.document; base.ontologies.ontology_instance.equivalent_instances; base.rosetta.languoid.local_name; language.human_language.region
@@ -87,6 +87,7 @@ UnName_Entity, government.national_anthem_of_a_country.country, Bolivia
 Bolivia, location.country.national_anthem, UnName_Entity
 A: {No}. Based on the given knowledge triplets, we can infer that the National Anthem of Bolivia is the anthem of Bolivia. Therefore, the country with the National Anthem of Bolivia is Bolivia itself. However, the given knowledge triplets do not provide information about which nations border Bolivia. To answer this question, we need additional knowledge about the geography of Bolivia and its neighboring countries.
 
+Q:
 """
 
 generate_directly = """Q: What state is home to the university that is represented in sports by George Washington Colonials men's basketball?

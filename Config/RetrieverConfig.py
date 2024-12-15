@@ -14,3 +14,4 @@ class RetrieverConfig(YamlModel):
     node_specificity: bool = True
     damping: float = 0.1
     max_token_for_local_context: int = 4800  # 12000 * 0.4
+    use_relations_vdb: bool = False
