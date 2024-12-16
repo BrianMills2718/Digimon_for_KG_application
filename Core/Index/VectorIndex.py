@@ -39,6 +39,7 @@ class VectorIndex(BaseIndex):
             return await result.get_node_data(graph, need_score)
 
     async def retrieval_edges(self, query, top_k, graph, need_score=False):
+
         results = await self.retrieval(query, top_k)
         result = VectorIndexEdgeResult(results)
 

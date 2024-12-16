@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from typing import Optional, Union
+import asyncio
 
 from openai import APIConnectionError, AsyncOpenAI, AsyncStream
 from openai._base_client import AsyncHttpxClientWrapper
@@ -20,7 +21,7 @@ from Core.Common.Constants import USE_CONFIG_TIMEOUT
 from Core.Common.Logger import log_llm_stream, logger
 from Core.Provider.BaseLLM import BaseLLM
 from Core.Provider.LLMProviderRegister import register_provider
-from Core.Common.Utils import  log_and_reraise
+from Core.Common.Utils import  log_and_reraise,prase_json_from_response
 from Core.Common.CostManager import CostManager
 from Core.Utils.Exceptions import handle_exception
 from Core.Utils.TokenCounter import (
@@ -45,7 +46,7 @@ class OpenAILLM(BaseLLM):
         self._init_client()
         self.auto_max_tokens = False
         self.cost_manager: Optional[CostManager] = None
-
+        self.semaphore = asyncio.Semaphore(config.max_concurrent)
     def _init_client(self):
         """https://github.com/openai/openai-python#async-usage"""
         self.model = self.config.model  # Used in _calc_usage & _cons_kwargs
@@ -148,14 +149,17 @@ class OpenAILLM(BaseLLM):
         retry=retry_if_exception_type(Exception),
         retry_error_callback=log_and_reraise,
     )
-    async def acompletion_text(self, messages: list[dict], stream=False, timeout=USE_CONFIG_TIMEOUT, max_tokens = None) -> str:
+    async def acompletion_text(self, messages: list[dict], stream=False, timeout=USE_CONFIG_TIMEOUT, max_tokens = None, format = "text") -> str:
         """when streaming, print each token in place."""
         if stream:
             return await self._achat_completion_stream(messages, timeout=timeout, max_tokens = max_tokens)
 
         rsp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
 
-        return self.get_choice_text(rsp)
+        rsp_text = self.get_choice_text(rsp)
+        if format == "json":
+            return prase_json_from_response(rsp_text)
+        return rsp_text
 
 
  

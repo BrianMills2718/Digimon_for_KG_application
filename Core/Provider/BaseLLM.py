@@ -42,7 +42,7 @@ class BaseLLM(ABC):
     cost_manager: Optional[CostManager] = None
     model: Optional[str] = None  # deprecated
     pricing_plan: Optional[str] = None
-
+   
     @abstractmethod
     def __init__(self, config: LLMConfig):
         pass
@@ -126,6 +126,7 @@ class BaseLLM(ABC):
         timeout=USE_CONFIG_TIMEOUT,
         stream=None,
         max_tokens = None,
+        format = "text",
     ) -> str:
         if system_msgs:
             message = self._system_msgs(system_msgs)
@@ -141,9 +142,9 @@ class BaseLLM(ABC):
             message.extend(msg)
         if stream is None:
             stream = self.config.stream
-        logger.debug(message)
-        
-        rsp = await self.acompletion_text(message, stream=stream, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
+        # logger.debug(message)
+        async with self.semaphore:
+         rsp = await self.acompletion_text(message, stream=stream, timeout=self.get_timeout(timeout), max_tokens = max_tokens, format = format)
         return rsp
 
     def _extract_assistant_rsp(self, context):
@@ -189,12 +190,12 @@ class BaseLLM(ABC):
         retry_error_callback=log_and_reraise,
     )
     async def acompletion_text(
-        self, messages: list[dict], stream: bool = False, timeout: int = USE_CONFIG_TIMEOUT, max_tokens = None
+        self, messages: list[dict], stream: bool = False, timeout: int = USE_CONFIG_TIMEOUT, max_tokens = None, format = "text"
     ) -> str:
         """Asynchronous version of completion. Return str. Support stream-print"""
         if stream:
-            return await self._achat_completion_stream(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
-        resp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
+            return await self._achat_completion_stream(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens, format = format)
+        resp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens, format = format)
         return self.get_choice_text(resp)
 
     def get_choice_text(self, rsp: dict) -> str:

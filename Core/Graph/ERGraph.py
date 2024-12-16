@@ -30,8 +30,9 @@ class ERGraph(BaseGraph):
     async def _named_entity_recognition(self, passage: str):
         ner_messages = GraphPrompt.NER.format(user_input=passage)
 
-        response_content = await self.llm.aask(ner_messages)
-        entities = prase_json_from_response(response_content)
+        entities = await self.llm.aask(ner_messages, format = "json")
+    
+        # entities = prase_json_from_response(response_content)
 
         if 'named_entities' not in entities:
             entities = []
@@ -43,10 +44,11 @@ class ERGraph(BaseGraph):
         named_entity_json = {"named_entities": entities}
         openie_messages = GraphPrompt.OPENIE_POST_NET.format(passage=chunk,
                                                              named_entity_json=json.dumps(named_entity_json))
-        response_content = await self.llm.aask(openie_messages)
-        triples = prase_json_from_response(response_content)
+        triples = await self.llm.aask(openie_messages, format = "json")
+      
+        # triples = prase_json_from_response(response_content)
         try:
-            triples = triples["triples"]
+            triples = triples["triples"] 
         except:
             return []
 
@@ -81,6 +83,7 @@ class ERGraph(BaseGraph):
 
     async def _build_graph(self, chunk_list: List[Any]):
         try:
+
             results = await asyncio.gather(
                 *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the extracted entities and triples
@@ -139,6 +142,7 @@ class ERGraph(BaseGraph):
             maybe_nodes[entity_name].append(entity)
 
         for triple in triples:
+            if isinstance(triple[0], list): triple = triple[0]
             if len(triple) != 3:
                 logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
                 continue
@@ -149,11 +153,12 @@ class ERGraph(BaseGraph):
                 logger.warning(
                     f"triple is not valid, since we have empty entity or relation, triple is: {triple}, so skip it")
                 continue
-            relationship = Relationship(src_id=clean_str(triple[0]),
-                                        tgt_id=clean_str(triple[2]),
-                                        weight=1.0, source_id=chunk_key,
-                                        relation_name=clean_str(triple[1]))
+            if isinstance(src_entity, str) and isinstance(tgt_entity, str) and isinstance(relation_name, str):
+                relationship = Relationship(src_id=src_entity,
+                                            tgt_id=tgt_entity,
+                                            weight=1.0, source_id=chunk_key,
+                                            relation_name=relation_name)
 
-            maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
+                maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)

@@ -217,7 +217,7 @@ class GraphRAG(ContextMixin, BaseModel):
         
         # Step 1.  Chunking Stage
         self.time_manager.start_stage()
-        await self.doc_chunk.build_chunks(docs, True)
+        await self.doc_chunk.build_chunks(docs)
         self._update_costs_info("Chunking")
         
         

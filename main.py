@@ -43,19 +43,22 @@ def check_dirs(opt):
 check_dirs(opt)
 # 
 query_dataset = RAGQueryDataset(data_dir=os.path.join(opt.data_root, opt.dataset_name))
-# corpus = query_dataset.get_corpus()
+corpus = query_dataset.get_corpus()
 # print(f"length of corpus: {len(corpus)}")
-# corpus = corpus[:10]
+corpus = corpus[:100]
 # asyncio.run(digimon.insert(corpus))
 
 if __name__ == "__main__":
-    with open("./book.txt") as f:
-        doc = f.read()
+    # with open("./book.txt") as f:
+    #     doc = f.read()
 
-    asyncio.run(digimon.insert([doc]))
+    asyncio.run(digimon.insert(corpus))
 
     # for train_item in dataloader:
 
-    a = asyncio.run(digimon.query("Who is Fred Gehrke?"))
+    # a = asyncio.run(digimon.query("Who is Fred Gehrke?"))
 
-    print(a)
+
+
+
+    # asyncio.run(digimon.query("Who is Scrooge?"))
