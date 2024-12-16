@@ -13,6 +13,7 @@ async def chunking_by_token_size(tokens_list: list[list[int]], doc_keys, tiktoke
     """
 
     results = []
+    idx_cnt = 0
     for index, tokens in enumerate(tokens_list):
         chunk_token = []
         lengths = []
@@ -27,10 +28,11 @@ async def chunking_by_token_size(tokens_list: list[list[int]], doc_keys, tiktoke
                 {
                     "tokens": lengths[i],
                     "content": chunk.strip(),
-                    "index": i,
+                    "index": idx_cnt,
                     "doc_id": doc_keys[index],
                     "title": title_list[index],
                 }
             )
+            idx_cnt += 1
 
     return results

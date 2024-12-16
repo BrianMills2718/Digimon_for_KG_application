@@ -62,8 +62,7 @@ class DocChunk:
                 tiktoken_model=self.token_model,
                 title_list=title_list,
                 overlap_token_size=self.config.chunk_overlap_token_size,
-                max_token_size=self.config.chunk_token_size
-,
+                max_token_size=self.config.chunk_token_size,
             )
 
             for chunk in chunks:
