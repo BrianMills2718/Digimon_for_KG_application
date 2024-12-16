@@ -87,6 +87,7 @@ class ChunkKVStorage(BaseKVStorage):
             try:
                 with open(self.dat_idx_pkl_file, "rb") as file:
                     self._data = pickle.load(file)
+                  
                 with open(self.dat_key_pkl_file, "rb") as file:
                     self._chunk = pickle.load(file)
                 self._key_to_index = {key: value.index for key, value in self._chunk.items()}
@@ -101,10 +102,9 @@ class ChunkKVStorage(BaseKVStorage):
             # Pkl file doesn't exist; need to construct the tree from scratch
             logger.info("Pkl file does not exist! Need to chunk the documents from scratch.")
             return False
-    async def _persist(self, force):
-        if (os.path.exists(self.dat_idx_pkl_file) and not force and os.path.exists(self.dat_key_pkl_file)):
-            return
+    async def _persist(self):
         logger.info(f"Writing data into {self.dat_idx_pkl_file} and {self.dat_key_pkl_file}")
+  
         self.write_chunk_data(self._data, self.dat_idx_pkl_file)
         self.write_chunk_data(self._chunk, self.dat_key_pkl_file)
     @staticmethod
@@ -112,13 +112,15 @@ class ChunkKVStorage(BaseKVStorage):
         with open(pkl_file, "wb") as file:
             pickle.dump(data, file)
 
-    async def persist(self, force=False):
+    async def persist(self):
         # Attempting to save the graph to the specified pkl file
-        await self._persist(force)
+        await self._persist()
 
     async def get_chunks(self):
         return list(self._chunk.items())
     
     async def size(self):
+        print(len(self._data))
+        print(len(self._chunk))
         assert len(self._data) == len(self._chunk)
         return len(self._data)

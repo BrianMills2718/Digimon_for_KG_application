@@ -6,9 +6,7 @@ from typing import Any, List
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Common.Logger import logger
 from Core.Common.Utils import (
-    clean_str,
-    prase_json_from_response
-)
+    clean_str)
 from Core.Schema.ChunkSchema import TextChunk
 from Core.Schema.Message import Message
 from Core.Prompt import GraphPrompt

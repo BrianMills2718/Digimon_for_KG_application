@@ -116,7 +116,11 @@ class ChunkRetriever(BaseRetriever):
         entity_to_edge_mat = await self.entities_to_relationships.get()
         relationship_to_chunk_mat = await self.relationships_to_chunks.get()
         # Create a vector (num_doc) with 1s at the indices of the retrieved documents and 0s elsewhere
-        node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
+        if len(seed_entities) == 0:
+            node_ppr_matrix = np.ones(self.graph.node_num) / self.graph.node_num
+
+        else:
+            node_ppr_matrix = await self._run_personalized_pagerank(query, seed_entities)
         edge_prob = entity_to_edge_mat.T.dot(node_ppr_matrix)
         ppr_chunk_prob = relationship_to_chunk_mat.T.dot(edge_prob)
         ppr_chunk_prob = min_max_normalize(ppr_chunk_prob)

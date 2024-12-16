@@ -25,6 +25,7 @@ class DocChunk:
 
     async def build_chunks(self, docs: Union[str, List[str]], force=False):
         logger.info("Starting chunk the given documents")
+  
         is_exist = await self._load_chunk(force)
         if not is_exist or force:
 

@@ -7,7 +7,6 @@ from graspologic.partition import hierarchical_leiden
 from Core.Common.Utils import (
     community_report_from_json,
     list_to_quoted_csv_string,
-    prase_json_from_response,
     encode_string_by_tiktoken,
     truncate_list_by_token_size, clean_str
 )
@@ -110,10 +109,10 @@ class LeidenCommunity(BaseCommunity):
         describe = await self._pack_single_community_describe(er_graph, community, already_reports=already_reports)
         prompt = CommunityPrompt.COMMUNITY_REPORT.format(input_text=describe)
 
-        response = await self.llm.aask(prompt)
-        data = prase_json_from_response(response)
+        response = await self.llm.aask(prompt, format = "json")
+        # data = prase_json_from_response(response)
 
-        return data
+        return response
 
     @staticmethod
     async def _pack_single_community_by_sub_communities(
