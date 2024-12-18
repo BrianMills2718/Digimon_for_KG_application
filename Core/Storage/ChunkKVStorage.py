@@ -87,7 +87,6 @@ class ChunkKVStorage(BaseKVStorage):
             try:
                 with open(self.dat_idx_pkl_file, "rb") as file:
                     self._data = pickle.load(file)
-                  
                 with open(self.dat_key_pkl_file, "rb") as file:
                     self._chunk = pickle.load(file)
                 self._key_to_index = {key: value.index for key, value in self._chunk.items()}
