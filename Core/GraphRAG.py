@@ -274,7 +274,7 @@ class GraphRAG(ContextMixin, BaseModel):
                                          random_seed=self.config.graph.graph_cluster_seed, force = False)
 
             await self.community.generate_community_report(self.graph, False)
-         
+        self._update_costs_info("Index Building")
 
         await self._build_retriever_context()
 

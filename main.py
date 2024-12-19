@@ -8,7 +8,6 @@ from shutil import copyfile
 from Data.QueryDataset import RAGQueryDataset
 import pandas as pd
 from Core.Utils.Evaluation import Evaluator
-from torch.utils.data import DataLoader
 
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 

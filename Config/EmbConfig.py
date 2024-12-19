@@ -25,6 +25,7 @@ class EmbeddingConfig(YamlModel):
     api_version: Optional[str] = None
 
     model: Optional[str] = None
+    cache_folder: Optional[str] = None
     embed_batch_size: Optional[int] = None
     dimensions: Optional[int] = None  # output dimension of embedding model
 

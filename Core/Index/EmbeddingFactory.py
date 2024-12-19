@@ -74,6 +74,7 @@ class RAGEmbeddingFactory(GenericFactory):
         # For huggingface-hub embedding model, we only need to set the model_name
         params = dict(
             model_name=config.embedding.model,
+            cache_folder=config.embedding.cache_folder,
         )
 
         return HuggingFaceEmbedding(**params)
