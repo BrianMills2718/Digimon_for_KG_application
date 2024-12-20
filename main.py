@@ -9,8 +9,6 @@ from Data.QueryDataset import RAGQueryDataset
 import pandas as pd
 from Core.Utils.Evaluation import Evaluator
 
-os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-
 
 def check_dirs(opt):
     # For each query, save the results in a separate directory
