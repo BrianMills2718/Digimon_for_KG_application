@@ -73,7 +73,7 @@ class TreeGraph(BaseGraph):
                 reduced_embeddings_local = umap.UMAP(
                     n_neighbors=10, n_components=dim, metric=self.config.cluster_metric
                 ).fit_transform(embeddings)
-                local_clusters, n_local_clusters = self.GMM_cluster(
+                local_clusters, n_local_clusters = self._GMM_cluster(
                     reduced_embeddings_local, threshold
                 )
 
