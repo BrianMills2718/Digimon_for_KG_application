@@ -43,12 +43,19 @@ class TreeGraph(BaseGraph):
     def _perform_clustering(
         self, embeddings: np.ndarray, dim: int, threshold: float, verbose: bool = False
     ) -> List[np.ndarray]:
+        logger.info("Length of embeddings: {length}".format(length=len(embeddings)))
+        # import pdb
+        # pdb.set_trace()
         reduced_embeddings_global = umap.UMAP(
             n_neighbors=int((len(embeddings) - 1) ** 0.5), n_components=min(dim, len(embeddings) -2), metric=self.config.cluster_metric
         ).fit_transform(embeddings)
         global_clusters, n_global_clusters = self._GMM_cluster(
             reduced_embeddings_global, threshold
         )
+        
+        # import pdb
+        # pdb.set_trace()
+
 
         if verbose:
             logger.info(f"Global Clusters: {n_global_clusters}")
@@ -60,6 +67,8 @@ class TreeGraph(BaseGraph):
             global_cluster_embeddings_ = embeddings[
                 np.array([i in gc for gc in global_clusters])
             ]
+            # import pdb
+            # pdb.set_trace()
             if verbose:
                 logger.info(
                     f"Nodes in Global Cluster {i}: {len(global_cluster_embeddings_)}"
@@ -72,7 +81,9 @@ class TreeGraph(BaseGraph):
             else:
                 reduced_embeddings_local = umap.UMAP(
                     n_neighbors=10, n_components=dim, metric=self.config.cluster_metric
-                ).fit_transform(embeddings)
+                ).fit_transform(global_cluster_embeddings_)
+                # import pdb
+                # pdb.set_trace()
                 local_clusters, n_local_clusters = self._GMM_cluster(
                     reduced_embeddings_local, threshold
                 )
@@ -81,6 +92,9 @@ class TreeGraph(BaseGraph):
                 logger.info(f"Local Clusters in Global Cluster {i}: {n_local_clusters}")
 
             for j in range(n_local_clusters):
+                # tmp = [j in lc for lc in local_clusters]
+                # import pdb
+                # pdb.set_trace()
                 local_cluster_embeddings_ = global_cluster_embeddings_[
                     np.array([j in lc for lc in local_clusters])
                 ]
@@ -102,6 +116,9 @@ class TreeGraph(BaseGraph):
     def _clustering(self, nodes: List[TreeNode], max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose) -> List[List[TreeNode]]:
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
+
+        import pdb
+        pdb.set_trace()
 
         # Perform the clustering
         clusters = self._perform_clustering(
@@ -130,11 +147,13 @@ class TreeGraph(BaseGraph):
             )
 
             # If the total length exceeds the maximum allowed length, recluster this cluster
-            if total_length > max_length_in_cluster:
+            if total_length > max_length_in_cluster and len(cluster_nodes) > self.config.reduction_dimension + 1:
                 if verbose:
                     logger.info(
                         f"reclustering cluster with {len(cluster_nodes)} nodes"
                     )
+                import pdb
+                pdb.set_trace()
                 node_clusters.extend(
                     self._clustering(
                         cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose
@@ -177,6 +196,7 @@ class TreeGraph(BaseGraph):
 
     async def _build_tree_from_leaves(self):
         for layer in range(self.config.num_layers):  # build a new layer
+            logger.info("length of layer: {length}".format(length=len(self._graph.get_layer(layer))))
             if len(self._graph.get_layer(layer)) <= self.config.reduction_dimension + 1:
                 break
 
