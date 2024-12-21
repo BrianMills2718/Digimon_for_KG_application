@@ -279,7 +279,7 @@ class Evaluator:
 
     def long_narrative_eval(self, df: pd.DataFrame):
 
-        label_list, pred_list = self.get_label_pred_list(df, "output", "answers")
+        label_list, pred_list = self.get_label_pred_list(df, "output", "answer")
 
         # Load results
         bleu_1_list = []
