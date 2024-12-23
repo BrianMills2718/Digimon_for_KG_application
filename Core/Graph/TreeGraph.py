@@ -7,6 +7,8 @@ from Core.Storage.TreeGraphStorage import TreeGraphStorage
 from Core.Schema.TreeSchema import TreeNode
 
 import asyncio
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 from typing import List, Set, Any
 
@@ -18,6 +20,7 @@ import random
 from sklearn.mixture import GaussianMixture
 
 class TreeGraph(BaseGraph):
+    max_workers: int = 20
 
     def __init__(self, config, llm, encoder):
         super().__init__(config, llm, encoder)
@@ -196,6 +199,14 @@ class TreeGraph(BaseGraph):
         content = SUMMARIZE.format(context=node_texts)
         return await self.llm.aask(content, max_tokens=summarization_length)
 
+    def _create_task_for(self, func):
+        def _pool_func(**params):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(func(**params))
+            loop.close()
+        return _pool_func
+
     async def _build_tree_from_leaves(self):
         for layer in range(self.config.num_layers):  # build a new layer
             logger.info("length of layer: {length}".format(length=len(self._graph.get_layer(layer))))
@@ -213,8 +224,11 @@ class TreeGraph(BaseGraph):
                 verbose = self.config.verbose,
             )
 
-            cluster_tasks = [asyncio.create_task(self._extract_cluster_relationship(layer + 1, cluster)) for cluster in clusters]
-            await asyncio.gather(*cluster_tasks)
+            with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+                for i in range(0, self.max_workers):
+                    cluster_tasks = [pool.submit(self._create_task_for(self._extract_cluster_relationship), layer = layer + 1, cluster = cluster) for (j, cluster) in enumerate(clusters) if j % self.max_workers == i]
+                    # self._run_tasks(cluster_tasks)
+                    as_completed(cluster_tasks)
 
             # for cluster in clusters:  # for each cluster, create a new node
             #     await self._extract_cluster_relationship(layer + 1, cluster)
@@ -230,8 +244,14 @@ class TreeGraph(BaseGraph):
 
         self._graph.add_layer()
 
-        leaf_tasks = [asyncio.create_task(self._extract_entity_relationship(chunk_key_pair=chunk)) for index, chunk in enumerate(chunks)]
-        await asyncio.gather(*leaf_tasks)
+        with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+            # leaf_tasks = []
+            # for index, chunk in enumerate(chunks):
+            #     logger.info(index)
+            #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
+            for i in range(0, self.max_workers):
+                leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
+                as_completed(leaf_tasks)
 
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
