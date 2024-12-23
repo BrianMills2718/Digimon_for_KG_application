@@ -229,6 +229,7 @@ class TreeGraph(BaseGraph):
                     cluster_tasks = [pool.submit(self._create_task_for(self._extract_cluster_relationship), layer = layer + 1, cluster = cluster) for (j, cluster) in enumerate(clusters) if j % self.max_workers == i]
                     # self._run_tasks(cluster_tasks)
                     as_completed(cluster_tasks)
+                    time.sleep(self.max_workers)
 
             # for cluster in clusters:  # for each cluster, create a new node
             #     await self._extract_cluster_relationship(layer + 1, cluster)
@@ -252,6 +253,7 @@ class TreeGraph(BaseGraph):
             for i in range(0, self.max_workers):
                 leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
                 as_completed(leaf_tasks)
+                time.sleep(self.max_wokers)
 
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
