@@ -6,6 +6,8 @@ from Core.Prompt.RaptorPrompt import SUMMARIZE
 from Core.Storage.TreeGraphStorage import TreeGraphStorage
 from Core.Schema.TreeSchema import TreeNode
 
+import asyncio
+
 from typing import List, Set, Any
 
 Embedding = List[float]
@@ -117,8 +119,8 @@ class TreeGraph(BaseGraph):
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
 
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
 
         # Perform the clustering
         clusters = self._perform_clustering(
@@ -152,8 +154,8 @@ class TreeGraph(BaseGraph):
                     logger.info(
                         f"reclustering cluster with {len(cluster_nodes)} nodes"
                     )
-                import pdb
-                pdb.set_trace()
+                # import pdb
+                # pdb.set_trace()
                 node_clusters.extend(
                     self._clustering(
                         cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose
@@ -211,8 +213,11 @@ class TreeGraph(BaseGraph):
                 verbose = self.config.verbose,
             )
 
-            for cluster in clusters:  # for each cluster, create a new node
-                await self._extract_cluster_relationship(layer + 1, cluster)
+            cluster_tasks = [asyncio.create_task(self._extract_cluster_relationship(layer + 1, cluster)) for cluster in clusters]
+            await asyncio.gather(*cluster_tasks)
+
+            # for cluster in clusters:  # for each cluster, create a new node
+            #     await self._extract_cluster_relationship(layer + 1, cluster)
 
             logger.info("Layer: {layer}".format(layer=layer))
             logger.info(self._graph.get_layer(layer + 1))
@@ -225,8 +230,8 @@ class TreeGraph(BaseGraph):
 
         self._graph.add_layer()
 
-        for index, chunk in enumerate(chunks):  # for each chunk, create a leaf node
-            await self._extract_entity_relationship(chunk_key_pair=chunk)
+        leaf_tasks = [asyncio.create_task(self._extract_entity_relationship(chunk_key_pair=chunk)) for index, chunk in enumerate(chunks)]
+        await asyncio.gather(*leaf_tasks)
 
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
