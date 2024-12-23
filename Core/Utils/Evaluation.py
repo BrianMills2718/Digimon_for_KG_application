@@ -15,6 +15,8 @@ import nltk
 from nltk import sent_tokenize
 from rouge_score import rouge_scorer, scoring
 from Option.Config2 import default_config
+from Core.Provider.BaseLLM import BaseLLM
+from Core.Provider.LLMProviderRegistry import create_llm_instance
 
 
 nltk_path = "/mnt/data/wangshu/hcarag/nltk"
@@ -148,7 +150,8 @@ class Evaluator:
     def __init__(self, eval_path: str, dataset_name: str):
 
         self.path = eval_path
-        self.llm = default_config.llm
+        self.config = default_config
+        self.llm = create_llm_instance(self.config.llm)
         self.dataset_name = dataset_name
         self.short_eval_metrics = ["accuracy", "f1", "precision", "recall", "em"]
         self.close_eval_metrics = ["accuracy"]
@@ -240,7 +243,7 @@ class Evaluator:
             else:
                 answer_str = answer
 
-            accuracy = self.eval_accuracy(prediction_str, answer)
+            accuracy = self.eval_accuracy(prediction_str, answer_str)
             f1, prec, recall = self.f1_score(prediction_str, answer_str)
             em = self.exact_match_score(prediction_str, answer_str)
             em_list.append(em)
@@ -369,7 +372,7 @@ class Evaluator:
 
         for index, row in df.iterrows():
             prediction = row["output"]
-            answer = row["answers"]
+            answer = row["answer"]
             answer_pairs = row["qa_pairs"]
             annotations = row["annotations"]
 
@@ -607,6 +610,8 @@ class Evaluator:
         s2 = self.normalize_answer(ground_truth)
         if s2 in s1:
             return 1
+        else:
+            return 0
 
 
 CLOSE_EXTRACT_OPTION_PORMPT = """
