@@ -1,0 +1,71 @@
+2024-12-23 17:33:57.560 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:131 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2024-12-23 17:33:57.589 | INFO     | Core.Chunk.DocChunk:build_chunks:27 - Starting chunk the given documents
+2024-12-23 17:33:57.589 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:85 - Attempting to load the chunk data from: ./narrative/0/tree_graph/chunk_storage_chunk_data_idx.pkl and ./narrative/0/tree_graph/chunk_storage_chunk_data_key.pkl
+2024-12-23 17:33:57.591 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:93 - Successfully loaded chunk data (idx and key) from: ./narrative/0/tree_graph/chunk_storage_chunk_data_idx.pkl
+2024-12-23 17:33:57.591 | INFO     | Core.Chunk.DocChunk:build_chunks:74 - ✅ Finished the chunking stage
+2024-12-23 17:33:57.591 | INFO     | Core.GraphRAG:_update_costs_info:205 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-23 17:33:57.591 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2024-12-23 17:33:57.591 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-23 17:33:57.591 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./narrative/0/tree_graph/graph_storage_tree_data.pkl
+2024-12-23 17:33:57.591 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:47 - Pkl file does not exist! Need to build the tree from scratch.
+2024-12-23 17:34:02.587 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 0, children = None
+2024-12-23 17:34:02.592 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 1, children = None
+2024-12-23 17:34:02.646 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 2, children = None
+2024-12-23 17:34:02.664 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 3, children = None
+2024-12-23 17:34:04.337 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 4, children = None
+2024-12-23 17:34:04.531 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 5, children = None
+2024-12-23 17:34:04.573 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 6, children = None
+2024-12-23 17:34:04.715 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 7, children = None
+2024-12-23 17:34:06.182 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 8, children = None
+2024-12-23 17:34:06.264 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 9, children = None
+2024-12-23 17:34:06.270 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 10, children = None
+2024-12-23 17:34:06.478 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 11, children = None
+2024-12-23 17:34:07.748 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 12, children = None
+2024-12-23 17:34:07.750 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 12, children = None
+2024-12-23 17:34:07.865 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 14, children = None
+2024-12-23 17:34:07.885 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 15, children = None
+2024-12-23 17:34:09.319 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 16, children = None
+2024-12-23 17:34:09.384 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 17, children = None
+2024-12-23 17:34:09.418 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 18, children = None
+2024-12-23 17:34:09.498 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 19, children = None
+2024-12-23 17:34:11.101 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 20, children = None
+2024-12-23 17:34:11.116 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 21, children = None
+2024-12-23 17:34:11.316 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 22, children = None
+2024-12-23 17:34:12.343 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 23, children = None
+2024-12-23 17:34:12.421 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 24, children = None
+2024-12-23 17:34:12.469 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 25, children = None
+2024-12-23 17:34:13.912 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 26, children = None
+2024-12-23 17:34:13.940 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 27, children = None
+2024-12-23 17:34:14.053 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 28, children = None
+2024-12-23 17:34:14.097 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 29, children = None
+2024-12-23 17:34:15.349 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 30, children = None
+2024-12-23 17:34:15.356 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 31, children = None
+2024-12-23 17:34:15.550 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 32, children = None
+2024-12-23 17:34:15.576 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 33, children = None
+2024-12-23 17:34:16.979 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 34, children = None
+2024-12-23 17:34:17.094 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 35, children = None
+2024-12-23 17:34:17.133 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 36, children = None
+2024-12-23 17:34:17.164 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 37, children = None
+2024-12-23 17:34:18.777 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 38, children = None
+2024-12-23 17:34:18.875 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 39, children = None
+2024-12-23 17:34:18.885 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 40, children = None
+2024-12-23 17:34:18.973 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 41, children = None
+2024-12-23 17:34:20.185 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 42, children = None
+2024-12-23 17:34:20.222 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 43, children = None
+2024-12-23 17:34:20.246 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 44, children = None
+2024-12-23 17:34:20.269 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 45, children = None
+2024-12-23 17:34:21.624 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 46, children = None
+2024-12-23 17:34:21.656 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 47, children = None
+2024-12-23 17:34:21.715 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 48, children = None
+2024-12-23 17:34:21.717 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 48, children = None
+2024-12-23 17:34:23.390 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 50, children = None
+2024-12-23 17:34:23.397 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 51, children = None
+2024-12-23 17:34:23.432 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 52, children = None
+2024-12-23 17:34:25.195 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 53, children = None
+2024-12-23 17:34:25.206 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 54, children = None
+2024-12-23 17:34:25.390 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 55, children = None
+2024-12-23 17:34:25.544 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 56, children = None
+2024-12-23 17:34:26.836 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 57, children = None
+2024-12-23 17:34:27.058 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 58, children = None
+2024-12-23 17:34:27.110 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 59, children = None
+2024-12-23 17:34:27.127 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 60, children = None

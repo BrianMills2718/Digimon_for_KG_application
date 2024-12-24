@@ -1,0 +1,797 @@
+2024-12-23 17:34:59.719 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:131 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2024-12-23 17:34:59.749 | INFO     | Core.Chunk.DocChunk:build_chunks:27 - Starting chunk the given documents
+2024-12-23 17:34:59.749 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:85 - Attempting to load the chunk data from: ./narrative/0/tree_graph/chunk_storage_chunk_data_idx.pkl and ./narrative/0/tree_graph/chunk_storage_chunk_data_key.pkl
+2024-12-23 17:34:59.751 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:93 - Successfully loaded chunk data (idx and key) from: ./narrative/0/tree_graph/chunk_storage_chunk_data_idx.pkl
+2024-12-23 17:34:59.751 | INFO     | Core.Chunk.DocChunk:build_chunks:74 - ✅ Finished the chunking stage
+2024-12-23 17:34:59.751 | INFO     | Core.GraphRAG:_update_costs_info:205 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2024-12-23 17:34:59.751 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2024-12-23 17:34:59.751 | INFO     | Core.Graph.BaseGraph:build_graph:42 - Starting build graph for the given documents
+2024-12-23 17:34:59.751 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./narrative/0/tree_graph/graph_storage_tree_data.pkl
+2024-12-23 17:34:59.751 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:47 - Pkl file does not exist! Need to build the tree from scratch.
+2024-12-23 17:35:02.381 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 0, children = None
+2024-12-23 17:35:02.385 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 1, children = None
+2024-12-23 17:35:02.390 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 2, children = None
+2024-12-23 17:35:02.415 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 3, children = None
+2024-12-23 17:35:02.432 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 4, children = None
+2024-12-23 17:35:02.436 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 5, children = None
+2024-12-23 17:35:02.445 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 6, children = None
+2024-12-23 17:35:02.449 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 7, children = None
+2024-12-23 17:35:02.452 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 8, children = None
+2024-12-23 17:35:02.480 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 9, children = None
+2024-12-23 17:35:02.487 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 10, children = None
+2024-12-23 17:35:02.506 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 11, children = None
+2024-12-23 17:35:02.539 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 12, children = None
+2024-12-23 17:35:02.546 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 13, children = None
+2024-12-23 17:35:02.604 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 14, children = None
+2024-12-23 17:35:02.612 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 15, children = None
+2024-12-23 17:35:02.618 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 16, children = None
+2024-12-23 17:35:02.638 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 17, children = None
+2024-12-23 17:35:02.670 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 18, children = None
+2024-12-23 17:35:02.678 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 19, children = None
+2024-12-23 17:35:04.022 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 20, children = None
+2024-12-23 17:35:04.387 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 21, children = None
+2024-12-23 17:35:04.426 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 22, children = None
+2024-12-23 17:35:04.560 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 23, children = None
+2024-12-23 17:35:04.584 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 24, children = None
+2024-12-23 17:35:04.603 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 25, children = None
+2024-12-23 17:35:04.612 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 26, children = None
+2024-12-23 17:35:04.624 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 27, children = None
+2024-12-23 17:35:04.636 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 28, children = None
+2024-12-23 17:35:04.645 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 29, children = None
+2024-12-23 17:35:04.655 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 30, children = None
+2024-12-23 17:35:04.695 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 31, children = None
+2024-12-23 17:35:04.701 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 32, children = None
+2024-12-23 17:35:04.707 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 33, children = None
+2024-12-23 17:35:04.740 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 34, children = None
+2024-12-23 17:35:04.770 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 35, children = None
+2024-12-23 17:35:04.876 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 36, children = None
+2024-12-23 17:35:04.914 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 37, children = None
+2024-12-23 17:35:04.967 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 38, children = None
+2024-12-23 17:35:04.970 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 39, children = None
+2024-12-23 17:35:05.252 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 40, children = None
+2024-12-23 17:35:05.683 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 41, children = None
+2024-12-23 17:35:06.008 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 42, children = None
+2024-12-23 17:35:06.113 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 43, children = None
+2024-12-23 17:35:06.123 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 44, children = None
+2024-12-23 17:35:06.129 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 45, children = None
+2024-12-23 17:35:06.135 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 46, children = None
+2024-12-23 17:35:06.140 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 47, children = None
+2024-12-23 17:35:06.146 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 48, children = None
+2024-12-23 17:35:06.177 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 49, children = None
+2024-12-23 17:35:06.188 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 50, children = None
+2024-12-23 17:35:06.198 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 51, children = None
+2024-12-23 17:35:06.235 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 52, children = None
+2024-12-23 17:35:06.323 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 53, children = None
+2024-12-23 17:35:06.329 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 54, children = None
+2024-12-23 17:35:06.452 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 55, children = None
+2024-12-23 17:35:06.499 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 56, children = None
+2024-12-23 17:35:06.569 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 57, children = None
+2024-12-23 17:35:06.594 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 58, children = None
+2024-12-23 17:35:06.686 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 59, children = None
+2024-12-23 17:35:06.957 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 60, children = None
+2024-12-23 17:35:07.066 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 61, children = None
+2024-12-23 17:35:07.081 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 62, children = None
+2024-12-23 17:35:07.204 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 63, children = None
+2024-12-23 17:35:07.326 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 64, children = None
+2024-12-23 17:35:07.424 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 65, children = None
+2024-12-23 17:35:07.433 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 66, children = None
+2024-12-23 17:35:07.456 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 67, children = None
+2024-12-23 17:35:07.506 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 68, children = None
+2024-12-23 17:35:07.513 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 69, children = None
+2024-12-23 17:35:07.519 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 70, children = None
+2024-12-23 17:35:07.557 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 71, children = None
+2024-12-23 17:35:07.581 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 72, children = None
+2024-12-23 17:35:07.634 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 73, children = None
+2024-12-23 17:35:07.662 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 74, children = None
+2024-12-23 17:35:07.701 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 75, children = None
+2024-12-23 17:35:07.801 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 76, children = None
+2024-12-23 17:35:07.918 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 77, children = None
+2024-12-23 17:35:07.942 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 78, children = None
+2024-12-23 17:35:08.084 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 79, children = None
+2024-12-23 17:35:08.439 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 80, children = None
+2024-12-23 17:35:08.513 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 81, children = None
+2024-12-23 17:35:08.641 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 82, children = None
+2024-12-23 17:35:08.650 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 83, children = None
+2024-12-23 17:35:08.779 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 84, children = None
+2024-12-23 17:35:08.823 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 85, children = None
+2024-12-23 17:35:08.828 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 86, children = None
+2024-12-23 17:35:08.834 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 87, children = None
+2024-12-23 17:35:08.866 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 88, children = None
+2024-12-23 17:35:08.888 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 89, children = None
+2024-12-23 17:35:08.900 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 90, children = None
+2024-12-23 17:35:08.943 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 91, children = None
+2024-12-23 17:35:09.028 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 92, children = None
+2024-12-23 17:35:09.040 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 93, children = None
+2024-12-23 17:35:09.045 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 94, children = None
+2024-12-23 17:35:09.237 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 95, children = None
+2024-12-23 17:35:09.279 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 96, children = None
+2024-12-23 17:35:09.369 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 97, children = None
+2024-12-23 17:35:09.411 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 98, children = None
+2024-12-23 17:35:09.499 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 99, children = None
+2024-12-23 17:35:09.834 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 100, children = None
+2024-12-23 17:35:09.869 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 101, children = None
+2024-12-23 17:35:10.092 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 102, children = None
+2024-12-23 17:35:10.098 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 103, children = None
+2024-12-23 17:35:10.191 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 104, children = None
+2024-12-23 17:35:10.197 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 105, children = None
+2024-12-23 17:35:10.218 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 106, children = None
+2024-12-23 17:35:10.280 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 107, children = None
+2024-12-23 17:35:10.288 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 108, children = None
+2024-12-23 17:35:10.297 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 109, children = None
+2024-12-23 17:35:10.303 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 110, children = None
+2024-12-23 17:35:10.388 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 111, children = None
+2024-12-23 17:35:10.419 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 112, children = None
+2024-12-23 17:35:10.432 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 113, children = None
+2024-12-23 17:35:10.480 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 114, children = None
+2024-12-23 17:35:10.612 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 115, children = None
+2024-12-23 17:35:10.736 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 116, children = None
+2024-12-23 17:35:10.982 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 117, children = None
+2024-12-23 17:35:11.010 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 118, children = None
+2024-12-23 17:35:11.331 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 119, children = None
+2024-12-23 17:35:11.437 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 120, children = None
+2024-12-23 17:35:11.669 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 121, children = None
+2024-12-23 17:35:11.675 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 122, children = None
+2024-12-23 17:35:11.697 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 123, children = None
+2024-12-23 17:35:11.703 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 124, children = None
+2024-12-23 17:35:11.732 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 125, children = None
+2024-12-23 17:35:11.738 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 126, children = None
+2024-12-23 17:35:11.763 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 127, children = None
+2024-12-23 17:35:11.781 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 128, children = None
+2024-12-23 17:35:11.794 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 129, children = None
+2024-12-23 17:35:11.845 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 130, children = None
+2024-12-23 17:35:11.970 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 131, children = None
+2024-12-23 17:35:12.024 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 132, children = None
+2024-12-23 17:35:12.084 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 133, children = None
+2024-12-23 17:35:12.105 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 134, children = None
+2024-12-23 17:35:12.119 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 135, children = None
+2024-12-23 17:35:12.144 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 136, children = None
+2024-12-23 17:35:12.254 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 137, children = None
+2024-12-23 17:35:12.936 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 138, children = None
+2024-12-23 17:35:13.004 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 139, children = None
+2024-12-23 17:35:13.242 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 140, children = None
+2024-12-23 17:35:13.250 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 141, children = None
+2024-12-23 17:35:13.257 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 142, children = None
+2024-12-23 17:35:13.295 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 143, children = None
+2024-12-23 17:35:13.326 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 144, children = None
+2024-12-23 17:35:13.339 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 145, children = None
+2024-12-23 17:35:13.359 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 146, children = None
+2024-12-23 17:35:13.365 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 147, children = None
+2024-12-23 17:35:13.372 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 148, children = None
+2024-12-23 17:35:13.391 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 149, children = None
+2024-12-23 17:35:13.676 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 150, children = None
+2024-12-23 17:35:13.683 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 151, children = None
+2024-12-23 17:35:13.743 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 152, children = None
+2024-12-23 17:35:13.802 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 153, children = None
+2024-12-23 17:35:13.844 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 154, children = None
+2024-12-23 17:35:13.848 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 155, children = None
+2024-12-23 17:35:13.903 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 156, children = None
+2024-12-23 17:35:13.951 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 157, children = None
+2024-12-23 17:35:14.259 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 158, children = None
+2024-12-23 17:35:14.464 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 159, children = None
+2024-12-23 17:35:14.697 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 160, children = None
+2024-12-23 17:35:14.701 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 161, children = None
+2024-12-23 17:35:14.732 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 162, children = None
+2024-12-23 17:35:14.764 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 163, children = None
+2024-12-23 17:35:14.789 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 164, children = None
+2024-12-23 17:35:14.858 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 165, children = None
+2024-12-23 17:35:14.860 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 165, children = None
+2024-12-23 17:35:14.915 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 167, children = None
+2024-12-23 17:35:14.922 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 168, children = None
+2024-12-23 17:35:14.942 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 169, children = None
+2024-12-23 17:35:15.021 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 170, children = None
+2024-12-23 17:35:15.059 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 171, children = None
+2024-12-23 17:35:15.099 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 172, children = None
+2024-12-23 17:35:15.111 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 173, children = None
+2024-12-23 17:35:15.126 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 174, children = None
+2024-12-23 17:35:15.154 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 175, children = None
+2024-12-23 17:35:15.195 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 176, children = None
+2024-12-23 17:35:15.292 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 177, children = None
+2024-12-23 17:35:15.807 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 178, children = None
+2024-12-23 17:35:16.076 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 179, children = None
+2024-12-23 17:35:16.147 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 180, children = None
+2024-12-23 17:35:16.203 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 181, children = None
+2024-12-23 17:35:16.295 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 182, children = None
+2024-12-23 17:35:16.328 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 183, children = None
+2024-12-23 17:35:16.335 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 184, children = None
+2024-12-23 17:35:16.455 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 185, children = None
+2024-12-23 17:35:16.473 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 186, children = None
+2024-12-23 17:35:16.507 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 187, children = None
+2024-12-23 17:35:16.547 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 188, children = None
+2024-12-23 17:35:16.595 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 189, children = None
+2024-12-23 17:35:16.670 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 190, children = None
+2024-12-23 17:35:16.676 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 191, children = None
+2024-12-23 17:35:16.682 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 192, children = None
+2024-12-23 17:35:16.722 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 193, children = None
+2024-12-23 17:35:16.729 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 194, children = None
+2024-12-23 17:35:16.734 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 195, children = None
+2024-12-23 17:35:16.749 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 196, children = None
+2024-12-23 17:35:16.908 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 197, children = None
+2024-12-23 17:35:17.265 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 198, children = None
+2024-12-23 17:35:17.480 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 199, children = None
+2024-12-23 17:35:17.559 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 200, children = None
+2024-12-23 17:35:17.581 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 201, children = None
+2024-12-23 17:35:17.587 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 202, children = None
+2024-12-23 17:35:17.614 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 203, children = None
+2024-12-23 17:35:17.733 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 204, children = None
+2024-12-23 17:35:17.848 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 205, children = None
+2024-12-23 17:35:17.883 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 206, children = None
+2024-12-23 17:35:17.904 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 207, children = None
+2024-12-23 17:35:17.963 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 208, children = None
+2024-12-23 17:35:18.014 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 209, children = None
+2024-12-23 17:35:18.021 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 210, children = None
+2024-12-23 17:35:18.144 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 211, children = None
+2024-12-23 17:35:18.183 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 212, children = None
+2024-12-23 17:35:18.190 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 213, children = None
+2024-12-23 17:35:18.208 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 214, children = None
+2024-12-23 17:35:18.236 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 215, children = None
+2024-12-23 17:35:18.282 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 216, children = None
+2024-12-23 17:35:18.372 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 217, children = None
+2024-12-23 17:35:18.798 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 218, children = None
+2024-12-23 17:35:18.825 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 219, children = None
+2024-12-23 17:35:18.932 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 220, children = None
+2024-12-23 17:35:19.009 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 221, children = None
+2024-12-23 17:35:19.026 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 222, children = None
+2024-12-23 17:35:19.264 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 223, children = None
+2024-12-23 17:35:19.293 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 224, children = None
+2024-12-23 17:35:19.350 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 225, children = None
+2024-12-23 17:35:19.405 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 226, children = None
+2024-12-23 17:35:19.491 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 227, children = None
+2024-12-23 17:35:19.532 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 228, children = None
+2024-12-23 17:35:19.622 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 229, children = None
+2024-12-23 17:35:19.629 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 230, children = None
+2024-12-23 17:35:19.713 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 231, children = None
+2024-12-23 17:35:19.730 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 232, children = None
+2024-12-23 17:35:19.771 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 233, children = None
+2024-12-23 17:35:19.800 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 234, children = None
+2024-12-23 17:35:19.851 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 235, children = None
+2024-12-23 17:35:19.879 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 236, children = None
+2024-12-23 17:35:19.915 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 237, children = None
+2024-12-23 17:35:20.128 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 238, children = None
+2024-12-23 17:35:20.140 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 239, children = None
+2024-12-23 17:35:20.374 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 240, children = None
+2024-12-23 17:35:20.444 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 241, children = None
+2024-12-23 17:35:20.571 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 242, children = None
+2024-12-23 17:35:20.623 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 243, children = None
+2024-12-23 17:35:20.637 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 244, children = None
+2024-12-23 17:35:20.677 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 245, children = None
+2024-12-23 17:35:20.743 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 246, children = None
+2024-12-23 17:35:21.003 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 247, children = None
+2024-12-23 17:35:21.087 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 248, children = None
+2024-12-23 17:35:21.126 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 249, children = None
+2024-12-23 17:35:21.133 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 250, children = None
+2024-12-23 17:35:21.149 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 251, children = None
+2024-12-23 17:35:21.238 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 252, children = None
+2024-12-23 17:35:21.244 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 253, children = None
+2024-12-23 17:35:21.273 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 254, children = None
+2024-12-23 17:35:21.327 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 255, children = None
+2024-12-23 17:35:21.381 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 256, children = None
+2024-12-23 17:35:21.636 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 257, children = None
+2024-12-23 17:35:21.680 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 258, children = None
+2024-12-23 17:35:21.771 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 259, children = None
+2024-12-23 17:35:21.882 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 260, children = None
+2024-12-23 17:35:21.908 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 261, children = None
+2024-12-23 17:35:22.082 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 262, children = None
+2024-12-23 17:35:22.097 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 263, children = None
+2024-12-23 17:35:22.145 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 264, children = None
+2024-12-23 17:35:22.168 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 265, children = None
+2024-12-23 17:35:22.396 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 266, children = None
+2024-12-23 17:35:22.437 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 267, children = None
+2024-12-23 17:35:22.555 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 268, children = None
+2024-12-23 17:35:22.557 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 268, children = None
+2024-12-23 17:35:22.571 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 270, children = None
+2024-12-23 17:35:22.586 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 271, children = None
+2024-12-23 17:35:22.603 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 272, children = None
+2024-12-23 17:35:22.629 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 273, children = None
+2024-12-23 17:35:22.642 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 274, children = None
+2024-12-23 17:35:22.753 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 275, children = None
+2024-12-23 17:35:23.059 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 276, children = None
+2024-12-23 17:35:23.116 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 277, children = None
+2024-12-23 17:35:23.202 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 278, children = None
+2024-12-23 17:35:23.499 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 279, children = None
+2024-12-23 17:35:23.603 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 280, children = None
+2024-12-23 17:35:23.661 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 281, children = None
+2024-12-23 17:35:23.691 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 282, children = None
+2024-12-23 17:35:23.761 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 283, children = None
+2024-12-23 17:35:23.885 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 284, children = None
+2024-12-23 17:35:23.891 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 285, children = None
+2024-12-23 17:35:23.924 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 286, children = None
+2024-12-23 17:35:23.977 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 287, children = None
+2024-12-23 17:35:24.114 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 288, children = None
+2024-12-23 17:35:24.116 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 288, children = None
+2024-12-23 17:35:24.146 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 290, children = None
+2024-12-23 17:35:24.172 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 291, children = None
+2024-12-23 17:35:24.212 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 292, children = None
+2024-12-23 17:35:24.263 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 293, children = None
+2024-12-23 17:35:24.330 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 294, children = None
+2024-12-23 17:35:24.350 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 295, children = None
+2024-12-23 17:35:24.487 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 296, children = None
+2024-12-23 17:35:24.594 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 297, children = None
+2024-12-23 17:35:24.702 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 298, children = None
+2024-12-23 17:35:24.936 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 299, children = None
+2024-12-23 17:35:25.094 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 300, children = None
+2024-12-23 17:35:25.103 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 301, children = None
+2024-12-23 17:35:25.105 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 301, children = None
+2024-12-23 17:35:25.119 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 303, children = None
+2024-12-23 17:35:25.141 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 304, children = None
+2024-12-23 17:35:25.180 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 305, children = None
+2024-12-23 17:35:25.367 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 306, children = None
+2024-12-23 17:35:25.402 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 307, children = None
+2024-12-23 17:35:25.456 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 308, children = None
+2024-12-23 17:35:25.492 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 309, children = None
+2024-12-23 17:35:25.521 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 310, children = None
+2024-12-23 17:35:25.582 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 311, children = None
+2024-12-23 17:35:25.602 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 312, children = None
+2024-12-23 17:35:25.629 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 313, children = None
+2024-12-23 17:35:25.635 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 314, children = None
+2024-12-23 17:35:25.677 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 315, children = None
+2024-12-23 17:35:26.025 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 316, children = None
+2024-12-23 17:35:26.027 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 316, children = None
+2024-12-23 17:35:26.097 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 318, children = None
+2024-12-23 17:35:26.531 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 319, children = None
+2024-12-23 17:35:26.538 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 320, children = None
+2024-12-23 17:35:26.572 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 321, children = None
+2024-12-23 17:35:26.616 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 322, children = None
+2024-12-23 17:35:26.691 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 323, children = None
+2024-12-23 17:35:26.782 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 324, children = None
+2024-12-23 17:35:26.836 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 325, children = None
+2024-12-23 17:35:26.838 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 325, children = None
+2024-12-23 17:35:26.877 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 327, children = None
+2024-12-23 17:35:26.919 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 328, children = None
+2024-12-23 17:35:27.088 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 329, children = None
+2024-12-23 17:35:27.101 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 330, children = None
+2024-12-23 17:35:27.220 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 331, children = None
+2024-12-23 17:35:27.241 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 332, children = None
+2024-12-23 17:35:27.246 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 333, children = None
+2024-12-23 17:35:27.310 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 334, children = None
+2024-12-23 17:35:27.413 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 335, children = None
+2024-12-23 17:35:27.505 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 336, children = None
+2024-12-23 17:35:27.853 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 337, children = None
+2024-12-23 17:35:28.077 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 338, children = None
+2024-12-23 17:35:28.129 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 339, children = None
+2024-12-23 17:35:28.159 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 340, children = None
+2024-12-23 17:35:28.308 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 341, children = None
+2024-12-23 17:35:28.540 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 342, children = None
+2024-12-23 17:35:28.635 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 343, children = None
+2024-12-23 17:35:28.650 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 344, children = None
+2024-12-23 17:35:28.733 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 345, children = None
+2024-12-23 17:35:28.823 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 346, children = None
+2024-12-23 17:35:28.835 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 347, children = None
+2024-12-23 17:35:28.839 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 348, children = None
+2024-12-23 17:35:28.854 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 349, children = None
+2024-12-23 17:35:28.904 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 350, children = None
+2024-12-23 17:35:28.946 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 351, children = None
+2024-12-23 17:35:29.062 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 352, children = None
+2024-12-23 17:35:29.103 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 353, children = None
+2024-12-23 17:35:29.233 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 354, children = None
+2024-12-23 17:35:29.460 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 355, children = None
+2024-12-23 17:35:29.494 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 356, children = None
+2024-12-23 17:35:29.577 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 357, children = None
+2024-12-23 17:35:29.730 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 358, children = None
+2024-12-23 17:35:30.089 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 359, children = None
+2024-12-23 17:35:30.671 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 360, children = None
+2024-12-23 17:35:30.677 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 361, children = None
+2024-12-23 17:35:30.688 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 362, children = None
+2024-12-23 17:35:30.994 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 363, children = None
+2024-12-23 17:35:31.179 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 364, children = None
+2024-12-23 17:35:31.212 | INFO     | Core.Graph.TreeGraph:_create_node:178 - Create node_id = 365, children = None
+2024-12-23 17:35:31.213 | INFO     | Core.Graph.TreeGraph:_build_graph:261 - Created 366 Leaf Embeddings
+2024-12-23 17:35:31.213 | INFO     | Core.Graph.TreeGraph:_build_tree_from_leaves:213 - length of layer: 366
+2024-12-23 17:35:31.215 | INFO     | Core.Graph.TreeGraph:_perform_clustering:51 - Length of embeddings: 366
+2024-12-23 17:35:46.410 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 0.854(s), this was the 1st time calling it.
+2024-12-23 17:35:46.503 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 0.943(s), this was the 1st time calling it.
+2024-12-23 17:35:46.512 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 0.940(s), this was the 1st time calling it.
+2024-12-23 17:35:46.531 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.006(s), this was the 1st time calling it.
+2024-12-23 17:35:46.532 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 0.963(s), this was the 1st time calling it.
+2024-12-23 17:35:46.616 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.100(s), this was the 1st time calling it.
+2024-12-23 17:35:46.620 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.084(s), this was the 1st time calling it.
+2024-12-23 17:35:46.637 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.125(s), this was the 1st time calling it.
+2024-12-23 17:35:46.641 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.078(s), this was the 1st time calling it.
+2024-12-23 17:35:47.707 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.163(s), this was the 1st time calling it.
+2024-12-23 17:35:47.717 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.177(s), this was the 1st time calling it.
+2024-12-23 17:35:48.617 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.122(s), this was the 1st time calling it.
+2024-12-23 17:35:48.621 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.055(s), this was the 1st time calling it.
+2024-12-23 17:35:48.625 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.073(s), this was the 1st time calling it.
+2024-12-23 17:35:48.748 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.240(s), this was the 1st time calling it.
+2024-12-23 17:35:48.752 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.203(s), this was the 1st time calling it.
+2024-12-23 17:35:48.754 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.222(s), this was the 1st time calling it.
+2024-12-23 17:35:48.884 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.363(s), this was the 1st time calling it.
+2024-12-23 17:35:49.034 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.505(s), this was the 1st time calling it.
+2024-12-23 17:35:49.132 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.627(s), this was the 1st time calling it.
+2024-12-23 17:35:49.440 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.884(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.529 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.005(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.653 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.137(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.667 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.155(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.670 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.097(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.836 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.276(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.849 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.280(s), this was the 2nd time calling it.
+2024-12-23 17:35:49.904 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.367(s), this was the 2nd time calling it.
+2024-12-23 17:35:50.921 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.381(s), this was the 2nd time calling it.
+2024-12-23 17:35:50.943 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.380(s), this was the 2nd time calling it.
+2024-12-23 17:35:50.945 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.401(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.649 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.093(s), this was the 3rd time calling it.
+2024-12-23 17:35:52.741 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.181(s), this was the 3rd time calling it.
+2024-12-23 17:35:52.753 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.257(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.756 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.204(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.763 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.255(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.775 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.209(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.798 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.285(s), this was the 3rd time calling it.
+2024-12-23 17:35:52.881 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.349(s), this was the 2nd time calling it.
+2024-12-23 17:35:52.885 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.337(s), this was the 2nd time calling it.
+2024-12-23 17:35:53.013 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.493(s), this was the 2nd time calling it.
+2024-12-23 17:35:53.131 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.603(s), this was the 2nd time calling it.
+2024-12-23 17:35:53.277 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.704(s), this was the 3rd time calling it.
+2024-12-23 17:35:53.280 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.775(s), this was the 2nd time calling it.
+2024-12-23 17:35:53.296 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.771(s), this was the 3rd time calling it.
+2024-12-23 17:35:53.553 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.017(s), this was the 3rd time calling it.
+2024-12-23 17:35:53.609 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.093(s), this was the 3rd time calling it.
+2024-12-23 17:35:54.204 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.664(s), this was the 3rd time calling it.
+2024-12-23 17:35:54.372 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.828(s), this was the 3rd time calling it.
+2024-12-23 17:35:54.469 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.899(s), this was the 3rd time calling it.
+2024-12-23 17:35:54.498 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.935(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.068 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.516(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.135 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.607(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.193 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.697(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.329 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.808(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.459 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.950(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.577 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.065(s), this was the 4th time calling it.
+2024-12-23 17:35:57.589 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.049(s), this was the 4th time calling it.
+2024-12-23 17:35:57.695 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.163(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.706 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.146(s), this was the 4th time calling it.
+2024-12-23 17:35:57.709 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.142(s), this was the 3rd time calling it.
+2024-12-23 17:35:57.864 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.348(s), this was the 4th time calling it.
+2024-12-23 17:35:57.883 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.359(s), this was the 4th time calling it.
+2024-12-23 17:35:58.014 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.458(s), this was the 4th time calling it.
+2024-12-23 17:35:58.119 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.615(s), this was the 3rd time calling it.
+2024-12-23 17:35:58.154 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.606(s), this was the 3rd time calling it.
+2024-12-23 17:35:58.348 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.779(s), this was the 4th time calling it.
+2024-12-23 17:35:58.767 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.204(s), this was the 4th time calling it.
+2024-12-23 17:35:58.796 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.260(s), this was the 4th time calling it.
+2024-12-23 17:35:59.801 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.229(s), this was the 4th time calling it.
+2024-12-23 17:35:59.925 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.381(s), this was the 4th time calling it.
+2024-12-23 17:36:01.574 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.042(s), this was the 4th time calling it.
+2024-12-23 17:36:01.580 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.044(s), this was the 5th time calling it.
+2024-12-23 17:36:01.591 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.031(s), this was the 5th time calling it.
+2024-12-23 17:36:01.594 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.042(s), this was the 4th time calling it.
+2024-12-23 17:36:01.690 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.142(s), this was the 4th time calling it.
+2024-12-23 17:36:01.707 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.199(s), this was the 4th time calling it.
+2024-12-23 17:36:01.710 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.206(s), this was the 4th time calling it.
+2024-12-23 17:36:01.813 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.293(s), this was the 4th time calling it.
+2024-12-23 17:36:01.941 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.445(s), this was the 4th time calling it.
+2024-12-23 17:36:01.944 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.416(s), this was the 4th time calling it.
+2024-12-23 17:36:02.130 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 16.564(s), this was the 4th time calling it.
+2024-12-23 17:36:03.127 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 17.603(s), this was the 5th time calling it.
+2024-12-23 17:36:03.217 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 17.645(s), this was the 5th time calling it.
+2024-12-23 17:36:04.651 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 19.081(s), this was the 5th time calling it.
+2024-12-23 17:36:05.131 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 19.575(s), this was the 5th time calling it.
+2024-12-23 17:36:05.140 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 19.600(s), this was the 5th time calling it.
+2024-12-23 17:36:05.262 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 19.753(s), this was the 5th time calling it.
+2024-12-23 17:36:06.403 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 20.887(s), this was the 5th time calling it.
+2024-12-23 17:36:06.816 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 21.288(s), this was the 5th time calling it.
+2024-12-23 17:36:07.055 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 21.535(s), this was the 5th time calling it.
+2024-12-23 17:36:07.196 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 21.684(s), this was the 5th time calling it.
+2024-12-23 17:36:07.200 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 21.637(s), this was the 5th time calling it.
+2024-12-23 17:36:08.507 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.955(s), this was the 5th time calling it.
+2024-12-23 17:36:08.535 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.039(s), this was the 5th time calling it.
+2024-12-23 17:36:08.981 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.476(s), this was the 5th time calling it.
+2024-12-23 17:36:08.984 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.435(s), this was the 5th time calling it.
+2024-12-23 17:36:09.128 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.592(s), this was the 6th time calling it.
+2024-12-23 17:36:09.129 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 402 - {'statusCode': 402, 'message': 'User balance is insufficient, your request has been rejected, please recharge in time at https://www.ohmygpt.com/pay .', 'errorType': 'insufficient_balance_error', 'data': None}
+2024-12-23 17:36:09.129 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:09.266 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.722(s), this was the 5th time calling it.
+2024-12-23 17:36:09.515 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.949(s), this was the 5th time calling it.
+2024-12-23 17:36:10.069 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 24.537(s), this was the 5th time calling it.
+2024-12-23 17:36:10.979 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 25.454(s), this was the 6th time calling it.
+2024-12-23 17:36:10.979 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:10.980 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:11.302 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 25.793(s), this was the 6th time calling it.
+2024-12-23 17:36:11.303 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:11.303 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:11.572 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.441(s), this was the 1st time calling it.
+2024-12-23 17:36:12.913 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 27.384(s), this was the 6th time calling it.
+2024-12-23 17:36:12.913 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:12.914 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:13.247 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.266(s), this was the 1st time calling it.
+2024-12-23 17:36:13.595 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.291(s), this was the 1st time calling it.
+2024-12-23 17:36:13.787 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 28.214(s), this was the 6th time calling it.
+2024-12-23 17:36:13.787 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:13.788 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:13.980 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 28.424(s), this was the 6th time calling it.
+2024-12-23 17:36:13.981 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:13.981 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:14.000 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 28.448(s), this was the 6th time calling it.
+2024-12-23 17:36:14.000 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:14.001 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.145 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.230(s), this was the 1st time calling it.
+2024-12-23 17:36:15.368 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 29.848(s), this was the 6th time calling it.
+2024-12-23 17:36:15.369 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:15.370 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.460 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.329(s), this was the 2nd time calling it.
+2024-12-23 17:36:15.477 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 29.917(s), this was the 6th time calling it.
+2024-12-23 17:36:15.477 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:15.478 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.486 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 29.917(s), this was the 6th time calling it.
+2024-12-23 17:36:15.493 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:15.494 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.725 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 30.177(s), this was the 6th time calling it.
+2024-12-23 17:36:15.726 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:15.726 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.793 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 30.288(s), this was the 6th time calling it.
+2024-12-23 17:36:15.793 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:15.794 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:15.960 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.172(s), this was the 1st time calling it.
+2024-12-23 17:36:16.976 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.993(s), this was the 1st time calling it.
+2024-12-23 17:36:16.983 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.487(s), this was the 1st time calling it.
+2024-12-23 17:36:17.381 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 31.841(s), this was the 6th time calling it.
+2024-12-23 17:36:17.382 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:17.382 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:17.462 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.091(s), this was the 1st time calling it.
+2024-12-23 17:36:17.481 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.500(s), this was the 2nd time calling it.
+2024-12-23 17:36:17.576 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.097(s), this was the 1st time calling it.
+2024-12-23 17:36:17.599 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.295(s), this was the 2nd time calling it.
+2024-12-23 17:36:17.603 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.601(s), this was the 1st time calling it.
+2024-12-23 17:36:17.884 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.157(s), this was the 1st time calling it.
+2024-12-23 17:36:18.107 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.312(s), this was the 1st time calling it.
+2024-12-23 17:36:19.414 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 33.918(s), this was the 6th time calling it.
+2024-12-23 17:36:19.414 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:19.415 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:19.632 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.717(s), this was the 2nd time calling it.
+2024-12-23 17:36:19.635 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.252(s), this was the 1st time calling it.
+2024-12-23 17:36:20.026 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.896(s), this was the 3rd time calling it.
+2024-12-23 17:36:20.139 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.643(s), this was the 2nd time calling it.
+2024-12-23 17:36:20.143 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.159(s), this was the 2nd time calling it.
+2024-12-23 17:36:20.152 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.363(s), this was the 2nd time calling it.
+2024-12-23 17:36:20.762 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.345(s), this was the 1st time calling it.
+2024-12-23 17:36:20.785 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.783(s), this was the 2nd time calling it.
+2024-12-23 17:36:21.057 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.686(s), this was the 2nd time calling it.
+2024-12-23 17:36:21.065 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.337(s), this was the 2nd time calling it.
+2024-12-23 17:36:21.066 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.587(s), this was the 2nd time calling it.
+2024-12-23 17:36:22.038 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.057(s), this was the 3rd time calling it.
+2024-12-23 17:36:22.257 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 36.745(s), this was the 6th time calling it.
+2024-12-23 17:36:22.258 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:22.258 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:22.276 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.481(s), this was the 2nd time calling it.
+2024-12-23 17:36:22.416 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.112(s), this was the 3rd time calling it.
+2024-12-23 17:36:22.433 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 36.901(s), this was the 6th time calling it.
+2024-12-23 17:36:22.433 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:22.434 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:22.743 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.359(s), this was the 2nd time calling it.
+2024-12-23 17:36:23.896 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.479(s), this was the 2nd time calling it.
+2024-12-23 17:36:23.948 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.033(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.053 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.265(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.067 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 38.504(s), this was the 6th time calling it.
+2024-12-23 17:36:24.068 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 402 - {'statusCode': 402, 'message': 'User balance is insufficient, your request has been rejected, please recharge in time at https://www.ohmygpt.com/pay .', 'errorType': 'insufficient_balance_error', 'data': None}
+2024-12-23 17:36:24.068 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:24.165 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.437(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.177 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 38.611(s), this was the 6th time calling it.
+2024-12-23 17:36:24.178 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:24.178 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:24.194 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.715(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.271 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.269(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.401 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 38.885(s), this was the 6th time calling it.
+2024-12-23 17:36:24.404 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.145(s), this was the 1st time calling it.
+2024-12-23 17:36:24.405 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:24.408 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.973(s), this was the 1st time calling it.
+2024-12-23 17:36:24.410 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.280(s), this was the 4th time calling it.
+2024-12-23 17:36:24.412 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:24.427 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.056(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.658 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.675(s), this was the 3rd time calling it.
+2024-12-23 17:36:24.777 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.281(s), this was the 3rd time calling it.
+2024-12-23 17:36:25.749 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.954(s), this was the 3rd time calling it.
+2024-12-23 17:36:26.311 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.242(s), this was the 1st time calling it.
+2024-12-23 17:36:26.420 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.241(s), this was the 1st time calling it.
+2024-12-23 17:36:26.639 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.256(s), this was the 3rd time calling it.
+2024-12-23 17:36:26.642 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.661(s), this was the 4th time calling it.
+2024-12-23 17:36:26.654 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 41.110(s), this was the 6th time calling it.
+2024-12-23 17:36:26.655 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:26.655 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:26.785 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.371(s), this was the 1st time calling it.
+2024-12-23 17:36:27.974 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.495(s), this was the 4th time calling it.
+2024-12-23 17:36:28.197 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.762(s), this was the 2nd time calling it.
+2024-12-23 17:36:28.220 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.803(s), this was the 3rd time calling it.
+2024-12-23 17:36:28.323 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.595(s), this was the 4th time calling it.
+2024-12-23 17:36:28.545 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.286(s), this was the 2nd time calling it.
+2024-12-23 17:36:28.548 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.760(s), this was the 4th time calling it.
+2024-12-23 17:36:28.696 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.200(s), this was the 4th time calling it.
+2024-12-23 17:36:28.699 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.785(s), this was the 4th time calling it.
+2024-12-23 17:36:28.724 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.068(s), this was the 1st time calling it.
+2024-12-23 17:36:28.776 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.792(s), this was the 4th time calling it.
+2024-12-23 17:36:29.202 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 17.898(s), this was the 4th time calling it.
+2024-12-23 17:36:29.637 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.841(s), this was the 4th time calling it.
+2024-12-23 17:36:29.647 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.578(s), this was the 2nd time calling it.
+2024-12-23 17:36:29.766 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.764(s), this was the 4th time calling it.
+2024-12-23 17:36:30.667 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.284(s), this was the 4th time calling it.
+2024-12-23 17:36:31.012 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.833(s), this was the 2nd time calling it.
+2024-12-23 17:36:31.158 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.028(s), this was the 5th time calling it.
+2024-12-23 17:36:31.161 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.682(s), this was the 5th time calling it.
+2024-12-23 17:36:31.164 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.793(s), this was the 4th time calling it.
+2024-12-23 17:36:31.175 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.761(s), this was the 2nd time calling it.
+2024-12-23 17:36:31.191 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.535(s), this was the 2nd time calling it.
+2024-12-23 17:36:31.630 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.195(s), this was the 3rd time calling it.
+2024-12-23 17:36:32.272 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 8.203(s), this was the 3rd time calling it.
+2024-12-23 17:36:33.465 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.484(s), this was the 5th time calling it.
+2024-12-23 17:36:33.572 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.268(s), this was the 5th time calling it.
+2024-12-23 17:36:33.576 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.317(s), this was the 3rd time calling it.
+2024-12-23 17:36:34.030 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 18.534(s), this was the 5th time calling it.
+2024-12-23 17:36:34.296 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.879(s), this was the 4th time calling it.
+2024-12-23 17:36:34.429 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 7.772(s), this was the 3rd time calling it.
+2024-12-23 17:36:34.535 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 17.152(s), this was the 5th time calling it.
+2024-12-23 17:36:34.923 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 12.488(s), this was the 4th time calling it.
+2024-12-23 17:36:35.000 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.821(s), this was the 3rd time calling it.
+2024-12-23 17:36:36.040 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 20.313(s), this was the 5th time calling it.
+2024-12-23 17:36:36.051 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 11.637(s), this was the 3rd time calling it.
+2024-12-23 17:36:36.292 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.504(s), this was the 5th time calling it.
+2024-12-23 17:36:37.821 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.386(s), this was the 5th time calling it.
+2024-12-23 17:36:38.056 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 15.797(s), this was the 4th time calling it.
+2024-12-23 17:36:38.063 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.994(s), this was the 4th time calling it.
+2024-12-23 17:36:38.460 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 19.043(s), this was the 5th time calling it.
+2024-12-23 17:36:38.521 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.042(s), this was the 6th time calling it.
+2024-12-23 17:36:38.522 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:38.522 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:38.656 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 14.477(s), this was the 4th time calling it.
+2024-12-23 17:36:39.578 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 23.783(s), this was the 5th time calling it.
+2024-12-23 17:36:39.663 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 25.661(s), this was the 5th time calling it.
+2024-12-23 17:36:39.806 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 25.823(s), this was the 5th time calling it.
+2024-12-23 17:36:39.848 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 26.933(s), this was the 5th time calling it.
+2024-12-23 17:36:39.957 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 13.301(s), this was the 4th time calling it.
+2024-12-23 17:36:40.071 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 29.090(s), this was the 6th time calling it.
+2024-12-23 17:36:40.072 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:40.072 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:40.774 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 25.403(s), this was the 5th time calling it.
+2024-12-23 17:36:41.288 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.765(s), this was the 1st time calling it.
+2024-12-23 17:36:41.293 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 29.989(s), this was the 6th time calling it.
+2024-12-23 17:36:41.294 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:41.294 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:41.438 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 17.369(s), this was the 5th time calling it.
+2024-12-23 17:36:41.447 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 24.064(s), this was the 6th time calling it.
+2024-12-23 17:36:41.450 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:41.450 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:41.462 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.388(s), this was the 1st time calling it.
+2024-12-23 17:36:42.640 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 18.226(s), this was the 4th time calling it.
+2024-12-23 17:36:44.284 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.989(s), this was the 1st time calling it.
+2024-12-23 17:36:44.672 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 3.221(s), this was the 1st time calling it.
+2024-12-23 17:36:44.683 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 4.609(s), this was the 2nd time calling it.
+2024-12-23 17:36:44.685 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 30.897(s), this was the 6th time calling it.
+2024-12-23 17:36:44.686 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:44.687 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:44.745 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 20.566(s), this was the 5th time calling it.
+2024-12-23 17:36:44.754 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 31.839(s), this was the 6th time calling it.
+2024-12-23 17:36:44.755 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Connection error.
+2024-12-23 17:36:44.755 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:44.800 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 30.798(s), this was the 6th time calling it.
+2024-12-23 17:36:44.800 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:44.800 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:45.214 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.690(s), this was the 2nd time calling it.
+2024-12-23 17:36:46.386 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 24.126(s), this was the 5th time calling it.
+2024-12-23 17:36:46.388 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.587(s), this was the 1st time calling it.
+2024-12-23 17:36:46.510 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 30.715(s), this was the 6th time calling it.
+2024-12-23 17:36:46.510 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 402 - {'statusCode': 402, 'message': 'User balance is insufficient, your request has been rejected, please recharge in time at https://www.ohmygpt.com/pay .', 'errorType': 'insufficient_balance_error', 'data': None}
+2024-12-23 17:36:46.511 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:46.614 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.163(s), this was the 2nd time calling it.
+2024-12-23 17:36:46.626 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 27.210(s), this was the 6th time calling it.
+2024-12-23 17:36:46.629 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 31.134(s), this was the 6th time calling it.
+2024-12-23 17:36:46.630 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:46.630 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:46.631 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:46.631 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:47.029 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.342(s), this was the 1st time calling it.
+2024-12-23 17:36:47.038 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.282(s), this was the 1st time calling it.
+2024-12-23 17:36:47.169 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 31.799(s), this was the 6th time calling it.
+2024-12-23 17:36:47.170 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:47.170 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:48.284 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 6.988(s), this was the 2nd time calling it.
+2024-12-23 17:36:48.639 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.001(s), this was the 1st time calling it.
+2024-12-23 17:36:48.646 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 32.919(s), this was the 6th time calling it.
+2024-12-23 17:36:48.647 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:48.647 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:48.796 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.285(s), this was the 1st time calling it.
+2024-12-23 17:36:48.889 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 39.759(s), this was the 6th time calling it.
+2024-12-23 17:36:48.890 | ERROR    | Core.Common.Utils:log_and_reraise:286 - Retry attempts exhausted. Last exception: Error code: 429 - {'statusCode': 429, 'message': 'You have been temporarily banned due to too many failed attempts, please try again later and read the error message before next try, contact us if you think this is an error.'}
+2024-12-23 17:36:48.890 | WARNING  | Core.Common.Utils:log_and_reraise:287 - 
+Recommend going to https://deepwisdom.feishu.cn/wiki/MsGnwQBjiif9c3koSJNcYaoSnu4#part-XdatdVlhEojeAfxaaEZcMV3ZniQ
+See FAQ 5.8
+
+2024-12-23 17:36:49.006 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.373(s), this was the 1st time calling it.
+2024-12-23 17:36:49.234 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 2.063(s), this was the 1st time calling it.
+2024-12-23 17:36:49.286 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 10.763(s), this was the 3rd time calling it.
+2024-12-23 17:36:49.383 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.309(s), this was the 3rd time calling it.
+2024-12-23 17:36:49.393 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 22.736(s), this was the 5th time calling it.
+2024-12-23 17:36:50.009 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.361(s), this was the 1st time calling it.
+2024-12-23 17:36:50.208 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 1.316(s), this was the 1st time calling it.
+2024-12-23 17:36:50.279 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 5.478(s), this was the 2nd time calling it.
+2024-12-23 17:36:50.645 | WARNING  | tenacity.after:log_it:44 - Finished call to 'Core.Provider.OpenaiApi.OpenAILLM.acompletion_text' after 9.194(s), this was the 3rd time calling it.
