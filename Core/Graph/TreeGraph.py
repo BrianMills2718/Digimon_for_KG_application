@@ -122,8 +122,6 @@ class TreeGraph(BaseGraph):
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
 
-        # import pdb
-        # pdb.set_trace()
 
         # Perform the clustering
         clusters = self._perform_clustering(
@@ -157,8 +155,7 @@ class TreeGraph(BaseGraph):
                     logger.info(
                         f"reclustering cluster with {len(cluster_nodes)} nodes"
                     )
-                # import pdb
-                # pdb.set_trace()
+    
                 node_clusters.extend(
                     self._clustering(
                         cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose

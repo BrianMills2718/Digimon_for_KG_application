@@ -9,6 +9,10 @@ from Data.QueryDataset import RAGQueryDataset
 import pandas as pd
 from Core.Utils.Evaluation import Evaluator
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 def check_dirs(opt):
     # For each query, save the results in a separate directory

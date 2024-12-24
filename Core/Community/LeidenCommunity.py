@@ -94,7 +94,7 @@ class LeidenCommunity(BaseCommunity):
                     k: {
                         "report_string": community_report_from_json(r),
                         "report_json": r,
-                        "community_info": v.as_dict
+                        **v.as_dict
                     }
                     for k, r, v in
                     zip(this_level_community_keys, this_level_communities_reports, this_level_community_values)
@@ -127,7 +127,7 @@ class LeidenCommunity(BaseCommunity):
             already_reports[k] for k in community.sub_communities if k in already_reports
         ]
         all_sub_communities = sorted(
-            all_sub_communities, key=lambda x: x.occurrence, reverse=True
+            all_sub_communities, key=lambda x: x["occurrence"], reverse=True
         )
         truncated_sub_communities = truncate_list_by_token_size(
             all_sub_communities,
@@ -150,8 +150,8 @@ class LeidenCommunity(BaseCommunity):
         already_nodes = set()
         already_edges = set()
         for c in truncated_sub_communities:
-            already_nodes.update(c.nodes)
-            already_edges.update([tuple(e) for e in c.edges])
+            already_nodes.update(c["nodes"])
+            already_edges.update([tuple(e) for e in c["edges"]])
         return (
             sub_communities_describe,
             len(encode_string_by_tiktoken(sub_communities_describe)),

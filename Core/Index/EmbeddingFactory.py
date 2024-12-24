@@ -76,6 +76,8 @@ class RAGEmbeddingFactory(GenericFactory):
             model_name=config.embedding.model,
             cache_folder=config.embedding.cache_folder,
         )
+        if config.embedding.cache_folder == "":
+            del params["cache_folder"]
         return HuggingFaceEmbedding(**params)
     
     @staticmethod
