@@ -29,7 +29,9 @@ class RAGQueryDataset(Dataset):
     def __getitem__(self, idx):
         question = self.dataset.iloc[idx]["question"]
         answer = self.dataset.iloc[idx]["answer"]
-        return {"id": idx, "question": question, "answer": answer}
+        # other_attrs = self.dataset.iloc[idx].drop(["answer", "question"])
+        other_attrs = self.dataset.iloc[idx].drop(["answer", "question"])
+        return {"id": idx, "question": question, "answer": answer, **other_attrs}
 
 
 if __name__ == "__main__":
