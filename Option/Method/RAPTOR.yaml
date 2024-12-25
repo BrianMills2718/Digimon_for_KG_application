@@ -39,6 +39,7 @@ graph:
     verbose: False
     random_seed: 224
     enforce_sub_communities: False
+    threshold_cluster_num: 5000
 
     
 
