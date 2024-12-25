@@ -30,7 +30,10 @@ class TreeGraph(BaseGraph):
         random.seed(self.config.random_seed)
 
     def _GMM_cluster(self, embeddings: np.ndarray, threshold: float, random_state: int = 0):
-        max_clusters = min(50, len(embeddings))
+        if  len(embeddings) >  self.config.threshold_cluster_num:
+            max_clusters  = len(embeddings) / 100
+        else:
+            max_clusters = min(50, len(embeddings))
         n_clusters = np.arange(1, max_clusters)
         bics = []
         for n in n_clusters:
