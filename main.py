@@ -9,10 +9,6 @@ from Data.QueryDataset import RAGQueryDataset
 import pandas as pd
 from Core.Utils.Evaluation import Evaluator
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
 def check_dirs(opt):
     # For each query, save the results in a separate directory
@@ -49,9 +45,9 @@ def wrapper_query(query_dataset, digimon, result_dir):
     return save_path
 
 
-async def wrapper_evaluation(path, opt, result_dir):
+def wrapper_evaluation(path, opt, result_dir):
     eval = Evaluator(path, opt.dataset_name)
-    res_dict = await eval.evaluate()
+    res_dict = eval.evaluate()
     save_path = os.path.join(result_dir, "metrics.json")
     with open(save_path, "w") as f:
         f.write(str(res_dict))
@@ -81,7 +77,7 @@ if __name__ == "__main__":
 
     save_path = wrapper_query(query_dataset, digimon, result_dir)
 
-    asyncio.run(wrapper_evaluation(save_path, result_dir))
+    wrapper_evaluation(save_path, result_dir)
 
     # for train_item in dataloader:
 

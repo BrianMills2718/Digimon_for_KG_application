@@ -446,6 +446,12 @@ class BaseGraph(ABC):
     async def get_edge_relation_name_batch(self, edges: list[tuple[str, str]]):
         return await self._graph.get_edge_relation_name_batch(edges=edges)
 
+    async def get_neighbors_from_sources(self, start_nodes: list[str]):
+        return await self._graph.get_neighbors_from_sources(start_nodes=start_nodes)
+
+    async def get_paths_from_sources(self, start_nodes: list[str], cutoff: int = 5) -> list[tuple[str, str, str]]:
+        return await self._graph.get_paths_from_sources(start_nodes=start_nodes)
+
     async def _clear(self):
         self._graph.clear()
 

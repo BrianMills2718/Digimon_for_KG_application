@@ -283,3 +283,59 @@ COT_SYSTEM_DOC = ('As an advanced reading comprehension assistant, your task is 
 COT_SYSTEM_NO_DOC  = ('As an advanced reading comprehension assistant, your task is to analyze the questions and then answer them. '
                                  'Your response start after "Thought: ", where you will methodically break down the reasoning process, illustrating how you arrive at conclusions. '
                                  'Conclude with "Answer: " to present a concise, definitive response, devoid of additional elaborations.')
+
+DALK_RERANK_PROMPT = """
+    There is a question and some knowledge graph. The knowledge graphs follow entity->relationship->entity list format.
+    \n\n
+    ##Graph: {graph}
+    \n\n
+    ##Question: {question}
+    \n\n
+    Please rerank the knowledge graph and output at most 5 important and relevant triples for solving the given question. Output the reranked knowledge in the following format:
+    Reranked Triple1: xxx ——> xxx
+    Reranked Triple2: xxx ——> xxx
+    Reranked Triple3: xxx ——> xxx
+    Answer:
+"""
+
+DALK_CONVERT_PROMPT = """
+    There are some knowledge graph. They follow entity->relationship->entity list format.
+    \n\n
+    {graph}
+    \n\n
+    Use the knowledge graph information. Try to convert them to natural language, respectively. Use single quotation marks for entity name and relation name. And name them as Neighbor-based Evidence 1, Neighbor-based Evidence 2,...\n\n
+
+    Output:
+"""
+
+DALK_STEP_PROMPT = """
+    You are an excellent AI assistant to answering the following question,
+    Question: 
+    \n\n
+    {question}
+    \n\n
+    You have some knowledge information in the following:\n\n
+    ### {paths}
+    \n\n
+    ### {neis},
+    Answer: Let's think step by step:
+"""
+
+DALK_CONTEXT_PROMPT = """
+    You have some knowledge information in the following:\n\n
+    ### {paths}
+    \n\n
+    ### {neis},
+    Answer: Let's think step by step: {step}
+    \n\n
+"""
+
+DALK_QUERY_PROMPT = """
+    You are an excellent AI assistant to answering the following question,
+    Question: 
+    \n\n
+    {question}
+    \n\n
+    {context}
+    The final answer is:
+"""

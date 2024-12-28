@@ -13,7 +13,7 @@ class SubgraphRetriever(BaseRetriever):
 
         config = kwargs.pop("config")
         super().__init__(config)
-        self.mode_list = ["concatenate_information_return_list", "induced_subgraph_return_networkx", "k_hop_return_set"]
+        self.mode_list = ["concatenate_information_return_list", "induced_subgraph_return_networkx", "k_hop_return_set", "paths_return_list", "neighbors_return_list"]
         self.type = "subgraph"
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -52,3 +52,23 @@ class SubgraphRetriever(BaseRetriever):
             return subgraph_datas
         except Exception as e:
             logger.exception(f"Failed to find relevant subgraph: {e}")
+
+    @register_retriever_method(type="subgraph", method_name="paths_return_list")
+    async def _find_subgraph_by_paths(self, seed: list[str], cutoff: int = 5):
+        try:
+            if seed is None: return None
+            path_datas = await self.graph.get_paths_from_sources(start_nodes=seed, cutoff=cutoff)
+
+            return path_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant paths: {e}")
+
+    @register_retriever_method(type="subgraph", method_name="neighbors_return_list")
+    async def _find_subgraph_by_neighbors(self, seed: list[str]):
+        try:
+            if seed is None: return None
+            nei_datas = await self.graph.get_neighbors_from_sources(start_nodes=seed)
+
+            return nei_datas
+        except Exception as e:
+            logger.exception(f"Failed to find relevant neighbors: {e}")

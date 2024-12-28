@@ -8,6 +8,7 @@ from Core.Query.KGPQuery import KGPQuery
 from Core.Query.ToGQuery import ToGQuery
 from Core.Query.GRQuery import GRQuery
 from Core.Query.MedQuery import MedQuery
+from Core.Query.DalkQuery import DalkQuery
 
 class QueryFactory:
     def __init__(self):
@@ -18,6 +19,7 @@ class QueryFactory:
             "tog": self._create_tog_query,
             "gr": self._create_gr_query,
             "med":self._create_med_query,
+            "dalk": self._create_dalk_query,
         }
 
     def get_query(self, name, config, retriever) -> BaseQuery:
@@ -47,5 +49,9 @@ class QueryFactory:
     @staticmethod
     def _create_med_query(config, retriever):
         return MedQuery(config, retriever)
+    
+    @staticmethod
+    def _create_dalk_query(config, retriever):
+        return DalkQuery(config, retriever)
 
 get_query = QueryFactory().get_query
