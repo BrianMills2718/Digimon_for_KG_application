@@ -16,7 +16,7 @@ from nltk import sent_tokenize
 from rouge_score import rouge_scorer, scoring
 from Option.Config2 import default_config
 from Core.Provider.BaseLLM import BaseLLM
-from Core.Provider.LLMProviderRegistry import create_llm_instance
+from Core.Provider.LLMProviderRegister import create_llm_instance
 
 
 nltk_path = "/mnt/data/wangshu/hcarag/nltk"
@@ -386,15 +386,15 @@ class Evaluator:
             str_hit_list.append(str_hit)
 
         mauve = self.compute_mauve(df)
-        rougeLsum_list = self.compute_rouge(df)
+        rougeLsum = self.compute_rouge(df)
 
         str_em = sum(str_em_list) * 100 / len(str_em_list)
         str_hit = sum(str_hit_list) * 100 / len(str_hit_list)
-        rougeLsum = sum(rougeLsum_list) / len(rougeLsum_list)
+        # rougeLsum = sum(rougeLsum_list) / len(rougeLsum_list)
 
         df["str_em"] = str_em_list
         df["str_hit"] = str_hit_list
-        df["rougeLsum"] = rougeLsum_list
+        df["rougeLsum"] = rougeLsum
 
         res_dict = {
             "str_em": str_em,
@@ -417,8 +417,11 @@ class Evaluator:
                 question=row["question"], model_output=row["output"]
             )
             response = await self.llm.aask(msg=prompt, format="json")
-            df.loc[index, "extract_output"] = response["model_output"]
-
+            
+            try:
+                df.loc[index, "extract_output"] = response["predict"]
+            except Exception as e:
+                df.loc[index, "extract_output"] = "-1"
         print("LLM extract option completed.")
 
         accuracy_list = []
@@ -631,9 +634,9 @@ Please provide your answer in the following JSON format:
         "model_output": <answer_option>
     }}
 
-# Example 1
+### Example 1
 -----------
-INPUT:
+# INPUT:
 
 Question:
 How much time has passed between Blake's night with Eldoria and his search for Sabrina York in his mind-world?
@@ -642,17 +645,17 @@ B: 10 hours
 C: 12 years
 D: 1 hour
 
-Model Output: 
+# Model Output: 
 I think the answer is 7 years.
 
 OUTPUT:
     {{
-        "model_output": "A"
+        "predict": "A"
     }}
 
-# Example 2
+### Example 2
 -----------
-INPUT:
+# INPUT:
 
 Question:
 How much time has passed between Blake's night with Eldoria and his search for Sabrina York in his mind-world?
@@ -661,41 +664,43 @@ B: 10 hours
 C: 12 years
 D: 1 hour
 
-Model Output: 
-C.
+# Model Output: 
+The correct answer is C.
 
 OUTPUT:
     {{
-        "model_output": "C"
+        "predict": "C"
     }}
     
-# EXAMPLE 3
+### EXAMPLE 3
 -----------
 
-INPUT:
+# INPUT:
 
 Question:
-Sabrina York is 
-A: a criminal that Blake is hunting
-B: a psycheye that taught Blake all the tricks
-C: an old friend of Blake's
-D: Eldoria's alter ego
+Donald Trump is the president of:
+A: China
+B: Canada
+C: France
+D: Spain
 
-Model Output: 
-Based on the context and nature of the question, Sabrina York is most likely B: a psycheye that taught Blake all the tricks.
+# Model Output: 
+The correct answer is: None of the above.
 
 OUTPUT:
     {{
-        "model_output": "B"
+        "predict": "-1"
     }}
 
-# Real Data
-INPUT:
+Now please the output based on the given question and model output.
+
+### Real Data
+# INPUT:
 
 Question:
 {question}
 
-Model Output:
+# Model Output:
 {model_output}
 
 OUTPUT:"""

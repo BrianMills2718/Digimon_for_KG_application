@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     save_path = wrapper_query(query_dataset, digimon, result_dir)
 
-    wrapper_evaluation(save_path, result_dir)
+    asyncio.run(wrapper_evaluation(save_path, opt, result_dir))
 
     # for train_item in dataloader:
 
