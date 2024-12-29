@@ -30,6 +30,7 @@ class GraphConfig(YamlModel):
     summarization_length: int = 100
     num_layers: int = 10
     top_k: int = 5
+    threshold_cluster_num: int = 5000
     start_layer: int = 5
     graph_cluster_params: Optional[dict] = None
     selection_mode: str = "top_k"
@@ -42,5 +43,5 @@ class GraphConfig(YamlModel):
 
     # For graph augmentation
     similarity_threshold: float = 0.8
-    similarity_top_k: int = 100
+    similarity_top_k: int = 10
     similarity_max: float = 1.0

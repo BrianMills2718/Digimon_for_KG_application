@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 import igraph as ig
 import numpy as np
-
 from lazy_object_proxy.utils import await_
 from scipy.sparse import csr_matrix
 
@@ -176,9 +175,14 @@ class BaseGraph(ABC):
     async def augment_graph_by_similarity_search(self, entity_vdb, duplicate=False):
         logger.info("Starting augment the existing graph with similariy edges")
 
-        ranking = {node: await entity_vdb.retrieval_nodes(query=node, graph = self._graph, top_k=self.config.similarity_top_k, need_score = True) for node in
-              await self._graph.nodes()}
+        # ranking =  for node in
+        #       await self._graph.nodes()}
 
+        ranking  = {}
+        import tqdm
+        for node in tqdm.tqdm(await self._graph.nodes(), total=len(await self._graph.nodes())):
+            ranking[node] =  await entity_vdb.retrieval_nodes(query=node, graph = self._graph, top_k=self.config.similarity_top_k, need_score = True)
+      
         kb_similarity = defaultdict(list)
         for key, rank in ranking.items():
             max_score = 0
