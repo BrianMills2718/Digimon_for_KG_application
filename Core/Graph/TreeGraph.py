@@ -121,7 +121,9 @@ class TreeGraph(BaseGraph):
         return all_local_clusters
 
 
-    def _clustering(self, nodes: List[TreeNode], max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose) -> List[List[TreeNode]]:
+    def _clustering(self, nodes: List[TreeNode], max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose, depth: int = 0) -> List[List[TreeNode]]:
+        if depth >= 20: return [nodes]
+        
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
 
@@ -161,7 +163,7 @@ class TreeGraph(BaseGraph):
     
                 node_clusters.extend(
                     self._clustering(
-                        cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose
+                        cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose, depth + 1
                     )
                 )
             else:
@@ -253,7 +255,7 @@ class TreeGraph(BaseGraph):
             for i in range(0, self.max_workers):
                 leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
                 as_completed(leaf_tasks)
-                time.sleep(self.max_wokers)
+                time.sleep(self.max_workers)
 
         logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()

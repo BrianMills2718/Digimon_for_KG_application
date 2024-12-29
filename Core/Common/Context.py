@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 from Option.Config2 import Config
 from Config.LLMConfig import LLMConfig, LLMType
 from Core.Provider.BaseLLM import BaseLLM
-from Core.Provider.LLMProviderRegister import create_llm_instance
+from Core.Provider.LLMProviderRegistry import create_llm_instance
 from Core.Common.CostManager import (
     CostManager,
     FireworksCostManager,

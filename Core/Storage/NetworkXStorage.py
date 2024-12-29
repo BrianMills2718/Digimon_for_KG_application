@@ -415,5 +415,77 @@ class NetworkXStorage(BaseGraphStorage):
         )
         return relations
 
+    async def get_one_path(self, start: str, cand: list[str], cutoff: int = 5):
+        pred, dist = nx.dijkstra_predecessor_and_distance(self._graph, source = start, cutoff = cutoff, weight = None)
+        end = None
+        for node, dis in dist.items():
+            if (node in cand) and (end is None or dis < dist[end]): end = node
+        if end is None: return None
+
+        # import pdb
+        # pdb.set_trace()
+
+        path = []
+        cur = end
+        while cur != start:
+            path.append(await self.get_edge(pred[cur][0], cur))
+            cur = pred[cur][0]
+        # import pdb
+        # pdb.set_trace()
+        return end, path[::-1]
+
+    async def get_paths_from_sources(self, start_nodes: list[str], cutoff: int = 5) -> list[tuple[str, str, str]]:
+        # import pdb
+        # pdb.set_trace()
+        cand = set(start_nodes)
+        paths = []
+        while len(cand) != 0:
+            start = next(iter(cand))
+            cand.remove(start)
+            
+            path_concat = []
+            while True:
+                result = await self.get_one_path(start, cand, cutoff)
+                if result is None: break
+                end, path = result
+                # import pdb
+                # pdb.set_trace()
+                path_concat.extend(path)
+                cand.remove(end)
+            
+            if (len(path_concat)): paths.append(path_concat)
+
+        return paths
+
+    async def get_neighbors_from_sources(self, start_nodes: list[str]):
+        # import pdb
+        # pdb.set_trace()
+        neighbor_list = []
+        neighbor_list_cand = []
+        for u in start_nodes:
+            neis = [(await self.get_edge(e[0], e[1]))["tgt_id"] for e in await self.get_node_edges(u)]
+            neighbor_list.extend([(await self.get_edge(e[0], e[1])) for e in await self.get_node_edges(u)])
+
+            while neis != []:
+                inter = list(set(neis) & set(start_nodes))
+                new_neis = []
+
+                if len(inter) != 0:
+                    for v in inter:
+                        new_neis.extend([(await self.get_edge(e[0], e[1]))["tgt_id"] for e in await self.get_node_edges(v)])
+                        neighbor_list_cand.extend([(await self.get_edge(e[0], e[1])) for e in await self.get_node_edges(v)])
+                else:
+                    for v in neis:
+                        new_neis.extend([(await self.get_edge(e[0], e[1]))["tgt_id"] for e in await self.get_node_edges(v)])
+                        neighbor_list_cand.extend([(await self.get_edge(e[0], e[1])) for e in await self.get_node_edges(v)])
+                if len(neighbor_list_cand) > 10:
+                    break
+                neis = new_neis
+        if len(neighbor_list)<=5:
+            neighbor_list.extend(neighbor_list_cand)
+        # import pdb
+        # pdb.set_trace()
+        return neighbor_list
+
     def clear(self):
         self._graph = nx.Graph()
