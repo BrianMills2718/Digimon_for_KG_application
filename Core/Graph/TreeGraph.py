@@ -20,8 +20,8 @@ import random
 from sklearn.mixture import GaussianMixture
 
 class TreeGraph(BaseGraph):
-    max_workers: int = 32
-
+    max_workers: int = 16
+    leaf_workers: int = 32
     def __init__(self, config, llm, encoder):
         super().__init__(config, llm, encoder)
         self._graph: TreeGraphStorage = TreeGraphStorage()  # Tree index
@@ -122,7 +122,7 @@ class TreeGraph(BaseGraph):
 
 
     def _clustering(self, nodes: List[TreeNode], max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose, depth: int = 0) -> List[List[TreeNode]]:
-        if depth >= 20: return [nodes]
+        # if depth >= 20: return [nodes]
         
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
@@ -231,8 +231,7 @@ class TreeGraph(BaseGraph):
                     cluster_tasks = [pool.submit(self._create_task_for(self._extract_cluster_relationship), layer = layer + 1, cluster = cluster) for (j, cluster) in enumerate(clusters) if j % self.max_workers == i]
                     # self._run_tasks(cluster_tasks)
                     as_completed(cluster_tasks)
-                    time.sleep(3)
-
+           
             # for cluster in clusters:  # for each cluster, create a new node
             #     await self._extract_cluster_relationship(layer + 1, cluster)
 
@@ -243,23 +242,21 @@ class TreeGraph(BaseGraph):
         
 
     async def _build_graph(self, chunks: List[Any]):
-        if self.config.build_tree_from_leaves:
-            await self._graph.load_tree_graph_from_leaves()
-            logger.info(f"Loaded {len(self._graph.leaf_nodes)} Leaf Embeddings")
-        else:
-            self._graph.clear()  # clear the storage before rebuilding
-            self._graph.add_layer()
-            with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-                # leaf_tasks = []
-                # for index, chunk in enumerate(chunks):
-                #     logger.info(index)
-                #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
-                for i in range(0, self.max_workers):
-                    leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
-                    as_completed(leaf_tasks)
-                    time.sleep(2)
-            logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
-            self._graph.write_tree_leaves()
+        self._graph.clear()  # clear the storage before rebuilding
+
+        self._graph.add_layer()
+
+        with ThreadPoolExecutor(max_workers=self.leaf_workers) as pool:
+            # leaf_tasks = []
+            # for index, chunk in enumerate(chunks):
+            #     logger.info(index)
+            #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
+            for i in range(0, self.leaf_workers):
+                leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.leaf_workers == i]
+                as_completed(leaf_tasks)
+   
+
+        logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
         await self._build_tree_from_leaves()
         
     @property

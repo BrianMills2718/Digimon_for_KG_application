@@ -20,7 +20,7 @@ from Config.LLMConfig import LLMConfig, LLMType
 from Core.Common.Constants import USE_CONFIG_TIMEOUT
 from Core.Common.Logger import log_llm_stream, logger
 from Core.Provider.BaseLLM import BaseLLM
-from Core.Provider.LLMProviderRegistry import register_provider
+from Core.Provider.LLMProviderRegister import register_provider
 from Core.Common.Utils import  log_and_reraise,prase_json_from_response
 from Core.Common.CostManager import CostManager
 from Core.Utils.Exceptions import handle_exception
