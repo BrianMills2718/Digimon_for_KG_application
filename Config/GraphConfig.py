@@ -26,6 +26,7 @@ class GraphConfig(YamlModel):
     llm_model_max_token_size: int = 32768
 
     # For Tree graph config 
+    build_tree_from_leaves: bool = False
     reduction_dimension: int = 5
     summarization_length: int = 100
     num_layers: int = 10

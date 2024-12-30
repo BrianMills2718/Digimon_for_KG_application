@@ -243,21 +243,23 @@ class TreeGraph(BaseGraph):
         
 
     async def _build_graph(self, chunks: List[Any]):
-        self._graph.clear()  # clear the storage before rebuilding
-
-        self._graph.add_layer()
-
-        with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-            # leaf_tasks = []
-            # for index, chunk in enumerate(chunks):
-            #     logger.info(index)
-            #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
-            for i in range(0, self.max_workers):
-                leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
-                as_completed(leaf_tasks)
-   
-
-        logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
+        if self.config.build_tree_from_leaves:
+            await self._graph.load_tree_graph_from_leaves()
+            logger.info(f"Loaded {len(self._graph.leaf_nodes)} Leaf Embeddings")
+        else:
+            self._graph.clear()  # clear the storage before rebuilding
+            self._graph.add_layer()
+            with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+                # leaf_tasks = []
+                # for index, chunk in enumerate(chunks):
+                #     logger.info(index)
+                #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
+                for i in range(0, self.max_workers):
+                    leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
+                    as_completed(leaf_tasks)
+                    time.sleep(2)
+            logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
+            self._graph.write_tree_leaves()
         await self._build_tree_from_leaves()
         
     @property
