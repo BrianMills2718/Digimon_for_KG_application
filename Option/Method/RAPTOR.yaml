@@ -27,6 +27,7 @@ graph:
     force: True
 
     # Tree Config
+    build_from_leaves: False
     reduction_dimension:  5
     summarization_length: 100
     num_layers:  10
