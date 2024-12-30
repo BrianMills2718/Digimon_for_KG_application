@@ -50,7 +50,7 @@ class TreeGraphStorage(BaseGraphStorage):
     def write_tree_leaves(self):
         TreeGraphStorage.write_tree_graph(tree=self.tree, tree_pkl_file=self.tree_leaves_pkl_file)
     
-    async def load_tree_graph_from_leaves(self, force) -> bool:
+    async def load_tree_graph_from_leaves(self, force = False) -> bool:
         # Attempting to load the graph from the specified pkl file
         logger.info(f"Attempting to load the tree leaves from: {self.tree_leaves_pkl_file}")
         if os.path.exists(self.tree_leaves_pkl_file):
