@@ -34,3 +34,8 @@ class ColBertIndexConfig(BaseIndexConfig):
     doc_maxlen: int = Field(default=120, description="Maximum length of documents.")
     query_maxlen: int = Field(default=60, description="Maximum length of queries.")
     kmeans_niters: int = Field(default=4, description="Number of iterations for K-means clustering.")
+
+
+
+class FAISSIndexConfig(VectorIndexConfig):
+    """Config for faiss-based index."""

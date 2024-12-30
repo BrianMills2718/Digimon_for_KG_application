@@ -5,6 +5,7 @@ from Core.Index import get_rag_embedding
 from Core.Index.Schema import (
     VectorIndexConfig,
     ColBertIndexConfig,
+    FAISSIndexConfig
 )
 
 
@@ -13,6 +14,7 @@ class IndexConfigFactory:
         self.creators = {
             "vector": self._create_vector_config,
             "colbert": self._create_colbert_config,
+            "faiss": self._create_faiss_config,
         }
 
     def get_config(self, config, persist_path):
@@ -22,6 +24,13 @@ class IndexConfigFactory:
     @staticmethod
     def _create_vector_config(config, persist_path):
         return VectorIndexConfig(
+            persist_path=persist_path,
+            embed_model=get_rag_embedding(config.embedding.api_type, config)
+        )
+
+    @staticmethod
+    def _create_faiss_config(config, persist_path):
+        return FAISSIndexConfig(
             persist_path=persist_path,
             embed_model=get_rag_embedding(config.embedding.api_type, config)
         )

@@ -23,7 +23,7 @@ class DocChunk:
     def namespace(self, namespace):
         self.namespace = namespace
 
-    async def build_chunks(self, docs: Union[str, List[str]], force=False):
+    async def build_chunks(self, docs: Union[str, List[str]], force=True):
         logger.info("Starting chunk the given documents")
   
         is_exist = await self._load_chunk(force)

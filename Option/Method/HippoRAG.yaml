@@ -10,7 +10,8 @@ enable_graph_augmentation: True
 
 index_name: er_graph_colbert
 
-vdb_type: colbert  # vector/colbert
+vdb_type: faiss  # vector/colbert
+# colbert_checkpoint_path: str = "/home/yingli/HippoRAG/exp/colbertv2.0"
 
 # Chunk Config 
 chunk:

@@ -10,6 +10,7 @@ import pandas as pd
 from Core.Utils.Evaluation import Evaluator
 
 
+
 def check_dirs(opt):
     # For each query, save the results in a separate directory
     result_dir = os.path.join(opt.working_dir, opt.exp_name, "Results")
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         data_dir=os.path.join(opt.data_root, opt.dataset_name)
     )
     corpus = query_dataset.get_corpus()
-    corpus = corpus[:10]
+    # corpus = corpus[:10]
 
     asyncio.run(digimon.insert(corpus))
 

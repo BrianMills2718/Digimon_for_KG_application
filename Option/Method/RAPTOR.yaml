@@ -10,7 +10,7 @@ enable_graph_augmentation: False
 
 index_name: tree_graph
 
-vdb_type: vector  # vector/colbert
+vdb_type: colbert  # vector/colbert
 
 # Chunk Config 
 chunk:
@@ -24,7 +24,7 @@ graph:
   # enable LightRAG
     enable_edge_keywords: False
     graph_type: tree_graph # rkg_graph/er_graph/tree_graph/passage_graph
-    force: True
+    force: False
 
     # Tree Config
     build_from_leaves: False
@@ -39,6 +39,7 @@ graph:
     cluster_metric: cosine
     verbose: False
     random_seed: 224
+    threshold_cluster_num: 5000
     enforce_sub_communities: False
     threshold_cluster_num: 5000
 
