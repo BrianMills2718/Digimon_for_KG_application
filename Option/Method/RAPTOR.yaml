@@ -35,7 +35,7 @@ graph:
     start_layer: 5
     selection_mode: top_k
     max_length_in_cluster: 3500
-    threshold: 0.5 # For RAPTOR 
+    threshold: 0.1 # For RAPTOR 
     cluster_metric: cosine
     verbose: False
     random_seed: 224
