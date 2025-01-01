@@ -134,7 +134,8 @@ class TreeGraphStorage(BaseGraphStorage):
     def get_node_num(self):
         return self.num_nodes
 
-    async def nodes(self):
+    @property
+    def nodes(self):
         return self.tree.all_nodes
 
     async def neighbors(self, node):
@@ -146,6 +147,3 @@ class TreeGraphStorage(BaseGraphStorage):
 
     async def get_community_schema(self):
         return None
-
-    async def get_node(self, node_id):
-        return self.tree.all_nodes[node_id]
