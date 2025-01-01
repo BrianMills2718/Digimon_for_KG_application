@@ -543,3 +543,20 @@ def to_str_by_maxtokens(max_chars, entities, relationships, chunks) -> str:
     else:
         data.append("\n## Sources: None\n")
     return "\n".join(data)
+
+
+def text_length(text: list[int] | list[list[int]]) -> int:
+        """
+        Help function to get the length for the input text. Text can be either
+        a list of ints (which means a single text as input), or a tuple of list of ints
+        (representing several text inputs to the model).
+        """
+
+        if isinstance(text, dict):  # {key: value} case
+            return len(next(iter(text.values())))
+        elif not hasattr(text, "__len__"):  # Object has no len() method
+            return 1
+        elif len(text) == 0 or isinstance(text[0], int):  # Empty string or list of ints
+            return len(text)
+        else:
+            return sum([len(t) for t in text])  # Sum of length of individual strings

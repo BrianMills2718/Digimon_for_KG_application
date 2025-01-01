@@ -20,8 +20,8 @@ import random
 from sklearn.mixture import GaussianMixture
 
 class TreeGraph(BaseGraph):
-    max_workers: int = 32
-
+    max_workers: int = 16
+    leaf_workers: int = 32
     def __init__(self, config, llm, encoder):
         super().__init__(config, llm, encoder)
         self._graph: TreeGraphStorage = TreeGraphStorage()  # Tree index

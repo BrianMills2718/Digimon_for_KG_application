@@ -181,18 +181,18 @@ class BaseGraph(ABC):
         ranking  = {}
         import tqdm
         for node in tqdm.tqdm(await self._graph.nodes(), total=len(await self._graph.nodes())):
-            ranking[node] =  await entity_vdb.retrieval_nodes(query=node, graph = self._graph, top_k=self.config.similarity_top_k, need_score = True)
+            ranking[node] =  await entity_vdb.retrieval(query = node, top_k=self.config.similarity_top_k)
       
         kb_similarity = defaultdict(list)
         for key, rank in ranking.items():
             max_score = 0
-    
-            for idx, (ns, score) in enumerate(zip(rank[0], rank[1])):
+            for idx, ns_item in enumerate(rank):
+                score = ns_item.score
                 if idx == 0:
                     max_score = score
                 if not duplicate and idx == 0:
                     continue
-                kb_similarity[key].append((ns['entity_name'], score / max_score))
+                kb_similarity[key].append((ns_item.metadata['entity_name'], score / max_score))
 
         maybe_edges = defaultdict(list)
         # Refactored second part using dictionary iteration and enumerate

@@ -4,7 +4,8 @@ import os
 import faiss
 from typing import Any
 from llama_index.core.schema import (
-    Document
+    Document,
+    TextNode
 )
 from llama_index.core import StorageContext, load_index_from_storage, VectorStoreIndex, Settings
 from Core.Index.BaseIndex import BaseIndex, VectorIndexNodeResult, VectorIndexEdgeResult
@@ -13,7 +14,7 @@ from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core.schema import QueryBundle
 import numpy as np
 from llama_index.vector_stores.faiss import FaissVectorStore
-
+from concurrent.futures import ProcessPoolExecutor
 
 class FaissIndex(BaseIndex):
     """FaissIndex is designed to be simple and straightforward.
@@ -23,13 +24,14 @@ class FaissIndex(BaseIndex):
 
     def __init__(self, config):
         super().__init__(config)
-
+        self.embedding_model =config.embed_model
     async def retrieval(self, query, top_k):
         if top_k is None:
             top_k = self._get_retrieve_top_k()
         retriever = self._index.as_retriever(similarity_top_k=top_k, embed_model=self.config.embed_model)
-        query_bundle = QueryBundle(query_str=query)
-
+        query_emb = self._embed_text(query)
+        query_bundle = QueryBundle(query_str=query, embedding=query_emb)
+    
         return await retriever.aretrieve(query_bundle)
 
     async def retrieval_nodes(self, query, top_k, graph, need_score=False, tree_node=False):
@@ -49,7 +51,8 @@ class FaissIndex(BaseIndex):
 
     async def retrieval_batch(self, queries, top_k):
         pass
-
+    def _embed_text(self, text: str):
+        return self.embedding_model._get_text_embedding(text)
     async def _update_index(self, datas: list[dict[str:Any]], meta_data: list):
         async def process_document(data):
             document = Document(
@@ -59,16 +62,37 @@ class FaissIndex(BaseIndex):
                 excluded_embed_metadata_keys=meta_data,
             )
             return document
-
+        Settings.embed_model = self.config.embed_model
         documents = await asyncio.gather(*[process_document(data) for data in datas])
-        parser = SimpleNodeParser.from_defaults()
-        nodes = parser.get_nodes_from_documents(documents)
+        # nodes = parser.get_nodes_from_documents(documents)
+        texts = [doc.text for doc in documents] 
+
+
+        text_embeddings = self.embedding_model._get_text_embeddings(texts)
+
+  
         vector_store = FaissVectorStore(faiss_index=faiss.IndexHNSWFlat(1024, 32))
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-        self._index = VectorStoreIndex(nodes,storage_context=storage_context,
+        self._index =  VectorStoreIndex([], storage_context=storage_context,
             embed_model= self.config.embed_model)
-        logger.info("refresh index size is {}".format(len(nodes)))
+        # for idx, doc in enumerate(documents):
+        #     embedding = text_embeddings[idx]  # 提前生成嵌入
+        #     node =  TextNode(text=doc.text, embedding=embedding, metadata=doc.metadata)
+        #     self._index.insert_nodes([node])
+        # # await self._index._async_add_nodes_to_index(self._index.index_struct, nodes, show_progress=True)
+      
+        
+        nodes = []
+        for doc, embedding in zip(documents, text_embeddings):
+            node = TextNode(text=doc.text, embedding=embedding, metadata=doc.metadata)
+            nodes.append(node)
+        self._index.insert_nodes(nodes)
+
+
+          
+        
+        logger.info("refresh index size is {}".format(len(documents)))
 
     async def _load_index(self) -> bool:
         try:
