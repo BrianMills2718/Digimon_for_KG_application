@@ -6,6 +6,7 @@ from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.ERGraph import ERGraph
 from Core.Graph.PassageGraph import PassageGraph
 from Core.Graph.TreeGraph import TreeGraph
+from Core.Graph.TreeGraphBalanced import TreeGraphBalanced
 from Core.Graph.RKGraph import RKGraph
 
 
@@ -16,6 +17,7 @@ class GraphFactory():
             "er_graph": self._create_er_graph,
             "rkg_graph": self._create_rkg_graph,
             "tree_graph": self._create_tree_graph,
+            "tree_graph_balanced": self._create_tree_graph_balanced,
             "passage_graph": self._crease_passage_graph
         }
 
@@ -37,6 +39,10 @@ class GraphFactory():
     @staticmethod
     def _create_tree_graph(config, **kwargs):
         return TreeGraph(config, **kwargs)
+
+    @staticmethod
+    def _create_tree_graph_balanced(config, **kwargs):
+        return TreeGraphBalanced(config, **kwargs)
 
     @staticmethod
     def _crease_passage_graph(config, **kwargs):

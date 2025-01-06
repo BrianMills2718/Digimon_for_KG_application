@@ -41,6 +41,10 @@ class GraphConfig(YamlModel):
     verbose: bool = False
     random_seed: int = 224
     enforce_sub_communities: bool = False
+    max_size_percentage: float = 0.2
+    tol: float = 1e-4
+    max_iter: int = 300
+    size_of_clusters: int = 10
 
     # For graph augmentation
     similarity_threshold: float = 0.8

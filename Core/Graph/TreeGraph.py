@@ -169,6 +169,10 @@ class TreeGraph(BaseGraph):
         # Initialize an empty list to store the clusters of nodes
         node_clusters = []
 
+        if len(np.unique(np.concatenate(clusters))) == 1:
+            logger.info("Only one cluster length = {len}, return".format(len = len(nodes)))
+            return [nodes]
+
         # Iterate over each unique label in the clusters
         for label in np.unique(np.concatenate(clusters)):
             # Get the indices of the nodes that belong to this cluster
