@@ -47,7 +47,7 @@ class TreeGraphStorage(BaseGraphStorage):
             logger.info("Pkl file does not exist! Need to build the tree from scratch.")
             return False
 
-    def write_tree_leaves(self):
+    async def write_tree_leaves(self):
         TreeGraphStorage.write_tree_graph(tree=self.tree, tree_pkl_file=self.tree_leaves_pkl_file)
     
     async def load_tree_graph_from_leaves(self, force = False) -> bool:

@@ -6,6 +6,8 @@ from Core.Prompt.RaptorPrompt import SUMMARIZE
 from Core.Storage.TreeGraphStorage import TreeGraphStorage
 from Core.Schema.TreeSchema import TreeNode
 
+from sklearn.metrics import pairwise_distances_argmin_min
+
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
@@ -19,7 +21,7 @@ import umap
 import random
 from sklearn.mixture import GaussianMixture
 
-class TreeGraph(BaseGraph):
+class TreeGraphBalanced(BaseGraph):
     max_workers: int = 16
     leaf_workers: int = 32
     def __init__(self, config, llm, encoder):
@@ -28,27 +30,6 @@ class TreeGraph(BaseGraph):
         self.embedding_model = get_rag_embedding(config.embedding.api_type, config)  # Embedding model
         self.config = config.graph # Only keep the graph config
         random.seed(self.config.random_seed)
-
-    async def _GMM_cluster(self, embeddings: np.ndarray, threshold: float, random_state: int = 0):
-        if  len(embeddings) >  self.config.threshold_cluster_num:
-            max_clusters  = len(embeddings) // 100
-            n_clusters = np.arange(max_clusters - 1, max_clusters)
-        else:
-            max_clusters = min(50, len(embeddings))
-            n_clusters = np.arange(1, max_clusters)
-        bics = []
-        for n in n_clusters:
-            # logger.info("GMM Cluster n = {n}".format(n=n))
-            gm = GaussianMixture(n_components=n, random_state=random_state)
-            gm.fit(embeddings)
-            bics.append(gm.bic(embeddings))
-        optimal_clusters = n_clusters[np.argmin(bics)]
-
-        gm = GaussianMixture(n_components=optimal_clusters, random_state=random_state)
-        gm.fit(embeddings)
-        probs = gm.predict_proba(embeddings)
-        labels = [np.where(prob > threshold)[0] for prob in probs]
-        return labels, optimal_clusters
 
     def _create_task_for(self, func):
         def _pool_func(**params):
@@ -67,144 +48,54 @@ class TreeGraph(BaseGraph):
             return result
         return _pool_func
 
-    async def _process_cluster(self, i, global_clusters, embeddings, dim, threshold):
-        logger.info("Processing cluster i={i}", i=i)
-        global_cluster_embeddings_ = embeddings[
-            np.array([i in gc for gc in global_clusters])
-        ]
-
-        if len(global_cluster_embeddings_) == 0:
-            return
-        if len(global_cluster_embeddings_) <= dim + 1:
-            local_clusters = [np.array([0]) for _ in global_cluster_embeddings_]
-            n_local_clusters = 1
-        else:
-            reduced_embeddings_local = umap.UMAP(
-                n_neighbors=10, n_components=dim, metric=self.config.cluster_metric
-            ).fit_transform(global_cluster_embeddings_)
-            # import pdb
-            # pdb.set_trace()
-            local_clusters, n_local_clusters = await self._GMM_cluster(
-                reduced_embeddings_local, threshold
-            )
-
-        return i, local_clusters, n_local_clusters
-
     async def _perform_clustering(
-        self, embeddings: np.ndarray, dim: int, threshold: float, verbose: bool = False
+        self, embeddings: np.ndarray
     ) -> List[np.ndarray]:
-        logger.info("Length of embeddings: {length}".format(length=len(embeddings)))
-        reduced_embeddings_global = umap.UMAP(
-            n_neighbors=int((len(embeddings) - 1) ** 0.5), n_components=min(dim, len(embeddings) -2), metric=self.config.cluster_metric
-        ).fit_transform(embeddings)
 
-        logger.info("Finished UMAP")
-        global_clusters, n_global_clusters = await self._GMM_cluster(
-            reduced_embeddings_global, threshold
-        )
-        
-        logger.info("Finished GMM clustering, {n} clusters".format(n=n_global_clusters))
+        n_samples = embeddings.shape[0]
+        logger.info("Perform Clustering: n_samples = {n_samples}".format(n_samples=n_samples))
+        n_clusters = n_samples // self.config.size_of_clusters
+        centers = embeddings[np.random.choice(n_samples, n_clusters, replace=False)]
+        labels = np.zeros(n_samples, dtype=int)
+        cluster_sizes = np.zeros(n_clusters, dtype=int)
+        max_size_diff = self.config.max_size_percentage * n_samples / n_clusters
 
-        # import pdb
-        # pdb.set_trace()
+        def _balance_clusters():
+            for i in range(n_samples):
+                if cluster_sizes[new_labels[i]] > n_samples / n_clusters + max_size_diff:
+                    small_clusters = [j for j in range(n_clusters) if cluster_sizes[j] < n_samples / n_clusters]
+                    distances = np.linalg.norm(embeddings[i] - new_centers[small_clusters], axis=1)
+                    new_cluster = small_clusters[np.argmin(distances)]
+                    cluster_sizes[new_labels[i]] -= 1
+                    new_labels[i] = new_cluster
+                    cluster_sizes[new_labels[i]] += 1
 
-        if verbose:
-            logger.info(f"Global Clusters: {n_global_clusters}")
+        for i in range(self.config.max_iter):
+            logger.info("Performing balanced K-means: iteration {iter}".format(iter=i))
+            new_labels = pairwise_distances_argmin_min(embeddings, centers)[0]
+            cluster_sizes = np.bincount(new_labels, minlength=n_clusters)  # 更新簇大小
+            new_centers = np.array([embeddings[new_labels == i].mean(axis=0) for i in range(n_clusters)])
+            _balance_clusters()
 
-        all_local_clusters = [np.array([]) for _ in range(len(embeddings))]
-        total_clusters = 0
+            center_shift = np.linalg.norm(new_centers - centers)
+            if center_shift <= self.config.tol:
+                break
 
-        completed_list = []
+            centers = new_centers
+            labels = new_labels
 
-        with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-            for j in range(0, self.max_workers):
-                cluster_tasks = [pool.submit(self._create_task_with_return(self._process_cluster),
-                                          i=i,
-                                          global_clusters=global_clusters,
-                                          embeddings=embeddings,
-                                          dim=dim,
-                                          threshold=threshold) for i in range(n_global_clusters) if i % self.max_workers == j]
-                completed_list.extend(as_completed(cluster_tasks))
-                time.sleep(4)
-
-        for task in completed_list:
-            i, local_clusters, n_local_clusters = task.result()
-            global_indices = np.where(np.array([i in gc for gc in global_clusters]))[0]
-            # global_cluster_embeddings_ = embeddings[global_indices]
-            for j in range(n_local_clusters):
-                # tmp = [j in lc for lc in local_clusters]
-                # import pdb
-                # pdb.set_trace()
-                indices = global_indices[np.array([j in lc for lc in local_clusters])]
-                # local_cluster_embeddings_ = global_cluster_embeddings_[
-                #     np.array([j in lc for lc in local_clusters])
-                # ]
-                # indices = np.where(
-                #     (embeddings == local_cluster_embeddings_[:, None]).all(-1)
-                # )[1]
-                for idx in indices:
-                    all_local_clusters[idx] = np.append(
-                        all_local_clusters[idx], j + total_clusters
-                    )
-
-            total_clusters += n_local_clusters
-
-        logger.info(f"Total Clusters: {total_clusters}")
-        return all_local_clusters
+        return labels
 
 
-    async def _clustering(self, nodes: List[TreeNode], max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose, depth: int = 0) -> List[List[TreeNode]]:
-        logger.info("Clustering: dep = {depth}", depth=depth)
-        if depth >= 20: return [nodes]
-        
+    async def _clustering(self, nodes: List[TreeNode]) -> List[List[TreeNode]]:
         # Get the embeddings from the nodes
         embeddings = np.array([node.embedding for node in nodes])
-
-
         # Perform the clustering
-        clusters = await self._perform_clustering(
-            embeddings, dim=reduction_dimension, threshold=threshold
-        )
-
-        # Initialize an empty list to store the clusters of nodes
-        node_clusters = []
-
-        if len(np.unique(np.concatenate(clusters))) == 1:
-            logger.info("Only one cluster length = {len}, return".format(len = len(nodes)))
-            return [nodes]
-
-        # Iterate over each unique label in the clusters
-        for label in np.unique(np.concatenate(clusters)):
-            # Get the indices of the nodes that belong to this cluster
-            indices = [i for i, cluster in enumerate(clusters) if label in cluster]
-
-            # Add the corresponding nodes to the node_clusters list
-            cluster_nodes = [nodes[i] for i in indices]
-
-            # Base case: if the cluster only has one node, do not attempt to recluster it
-            if len(cluster_nodes) == 1:
-                node_clusters.append(cluster_nodes)
-                continue
-
-            # Calculate the total length of the text in the nodes
-            total_length = sum(
-                [len(tokenizer.encode(node.text)) for node in cluster_nodes]
-            )
-
-            # If the total length exceeds the maximum allowed length, recluster this cluster
-            if total_length > max_length_in_cluster and len(cluster_nodes) > self.config.reduction_dimension + 1:
-                if verbose:
-                    logger.info(
-                        f"reclustering cluster with {len(cluster_nodes)} nodes"
-                    )
-    
-                node_clusters.extend(
-                    await self._clustering(
-                        cluster_nodes, max_length_in_cluster, tokenizer, reduction_dimension, threshold, verbose, depth + 1
-                    )
-                )
-            else:
-                node_clusters.append(cluster_nodes)
+        clusters = await self._perform_clustering(embeddings)
+        unique_values, inverse_indices = np.unique(clusters, return_inverse=True)
+        sorted_indices = np.argsort(inverse_indices)
+        clustered_indices = np.split(sorted_indices, np.cumsum(np.bincount(inverse_indices))[:-1])
+        node_clusters = [[nodes[i] for i in cluster] for cluster in clustered_indices]
 
         return node_clusters
 
@@ -279,14 +170,7 @@ class TreeGraph(BaseGraph):
 
             self._graph.add_layer()
 
-            clusters = await self._clustering(
-                nodes = self._graph.get_layer(layer),
-                max_length_in_cluster =  self.config.max_length_in_cluster,
-                tokenizer = self.ENCODER,
-                reduction_dimension = self.config.reduction_dimension,
-                threshold = self.config.threshold,
-                verbose = self.config.verbose,
-            )
+            clusters = await self._clustering(nodes = self._graph.get_layer(layer))
 
             with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
                 for i in range(0, self.max_workers):
