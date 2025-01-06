@@ -8,9 +8,9 @@ enable_graph_augmentation: False
 
 # Data
 
-index_name: tree_graph
+index_name: tree_graph_balanced
 
-vdb_type: colbert  # vector/colbert
+vdb_type: faiss  # vector/colbert
 
 # Chunk Config 
 chunk:
@@ -27,7 +27,7 @@ graph:
     force: True
 
     # Tree Config
-    build_tree_from_leaves: True
+    build_tree_from_leaves: False
     reduction_dimension: 50
     summarization_length: 100
     num_layers:  5 # For RAPTOR
