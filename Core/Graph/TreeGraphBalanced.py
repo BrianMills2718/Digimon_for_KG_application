@@ -73,9 +73,23 @@ class TreeGraphBalanced(BaseGraph):
         for i in range(self.config.max_iter):
             logger.info("Performing balanced K-means: iteration {iter}".format(iter=i))
             new_labels = pairwise_distances_argmin_min(embeddings, centers)[0]
-            cluster_sizes = np.bincount(new_labels, minlength=n_clusters)  # 更新簇大小
-            new_centers = np.array([embeddings[new_labels == i].mean(axis=0) for i in range(n_clusters)])
+            
+            def _process_clusters(n_clusters, new_labels):
+                mapping = {v: i for i, v in enumerate(dict.fromkeys(new_labels))}
+                new_labels = [mapping[x] for x in new_labels]
+                n_clusters = len(mapping)
+                # import pdb
+                # pdb.set_trace()
+                cluster_sizes = np.bincount(new_labels, minlength=n_clusters)  # 更新簇大小
+                new_centers = np.array([embeddings[np.array(new_labels) == i].mean(axis=0) for i in range(n_clusters)])
+                return n_clusters, new_labels, new_centers, cluster_sizes
+            
+            n_clusters, new_labels, new_centers, cluster_sizes = _process_clusters(n_clusters, new_labels)
             _balance_clusters()
+            n_clusters, new_labels, new_centers, cluster_sizes = _process_clusters(n_clusters, new_labels)
+
+            if n_clusters < n_samples // self.config.size_of_clusters:
+                break
 
             center_shift = np.linalg.norm(new_centers - centers)
             if center_shift <= self.config.tol:
