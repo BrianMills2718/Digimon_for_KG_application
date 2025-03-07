@@ -132,3 +132,11 @@ You can freely 🪽 combine those operators 🧩 to create more and more GraphRA
 | **HippoRAG**     | Chunk (by_ppr)                                                                                      |
 | **LightRAG**     | Chunk (by_relationship) + Entity (by_relationship) + Relationship (by_vdb)                          |
 | **FastGraphRAG** | Chunk (by_ppr) + Entity (by_ppr) + Relationship (by_ppr)                                           |
+
+
+
+## 📖 See Our Paper
+
+For a detailed analysis, check out our paper:
+
+📄 **[In-depth Analysis of Graph-based RAG in a Unified Framework](https://www.arxiv.org/abs/2503.04338) (arXiv preprint 2503.04338)**
