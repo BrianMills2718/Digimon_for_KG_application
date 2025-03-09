@@ -134,7 +134,7 @@ class TreeGraphStorage(BaseGraphStorage):
     def get_node_num(self):
         return self.num_nodes
 
-    def get_node(self, node_id):
+    async def get_node(self, node_id):
         return self.tree.all_nodes[node_id]
     
     @property
