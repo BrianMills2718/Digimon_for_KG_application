@@ -46,9 +46,9 @@ def wrapper_query(query_dataset, digimon, result_dir):
     return save_path
 
 
-def wrapper_evaluation(path, opt, result_dir):
+async def wrapper_evaluation(path, opt, result_dir):
     eval = Evaluator(path, opt.dataset_name)
-    res_dict = eval.evaluate()
+    res_dict = await eval.evaluate()
     save_path = os.path.join(result_dir, "metrics.json")
     with open(save_path, "w") as f:
         f.write(str(res_dict))
