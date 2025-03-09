@@ -147,3 +147,7 @@ class TreeGraphStorage(BaseGraphStorage):
 
     async def get_community_schema(self):
         return None
+    
+    # Tree graph deose not support it
+    async def get_subgraph_metadata(self) -> list[str]:
+        return None
