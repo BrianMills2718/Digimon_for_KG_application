@@ -53,6 +53,7 @@ class FaissIndex(BaseIndex):
         pass
     def _embed_text(self, text: str):
         return self.embedding_model._get_text_embedding(text)
+    
     async def _update_index(self, datas: list[dict[str:Any]], meta_data: list):
         async def process_document(data):
             document = Document(
@@ -64,23 +65,18 @@ class FaissIndex(BaseIndex):
             return document
         Settings.embed_model = self.config.embed_model
         documents = await asyncio.gather(*[process_document(data) for data in datas])
-        # nodes = parser.get_nodes_from_documents(documents)
         texts = [doc.text for doc in documents] 
 
 
         text_embeddings = self.embedding_model._get_text_embeddings(texts)
 
   
-        vector_store = FaissVectorStore(faiss_index=faiss.IndexHNSWFlat(1024, 32))
+        vector_store = FaissVectorStore(faiss_index=faiss.IndexHNSWFlat(self.embedding_model.dimensions, 32))
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
         self._index =  VectorStoreIndex([], storage_context=storage_context,
             embed_model= self.config.embed_model)
-        # for idx, doc in enumerate(documents):
-        #     embedding = text_embeddings[idx]  # 提前生成嵌入
-        #     node =  TextNode(text=doc.text, embedding=embedding, metadata=doc.metadata)
-        #     self._index.insert_nodes([node])
-        # # await self._index._async_add_nodes_to_index(self._index.index_struct, nodes, show_progress=True)
+      
       
         
         nodes = []

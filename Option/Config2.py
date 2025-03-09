@@ -24,7 +24,7 @@ class Config(WorkingParams, YamlModel):
 
     # Key Parameters
     llm: LLMConfig
-    exp_name: str = "debug_yaodong"
+    exp_name: str = "default"
     # RAG Embedding
     embedding: EmbeddingConfig = EmbeddingConfig()
 
