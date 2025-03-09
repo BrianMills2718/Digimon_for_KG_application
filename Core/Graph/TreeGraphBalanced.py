@@ -189,24 +189,20 @@ class TreeGraphBalanced(BaseGraph):
             with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
                 for i in range(0, self.max_workers):
                     cluster_tasks = [pool.submit(self._create_task_for(self._extract_cluster_relationship_without_embedding), layer = layer + 1, cluster = cluster) for (j, cluster) in enumerate(clusters) if j % self.max_workers == i]
-                    # self._run_tasks(cluster_tasks)
                     as_completed(cluster_tasks)
-                    time.sleep(3)
 
             logger.info("To batch embed current layer")
             await self._batch_embed_and_assign(self._graph.num_layers - 1)
-            # for cluster in clusters:  # for each cluster, create a new node
-            #     await self._extract_cluster_relationship(layer + 1, cluster)
+
 
             logger.info("Layer: {layer}".format(layer=layer))
-            # logger.info(self._graph.get_layer(layer + 1))
 
         logger.info(self._graph.num_layers)
         
 
     async def _build_graph(self, chunks: List[Any]):
-        if self.config.build_tree_from_leaves:
-            await self._graph.load_tree_graph_from_leaves()
+        is_load = await self._graph.load_tree_graph_from_leaves()
+        if is_load:
             logger.info(f"Loaded {len(self._graph.leaf_nodes)} Leaf Embeddings")
         else:
             self._graph.clear()  # clear the storage before rebuilding
