@@ -25,7 +25,7 @@
 
 > Our project focuses on **modularizing and decoupling** these methods 🧩 to **unveil the mystery** 🕵️‍♂️🔍✨ behind them and share fun and valuable insights! 🤩💫  Our project🔨 is included in [Awesome Graph-based RAG](https://github.com/DEEP-PolyU/Awesome-GraphRAG).
 
-![Workflow of GraphRAG](Doc\workflow.png)
+![Workflow of GraphRAG](./Doc/workflow.png)
 
 ---
 
