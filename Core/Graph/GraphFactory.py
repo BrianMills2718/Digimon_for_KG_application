@@ -1,7 +1,6 @@
 """
 Graph Factory.
 """
-import os
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Graph.ERGraph import ERGraph
 from Core.Graph.PassageGraph import PassageGraph

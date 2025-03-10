@@ -28,6 +28,69 @@
 ![Workflow of GraphRAG](./Doc/workflow.png)
 
 ---
+[![](https://img.shields.io/badge/cs.Zhou-2025.04338-B31C1C?logo=arxiv&logoColor=B31C1C)](https://www.arxiv.org/abs/2503.04338)
+[![](https://img.shields.io/badge/python-3.9+-blue)](https://pypi.org/project/agentscope/)
+[![](https://img.shields.io/badge/Contribute-Welcome-green)](https://modelscope.github.io/agentscope/tutorial/contribute.html)
+
+- If you find our work helpful, please kindly cite [our paper](https://www.arxiv.org/abs/2503.04338).
+
+- Download the datasets [GraphRAG-dataset](https://drive.google.com/file/d/14nYYw-3FutumQnSRwKavIbG3LRSmIzDX/view?usp=sharing)
+
+
+
+
+---
+
+## Quick Start 🚀
+
+### From Source
+
+```bash
+# Clone the repository from GitHub
+git clone https://github.com/JayLZhou/GraphRAG.git
+cd GraphRAG
+```
+
+### Run a Method
+
+You can run different GraphRAG methods by specifying the corresponding configuration file (`.yaml`). 
+
+#### Example: Running RAPTOR
+```bash
+python main.py -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
+```
+
+#### Available Methods:
+The following methods are available, and each can be run using the same command format:
+```bash
+python main.py -opt Option/Method/<METHOD>.yaml -dataset_name your_dataset
+```
+Replace `<METHOD>` with one of the following:
+
+- `Dalk`
+- `GR`
+- `GraphRAG`
+- `HippoRAG`
+- `KGP`
+- `LightRAG`
+- `MedG`
+- `RAPTOR`
+- `ToG`
+
+For example, to run `GraphRAG`:
+```bash
+python main.py -opt Option/Method/GraphRAG.yaml -dataset_name your_dataset
+```
+
+### Dependencies
+
+Ensure you have the required dependencies installed:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 
 ## Representative Methods
 
@@ -153,9 +216,7 @@ You can freely 🪽 combine those operators 🧩 to create more and more GraphRA
 | **FastGraphRAG** | Chunk (Aggregator) + Entity (PPR) + Relationship (Aggregator)  |
 
 
-## 📊 Dataset \& Data Format
 
-Please view the following link: [GraphRAG-dataset](https://drive.google.com/file/d/14nYYw-3FutumQnSRwKavIbG3LRSmIzDX/view?usp=sharing)
 
 
 ## 📖 See Our Paper
