@@ -88,7 +88,26 @@ Ensure you have the required dependencies installed:
 ```bash
 pip install -r requirements.txt
 ```
+#### Supported LLM Backends
 
+GraphRAG supports both cloud-based and local deployment of LLMs:
+
+- **Cloud-based models:** OpenAI (e.g., `gpt-4`, `gpt-3.5-turbo`)
+- **Locally deployed models:** `Ollama` and `LlamaFactory`
+
+To use a local model, set `api_type` to `openllm` in the configuration file.
+
+##### Example Configuration (`config.yaml`):
+
+```yaml
+llm:
+  api_type: "ollama"  # Options: "openai", "ollama", "llama_factory"
+  model: "llama3:8b"
+  base_url: "http://localhost:11434"  # Change this for local models
+  api_key: "YOUR_API_KEY"  # Not required for local models
+```
+
+For `LlamaFactory` or `Ollama`, ensure the model is correctly installed and running in your local environment.
 ---
 
 
