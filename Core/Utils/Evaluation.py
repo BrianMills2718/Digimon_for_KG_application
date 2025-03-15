@@ -1,5 +1,3 @@
-# TODO: for 🌲
-
 import json
 import pandas as pd
 import re
@@ -19,8 +17,8 @@ from Core.Provider.BaseLLM import BaseLLM
 from Core.Provider.LLMProviderRegister import create_llm_instance
 
 
-nltk_path = "/mnt/data/wangshu/hcarag/nltk"
-# 添加 NLTK 数据路径
+nltk_path = "YOUR_OWN_NLTK_CACHE_PATH"
+# add the nltk_path to the nltk.data.path
 nltk.data.path.append(nltk_path)
 
 try:
@@ -168,12 +166,12 @@ class Evaluator:
             "rouge_l recall",
         ]
         self.long_asqa_metrics = ["str_em", "str_hit", "rougeLsum", "mauve"]
-        
+
         self.dataset_mode_map = {
             "hotpotqa": "short-form",
             "multihop-rag": "short-form",
+            "popqa": "short-form",
             "ALCE": "long-asqa",
-            "medqa": "close-set",
             "quality": "close-set",
         }
         if "narrative" in dataset_name:
@@ -181,7 +179,6 @@ class Evaluator:
         else:
             self.mode = self.dataset_mode_map.get(dataset_name, "short-form")
 
-        
     async def evaluate(self):
         df = pd.read_json(self.path, lines=True)
         print(f"Loaded {len(df)} records from {self.path}")
@@ -223,6 +220,9 @@ class Evaluator:
         return label_list, pred_list
 
     def short_eval(self, df: pd.DataFrame):
+        # Short form evaluation code is referenced from the HippoRAG evaluation script:
+        # links: https://github.com/OSU-NLP-Group/HippoRAG
+
         # Load results
         accuracy_list = []
         f1_list = []
@@ -281,7 +281,6 @@ class Evaluator:
         return res_dict, df
 
     def long_narrative_eval(self, df: pd.DataFrame):
-
         label_list, pred_list = self.get_label_pred_list(df, "output", "answer")
 
         # Load results
@@ -366,7 +365,9 @@ class Evaluator:
         return res_dict, df
 
     def long_asqa_eval(self, df: pd.DataFrame):
-
+        # Long ASQA code is referenced from official ALCE repository:
+        # links: https://github.com/princeton-nlp/ALCE
+        
         str_em_list = []
         str_hit_list = []
 
@@ -411,13 +412,16 @@ class Evaluator:
         return res_dict, df
 
     async def close_eval(self, df: pd.DataFrame):
-
+        # Close set evaluation first use LLM to extract the option from the model output
+        # Then, evaluate the extracted option with the answer index
+        
+    
         for index, row in df.iterrows():
             prompt = CLOSE_EXTRACT_OPTION_PORMPT.format(
                 question=row["question"], model_output=row["output"]
             )
             response = await self.llm.aask(msg=prompt, format="json")
-            
+
             try:
                 df.loc[index, "extract_output"] = response["predict"]
             except Exception as e:
