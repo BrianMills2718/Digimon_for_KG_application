@@ -61,9 +61,6 @@ query:
     local_max_token_for_text_unit: 4000  # 12000 * 0.33
     max_token_for_text_unit: 4000
     use_keywords: True
-    
-    # Knob for RAPTOR
-    tree_search: True
 
     entities_max_tokens: 2000
     relationships_max_tokens: 2000
