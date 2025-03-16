@@ -95,15 +95,15 @@ GraphRAG supports both cloud-based and local deployment of LLMs:
 - **Cloud-based models:** OpenAI (e.g., `gpt-4`, `gpt-3.5-turbo`)
 - **Locally deployed models:** `Ollama` and `LlamaFactory`
 
-To use a local model, set `api_type` to `openllm` in the configuration file.
+To use a local model, set `api_type` to `open_llm` in the configuration file.
 
 ##### Example Configuration (`config.yaml`):
 
 ```yaml
 llm:
-  api_type: "ollama"  # Options: "openai", "ollama", "llama_factory"
-  model: "llama3:8b"
-  base_url: "http://localhost:11434"  # Change this for local models
+  api_type: "openai/open_llm"  # Options: "openai" or "open_llm" (For Ollama and LlamaFactory) 
+  model: "YOUR_LOCAL_MODEL_NAME"
+  base_url: "YOUR_LOCAL_URL"  # Change this for local models
   api_key: "YOUR_API_KEY"  # Not required for local models
 ```
 
