@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from Core.Common.LLMConfig import LLMConfig
+from Config.LLMConfig import LLMConfig
 from Core.Common.Context import Context
 from Core.Provider.BaseLLM import BaseLLM
 
