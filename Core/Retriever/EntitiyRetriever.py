@@ -51,7 +51,7 @@ class EntityRetriever(BaseRetriever):
                 except:
                     logger.warning("Only tree graph support this! Please check the `graph_type' item in your config file")
             node_degrees = await asyncio.gather(
-                *[await self.graph.node_degree(node["entity_name"]) for node in node_datas]
+                *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )
             node_datas = [
                 {**n, "entity_name": n["entity_name"], "rank": d}
