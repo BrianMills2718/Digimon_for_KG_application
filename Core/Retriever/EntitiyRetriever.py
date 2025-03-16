@@ -45,8 +45,11 @@ class EntityRetriever(BaseRetriever):
             if not all([n is not None for n in node_datas]):
                 logger.warning("Some nodes are missing, maybe the storage is damaged")
             if tree_node:
-                node_datas = [node.text for node in node_datas]
-                return node_datas
+                try:
+                    node_datas = [node.text for node in node_datas]
+                    return node_datas
+                except:
+                    logger.warning("Only tree graph support this! Please check the `graph_type' item in your config file")
             node_degrees = await asyncio.gather(
                 *[await self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )
