@@ -48,7 +48,7 @@ class EntityRetriever(BaseRetriever):
                 node_datas = [node.text for node in node_datas]
                 return node_datas
             node_degrees = await asyncio.gather(
-                *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
+                *[await self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )
             node_datas = [
                 {**n, "entity_name": n["entity_name"], "rank": d}
