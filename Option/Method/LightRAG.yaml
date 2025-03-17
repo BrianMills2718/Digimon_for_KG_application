@@ -2,6 +2,7 @@
 # Basic Config
 use_entities_vdb: True
 use_relations_vdb: True  # Only set True for LightRAG
+use_subgraphs_vdb: False
 llm_model_max_token_size: 32768
 use_entity_link_chunk: False  # Only set True for HippoRAG and FastGraphRAG
 enable_graph_augmentation: False

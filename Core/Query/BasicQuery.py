@@ -29,8 +29,8 @@ class BasicQuery(BaseQuery):
             hl_entities_context, hl_relations_context, hl_text_units_context = await self._retrieve_relevant_contexts_global_keywords(
                 query)
             entities_context, relations_context, text_units_context = combine_contexts(
-                entities=[entities_context, hl_entities_context], relations=[relations_context, hl_relations_context],
-                text_units=[text_units_context, hl_text_units_context], sources=[communities_context])
+                entities=[entities_context, hl_entities_context], relationships=[relations_context, hl_relations_context],
+                sources=[text_units_context, hl_text_units_context])
         results = f"""
             -----Entities-----
             ```csv
@@ -93,7 +93,7 @@ class BasicQuery(BaseQuery):
 
         relations_section_list = [
             ["id", "source", "target", "description", "weight", "rank"]
-        ] if not self.config.use_keywords else ["id", "source", "target", "description", "keywords", "weight", "rank"]
+        ] if not self.config.use_keywords else ["id", "source", "target", "keywords", "description", "weight", "rank"]
 
         for i, e in enumerate(use_relations):
             row = [
