@@ -93,7 +93,7 @@ class BasicQuery(BaseQuery):
 
         relations_section_list = [
             ["id", "source", "target", "description", "weight", "rank"]
-        ] if not self.config.use_keywords else ["id", "source", "target", "keywords", "description", "weight", "rank"]
+        ] if not self.config.use_keywords else ["id", "source", "target", "description", "keywords", "weight", "rank"]
 
         for i, e in enumerate(use_relations):
             row = [
