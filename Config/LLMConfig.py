@@ -1,107 +1,60 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
-from enum import Enum
-from typing import Optional
-
-from pydantic import field_validator
-
-from Core.Common.Constants import CONFIG_ROOT, LLM_API_TIMEOUT, GRAPHRAG_ROOT
 from Core.Utils.YamlModel import YamlModel
+from dataclasses import field
 
 
-class LLMType(Enum):
-    OPENAI = "openai"
-    FIREWORKS = "fireworks"
-    OPEN_LLM = "open_llm"
-    OLLAMA = "ollama"  # /chat at ollama api
-    OLLAMA_GENERATE = "ollama.generate"  # /generate at ollama api
-    OLLAMA_EMBEDDINGS = "ollama.embeddings"  # /embeddings at ollama api
-    OLLAMA_EMBED = "ollama.embed"  # /embed at ollama api
-    OPENROUTER = "openrouter"
-    BEDROCK = "bedrock"
-    ARK = "ark"  # https://www.volcengine.com/docs/82379/1263482#python-sdk
+class QueryConfig(YamlModel):
+    # model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
+    query_type: str = "qa"
+    only_need_context: bool = False
+    response_type: str = "Multiple Paragraphs"
+    level: int = 2
+    top_k: int = 20
+    nei_k: int = 3
+    num_doc: int = 5  # Default parameter for the HippoRAG
+    # naive search
+    naive_max_token_for_text_unit: int = 12000
+    use_keywords: bool = False
+    use_communiy_info: bool = False
+    # local search
+    
+    enable_local: bool = False
 
-    def __missing__(self, key):
-        return self.OPENAI
+    local_max_token_for_community_report: int = 3200  # 12000 * 0.27
+    local_community_single_one: bool = False
+    community_information: bool = False  # Open for MS-GraphRAG based method
+    # global search
+    global_min_community_rating: float = 0
+    global_max_consider_community: float = 512
+    global_max_token_for_community_report: int = 16384
+    max_token_for_global_context: int = 4000
+    global_special_community_map_llm_kwargs: dict = field(
+        default_factory=lambda: {"response_format": {"type": "json_object"}}
+    )
+    use_global_query: bool = False # For LightRAG and GraphRAG
+    enable_hybrid_query: bool = False # For LightRAG 
+    # For IR-COT
+    max_ir_steps: int = 2
 
+    # For Hipporag
+    augmentation_ppr: bool = False
+    entities_max_tokens: int = 2000
+    relationships_max_tokens: int = 2000
 
-class LLMConfig(YamlModel):
-    """Option for LLM
+    # For RAPTOR
+    tree_search: bool = False
 
-    OpenAI: https://github.com/openai/openai-python/blob/main/src/openai/resources/chat/completions.py#L681
-    Optional Fields in pydantic: https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields
-    """
+    # For TOG
+    depth: int = 3
+    width: int = 3
 
-    api_key: str = "sk-"
-    api_type: LLMType = LLMType.OPENAI
-    base_url: str = "https://api.openai.com/v1"
-    api_version: Optional[str] = None
+    # For G-Retriever (GR)
+    max_txt_len: int = 512
+    topk_e: int = 3
+    cost_e: float = 0.5
 
-    model: Optional[str] = None  # also stands for DEPLOYMENT_NAME
-    pricing_plan: Optional[str] = None  # Cost Settlement Plan Parameters.
+    # For Medical GraphRAG
+    topk_entity: int = 10
+    k_hop: int = 2
 
-    # For Cloud Service Provider like Baidu/ Alibaba
-    access_key: Optional[str] = None
-    secret_key: Optional[str] = None
-    session_token: Optional[str] = None
-    endpoint: Optional[str] = None  # for self-deployed model on the cloud
-
-    # For Spark(Xunfei), maybe remove later
-    app_id: Optional[str] = None
-    api_secret: Optional[str] = None
-    domain: Optional[str] = None
-
-    # For Chat Completion
-    max_token: int = 4096
-    temperature: float = 0.0
-    top_p: float = 1.0
-    top_k: int = 0
-    repetition_penalty: float = 1.0
-    stop: Optional[str] = None
-    presence_penalty: float = 0.0
-    frequency_penalty: float = 0.0
-    best_of: Optional[int] = None
-    n: Optional[int] = None
-    stream: bool = False  # Default True
-    seed: Optional[int] = None
-    # https://cookbook.openai.com/examples/using_logprobs
-    logprobs: Optional[bool] = None
-    top_logprobs: Optional[int] = None
-    timeout: int = 600
-    context_length: Optional[int] = None  # Max input tokens
-
-    # For Amazon Bedrock
-    region_name: str = None
-
-    # For Network
-    proxy: Optional[str] = None
-    max_concurrent:int  = 32
-    # Cost Control
-    calc_usage: bool = True
-
-    # For Messages Control
-    use_system_prompt: bool = True
-
-    @field_validator("api_key")
-    @classmethod
-    def check_llm_key(cls, v):
-        if v in ["", None, "YOUR_API_KEY"]:
-            repo_config_path = GRAPHRAG_ROOT / "Option/Config2.yaml"
-            root_config_path = CONFIG_ROOT / "Config2.yaml"
-            if root_config_path.exists():
-                raise ValueError(
-                    f"Please set your API key in {root_config_path}. If you also set your config in {repo_config_path}, \n"
-                    f"the former will overwrite the latter. This may cause unexpected result.\n"
-                )
-            elif repo_config_path.exists():
-                raise ValueError(f"Please set your API key in {repo_config_path}")
-            else:
-                raise ValueError("Please set your API key in config2.yaml")
-        return v
-
-    @field_validator("timeout")
-    @classmethod
-    def check_timeout(cls, v):
-        return v or LLM_API_TIMEOUT
+    # For GraphRAG 
+    use_community: bool = False

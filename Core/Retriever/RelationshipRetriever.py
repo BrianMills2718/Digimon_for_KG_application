@@ -32,7 +32,6 @@ class RelationshipRetriever(BaseRetriever):
     async def _find_relevant_relations_vdb(self, seed, need_score=False, need_context=True, top_k=None):
         try:
             if seed is None: return None
-            assert self.config.use_relations_vdb
             if top_k is None:
                 top_k = self.config.top_k
 

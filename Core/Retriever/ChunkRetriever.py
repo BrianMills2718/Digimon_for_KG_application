@@ -102,7 +102,7 @@ class ChunkRetriever(BaseRetriever):
         all_text_units = truncate_list_by_token_size(
             all_text_units,
             key=lambda x: x["data"],
-            max_token_size=self.config.max_token_for_text_unit,
+            max_token_size=self.config.local_max_token_for_text_unit,
         )
         all_text_units = [t["data"] for t in all_text_units]
 

@@ -200,11 +200,14 @@ class EntityRetriever(BaseRetriever):
         node_degrees = await asyncio.gather(
             *[self.graph.node_degree(entity_name) for entity_name in entity_names]
         )
-        node_datas = [
-            {**n, "entity_name": k, "rank": d}
-            for k, n, d in zip(entity_names, node_datas, node_degrees)
-        ]
+        for k, n, d in zip(entity_names, node_datas, node_degrees):
+            if "description" not in n:
+                n['description'] = ""
 
+            node_datas = [
+                {**n, "entity_name": k, "rank": d}
+            ]
+     
         node_datas = truncate_list_by_token_size(
             node_datas,
             key=lambda x: x["description"],
