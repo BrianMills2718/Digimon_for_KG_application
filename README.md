@@ -69,7 +69,8 @@ Replace `<METHOD>` with one of the following:
 
 - `Dalk`
 - `GR`
-- `GraphRAG`
+- `LGraphRAG` (Local search in GraphRAG)
+- `GGraphRAG` (Global search in GraphRAG)
 - `HippoRAG`
 - `KGP`
 - `LightRAG`

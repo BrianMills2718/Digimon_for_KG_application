@@ -61,7 +61,6 @@ retriever:
 query: 
     query_type: qa
     only_need_context: False
-    enable_hybrid_query: True
     augmentation_ppr: True
     response_type: Multiple Paragraphs
     level: 2
