@@ -181,18 +181,22 @@ class BaseGraph(ABC):
         import tqdm
         for node in tqdm.tqdm(await self._graph.nodes(), total=len(await self._graph.nodes())):
             ranking[node] =  await entity_vdb.retrieval(query = node, top_k=self.config.similarity_top_k)
-      
+        # For FAISS index, it uses L2-distance 
+        is_euclidean_distance = False
         kb_similarity = defaultdict(list)
         for key, rank in ranking.items():
-            max_score = 0
+            max_score = max(ns_item.score for ns_item in rank)  # find the max score
             for idx, ns_item in enumerate(rank):
                 score = ns_item.score
-                if idx == 0:
-                    max_score = score
+                if idx == 0 and score == 0:
+                    # L1 or L2 distance 
+                    is_euclidean_distance = True
                 if not duplicate and idx == 0:
                     continue
-                kb_similarity[key].append((ns_item.metadata['entity_name'], score / max_score))
-
+                if is_euclidean_distance:
+                    kb_similarity[key].append((ns_item.metadata['entity_name'], 1 - score / max_score))
+                else: 
+                    kb_similarity[key].append((ns_item.metadata['entity_name'],  score / max_score))
         maybe_edges = defaultdict(list)
         # Refactored second part using dictionary iteration and enumerate
         for src_id, nns in kb_similarity.items():
