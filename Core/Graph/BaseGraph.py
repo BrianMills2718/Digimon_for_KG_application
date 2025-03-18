@@ -175,8 +175,7 @@ class BaseGraph(ABC):
     async def augment_graph_by_similarity_search(self, entity_vdb, duplicate=False):
         logger.info("Starting augment the existing graph with similariy edges")
 
-        # ranking =  for node in
-        #       await self._graph.nodes()}
+
 
         ranking  = {}
         import tqdm

@@ -74,7 +74,6 @@ Replace `<METHOD>` with one of the following:
 - `HippoRAG`
 - `KGP`
 - `LightRAG`
-- `MedG`
 - `RAPTOR`
 - `ToG`
 
