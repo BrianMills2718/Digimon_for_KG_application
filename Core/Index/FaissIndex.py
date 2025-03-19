@@ -10,11 +10,11 @@ from llama_index.core.schema import (
 from llama_index.core import StorageContext, load_index_from_storage, VectorStoreIndex, Settings
 from Core.Index.BaseIndex import BaseIndex, VectorIndexNodeResult, VectorIndexEdgeResult
 import asyncio
-from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core.schema import QueryBundle
 import numpy as np
 from llama_index.vector_stores.faiss import FaissVectorStore
 from concurrent.futures import ProcessPoolExecutor
+from llama_index.embeddings.openai import OpenAIEmbedding
 
 class FaissIndex(BaseIndex):
     """FaissIndex is designed to be simple and straightforward.
@@ -66,9 +66,15 @@ class FaissIndex(BaseIndex):
         Settings.embed_model = self.config.embed_model
         documents = await asyncio.gather(*[process_document(data) for data in datas])
         texts = [doc.text for doc in documents] 
-
-
-        text_embeddings = self.embedding_model._get_text_embeddings(texts)
+        text_embeddings = []
+        if isinstance(self.embedding_model, OpenAIEmbedding):
+            batch_size = self.embedding_model.embed_batch_size 
+            for i in range(0, len(texts), batch_size):
+                batch = texts[i:i + batch_size]
+                batch_embeddings = self.embedding_model._get_text_embeddings(batch)
+                text_embeddings.extend(batch_embeddings)
+        else:
+            text_embeddings = self.embedding_model._get_text_embeddings(texts)
 
   
         vector_store = FaissVectorStore(faiss_index=faiss.IndexHNSWFlat(self.embedding_model.dimensions, 32))
