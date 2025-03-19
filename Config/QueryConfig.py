@@ -32,6 +32,7 @@ class QueryConfig(YamlModel):
         default_factory=lambda: {"response_format": {"type": "json_object"}}
     )
     use_global_query: bool = False # For LightRAG and GraphRAG
+    use_community: bool = False # True for LGraphRAG and GGraphRAG
     enable_hybrid_query: bool = False # For LightRAG 
     # For IR-COT
     max_ir_steps: int = 2
