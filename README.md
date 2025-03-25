@@ -107,7 +107,17 @@ llm:
   api_key: "YOUR_API_KEY"  # Not required for local models
 ```
 
-For `LlamaFactory` or `Ollama`, ensure the model is correctly installed and running in your local environment.
+##### For `LlamaFactory` or `Ollama`, ensure the model is correctly installed and running in your local environment.
+
+You can refer to the Readme of [`LlamaFactory`](https://github.com/hiyouga/LLaMA-Factory)
+```yaml
+llm:
+  api_type: "open_llm"  # Options: "openai" or "open_llm" (For Ollama and LlamaFactory) 
+  model: "YOUR_LOCAL_MODEL_NAME"
+  base_url: "YOUR_LOCAL_URL"  # Change this for local models
+  api_key: "ANY_THING_IS_OKAY"  # Not required for local models
+```
+
 ---
 
 
