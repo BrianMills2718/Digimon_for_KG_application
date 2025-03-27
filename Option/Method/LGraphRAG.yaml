@@ -80,8 +80,6 @@ query:
     local_community_single_one: False
     # global search
     use_global_query: False
-    global_min_community_rating:  0
-    global_max_consider_community: 512
     global_max_token_for_community_report: 16384
     max_token_for_global_context: 4000
     global_special_community_map_llm_kwargs: {"response_format": {"type": "json_object"}}
