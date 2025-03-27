@@ -18,3 +18,5 @@ class RetrieverConfig(YamlModel):
     local_max_token_for_text_unit: int = 4000  # 12000 * 0.33
     use_relations_vdb: bool = False
     use_subgraphs_vdb: bool = False
+    global_max_consider_community: int = 512
+    global_min_community_rating: float = 0.0
