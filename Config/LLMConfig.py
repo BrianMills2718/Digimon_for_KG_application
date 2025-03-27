@@ -77,7 +77,7 @@ class LLMConfig(YamlModel):
 
     # For Network
     proxy: Optional[str] = None
-    max_concurrent:int  = 4 # Your concurrent number 
+    max_concurrent:int  = 20 # Your concurrent number 
     # Cost Control
     calc_usage: bool = True
 
