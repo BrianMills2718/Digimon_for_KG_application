@@ -23,11 +23,11 @@ chunk:
 graph:
   # enable LightRAG
     enable_edge_keywords: False
-    graph_type: tree_graph_balanced # rkg_graph/er_graph/tree_graph/passage_graph
-    force: True
+    graph_type: tree_graph # rkg_graph/er_graph/tree_graph/passage_graph
+    force: False
 
     # Tree Config
-    build_tree_from_leaves: True
+    build_tree_from_leaves: False
     reduction_dimension: 10
     summarization_length: 100
     num_layers:  5 # For RAPTOR
