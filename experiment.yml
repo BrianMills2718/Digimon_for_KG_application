@@ -1,4 +1,4 @@
-name: digmon
+name: digimon
 channels:
   - defaults
 dependencies:

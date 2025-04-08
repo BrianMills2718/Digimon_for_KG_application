@@ -29,7 +29,7 @@
 
 ---
 [![](https://img.shields.io/badge/cs.Zhou-2025.04338-B31C1C?logo=arxiv&logoColor=B31C1C)](https://www.arxiv.org/abs/2503.04338)
-[![](https://img.shields.io/badge/python-3.9+-blue)](https://pypi.org/project/agentscope/)
+[![](https://img.shields.io/badge/python-3.10+-blue)](https://pypi.org/project/agentscope/)
 [![](https://img.shields.io/badge/Contribute-Welcome-green)](https://modelscope.github.io/agentscope/tutorial/contribute.html)
 
 - If you find our work helpful, please kindly cite [our paper](https://www.arxiv.org/abs/2503.04338).
@@ -84,9 +84,9 @@ python main.py -opt Option/Method/GraphRAG.yaml -dataset_name your_dataset
 
 ### Dependencies
 
-Ensure you have the required dependencies installed:
+Ensure you have the required dependencies installed (The default experiment name is digimon):
 ```bash
-pip install -r requirements.txt
+conda env create -f experiment.yml -n your_experiment_name
 ```
 #### Supported LLM Backends
 
