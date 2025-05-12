@@ -245,11 +245,25 @@ You can freely 🪽 combine those operators 🧩 to create more and more GraphRA
 | **FastGraphRAG** | Chunk (Aggregator) + Entity (PPR) + Relationship (Aggregator)  |
 
 
+## 🏹 Our future plans
+- [ ] Detailed readme
+- [ ] Support RoG, PathRAG, etc.
+- [ ] Provide a docker image for easy deployment. 
+- [ ] Support more LLMs, such as AZURE. 
+
+## 🧭 Cite Our Paper
+
+If you find this work useful, please consider citing our papers:
+
+### In-depth Analysis of Graph-based RAG in a Unified Framework
+
+```
+@article{zhou2025depth,
+  title={In-depth Analysis of Graph-based RAG in a Unified Framework},
+  author={Zhou, Yingli and Su, Yaodong and Sun, Youran and Wang, Shu and Wang, Taotao and He, Runyuan and Zhang, Yongwei and Liang, Sicong and Liu, Xilin and Ma, Yuchi and others},
+  journal={arXiv preprint arXiv:2503.04338},
+  year={2025}
+}
+ ```
 
 
-
-## 📖 See Our Paper
-
-For a detailed analysis, check out our paper:
-
-📄 **[In-depth Analysis of Graph-based RAG in a Unified Framework](https://www.arxiv.org/abs/2503.04338) (arXiv preprint 2503.04338)**
