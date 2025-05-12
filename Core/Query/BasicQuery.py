@@ -211,11 +211,27 @@ class BasicQuery(BaseQuery):
     async def generation_qa(self, query, context):
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
-
         if self.config.tree_search:
             instruction = f"Given Context: {context} Give the best full answer amongst the option to question {query}"
             response = await self.llm.aask(msg=instruction)
             return response
+        if self.config.community_information and self.config.use_global_query:
+            sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
+        elif not self.config.community_information and self.config.use_keywords:
+            sys_prompt_temp = QueryPrompt.RAG_RESPONSE
+        elif self.config.community_information and not self.config.use_keywords and self.config.enable_local:
+            sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
+        else:
+            logger.error("Invalid query configuration")
+            return QueryPrompt.FAIL_RESPONSE
+        response = await self.llm.aask(
+            query,
+            system_msgs=[sys_prompt_temp.format(
+                report_data=context, response_type=self.config.response_type
+            )],
+        )
+        return response
+  
 
     async def generation_summary(self, query, context):
 
