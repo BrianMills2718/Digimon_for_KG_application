@@ -1,0 +1,20 @@
+llm:
+  api_type: "openai"  # you're using OpenAI's hosted models
+  base_url: "https://api.openai.com/v1"
+  model: "gpt-3.5-turbo"
+  api_key: "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"
+
+embedding:
+  api_type: "openai"
+  api_key: "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"
+  model: "text-embedding-3-small"
+  cache_dir: ""
+  dimensions: 1024
+  max_token_size: 8102
+  embed_batch_size: 128
+  embedding_func_max_async: 16
+
+data_root: "./Data"  # can be empty or created later
+
+working_dir: ./results  # output directory
+exp_name: test

@@ -1,0 +1,16 @@
+# environment.yml  —  Digimon baseline (CPU-only, no CUDA)
+name: digimon
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10          # match repo
+  - pip                  # install pip wheels
+  # ───────────────────────────────────────────────
+  # Anything available on conda-forge can go here
+  # e.g.  - numpy  - pandas  - faiss-cpu
+  - faiss-cpu=1.7.4
+  # ───────────────────────────────────────────────
+  - pip:
+      # One line tells conda/pip to slurp all pinned wheels
+      - -r requirements.txt
