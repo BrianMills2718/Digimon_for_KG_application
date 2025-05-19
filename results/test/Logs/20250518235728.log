@@ -1,0 +1,28 @@
+2025-05-18 23:57:38.369 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:131 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2025-05-18 23:57:38.379 | INFO     | Core.Chunk.DocChunk:build_chunks:27 - Starting chunk the given documents
+2025-05-18 23:57:38.401 | INFO     | Core.Storage.ChunkKVStorage:_persist:105 - Writing data into ./results/HotpotQAsmallest/tree_graph_balanced/chunk_storage_chunk_data_idx.pkl and ./results/HotpotQAsmallest/tree_graph_balanced/chunk_storage_chunk_data_key.pkl
+2025-05-18 23:57:38.402 | INFO     | Core.Chunk.DocChunk:build_chunks:74 - ✅ Finished the chunking stage
+2025-05-18 23:57:38.402 | INFO     | Core.GraphRAG:_update_costs_info:205 - Chunking stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2025-05-18 23:57:38.402 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.02
+2025-05-18 23:57:38.402 | INFO     | Core.Graph.BaseGraph:build_graph:41 - Starting build graph for the given documents
+2025-05-18 23:57:38.402 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./results/HotpotQAsmallest/tree_graph_balanced/graph_storage_tree_data.pkl
+2025-05-18 23:57:38.404 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:38 - Successfully loaded tree from: ./results/HotpotQAsmallest/tree_graph_balanced/graph_storage_tree_data.pkl with 50 nodes and 2 layers
+2025-05-18 23:57:38.404 | INFO     | Core.Graph.BaseGraph:build_graph:50 - ✅ Finished the graph building stage
+2025-05-18 23:57:38.405 | INFO     | Core.GraphRAG:_update_costs_info:205 - Build Graph stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2025-05-18 23:57:38.405 | INFO     | Core.GraphRAG:_update_costs_info:207 - Build Graph time(s): 0.00
+2025-05-18 23:57:38.405 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting insert elements of the given graph into vector database
+2025-05-18 23:57:38.405 | INFO     | Core.Index.BaseIndex:build_index:17 - Loading index from the file ./results/HotpotQAsmallest/tree_graph_balanced/entities_vdb
+2025-05-18 23:57:38.412 | INFO     | Core.Index.BaseIndex:build_index:29 - ✅ Finished starting insert entities of the given graph into vector database
+2025-05-18 23:57:38.412 | INFO     | Core.GraphRAG:_update_costs_info:205 - Index Building stage cost: Total prompt token: 0, Total completeion token: 0, Total cost: 0
+2025-05-18 23:57:38.412 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building time(s): 0.01
+2025-05-18 23:57:38.413 | INFO     | Core.GraphRAG:_build_retriever_context:176 - Building retriever context for the current execution
+2025-05-18 23:57:40.262 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.001 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 433, completion_tokens: 21
+2025-05-18 23:57:41.525 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.002 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 517, completion_tokens: 45
+2025-05-18 23:57:43.329 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.003 | Max budget: $10.000 | Current cost: $0.002, prompt_tokens: 830, completion_tokens: 134
+2025-05-18 23:57:44.866 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.004 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 413, completion_tokens: 59
+2025-05-18 23:57:45.931 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.005 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 481, completion_tokens: 18
+2025-05-18 23:57:49.759 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.005 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 480, completion_tokens: 56
+2025-05-18 23:57:51.049 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.006 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 519, completion_tokens: 26
+2025-05-18 23:57:52.265 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.008 | Max budget: $10.000 | Current cost: $0.002, prompt_tokens: 1024, completion_tokens: 21
+2025-05-18 23:57:53.563 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.008 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 405, completion_tokens: 14
+2025-05-18 23:57:54.758 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.009 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 535, completion_tokens: 14

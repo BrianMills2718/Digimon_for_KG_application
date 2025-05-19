@@ -1,0 +1,2 @@
+2025-05-19 03:42:12.330 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:131 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2025-05-19 03:42:17.747 | INFO     | Core.Chunk.DocChunk:build_chunks:27 - Starting chunk the given documents
