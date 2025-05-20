@@ -101,9 +101,11 @@ class CommunityRetriever(BaseRetriever):
 
     @register_retriever_method(type="community", method_name="from_level")
     async def find_relevant_community_by_level(self, seed=None):
-        community_schema = self.community.community_schema
+        community_schema_from_storage = self.community.community_schema
+        query_config_level = self.retriever_context.context["query_config"].level
+        logger.debug(f"COMMUNITY_RETRIEVER_FROM_LEVEL: Filtering communities by level <= {query_config_level}")
         community_schema = {
-            k: v for k, v in community_schema.items() if v.level <= self.config.level
+            k: v for k, v in community_schema_from_storage.items() if v.level <= query_config_level
         }
         if not len(community_schema):
             return QueryPrompt.FAIL_RESPONSE
@@ -114,23 +116,30 @@ class CommunityRetriever(BaseRetriever):
             reverse=True,
         )
 
-        sorted_community_schemas = sorted_community_schemas[
-                                   : self.config.global_max_consider_community
-                                   ]
+        global_max_consider_community = int(self.retriever_context.context["query_config"].global_max_consider_community)
+        sorted_community_schemas = sorted_community_schemas[:global_max_consider_community]
         community_datas = await self.community.community_reports.get_by_ids(  ###
             [k[0] for k in sorted_community_schemas]
         )
 
         community_datas = [c for c in community_datas if c is not None]
+        global_min_community_rating = float(self.retriever_context.context["query_config"].global_min_community_rating)
         community_datas = [
             c
             for c in community_datas
-            if c["report_json"].get("rating", 0) >= self.config.global_min_community_rating
+            if c["report_json"].get("rating", 0) >= global_min_community_rating
         ]
+        if community_datas:
+            logger.debug(f"COMMUNITY_RETRIEVER_FROM_LEVEL: First 2 community_datas before sorting: {community_datas[:2]}")
         community_datas = sorted(
             community_datas,
-            key=lambda x: (x['community_info']['occurrence'], x["report_json"].get("rating", 0)),
+            key=lambda x: (x.get('community_info', {}).get('occurrence', 0), x["report_json"].get("rating", 0)),
             reverse=True,
         )
         logger.info(f"Retrieved {len(community_datas)} communities")
-        return community_datas
+        # Wrap each community data in a dict with 'community_info' for downstream compatibility
+        wrapped_community_datas = [
+            {"community_info": c, "report_json": c.get("report_json", {}), "report_string": c.get("report_string", "")}
+            for c in community_datas
+        ]
+        return wrapped_community_datas

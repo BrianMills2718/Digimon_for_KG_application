@@ -1,0 +1,3190 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d10" for="edge" attr.name="tgt_id" attr.type="string" />
+  <key id="d9" for="edge" attr.name="src_id" attr.type="string" />
+  <key id="d8" for="edge" attr.name="description" attr.type="string" />
+  <key id="d7" for="edge" attr.name="keywords" attr.type="string" />
+  <key id="d6" for="edge" attr.name="relation_name" attr.type="string" />
+  <key id="d5" for="edge" attr.name="source_id" attr.type="string" />
+  <key id="d4" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d3" for="node" attr.name="description" attr.type="string" />
+  <key id="d2" for="node" attr.name="entity_type" attr.type="string" />
+  <key id="d1" for="node" attr.name="entity_name" attr.type="string" />
+  <key id="d0" for="node" attr.name="source_id" attr.type="string" />
+  <graph edgedefault="undirected">
+    <node id="american revolution">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a&lt;SEP&gt;chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">american revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="thirteen colonies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">thirteen colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british america">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british america</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="american revolutionary war">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">american revolutionary war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="april 19  1775">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">april 19  1775</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="battles of lexington and concord">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">battles of lexington and concord</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="second continental congress">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">second continental congress</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="independence hall">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">independence hall</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="philadelphia">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">philadelphia</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="continental army">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">continental army</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="george washington">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">george washington</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="declaration of independence">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">declaration of independence</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="king george iii">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">king george iii</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="treaty of paris">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">treaty of paris</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="united states of america">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">united states of america</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="france">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600&lt;SEP&gt;chunk-517dd89f19429314e274bd8c27777e5c&lt;SEP&gt;chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">france</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french and indian war">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">french and indian war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british parliament">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british parliament</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="stamp act congress">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">stamp act congress</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="townshend acts">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">townshend acts</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="boston">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">boston</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="boston massacre">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">boston massacre</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="gaspee">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">gaspee</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="rhode island">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">rhode island</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="sons of liberty">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">sons of liberty</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="boston tea party">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">boston tea party</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british east india company">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british east india company</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="london">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">london</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="first continental congress">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">first continental congress</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="carpenters  hall">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">carpenters  hall</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="province of georgia">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">province of georgia</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="patriot">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">patriot</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="thomas jefferson">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">thomas jefferson</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="articles of confederation">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">articles of confederation</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="lee resolution">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">lee resolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="marquis de lafayette">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">marquis de lafayette</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="charles cornwallis">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">charles cornwallis</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="siege of yorktown">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">siege of yorktown</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="mississippi river">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">mississippi river</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="great lakes">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">great lakes</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="loyalists">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">loyalists</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="canada">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">canada</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="timeline of the american revolution">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">timeline of the american revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="province of quebec">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">province of quebec</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="royal proclamation of 1763">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">royal proclamation of 1763</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british policy of salutary neglect">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british policy of salutary neglect</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="capt  levi preston">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">capt  levi preston</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="danvers">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">danvers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="massachusetts">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">massachusetts</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial history of the united states">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">colonial history of the united states</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="english empire">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">english empire</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="britain">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">britain</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="revolution">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="americans">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">americans</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="england">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">england</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="17th century">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">17th century</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british empire">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british empire</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="scotland">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">scotland</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1707">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">1707</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="american">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">american</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="english civil war">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">english civil war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="puritan colonies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">puritan colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new england">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new england</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="commonwealth government">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">commonwealth government</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="king charles i">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">king charles i</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="stuart restoration">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">stuart restoration</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1660">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">1660</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="charles ii">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">charles ii</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="king philip s war">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">king philip s war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="native american">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">native american</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british people">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british people</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="charles">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">charles</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="james ii">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">james ii</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="english control">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">english control</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="crown">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">crown</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1686">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">1686</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="james">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">james</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new york">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new york</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new jersey">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new jersey</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="dominion of new england">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">dominion of new england</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="edmund andros">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">edmund andros</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="parliament">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">parliament</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="glorious revolution">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">glorious revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="boston revolt">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">boston revolt</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="dominion rule">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">dominion rule</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial governments">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial governments</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="william">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">william</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="mary">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">mary</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="king in parliament">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">king in parliament</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="house of lords">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">house of lords</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="house of commons">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">house of commons</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british subjects">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british subjects</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="atlantic">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">atlantic</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british constitution">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british constitution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="englishmen">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">englishmen</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british government">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british government</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="royal governor">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">royal governor</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="property owners">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">property owners</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial assembly">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial assembly</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="whig ideology">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">whig ideology</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="american political philosophy">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">american political philosophy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british west indies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british west indies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="navigation acts">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">navigation acts</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="english port">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">english port</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="wool act 1698">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">wool act 1698</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="hat act 1731">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">hat act 1731</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="iron act 1750">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">iron act 1750</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial reactions">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial reactions</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="molasses act 1733">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">molasses act 1733</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new england colonists">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new england colonists</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="robert middlekauff">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">robert middlekauff</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british monarchy">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">british monarchy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="great britain">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">great britain</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1763">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">1763</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="bute ministry">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">bute ministry</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">british</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="45 000">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">45 000</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british regulars">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">british regulars</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial volunteers">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">colonial volunteers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="north america">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">north america</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1 500">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">1 500</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british army">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">british army</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="native americans">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">native americans</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french in canada">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">french in canada</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="spanish in florida">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">spanish in florida</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="appalachian mountains">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">appalachian mountains</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="pontiac s war">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">pontiac s war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1763 1766">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">1763 1766</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="grenville ministry">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">grenville ministry</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french revolution">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="estates general">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a&lt;SEP&gt;chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">estates general</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="coup of 18 brumaire">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">coup of 18 brumaire</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="9 november 1799">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">9 november 1799</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="liberal democracy">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">liberal democracy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french political discourse">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french political discourse</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="ancien r gime">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">ancien r gime</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="financial crisis">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">financial crisis</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="social distress">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">social distress</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="estates general in may 1789">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">estates general in may 1789</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="national assembly">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">national assembly</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="storming of the bastille">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">storming of the bastille</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="paris">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">paris</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="abolition of feudalism">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">abolition of feudalism</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="catholic church">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">catholic church</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="declaration of rights">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">declaration of rights</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="king louis xvi">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">king louis xvi</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="varennes">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">varennes</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french revolutionary wars">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french revolutionary wars</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="armed insurrection">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">armed insurrection</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french first republic">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french first republic</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="louis xvi">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">louis xvi</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french revolutionary tribunal">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french revolutionary tribunal</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="reign of terror">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">reign of terror</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="thermidorian reaction">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">thermidorian reaction</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="committee of public safety">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">committee of public safety</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="jacobins">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">jacobins</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="maximilien robespierre">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a&lt;SEP&gt;chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">maximilien robespierre</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="directory">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">directory</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="napoleon bonaparte">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">napoleon bonaparte</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="consulate">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">consulate</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="causes of the french revolution">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">causes of the french revolution</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="middle class">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">middle class</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="economic recession">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">economic recession</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="bad harvests">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">bad harvests</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="unemployment">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">unemployment</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="food prices">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">food prices</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="debt crisis">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">debt crisis</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="tax rates">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">tax rates</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="estates general of 1789">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">estates general of 1789</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="parlements">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">parlements</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="nobility">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">nobility</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="enlightenment">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">enlightenment</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="european revolts">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">european revolts</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="affair of the diamond necklace">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">affair of the diamond necklace</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="parlement of paris">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a&lt;SEP&gt;chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">parlement of paris</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="budgetary crises">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">budgetary crises</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="tax farmers">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">tax farmers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="peasants">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">peasants</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="church">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">church</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="anglo french war">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">anglo french war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1778 1783">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">1778 1783</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1788">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">1788</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="calonne">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">calonne</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="brienne">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">brienne</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1614">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">1614</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="third estate">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">third estate</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="abb  siey s">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">abb  siey s</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="jean joseph mounier">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">jean joseph mounier</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="antoine barnave">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">antoine barnave</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="commander in chief">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">commander in chief</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="revolutionary war">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">revolutionary war</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new taxes">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">new taxes</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british troops to boston">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british troops to boston</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british troops">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british troops</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="protesters in boston massacre">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">protesters in boston massacre</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="closing boston harbor">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">closing boston harbor</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="enacting punitive laws">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">enacting punitive laws</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="patriot resistance">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">patriot resistance</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="several colonies">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">several colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="coordinating patriot resistance">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">coordinating patriot resistance</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="surrounding boston">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">surrounding boston</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="washington">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">washington</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="british to withdraw">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british to withdraw</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="political philosophies">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">political philosophies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="monarchy">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">monarchy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="aristocracy">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">aristocracy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="all men are created equal">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">all men are created equal</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial cause of independence">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">colonial cause of independence</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="decisive victory in siege of yorktown">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">decisive victory in siege of yorktown</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="former colonies territory">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">former colonies territory</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="independence">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">independence</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="thirteen colonies to seek autonomy">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">thirteen colonies to seek autonomy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="americans rebelled against england">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">americans rebelled against england</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="americans always governed themselves">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">americans always governed themselves</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="americans always meant to govern themselves">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">americans always meant to govern themselves</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="danvers  massachusetts">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">danvers  massachusetts</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="scotland in 1707">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">scotland in 1707</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new england colonies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new england colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial charters">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial charters</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="aristocrats">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">aristocrats</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="gentry and merchants">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">gentry and merchants</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="executive power">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">executive power</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="tyrannical government">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">tyrannical government</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1740s">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">1740s</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="colonial leaders">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial leaders</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1755">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">1755</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="great britain and france">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">great britain and france</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1754 1763">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">1754 1763</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="45 000 soldiers">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">45 000 soldiers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="10 000 soldiers">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">10 000 soldiers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1 500 politically well connected officers">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">1 500 politically well connected officers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="foreign populations">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">foreign populations</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="french threat was removed">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">french threat was removed</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="migration">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">migration</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="territory between appalachian mountains and mississippi river as indian reserve">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">territory between appalachian mountains and mississippi river as indian reserve</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="territory to white settlement">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">territory to white settlement</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="settlers  fur traders  and land speculators">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">settlers  fur traders  and land speculators</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="june">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">june</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="state control over catholic church">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">state control over catholic church</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="april 1792">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">april 1792</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="september">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">september</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="january 1793">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">january 1793</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="execution of 16 000 people">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">execution of 16 000 people</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="social  economic  financial  and political crisis">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">social  economic  financial  and political crisis</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="resistance to reform by ruling elite">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">resistance to reform by ruling elite</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="indecisive policy by louis xvi">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">indecisive policy by louis xvi</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="crisis state was unable to manage">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">crisis state was unable to manage</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="21 to 28 million">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">21 to 28 million</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="600 000 inhabitants in paris">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">600 000 inhabitants in paris</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="tripling in size of middle class">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">tripling in size of middle class</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="almost 10  of population by 1789">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">almost 10  of population by 1789</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="rentier and mercantile classes">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">rentier and mercantile classes</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="wage laborers and peasant farmers">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">wage laborers and peasant farmers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1785">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">1785</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="1787 and 1788">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">1787 and 1788</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="high unemployment and food prices">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">high unemployment and food prices</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="budgetary crises during 18th century">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">budgetary crises during 18th century</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="nobility and church">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">nobility and church</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="all taxpayers">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">all taxpayers</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="conservative elements within nobility">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">conservative elements within nobility</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="patriotism  liberty  equality  and democracy">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">patriotism  liberty  equality  and democracy</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="educated public to crisis">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">educated public to crisis</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="court  nobility  and church officials">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">court  nobility  and church officials</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="universal land tax">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">universal land tax</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="abolition of grain controls">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">abolition of grain controls</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="new provincial assemblies">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">new provincial assemblies</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="8 august 1788">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">8 august 1788</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="less than 5  of the population">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">less than 5  of the population</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="what is the third estate">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">what is the third estate</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="privilege of the clergy and nobility">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">privilege of the clergy and nobility</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="regional meetings">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">regional meetings</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="demands">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">demands</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <node id="literature">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">literature</data>
+      <data key="d2" />
+      <data key="d3" />
+    </node>
+    <edge source="american revolution" target="thirteen colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">occurred in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="american revolution" target="british america">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">occurred in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">british america</data>
+    </edge>
+    <edge source="american revolution" target="american revolutionary war">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">culminated in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">american revolutionary war</data>
+    </edge>
+    <edge source="american revolution" target="boston tea party">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">escalated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">boston tea party</data>
+    </edge>
+    <edge source="american revolution" target="united states of america">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">established after</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">united states of america</data>
+    </edge>
+    <edge source="american revolution" target="robert middlekauff">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">historian of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">robert middlekauff</data>
+    </edge>
+    <edge source="american revolution" target="patriotism  liberty  equality  and democracy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">inspired public debate on</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">patriotism  liberty  equality  and democracy</data>
+    </edge>
+    <edge source="american revolution" target="educated public to crisis">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">shaped response of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolution</data>
+      <data key="d10">educated public to crisis</data>
+    </edge>
+    <edge source="thirteen colonies" target="17th century">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">established in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">17th century</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="thirteen colonies" target="english empire">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">part of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">english empire</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="thirteen colonies" target="british empire">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">part of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british empire</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="thirteen colonies" target="navigation acts">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">restricted in trade by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">navigation acts</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="thirteen colonies" target="royal proclamation of 1763">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">angered</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">royal proclamation of 1763</data>
+      <data key="d10">thirteen colonies</data>
+    </edge>
+    <edge source="american revolutionary war" target="april 19  1775">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">launched on</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolutionary war</data>
+      <data key="d10">april 19  1775</data>
+    </edge>
+    <edge source="american revolutionary war" target="battles of lexington and concord">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">started with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american revolutionary war</data>
+      <data key="d10">battles of lexington and concord</data>
+    </edge>
+    <edge source="second continental congress" target="independence hall">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">convened in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">independence hall</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="philadelphia">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">convened in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">philadelphia</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="continental army">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">formed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">continental army</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="george washington">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">appointed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">george washington</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="declaration of independence">
+      <data key="d4">2.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">adopted</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">declaration of independence</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="articles of confederation">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">debated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">articles of confederation</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="lee resolution">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">passed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">lee resolution</data>
+      <data key="d10">second continental congress</data>
+    </edge>
+    <edge source="continental army" target="washington">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">led</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">continental army</data>
+      <data key="d10">washington</data>
+    </edge>
+    <edge source="george washington" target="commander in chief">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">became</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">commander in chief</data>
+      <data key="d10">george washington</data>
+    </edge>
+    <edge source="declaration of independence" target="revolutionary war">
+      <data key="d4">3.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">escalated&lt;SEP&gt;formalized&lt;SEP&gt;inspired</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">declaration of independence</data>
+      <data key="d10">revolutionary war</data>
+    </edge>
+    <edge source="declaration of independence" target="political philosophies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">embodied</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">declaration of independence</data>
+      <data key="d10">political philosophies</data>
+    </edge>
+    <edge source="declaration of independence" target="monarchy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">rejected</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">declaration of independence</data>
+      <data key="d10">monarchy</data>
+    </edge>
+    <edge source="declaration of independence" target="aristocracy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">rejected</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">aristocracy</data>
+      <data key="d10">declaration of independence</data>
+    </edge>
+    <edge source="declaration of independence" target="all men are created equal">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">proclaimed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">all men are created equal</data>
+      <data key="d10">declaration of independence</data>
+    </edge>
+    <edge source="king george iii" target="british troops to boston">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">deployed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british troops to boston</data>
+      <data key="d10">king george iii</data>
+    </edge>
+    <edge source="treaty of paris" target="former colonies territory">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">granted</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">former colonies territory</data>
+      <data key="d10">treaty of paris</data>
+    </edge>
+    <edge source="treaty of paris" target="independence">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">acknowledged</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">independence</data>
+      <data key="d10">treaty of paris</data>
+    </edge>
+    <edge source="france" target="revolutionary war">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">entered</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">revolutionary war</data>
+    </edge>
+    <edge source="france" target="colonial cause of independence">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">supported</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">colonial cause of independence</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="british">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">defeated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="21 to 28 million">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">population grew from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">21 to 28 million</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="600 000 inhabitants in paris">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">had over</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">600 000 inhabitants in paris</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="tripling in size of middle class">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">accompanied by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">tripling in size of middle class</data>
+    </edge>
+    <edge source="france" target="almost 10  of population by 1789">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">middle class comprised</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">almost 10  of population by 1789</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="rentier and mercantile classes">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">benefits of prosperity restricted to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">rentier and mercantile classes</data>
+    </edge>
+    <edge source="france" target="wage laborers and peasant farmers">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">living standards fell for</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">wage laborers and peasant farmers</data>
+    </edge>
+    <edge source="france" target="1785">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">economic recession from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1785</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="1787 and 1788">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">bad harvests in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1787 and 1788</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="high unemployment and food prices">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">high unemployment and food prices</data>
+    </edge>
+    <edge source="france" target="budgetary crises during 18th century">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">faced series of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">budgetary crises during 18th century</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="peasants">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">tax burden fell mainly on</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">peasants</data>
+    </edge>
+    <edge source="france" target="parlements">
+      <data key="d4">2.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">king could impose laws by decree  risking conflict with&lt;SEP&gt;new tax laws had to be registered with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">parlements</data>
+    </edge>
+    <edge source="france" target="tax farmers">
+      <data key="d4">2.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">tax collection contracted to&lt;SEP&gt;tax collection kept much of it as personal profit by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">tax farmers</data>
+    </edge>
+    <edge source="france" target="nobility and church">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">tax exemptions benefited</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">france</data>
+      <data key="d10">nobility and church</data>
+    </edge>
+    <edge source="france" target="all taxpayers">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">tax complexity caused resentment among</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">all taxpayers</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="anglo french war">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">funded</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">anglo french war</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="1778 1783">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">funded</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1778 1783</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="france" target="1788">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">borrowed heavily</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1788</data>
+      <data key="d10">france</data>
+    </edge>
+    <edge source="french and indian war" target="british policy of salutary neglect">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">changed after</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british policy of salutary neglect</data>
+      <data key="d10">french and indian war</data>
+    </edge>
+    <edge source="french and indian war" target="great britain and france">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">fought between</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french and indian war</data>
+      <data key="d10">great britain and france</data>
+    </edge>
+    <edge source="french and indian war" target="great britain">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">defeated france in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french and indian war</data>
+      <data key="d10">great britain</data>
+    </edge>
+    <edge source="french and indian war" target="1754 1763">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">occurred during</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1754 1763</data>
+      <data key="d10">french and indian war</data>
+    </edge>
+    <edge source="british parliament" target="new taxes">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">imposed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british parliament</data>
+      <data key="d10">new taxes</data>
+    </edge>
+    <edge source="british parliament" target="townshend acts">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">passed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british parliament</data>
+      <data key="d10">townshend acts</data>
+    </edge>
+    <edge source="sons of liberty" target="boston tea party">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">instigated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">boston tea party</data>
+      <data key="d10">sons of liberty</data>
+    </edge>
+    <edge source="london" target="closing boston harbor">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">responded by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">closing boston harbor</data>
+      <data key="d10">london</data>
+    </edge>
+    <edge source="london" target="enacting punitive laws">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">responded by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">enacting punitive laws</data>
+      <data key="d10">london</data>
+    </edge>
+    <edge source="first continental congress" target="carpenters  hall">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">met in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">carpenters  hall</data>
+      <data key="d10">first continental congress</data>
+    </edge>
+    <edge source="first continental congress" target="patriot resistance">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">coordinated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">first continental congress</data>
+      <data key="d10">patriot resistance</data>
+    </edge>
+    <edge source="first continental congress" target="several colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">convened by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">first continental congress</data>
+      <data key="d10">several colonies</data>
+    </edge>
+    <edge source="first continental congress" target="province of georgia">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">joined by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">first continental congress</data>
+      <data key="d10">province of georgia</data>
+    </edge>
+    <edge source="first continental congress" target="coordinating patriot resistance">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">began</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">coordinating patriot resistance</data>
+      <data key="d10">first continental congress</data>
+    </edge>
+    <edge source="mississippi river" target="great britain">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">acquired territory east of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">great britain</data>
+      <data key="d10">mississippi river</data>
+    </edge>
+    <edge source="mississippi river" target="british">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">acquired territory east of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british</data>
+      <data key="d10">mississippi river</data>
+    </edge>
+    <edge source="royal proclamation of 1763" target="grenville ministry">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">issued</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">grenville ministry</data>
+      <data key="d10">royal proclamation of 1763</data>
+    </edge>
+    <edge source="royal proclamation of 1763" target="territory between appalachian mountains and mississippi river as indian reserve">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">designated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">royal proclamation of 1763</data>
+      <data key="d10">territory between appalachian mountains and mississippi river as indian reserve</data>
+    </edge>
+    <edge source="royal proclamation of 1763" target="territory to white settlement">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">closed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">royal proclamation of 1763</data>
+      <data key="d10">territory to white settlement</data>
+    </edge>
+    <edge source="royal proclamation of 1763" target="settlers  fur traders  and land speculators">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">angered</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">royal proclamation of 1763</data>
+      <data key="d10">settlers  fur traders  and land speculators</data>
+    </edge>
+    <edge source="british policy of salutary neglect" target="thirteen colonies to seek autonomy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">prompted</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british policy of salutary neglect</data>
+      <data key="d10">thirteen colonies to seek autonomy</data>
+    </edge>
+    <edge source="capt  levi preston" target="americans rebelled against england">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">responded</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">americans rebelled against england</data>
+      <data key="d10">capt  levi preston</data>
+    </edge>
+    <edge source="capt  levi preston" target="americans always governed themselves">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">stated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">americans always governed themselves</data>
+      <data key="d10">capt  levi preston</data>
+    </edge>
+    <edge source="capt  levi preston" target="americans always meant to govern themselves">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">stated</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">americans always meant to govern themselves</data>
+      <data key="d10">capt  levi preston</data>
+    </edge>
+    <edge source="capt  levi preston" target="danvers  massachusetts">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">capt  levi preston</data>
+      <data key="d10">danvers  massachusetts</data>
+    </edge>
+    <edge source="massachusetts" target="charles ii">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">did not recognize</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">charles ii</data>
+      <data key="d10">massachusetts</data>
+    </edge>
+    <edge source="britain" target="revolution">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">occurred in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">britain</data>
+      <data key="d10">revolution</data>
+    </edge>
+    <edge source="americans" target="england">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">rebelled against</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">americans</data>
+      <data key="d10">england</data>
+    </edge>
+    <edge source="england" target="scotland in 1707">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">union with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">england</data>
+      <data key="d10">scotland in 1707</data>
+    </edge>
+    <edge source="england" target="new england">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">fought without military assistance from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">england</data>
+      <data key="d10">new england</data>
+    </edge>
+    <edge source="british empire" target="glorious revolution">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">constitutional monarchy after</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british empire</data>
+      <data key="d10">glorious revolution</data>
+    </edge>
+    <edge source="american" target="english civil war">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">identity traced back to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">american</data>
+      <data key="d10">english civil war</data>
+    </edge>
+    <edge source="puritan colonies" target="commonwealth government">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">supported</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">commonwealth government</data>
+      <data key="d10">puritan colonies</data>
+    </edge>
+    <edge source="commonwealth government" target="king charles i">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">executed by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">commonwealth government</data>
+      <data key="d10">king charles i</data>
+    </edge>
+    <edge source="stuart restoration" target="1660">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">happened in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1660</data>
+      <data key="d10">stuart restoration</data>
+    </edge>
+    <edge source="king philip s war" target="new england colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">fought by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">king philip s war</data>
+      <data key="d10">new england colonies</data>
+    </edge>
+    <edge source="charles" target="james ii">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">brother of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">charles</data>
+      <data key="d10">james ii</data>
+    </edge>
+    <edge source="crown" target="colonial charters">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">nullified</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">colonial charters</data>
+      <data key="d10">crown</data>
+    </edge>
+    <edge source="crown" target="executive power">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">appointed royal governor to exercise</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">crown</data>
+      <data key="d10">executive power</data>
+    </edge>
+    <edge source="james" target="dominion of new england">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">consolidated new england colonies into</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">dominion of new england</data>
+      <data key="d10">james</data>
+    </edge>
+    <edge source="james" target="parliament">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">ruled without</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">james</data>
+      <data key="d10">parliament</data>
+    </edge>
+    <edge source="edmund andros" target="royal governor">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">appointed as</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">edmund andros</data>
+      <data key="d10">royal governor</data>
+    </edge>
+    <edge source="parliament" target="navigation acts">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">passed by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">navigation acts</data>
+      <data key="d10">parliament</data>
+    </edge>
+    <edge source="boston revolt" target="dominion rule">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">overthrew</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">boston revolt</data>
+      <data key="d10">dominion rule</data>
+    </edge>
+    <edge source="william" target="new england colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">granted new charters to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">new england colonies</data>
+      <data key="d10">william</data>
+    </edge>
+    <edge source="mary" target="new england colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">granted new charters to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">mary</data>
+      <data key="d10">new england colonies</data>
+    </edge>
+    <edge source="house of lords" target="aristocrats">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">inherited by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">aristocrats</data>
+      <data key="d10">house of lords</data>
+    </edge>
+    <edge source="house of commons" target="gentry and merchants">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">controlled by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">gentry and merchants</data>
+      <data key="d10">house of commons</data>
+    </edge>
+    <edge source="british subjects" target="englishmen">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">claimed british constitution with guarantees of rights of</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british subjects</data>
+      <data key="d10">englishmen</data>
+    </edge>
+    <edge source="british government" target="colonial assembly">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">had powers to legislate and levy taxes with right of veto by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british government</data>
+      <data key="d10">colonial assembly</data>
+    </edge>
+    <edge source="british government" target="1740s">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">ceased enforcement efforts after</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1740s</data>
+      <data key="d10">british government</data>
+    </edge>
+    <edge source="british government" target="colonial leaders">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">negotiated and compromised with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british government</data>
+      <data key="d10">colonial leaders</data>
+    </edge>
+    <edge source="british government" target="1755">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">rarely sent military forces to america before</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1755</data>
+      <data key="d10">british government</data>
+    </edge>
+    <edge source="property owners" target="colonial assembly">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">elected</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">colonial assembly</data>
+      <data key="d10">property owners</data>
+    </edge>
+    <edge source="whig ideology" target="tyrannical government">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">influenced american political philosophy with love of liberty and opposition to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">tyrannical government</data>
+      <data key="d10">whig ideology</data>
+    </edge>
+    <edge source="british west indies" target="colonies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">traded with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british west indies</data>
+      <data key="d10">colonies</data>
+    </edge>
+    <edge source="molasses act 1733" target="new england colonists">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d6">protested by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">molasses act 1733</data>
+      <data key="d10">new england colonists</data>
+    </edge>
+    <edge source="bute ministry" target="north america">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">decided to garrison soldiers in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">bute ministry</data>
+      <data key="d10">north america</data>
+    </edge>
+    <edge source="bute ministry" target="10 000 soldiers">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">decided to garrison</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">10 000 soldiers</data>
+      <data key="d10">bute ministry</data>
+    </edge>
+    <edge source="british" target="45 000 soldiers">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">fielded</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">45 000 soldiers</data>
+      <data key="d10">british</data>
+    </edge>
+    <edge source="british army" target="1 500 politically well connected officers">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">had</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1 500 politically well connected officers</data>
+      <data key="d10">british army</data>
+    </edge>
+    <edge source="british army" target="native americans">
+      <data key="d4">2.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">prevented conflict with&lt;SEP&gt;provided defense against</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british army</data>
+      <data key="d10">native americans</data>
+    </edge>
+    <edge source="british army" target="foreign populations">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">provided defense against</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british army</data>
+      <data key="d10">foreign populations</data>
+    </edge>
+    <edge source="native americans" target="pontiac s war">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">launched</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">native americans</data>
+      <data key="d10">pontiac s war</data>
+    </edge>
+    <edge source="french revolution" target="estates general of 1789">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">began with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">estates general of 1789</data>
+      <data key="d10">french revolution</data>
+    </edge>
+    <edge source="french revolution" target="coup of 18 brumaire">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">ended with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">coup of 18 brumaire</data>
+      <data key="d10">french revolution</data>
+    </edge>
+    <edge source="french revolution" target="liberal democracy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">resulted in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french revolution</data>
+      <data key="d10">liberal democracy</data>
+    </edge>
+    <edge source="french revolution" target="french political discourse">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">values remain central to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french political discourse</data>
+      <data key="d10">french revolution</data>
+    </edge>
+    <edge source="french revolution" target="ancien r gime">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">caused by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">ancien r gime</data>
+      <data key="d10">french revolution</data>
+    </edge>
+    <edge source="french revolution" target="financial crisis">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">caused by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">financial crisis</data>
+      <data key="d10">french revolution</data>
+    </edge>
+    <edge source="french revolution" target="social distress">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">caused by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french revolution</data>
+      <data key="d10">social distress</data>
+    </edge>
+    <edge source="estates general" target="parlement of paris">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">ruled</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">estates general</data>
+      <data key="d10">parlement of paris</data>
+    </edge>
+    <edge source="estates general" target="1614">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">convened in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1614</data>
+      <data key="d10">estates general</data>
+    </edge>
+    <edge source="national assembly" target="estates general of 1789">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">estates general of 1789</data>
+      <data key="d10">national assembly</data>
+    </edge>
+    <edge source="national assembly" target="third estate">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">re constituted from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">national assembly</data>
+      <data key="d10">third estate</data>
+    </edge>
+    <edge source="national assembly" target="june">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">formed in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">june</data>
+      <data key="d10">national assembly</data>
+    </edge>
+    <edge source="storming of the bastille" target="paris">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">occurred in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">paris</data>
+      <data key="d10">storming of the bastille</data>
+    </edge>
+    <edge source="storming of the bastille" target="abolition of feudalism">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">abolition of feudalism</data>
+      <data key="d10">storming of the bastille</data>
+    </edge>
+    <edge source="storming of the bastille" target="state control over catholic church">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">state control over catholic church</data>
+      <data key="d10">storming of the bastille</data>
+    </edge>
+    <edge source="storming of the bastille" target="declaration of rights">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">declaration of rights</data>
+      <data key="d10">storming of the bastille</data>
+    </edge>
+    <edge source="king louis xvi" target="varennes">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">attempted flight to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">king louis xvi</data>
+      <data key="d10">varennes</data>
+    </edge>
+    <edge source="king louis xvi" target="monarchy">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">discredited by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">king louis xvi</data>
+      <data key="d10">monarchy</data>
+    </edge>
+    <edge source="french revolutionary wars" target="april 1792">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">began in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">april 1792</data>
+      <data key="d10">french revolutionary wars</data>
+    </edge>
+    <edge source="french revolutionary wars" target="armed insurrection">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led to</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">armed insurrection</data>
+      <data key="d10">french revolutionary wars</data>
+    </edge>
+    <edge source="french first republic" target="september">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">established in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french first republic</data>
+      <data key="d10">september</data>
+    </edge>
+    <edge source="louis xvi" target="january 1793">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">executed in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">january 1793</data>
+      <data key="d10">louis xvi</data>
+    </edge>
+    <edge source="louis xvi" target="conservative elements within nobility">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">backed down when faced with opposition from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">conservative elements within nobility</data>
+      <data key="d10">louis xvi</data>
+    </edge>
+    <edge source="reign of terror" target="execution of 16 000 people">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">resulted in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">execution of 16 000 people</data>
+      <data key="d10">reign of terror</data>
+    </edge>
+    <edge source="reign of terror" target="thermidorian reaction">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">ended with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">reign of terror</data>
+      <data key="d10">thermidorian reaction</data>
+    </edge>
+    <edge source="committee of public safety" target="jacobins">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">dominated by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">committee of public safety</data>
+      <data key="d10">jacobins</data>
+    </edge>
+    <edge source="committee of public safety" target="maximilien robespierre">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">led by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">committee of public safety</data>
+      <data key="d10">maximilien robespierre</data>
+    </edge>
+    <edge source="committee of public safety" target="directory">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">replaced by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">committee of public safety</data>
+      <data key="d10">directory</data>
+    </edge>
+    <edge source="maximilien robespierre" target="literature">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">organised</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">literature</data>
+      <data key="d10">maximilien robespierre</data>
+    </edge>
+    <edge source="directory" target="consulate">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">replaced by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">consulate</data>
+      <data key="d10">directory</data>
+    </edge>
+    <edge source="napoleon bonaparte" target="consulate">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">established with</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">consulate</data>
+      <data key="d10">napoleon bonaparte</data>
+    </edge>
+    <edge source="causes of the french revolution" target="social  economic  financial  and political crisis">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">culminated in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">causes of the french revolution</data>
+      <data key="d10">social  economic  financial  and political crisis</data>
+    </edge>
+    <edge source="causes of the french revolution" target="resistance to reform by ruling elite">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">resulted from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">causes of the french revolution</data>
+      <data key="d10">resistance to reform by ruling elite</data>
+    </edge>
+    <edge source="causes of the french revolution" target="indecisive policy by louis xvi">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">resulted from</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">causes of the french revolution</data>
+      <data key="d10">indecisive policy by louis xvi</data>
+    </edge>
+    <edge source="causes of the french revolution" target="crisis state was unable to manage">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">resulted in</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">causes of the french revolution</data>
+      <data key="d10">crisis state was unable to manage</data>
+    </edge>
+    <edge source="estates general of 1789" target="1614">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">first meeting since</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">1614</data>
+      <data key="d10">estates general of 1789</data>
+    </edge>
+    <edge source="affair of the diamond necklace" target="court  nobility  and church officials">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d6">fuelled widespread anger at</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">affair of the diamond necklace</data>
+      <data key="d10">court  nobility  and church officials</data>
+    </edge>
+    <edge source="calonne" target="universal land tax">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">proposed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">calonne</data>
+      <data key="d10">universal land tax</data>
+    </edge>
+    <edge source="calonne" target="abolition of grain controls">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">proposed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">abolition of grain controls</data>
+      <data key="d10">calonne</data>
+    </edge>
+    <edge source="calonne" target="new provincial assemblies">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">proposed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">calonne</data>
+      <data key="d10">new provincial assemblies</data>
+    </edge>
+    <edge source="brienne" target="new taxes">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">submitted</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">brienne</data>
+      <data key="d10">new taxes</data>
+    </edge>
+    <edge source="brienne" target="8 august 1788">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">resigned</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">8 august 1788</data>
+      <data key="d10">brienne</data>
+    </edge>
+    <edge source="third estate" target="less than 5  of the population">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">represented</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">less than 5  of the population</data>
+      <data key="d10">third estate</data>
+    </edge>
+    <edge source="abb  siey s" target="what is the third estate">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">issued</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">abb  siey s</data>
+      <data key="d10">what is the third estate</data>
+    </edge>
+    <edge source="abb  siey s" target="privilege of the clergy and nobility">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">denounced</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">abb  siey s</data>
+      <data key="d10">privilege of the clergy and nobility</data>
+    </edge>
+    <edge source="jean joseph mounier" target="regional meetings">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">organised</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">jean joseph mounier</data>
+      <data key="d10">regional meetings</data>
+    </edge>
+    <edge source="antoine barnave" target="demands">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d6">supported</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">antoine barnave</data>
+      <data key="d10">demands</data>
+    </edge>
+    <edge source="british troops" target="protesters in boston massacre">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">killed</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british troops</data>
+      <data key="d10">protesters in boston massacre</data>
+    </edge>
+    <edge source="british troops" target="washington">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">captured</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british troops</data>
+      <data key="d10">washington</data>
+    </edge>
+    <edge source="surrounding boston" target="washington">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">responded by</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">surrounding boston</data>
+      <data key="d10">washington</data>
+    </edge>
+    <edge source="washington" target="british to withdraw">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">forced</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">british to withdraw</data>
+      <data key="d10">washington</data>
+    </edge>
+    <edge source="washington" target="decisive victory in siege of yorktown">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d6">led</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">decisive victory in siege of yorktown</data>
+      <data key="d10">washington</data>
+    </edge>
+    <edge source="french threat was removed" target="migration">
+      <data key="d4">1.0</data>
+      <data key="d5">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d6">increased after</data>
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d9">french threat was removed</data>
+      <data key="d10">migration</data>
+    </edge>
+  </graph>
+</graphml>

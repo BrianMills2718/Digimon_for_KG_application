@@ -1,0 +1,52 @@
+2025-05-20 04:08:49.624 | INFO     | __main__:handle_build_mode:101 - Starting 'build' mode for dataset: MySampleTexts...
+2025-05-20 04:08:49.629 | INFO     | Core.GraphRAG:build_and_persist_artifacts:210 - --- Starting Artifact Build Process for test ---
+2025-05-20 04:08:49.629 | INFO     | Core.Chunk.DocChunk:build_chunks:25 - Starting chunk the given documents
+2025-05-20 04:08:49.633 | INFO     | Core.Storage.ChunkKVStorage:_persist_internal:155 - Writing data into ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:08:49.633 | INFO     | Core.Chunk.DocChunk:build_chunks:100 - ✅ Finished the chunking stage
+2025-05-20 04:08:49.633 | INFO     | Core.GraphRAG:_update_costs_info:203 - Chunking stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 04:08:49.633 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2025-05-20 04:08:49.633 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-05-20 04:08:49.633 | INFO     | Core.Storage.NetworkXStorage:load_graph:103 - Force rebuilding the graph
+2025-05-20 04:08:54.153 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.006 | Max budget: $10.000 | Current cost: $0.006, prompt_tokens: 3240, completion_tokens: 577
+2025-05-20 04:08:55.019 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.012 | Max budget: $10.000 | Current cost: $0.006, prompt_tokens: 2703, completion_tokens: 735
+2025-05-20 04:08:58.106 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.018 | Max budget: $10.000 | Current cost: $0.006, prompt_tokens: 3239, completion_tokens: 676
+2025-05-20 04:08:58.462 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.023 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 2345, completion_tokens: 877
+2025-05-20 04:09:01.640 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.030 | Max budget: $10.000 | Current cost: $0.007, prompt_tokens: 3838, completion_tokens: 582
+2025-05-20 04:09:02.105 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.036 | Max budget: $10.000 | Current cost: $0.006, prompt_tokens: 3243, completion_tokens: 463
+2025-05-20 04:09:04.227 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.043 | Max budget: $10.000 | Current cost: $0.008, prompt_tokens: 3936, completion_tokens: 813
+2025-05-20 04:09:04.251 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.049 | Max budget: $10.000 | Current cost: $0.006, prompt_tokens: 3459, completion_tokens: 475
+2025-05-20 04:09:04.617 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.057 | Max budget: $10.000 | Current cost: $0.008, prompt_tokens: 3239, completion_tokens: 1542
+2025-05-20 04:09:09.027 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.066 | Max budget: $10.000 | Current cost: $0.008, prompt_tokens: 4802, completion_tokens: 549
+2025-05-20 04:09:09.033 | INFO     | Core.Graph.RKGraph:_build_graph:66 - Constructing graph finished
+2025-05-20 04:09:09.033 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 04:09:09.034 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 105 nodes, 61 edges
+2025-05-20 04:09:09.037 | INFO     | Core.Graph.BaseGraph:build_graph:63 - ✅ Finished the graph building stage
+2025-05-20 04:09:09.037 | INFO     | Core.GraphRAG:_update_costs_info:203 - Build Graph stage cost: Total prompt token: 34044, Total completion token: 7289, Total cost: 0.06564400000000001
+2025-05-20 04:09:09.037 | INFO     | Core.GraphRAG:_update_costs_info:207 - Build Graph time(s): 19.40
+2025-05-20 04:09:09.038 | INFO     | Core.GraphRAG:build_and_persist_artifacts:225 - Forcing rebuild of entities VDB for testing metadata propagation.
+2025-05-20 04:09:09.038 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting build_index for VDB at ./results/MySampleTexts/kg_graph/entities_vdb. Force flag is: True
+2025-05-20 04:09:09.038 | INFO     | Core.Index.BaseIndex:build_index:28 - Deleting existing index at ./results/MySampleTexts/kg_graph/entities_vdb before rebuilding (force=True, load_failed=False).
+2025-05-20 04:09:09.039 | INFO     | Core.Index.BaseIndex:build_index:31 - Initializing new index structure for VDB at ./results/MySampleTexts/kg_graph/entities_vdb.
+2025-05-20 04:09:09.040 | INFO     | Core.Index.BaseIndex:build_index:34 - Building and persisting new index with 105 elements using metadata keys: ['entity_name'].
+2025-05-20 04:09:10.137 | INFO     | Core.Index.VectorIndex:_update_index:65 - refresh index size is 105
+2025-05-20 04:09:10.398 | INFO     | Core.Index.BaseIndex:build_index:37 - New index successfully built and stored.
+2025-05-20 04:09:10.398 | INFO     | Core.Index.BaseIndex:build_index:39 - ✅ Finished VDB index setup process.
+2025-05-20 04:09:10.399 | INFO     | Core.Community.BaseCommunity:cluster:46 - Starting build community of the given graph
+2025-05-20 04:09:10.401 | INFO     | Core.Community.LeidenCommunity:_clustering:67 - Each level has communities: {0: 2}
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 14 data
+2025-05-20 04:09:10.402 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-20 04:09:10.402 | INFO     | Core.Community.LeidenCommunity:_load_community_report:260 - ☠️ Force to regenerate the community report.
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 105 nodes, 61 edges
+2025-05-20 04:09:10.407 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:86 - Generating by levels: [0]
+2025-05-20 04:09:13.812 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.069 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1852, completion_tokens: 428
+2025-05-20 04:09:20.134 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.074 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 2412, completion_tokens: 654
+2025-05-20 04:09:20.134 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 2 data
+2025-05-20 04:09:20.135 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 4264, Total completion token: 1082, Total cost: 0.008559999999999998
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 11.10
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 04:09:20.135 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 04:09:20.135 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts

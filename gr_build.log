@@ -1,0 +1,105 @@
+####################################################################################################
+ _____ _____ _____ _____ __  __  ____  _   _ 
+|  __ \_   _/ ____|_   _|  \/  |/ __ \| \ | |
+| |  | || || |  __  | | | \  / | |  | |  \| |
+| |  | || || | |_ | | | | |\/| | |  | | . ` |
+| |__| || || |__| |_| |_| |  | | |__| | |\  |
+|_____/_____\_____|_____|_|  |_|\____/|_| \_|
+                                             
+                                             
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.                                          ║
+║                                                                                                        ║
+║ Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.         ║
+║                                                                                                        ║
+║ You can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you! ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+####################################################################################################
+2025-05-20 04:41:16.069 | INFO     | __main__:handle_build_mode:101 - Starting 'build' mode for dataset: MySampleTexts...
+2025-05-20 04:41:16.075 | INFO     | Core.GraphRAG:build_and_persist_artifacts:210 - --- Starting Artifact Build Process for test ---
+2025-05-20 04:41:16.075 | INFO     | Core.Chunk.DocChunk:build_chunks:25 - Starting chunk the given documents
+2025-05-20 04:41:16.078 | INFO     | Core.Storage.ChunkKVStorage:_persist_internal:155 - Writing data into ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:41:16.078 | INFO     | Core.Chunk.DocChunk:build_chunks:100 - ✅ Finished the chunking stage
+2025-05-20 04:41:16.079 | INFO     | Core.GraphRAG:_update_costs_info:203 - Chunking stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 04:41:16.079 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2025-05-20 04:41:16.079 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-05-20 04:41:16.079 | INFO     | Core.Storage.NetworkXStorage:load_graph:103 - Force rebuilding the graph
+2025-05-20 04:41:17.335 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.001 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 852, completion_tokens: 99
+2025-05-20 04:41:17.404 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.002 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 494, completion_tokens: 106
+2025-05-20 04:41:19.263 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.005 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1388, completion_tokens: 316
+2025-05-20 04:41:20.098 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.008 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1388, completion_tokens: 361
+2025-05-20 04:41:21.340 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.010 | Max budget: $10.000 | Current cost: $0.002, prompt_tokens: 868, completion_tokens: 414
+2025-05-20 04:41:21.340 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: ['British soldiers', 'helped collect customs duties'], len is 2, so skip it
+2025-05-20 04:41:23.425 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.014 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1388, completion_tokens: 735
+2025-05-20 04:41:23.425 | INFO     | Core.Common.Utils:prase_json_from_response:218 - JSON data successfully extracted.
+2025-05-20 04:41:28.084 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.018 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 1927, completion_tokens: 944
+2025-05-20 04:41:30.485 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.022 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1208, completion_tokens: 689
+2025-05-20 04:41:40.254 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.027 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 1955, completion_tokens: 1034
+2025-05-20 04:42:02.014 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.037 | Max budget: $10.000 | Current cost: $0.011, prompt_tokens: 1667, completion_tokens: 4096
+2025-05-20 04:42:02.017 | INFO     | Core.Common.Utils:prase_json_from_response:218 - JSON data successfully extracted.
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is: [, so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is: 
+, so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is:  , so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is:  , so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is:  , so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is:  , so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:143 - entity name is not valid, entity is: ", so skip it
+2025-05-20 04:42:02.017 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: [, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: 
+, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: [, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: ", len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: A, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: m, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: e, len is 1, so skip it
+2025-05-20 04:42:02.018 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: r, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: i, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: c, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: a, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: n, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is:  , len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: R, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: e, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: v, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: o, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: l, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: u, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: t, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: i, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: o, len is 1, so skip it
+2025-05-20 04:42:02.019 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: n, len is 1, so skip it
+2025-05-20 04:42:02.025 | INFO     | Core.Graph.ERGraph:_build_graph:92 - Constructing graph finished
+2025-05-20 04:42:02.025 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml
+2025-05-20 04:42:02.025 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 206 nodes, 135 edges
+2025-05-20 04:42:02.033 | INFO     | Core.Graph.BaseGraph:build_graph:63 - ✅ Finished the graph building stage
+2025-05-20 04:42:02.033 | INFO     | Core.GraphRAG:_update_costs_info:203 - Build Graph stage cost: Total prompt token: 13135, Total completion token: 8794, Total cost: 0.037290500000000004
+2025-05-20 04:42:02.033 | INFO     | Core.GraphRAG:_update_costs_info:207 - Build Graph time(s): 45.95
+2025-05-20 04:42:02.033 | INFO     | Core.GraphRAG:build_and_persist_artifacts:225 - Forcing rebuild of entities VDB for testing metadata propagation.
+2025-05-20 04:42:02.034 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting build_index for VDB at ./results/MySampleTexts/er_graph/entities_vdb. Force flag is: True
+2025-05-20 04:42:02.034 | INFO     | Core.Index.BaseIndex:build_index:31 - Initializing new index structure for VDB at ./results/MySampleTexts/er_graph/entities_vdb.
+2025-05-20 04:42:02.035 | INFO     | Core.Index.BaseIndex:build_index:34 - Building and persisting new index with 206 elements using metadata keys: ['entity_name'].
+2025-05-20 04:42:05.021 | INFO     | Core.Index.VectorIndex:_update_index:65 - refresh index size is 206
+2025-05-20 04:42:05.583 | INFO     | Core.Index.BaseIndex:build_index:37 - New index successfully built and stored.
+2025-05-20 04:42:05.583 | INFO     | Core.Index.BaseIndex:build_index:39 - ✅ Finished VDB index setup process.
+2025-05-20 04:42:05.584 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting build_index for VDB at ./results/MySampleTexts/er_graph/relations_vdb. Force flag is: True
+2025-05-20 04:42:05.584 | INFO     | Core.Index.BaseIndex:build_index:31 - Initializing new index structure for VDB at ./results/MySampleTexts/er_graph/relations_vdb.
+2025-05-20 04:42:05.585 | INFO     | Core.Index.BaseIndex:build_index:34 - Building and persisting new index with 135 elements using metadata keys: ['src_id', 'tgt_id'].
+2025-05-20 04:42:07.121 | INFO     | Core.Index.VectorIndex:_update_index:65 - refresh index size is 135
+2025-05-20 04:42:07.501 | INFO     | Core.Index.BaseIndex:build_index:37 - New index successfully built and stored.
+2025-05-20 04:42:07.501 | INFO     | Core.Index.BaseIndex:build_index:39 - ✅ Finished VDB index setup process.
+2025-05-20 04:42:07.501 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0.0
+2025-05-20 04:42:07.501 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 5.47
+2025-05-20 04:42:07.501 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:42:07.501 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 04:42:07.502 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 04:42:07.502 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts

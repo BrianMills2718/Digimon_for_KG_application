@@ -1,14 +1,17 @@
 from Core.GraphRAG import GraphRAG
 from Option.Config2 import Config
 import argparse
-import os
 import asyncio
+import os
+import pandas as pd
+import json
 from pathlib import Path
 from shutil import copyfile
+from Core.GraphRAG import GraphRAG
+from Option.Config2 import Config
 from Data.QueryDataset import RAGQueryDataset
-import pandas as pd
 from Core.Utils.Evaluation import Evaluator
-from Core.Common.Logger import logger # Assuming logger is setup in Core.Common.Logger
+from Core.Common.Logger import logger # Assuming logger is used
 
 # --- Helper Functions (modified or kept from original) ---
 def check_and_create_dirs(opt_config, cmd_args_opt_path):
@@ -128,30 +131,83 @@ async def handle_query_mode(config_obj, dataset_name_str, question_str, graphrag
     logger.info(f"Answer: {answer}")
     # print(f"Answer: {answer}") # Also print to stdout for direct user feedback
 
-async def handle_evaluate_mode(config_obj, dataset_name_str, graphrag_instance, cmd_args_opt_path):
-    """Handles the 'evaluate' mode: loads artifacts, runs queries, and evaluates."""
-    logger.info(f"Starting 'evaluate' mode for dataset: {dataset_name_str}...")
+async def handle_evaluate_mode(config_options: Config, dataset_name: str, method_config_path: str):
+    logger.info(f"Starting 'evaluate' mode for method config: {method_config_path} on dataset: {dataset_name}...")
 
-    result_dir_path, metric_dir_path = check_and_create_dirs(config_obj, cmd_args_opt_path)
+    # Initialize GraphRAG instance for the method to be evaluated
+    graphrag_instance = GraphRAG(config=config_options)
 
-    # Placeholder: Ensure GraphRAG is set up for querying (loads artifacts)
-    # await graphrag_instance.setup_for_querying()
-    logger.info("Attempting to setup GraphRAG for querying (loading artifacts for evaluation)...")
-    await graphrag_instance.setup_for_querying() # Call the new setup method
-
-    query_dataset = RAGQueryDataset(
-        data_dir=os.path.join(config_obj.data_root, dataset_name_str)
-    )
-    if len(query_dataset) == 0:
-        logger.error(f"No questions found in {dataset_name_str} for evaluation.")
+    # Setup for querying (load artifacts)
+    logger.info("Setting up GraphRAG for querying (loading artifacts)...")
+    if not await graphrag_instance.setup_for_querying():
+        logger.error("Failed to setup GraphRAG for querying. Ensure 'build' mode was run successfully for this configuration.")
+        print("Error: Failed to load necessary artifacts for evaluation. Please run 'build' mode first for this method configuration.")
         return
 
-    # Run queries and save results
-    results_json_path = await wrapper_query_async(query_dataset, graphrag_instance, result_dir_path)
-    
-    # Evaluate the results
-    await wrapper_evaluation_async(results_json_path, config_obj, metric_dir_path)
-    logger.info(f"Evaluation process completed for dataset: {dataset_name_str}.")
+    # Load the query dataset
+    query_dataset_path = Path(config_options.data_root) / dataset_name
+    if not query_dataset_path.exists():
+        logger.error(f"Dataset path not found: {query_dataset_path}")
+        print(f"Error: Dataset path not found: {query_dataset_path}")
+        return
+
+    logger.info(f"Loading query dataset from: {query_dataset_path}")
+    query_dataset = RAGQueryDataset(data_dir=str(query_dataset_path))
+    if len(query_dataset) == 0:
+        logger.error(f"No questions found in dataset: {dataset_name}")
+        print(f"Error: No questions found in dataset: {dataset_name}")
+        return
+
+    # --- Querying Phase ---
+    all_query_results = []
+    num_questions_to_evaluate = len(query_dataset) # Evaluate all for now
+    logger.info(f"Processing {num_questions_to_evaluate} questions for evaluation...")
+
+    for i in range(num_questions_to_evaluate):
+        query_item = query_dataset[i]
+        question_str = query_item["question"]
+        logger.info(f"Querying for question #{i+1}: {question_str[:100]}...")
+
+        try:
+            generated_answer = await graphrag_instance.query(question_str)
+        except Exception as e:
+            logger.error(f"Error querying for question '{question_str}': {e}")
+            generated_answer = "Error: Query failed."
+
+        query_output_data = query_item.copy() # Start with all original data from Question.json
+        query_output_data["output"] = generated_answer # Add the generated answer
+        all_query_results.append(query_output_data)
+
+    # Save query results to a temporary JSON file
+    method_name = Path(method_config_path).stem # e.g., "LGraphRAG"
+    eval_results_base_dir = Path(config_options.working_dir) / config_options.exp_name
+    evaluation_output_dir = eval_results_base_dir / "Evaluation_Outputs" / method_name
+    os.makedirs(evaluation_output_dir, exist_ok=True)
+    query_results_save_path = evaluation_output_dir / f"{dataset_name}_query_outputs_for_eval.json"
+
+    try:
+        all_results_df = pd.DataFrame(all_query_results)
+        all_results_df.to_json(query_results_save_path, orient="records", lines=True)
+        logger.info(f"Query outputs for evaluation saved to: {query_results_save_path}")
+    except Exception as e:
+        logger.error(f"Failed to save query outputs to JSON: {e}")
+        print(f"Error: Failed to save query outputs: {e}")
+        return
+
+    # --- Evaluation Phase ---
+    logger.info(f"Starting evaluation using results from: {query_results_save_path}")
+    try:
+        evaluator = Evaluator(str(query_results_save_path), dataset_name)
+        metrics_dict = await evaluator.evaluate()
+        metrics_save_path = evaluation_output_dir / f"{dataset_name}_evaluation_metrics.json"
+        with open(metrics_save_path, "w") as f:
+            json.dump(metrics_dict, f, indent=4)
+        logger.info(f"Evaluation metrics saved to: {metrics_save_path}")
+        print(f"Evaluation complete. Metrics saved to: {metrics_save_path}")
+        print("Metrics:", metrics_dict)
+    except Exception as e:
+        logger.error(f"Error during evaluation: {e}")
+        print(f"Error during evaluation: {e}")
 
 # --- Main Orchestration ---
 async def main():
@@ -200,7 +256,8 @@ async def main():
             parser.error("-question is required for 'query' mode.")
         await handle_query_mode(opt, args.dataset_name, args.question, digimon)
     elif args.mode == "evaluate":
-        await handle_evaluate_mode(opt, args.dataset_name, digimon, args.opt)
+        # Pass the method_config_path for directory naming purposes
+        await handle_evaluate_mode(opt, args.dataset_name, args.opt)
 
 if __name__ == "__main__":
     asyncio.run(main())

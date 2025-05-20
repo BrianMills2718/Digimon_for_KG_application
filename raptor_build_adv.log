@@ -1,0 +1,59 @@
+####################################################################################################
+ _____ _____ _____ _____ __  __  ____  _   _ 
+|  __ \_   _/ ____|_   _|  \/  |/ __ \| \ | |
+| |  | || || |  __  | | | \  / | |  | |  \| |
+| |  | || || | |_ | | | | |\/| | |  | | . ` |
+| |__| || || |__| |_| |_| |  | | |__| | |\  |
+|_____/_____\_____|_____|_|  |_|\____/|_| \_|
+                                             
+                                             
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ Welcome to DIGIMON: Deep Analysis of Graph-Based RAG Systems.                                          ║
+║                                                                                                        ║
+║ Unlock advanced insights with our comprehensive tool for evaluating and optimizing RAG models.         ║
+║                                                                                                        ║
+║ You can freely combine any graph-based RAG algorithms you desire. We hope this will be helpful to you! ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+####################################################################################################
+2025-05-20 05:13:06.059 | WARNING  | Core.GraphRAG:_register_e2r_r2c_matrix:128 - Tree graph is not supported for entity-link-chunk mapping. Skipping entity-link-chunk mapping.
+2025-05-20 05:13:06.059 | INFO     | __main__:handle_build_mode:101 - Starting 'build' mode for dataset: MySampleTexts...
+2025-05-20 05:13:06.064 | INFO     | Core.GraphRAG:build_and_persist_artifacts:210 - --- Starting Artifact Build Process for test ---
+2025-05-20 05:13:06.064 | INFO     | Core.Chunk.DocChunk:build_chunks:25 - Starting chunk the given documents
+2025-05-20 05:13:06.065 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/tree_graph_balanced/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/tree_graph_balanced/chunk_storage_chunk_data_key.pkl
+2025-05-20 05:13:06.065 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:144 - Pickle file(s) do not exist! Need to chunk the documents from scratch.
+2025-05-20 05:13:06.068 | INFO     | Core.Storage.ChunkKVStorage:_persist_internal:155 - Writing data into ./results/MySampleTexts/tree_graph_balanced/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/tree_graph_balanced/chunk_storage_chunk_data_key.pkl
+2025-05-20 05:13:06.068 | INFO     | Core.Chunk.DocChunk:build_chunks:100 - ✅ Finished the chunking stage
+2025-05-20 05:13:06.068 | INFO     | Core.GraphRAG:_update_costs_info:203 - Chunking stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 05:13:06.069 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2025-05-20 05:13:06.069 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-05-20 05:13:06.069 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:33 - Attempting to load the tree from: ./results/MySampleTexts/tree_graph_balanced/graph_storage_tree_data.pkl
+2025-05-20 05:13:06.069 | INFO     | Core.Storage.TreeGraphStorage:load_tree_graph:47 - Pkl file does not exist! Need to build the tree from scratch.
+2025-05-20 05:13:06.069 | INFO     | Core.Graph.TreeGraph:_create_node_without_embedding:237 - Create node_id = unassigned, children = None
+2025-05-20 05:13:06.070 | INFO     | Core.Graph.TreeGraph:_create_node_without_embedding:237 - Create node_id = unassigned, children = None
+2025-05-20 05:13:06.070 | INFO     | Core.Graph.TreeGraph:_create_node_without_embedding:237 - Create node_id = unassigned, children = None
+2025-05-20 05:13:06.071 | INFO     | Core.Graph.TreeGraph:_create_node_without_embedding:237 - Create node_id = unassigned, children = None
+2025-05-20 05:13:06.071 | INFO     | Core.Graph.TreeGraph:_create_node_without_embedding:237 - Create node_id = unassigned, children = None
+2025-05-20 05:13:06.072 | INFO     | Core.Graph.TreeGraph:_build_graph:333 - 5
+2025-05-20 05:13:06.072 | INFO     | Core.Graph.TreeGraph:_build_graph:334 - To batch embed leaves
+2025-05-20 05:13:06.961 | INFO     | Core.Graph.TreeGraph:_build_graph:336 - Created 5 Leaf Embeddings
+2025-05-20 05:13:06.961 | INFO     | Core.Graph.TreeGraph:_build_tree_from_leaves:284 - length of layer: 5
+2025-05-20 05:13:06.962 | INFO     | Core.Graph.TreeGraph:_build_tree_from_leaves:314 - 1
+2025-05-20 05:13:06.962 | INFO     | Core.Storage.TreeGraphStorage:_persist:24 - Writing graph into ./results/MySampleTexts/tree_graph_balanced/graph_storage_tree_data.pkl
+2025-05-20 05:13:06.962 | INFO     | Core.Graph.BaseGraph:build_graph:63 - ✅ Finished the graph building stage
+2025-05-20 05:13:06.962 | INFO     | Core.GraphRAG:_update_costs_info:203 - Build Graph stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 05:13:06.962 | INFO     | Core.GraphRAG:_update_costs_info:207 - Build Graph time(s): 0.89
+2025-05-20 05:13:06.962 | INFO     | Core.GraphRAG:build_and_persist_artifacts:225 - Forcing rebuild of entities VDB for testing metadata propagation.
+2025-05-20 05:13:06.962 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting build_index for VDB at ./results/MySampleTexts/tree_graph_balanced/entities_vdb. Force flag is: True
+2025-05-20 05:13:06.962 | INFO     | Core.Index.BaseIndex:build_index:31 - Initializing new index structure for VDB at ./results/MySampleTexts/tree_graph_balanced/entities_vdb.
+2025-05-20 05:13:06.964 | INFO     | Core.Index.BaseIndex:build_index:34 - Building and persisting new index with 5 elements using metadata keys: ['index', 'layer'].
+2025-05-20 05:13:07.314 | INFO     | Core.Index.FaissIndex:_update_index:117 - Inserting 5 nodes into Faiss index.
+2025-05-20 05:13:07.315 | INFO     | Core.Index.FaissIndex:_update_index:122 - FaissIndex: refresh index size is 5
+2025-05-20 05:13:07.316 | INFO     | Core.Index.BaseIndex:build_index:37 - New index successfully built and stored.
+2025-05-20 05:13:07.317 | INFO     | Core.Index.BaseIndex:build_index:39 - ✅ Finished VDB index setup process.
+2025-05-20 05:13:07.317 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 05:13:07.317 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 0.35
+2025-05-20 05:13:07.317 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 05:13:07.317 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 05:13:07.317 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 05:13:07.317 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts

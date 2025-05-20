@@ -1,0 +1,13 @@
+2025-05-20 01:55:13.534 | INFO     | __main__:handle_query_mode:119 - Starting 'query' mode for dataset: MySampleTexts...
+2025-05-20 01:55:13.535 | INFO     | __main__:handle_query_mode:120 - Question: What were the key causes of the American Revolution?
+2025-05-20 01:55:13.535 | INFO     | __main__:handle_query_mode:124 - Attempting to setup GraphRAG for querying (loading artifacts)...
+2025-05-20 01:55:13.535 | INFO     | Core.GraphRAG:setup_for_querying:256 - --- Starting Artifact Loading Process for test ---
+2025-05-20 01:55:13.535 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 01:55:13.535 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:144 - Pickle file(s) do not exist! Need to chunk the documents from scratch.
+2025-05-20 01:55:13.535 | ERROR    | Core.GraphRAG:setup_for_querying:259 - Failed to load chunk data. Ensure 'build' mode was run successfully.
+2025-05-20 01:55:13.535 | INFO     | Core.GraphRAG:query:328 - Artifacts not loaded for querying, attempting to load now...
+2025-05-20 01:55:13.535 | INFO     | Core.GraphRAG:setup_for_querying:256 - --- Starting Artifact Loading Process for test ---
+2025-05-20 01:55:13.535 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 01:55:13.535 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:144 - Pickle file(s) do not exist! Need to chunk the documents from scratch.
+2025-05-20 01:55:13.535 | ERROR    | Core.GraphRAG:setup_for_querying:259 - Failed to load chunk data. Ensure 'build' mode was run successfully.
+2025-05-20 01:55:13.535 | INFO     | __main__:handle_query_mode:128 - Answer: Error: Failed to load necessary artifacts for querying. Please run 'build' mode first.

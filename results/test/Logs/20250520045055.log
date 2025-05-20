@@ -1,0 +1,40 @@
+2025-05-20 04:51:02.964 | INFO     | __main__:handle_build_mode:101 - Starting 'build' mode for dataset: MySampleTexts...
+2025-05-20 04:51:02.970 | INFO     | Core.GraphRAG:build_and_persist_artifacts:210 - --- Starting Artifact Build Process for test ---
+2025-05-20 04:51:02.970 | INFO     | Core.Chunk.DocChunk:build_chunks:25 - Starting chunk the given documents
+2025-05-20 04:51:02.974 | INFO     | Core.Storage.ChunkKVStorage:_persist_internal:155 - Writing data into ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:51:02.974 | INFO     | Core.Chunk.DocChunk:build_chunks:100 - ✅ Finished the chunking stage
+2025-05-20 04:51:02.974 | INFO     | Core.GraphRAG:_update_costs_info:203 - Chunking stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0
+2025-05-20 04:51:02.974 | INFO     | Core.GraphRAG:_update_costs_info:207 - Chunking time(s): 0.00
+2025-05-20 04:51:02.974 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-05-20 04:51:02.974 | INFO     | Core.Storage.NetworkXStorage:load_graph:103 - Force rebuilding the graph
+2025-05-20 04:51:04.173 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.001 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 852, completion_tokens: 99
+2025-05-20 04:51:04.362 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.002 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 494, completion_tokens: 118
+2025-05-20 04:51:06.040 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.005 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1388, completion_tokens: 316
+2025-05-20 04:51:06.099 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.008 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1388, completion_tokens: 391
+2025-05-20 04:51:06.891 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.011 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1388, completion_tokens: 414
+2025-05-20 04:51:11.254 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.013 | Max budget: $10.000 | Current cost: $0.002, prompt_tokens: 879, completion_tokens: 510
+2025-05-20 04:51:14.180 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.018 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 1927, completion_tokens: 824
+2025-05-20 04:51:14.912 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.023 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 1980, completion_tokens: 1146
+2025-05-20 04:51:14.913 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:151 - triples length is not 3, triple is: ['Capt. Levi Preston', 'asked why Americans rebelled against England', 'responded with', 'self-governance'], len is 4, so skip it
+2025-05-20 04:51:15.818 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.028 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 1990, completion_tokens: 898
+2025-05-20 04:51:19.320 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.031 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 1208, completion_tokens: 797
+2025-05-20 04:51:19.329 | INFO     | Core.Graph.ERGraph:_build_graph:92 - Constructing graph finished
+2025-05-20 04:51:19.329 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml
+2025-05-20 04:51:19.330 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 320 nodes, 208 edges
+2025-05-20 04:51:19.340 | INFO     | Core.Graph.BaseGraph:build_graph:63 - ✅ Finished the graph building stage
+2025-05-20 04:51:19.341 | INFO     | Core.GraphRAG:_update_costs_info:203 - Build Graph stage cost: Total prompt token: 13494, Total completion token: 5513, Total cost: 0.031267
+2025-05-20 04:51:19.341 | INFO     | Core.GraphRAG:_update_costs_info:207 - Build Graph time(s): 16.37
+2025-05-20 04:51:19.341 | INFO     | Core.GraphRAG:build_and_persist_artifacts:225 - Forcing rebuild of entities VDB for testing metadata propagation.
+2025-05-20 04:51:19.343 | INFO     | Core.Index.BaseIndex:build_index:13 - Starting build_index for VDB at ./results/MySampleTexts/er_graph/entities_vdb. Force flag is: True
+2025-05-20 04:51:19.343 | INFO     | Core.Index.BaseIndex:build_index:28 - Deleting existing index at ./results/MySampleTexts/er_graph/entities_vdb before rebuilding (force=True, load_failed=False).
+2025-05-20 04:51:19.344 | INFO     | Core.Index.BaseIndex:build_index:31 - Initializing new index structure for VDB at ./results/MySampleTexts/er_graph/entities_vdb.
+2025-05-20 04:51:19.345 | INFO     | Core.Index.BaseIndex:build_index:34 - Building and persisting new index with 320 elements using metadata keys: ['entity_name'].
+2025-05-20 04:51:22.926 | INFO     | Core.Index.VectorIndex:_update_index:65 - refresh index size is 320
+2025-05-20 04:51:23.807 | INFO     | Core.Index.BaseIndex:build_index:37 - New index successfully built and stored.
+2025-05-20 04:51:23.807 | INFO     | Core.Index.BaseIndex:build_index:39 - ✅ Finished VDB index setup process.
+2025-05-20 04:51:23.807 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 0, Total completion token: 0, Total cost: 0.0
+2025-05-20 04:51:23.807 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 4.47
+2025-05-20 04:51:23.807 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:51:23.807 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 04:51:23.807 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 04:51:23.807 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts
