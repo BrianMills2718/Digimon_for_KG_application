@@ -2,10 +2,14 @@ import html
 import json
 import os
 from collections import defaultdict
-from typing import Any, Union, cast
+import html
+import json
+import os
+from collections import defaultdict
+from typing import Any, Union, cast, List, Optional, Tuple
 import networkx as nx
 import numpy as np
-from pydantic import model_validator
+from dataclasses import field, dataclass
 import asyncio
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
@@ -14,13 +18,15 @@ from Core.Storage.BaseGraphStorage import BaseGraphStorage
 
 
 class NetworkXStorage(BaseGraphStorage):
+    name: str = "nx_data.graphml"
+    edge_list: Optional[List[Tuple[str, str]]] = field(default=None, init=False, repr=False)
+    node_list: Optional[List[str]] = field(default=None, init=False, repr=False)
+
     def __init__(self):
         super().__init__()
+        self._graph: nx.Graph = nx.Graph()
         self.edge_list = None
         self.node_list = None
-
-    name: str = "nx_data.graphml"  # The valid file name for NetworkX
-    _graph: nx.Graph = nx.Graph()
 
     def load_nx_graph(self) -> bool:
         # Attempting to load the graph from the specified GraphML file
@@ -47,7 +53,7 @@ class NetworkXStorage(BaseGraphStorage):
         )
         nx.write_graphml(graph, file_name)
 
-    @model_validator(mode="after")
+    
     def _register_node2emb(cls, data):
         cls._node_embed_algorithms = {
             "node2vec": data._node2vec_embed,

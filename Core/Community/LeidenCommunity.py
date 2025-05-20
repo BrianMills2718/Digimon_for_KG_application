@@ -34,6 +34,11 @@ class LeidenCommunity(BaseCommunity):
         """Getter method for community_reports."""
         return self._community_reports
 
+    @property
+    def community_node_map(self):
+        """Public property to access the _community_node_map (JsonKVStorage instance)."""
+        return self._community_node_map
+
     async def clustering(self, largest_cc, max_cluster_size, random_seed):
         await self._clustering(largest_cc, max_cluster_size, random_seed)
 

@@ -41,15 +41,33 @@ class VectorIndexNodeResult(EntityResult):
         else:
             return nodes
     
-    
-    async def get_tree_node_data(self, graph, score = False):
-  
-        nodes = await asyncio.gather( *[ graph.get_node(r.metadata[graph.entity_metakey]) for r in self.results])
+    async def get_tree_node_data(self, graph, score = False): # graph is TreeGraphStorage (or any graph providing .entity_metakey)
+        processed_nodes = []
+        for r_idx, r in enumerate(self.results):
+            node_id_from_meta = r.metadata.get(graph.entity_metakey) # graph.entity_metakey should be "index"
+            layer_from_meta = r.metadata.get("layer", -1) # Get layer directly from VDB metadata
+            if node_id_from_meta is None:
+                logger.warning(f"Node ID (via metakey '{graph.entity_metakey}') not found in VDB result metadata: {r.metadata}")
+                continue
+            node_obj = await graph.get_node(node_id_from_meta)
+            if node_obj and hasattr(node_obj, 'text'):
+                node_text = node_obj.text
+                current_node_data = {
+                    "id": node_id_from_meta, # This is the original node ID
+                    "text": node_text,
+                    "layer": layer_from_meta 
+                }
+                if score:
+                    current_node_data["vdb_score"] = r.score
+                processed_nodes.append(current_node_data)
+            else:
+                logger.warning(f"Could not retrieve text for node id: {node_id_from_meta} or node object is incomplete. Metadata: {r.metadata}")
+        if not processed_nodes:
+            logger.warning("No nodes were successfully processed in get_tree_node_data.")
         if score:
-
-            return nodes, [r.score for r in self.results]
+            return processed_nodes, [res.score for res in self.results if res.metadata.get(graph.entity_metakey) is not None]
         else:
-            return nodes
+            return processed_nodes
 
 class RelationResult(ABC):
     @abstractmethod

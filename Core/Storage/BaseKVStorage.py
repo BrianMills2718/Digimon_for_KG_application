@@ -6,7 +6,7 @@ from Core.Storage.BaseStorage import BaseStorage
 T = TypeVar("T")
 
 
-class BaseKVStorage(Generic[T], BaseStorage):
+class BaseKVStorage(BaseStorage, Generic[T]):
     async def all_keys(self) -> list[str]:
         raise NotImplementedError
 

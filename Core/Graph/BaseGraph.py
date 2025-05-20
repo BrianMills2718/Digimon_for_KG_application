@@ -20,6 +20,19 @@ from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 class BaseGraph(ABC):
 
+    async def load_persisted_graph(self, force: bool = False) -> bool:
+        """
+        Public method to explicitly load the graph from persisted storage.
+        This method calls the load_graph method of the underlying storage object (self._graph).
+        Returns True if loading was successful, False otherwise.
+        """
+        if self._graph is None:
+            logger.error("Graph storage object (_graph) is not initialized in BaseGraph.")
+            return False
+        logger.info(f"Attempting to load persisted graph via {self._graph.__class__.__name__}.load_graph(force={force})")
+        return await self._graph.load_graph(force)
+
+
     def __init__(self, config, llm, encoder):
         self.working_memory: Memory = Memory()  # Working memory
         self.config = config  # Build graph config

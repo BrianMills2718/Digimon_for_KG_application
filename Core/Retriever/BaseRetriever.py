@@ -9,8 +9,9 @@ from Core.Retriever.RetrieverFactory import get_retriever_operator
 
 class BaseRetriever(ABC):
 
-    def __init__(self, config):
+    def __init__(self, config, retriever_context=None):
         self.config = config
+        self.retriever_context = retriever_context
 
     async def retrieve_relevant_content(self, **kwargs):
         """

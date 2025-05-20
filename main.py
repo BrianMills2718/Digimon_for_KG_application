@@ -8,80 +8,199 @@ from shutil import copyfile
 from Data.QueryDataset import RAGQueryDataset
 import pandas as pd
 from Core.Utils.Evaluation import Evaluator
+from Core.Common.Logger import logger # Assuming logger is setup in Core.Common.Logger
 
+# --- Helper Functions (modified or kept from original) ---
+def check_and_create_dirs(opt_config, cmd_args_opt_path):
+    """
+    Creates directories for results, configs, and metrics.
+    Copies relevant configuration files.
+    Now takes opt_config and cmd_args_opt_path as parameters.
+    """
+    # Base directory for the specific dataset/experiment
+    base_exp_dir = os.path.join(opt_config.working_dir, opt_config.exp_name) # opt_config.exp_name is dataset_name
 
+    result_dir = os.path.join(base_exp_dir, "Results")
+    config_out_dir = os.path.join(base_exp_dir, "Configs") # Renamed to avoid conflict with Config module
+    metric_dir = os.path.join(base_exp_dir, "Metrics")
 
-def check_dirs(opt):
-    # For each query, save the results in a separate directory
-    result_dir = os.path.join(opt.working_dir, opt.exp_name, "Results")
-    # Save the current used config in a separate directory
-    config_dir = os.path.join(opt.working_dir, opt.exp_name, "Configs")
-    # Save the metrics of entire experiment in a separate directory
-    metric_dir = os.path.join(opt.working_dir, opt.exp_name, "Metrics")
     os.makedirs(result_dir, exist_ok=True)
-    os.makedirs(config_dir, exist_ok=True)
+    os.makedirs(config_out_dir, exist_ok=True)
     os.makedirs(metric_dir, exist_ok=True)
-    opt_name = args.opt[args.opt.rindex("/") + 1 :]
-    basic_name = os.path.join(args.opt.split("/")[0], "Config2.yaml")
-    copyfile(args.opt, os.path.join(config_dir, opt_name))
-    copyfile(basic_name, os.path.join(config_dir, "Config2.yaml"))
-    return result_dir
 
+    # Copy the specific method YAML
+    if cmd_args_opt_path and os.path.exists(cmd_args_opt_path):
+        opt_name = os.path.basename(cmd_args_opt_path)
+        copyfile(cmd_args_opt_path, os.path.join(config_out_dir, opt_name))
+    else:
+        logger.warning(f"Specific option file path not provided or not found: {cmd_args_opt_path}")
 
-def wrapper_query(query_dataset, digimon, result_dir):
-    all_res = []
-
-    dataset_len = len(query_dataset)
-    dataset_len = 10
+    # Copy the base Config2.yaml
+    # Assuming Config2.yaml is in the same directory as the specific method YAML's parent 'Option' folder
+    if cmd_args_opt_path:
+        base_config_path_parts = Path(cmd_args_opt_path).parent.parent / "Config2.yaml" # e.g. Option/Config2.yaml
+        if os.path.exists(base_config_path_parts):
+            copyfile(base_config_path_parts, os.path.join(config_out_dir, "Config2.yaml"))
+        else:
+            logger.warning(f"Base Config2.yaml not found at expected location: {base_config_path_parts}")
     
-    for _, i in enumerate(range(dataset_len)):
-        query = query_dataset[i]
-        res = asyncio.run(digimon.query(query["question"]))
-        query["output"] = res
-        all_res.append(query)
+    logger.info(f"Output directories created/verified under: {base_exp_dir}")
+    return result_dir, metric_dir # Return metric_dir as well
+
+async def wrapper_query_async(query_dataset, digimon_instance, result_dir_path):
+    """
+    Asynchronously queries the dataset and saves results.
+    Now an async function and takes digimon_instance.
+    """
+    all_res = []
+    # Limiting dataset length for testing, remove or adjust for production
+    dataset_len = min(len(query_dataset), 10) 
+    
+    logger.info(f"Starting queries for {dataset_len} items...")
+    for i in range(dataset_len):
+        query_item = query_dataset[i]
+        try:
+            # Assuming digimon_instance is already setup for querying
+            res = await digimon_instance.query(query_item["question"])
+            query_item["output"] = res
+        except Exception as e:
+            logger.error(f"Error querying for question ID {query_item.get('id', i)}: {e}")
+            query_item["output"] = f"Error: {e}"
+        all_res.append(query_item)
 
     all_res_df = pd.DataFrame(all_res)
-    save_path = os.path.join(result_dir, "results.json")
+    save_path = os.path.join(result_dir_path, "results.json")
     all_res_df.to_json(save_path, orient="records", lines=True)
+    logger.info(f"Query results saved to: {save_path}")
     return save_path
 
+async def wrapper_evaluation_async(results_json_path, opt_config, metric_dir_path):
+    """
+    Asynchronously evaluates results.
+    Now an async function.
+    """
+    if not os.path.exists(results_json_path):
+        logger.error(f"Results JSON file not found for evaluation: {results_json_path}")
+        return
 
-async def wrapper_evaluation(path, opt, result_dir):
-    eval = Evaluator(path, opt.dataset_name)
-    res_dict = await eval.evaluate()
-    save_path = os.path.join(result_dir, "metrics.json")
-    with open(save_path, "w") as f:
-        f.write(str(res_dict))
+    eval_instance = Evaluator(results_json_path, opt_config.dataset_name) # opt_config.dataset_name is exp_name
+    res_dict = await eval_instance.evaluate()
+    
+    save_path = os.path.join(metric_dir_path, "metrics.json")
+    try:
+        with open(save_path, "w", encoding="utf-8") as f:
+            # Ensure res_dict is serializable, e.g. convert to string or use json.dump
+            f.write(str(res_dict)) 
+        logger.info(f"Evaluation metrics saved to: {save_path}")
+    except Exception as e:
+        logger.error(f"Failed to save metrics: {e}")
 
-
-if __name__ == "__main__":
-
-    # with open("./book.txt") as f:
-    #     doc = f.read()
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-opt", type=str, help="Path to option YMAL file.")
-    parser.add_argument("-dataset_name", type=str, help="Name of the dataset.")
-    args = parser.parse_args()
-
-    opt = Config.parse(Path(args.opt), dataset_name=args.dataset_name)
-    digimon = GraphRAG(config=opt)
-    result_dir = check_dirs(opt)
-
+# --- Mode Specific Handlers ---
+async def handle_build_mode(config_obj, dataset_name_str, graphrag_instance):
+    """Handles the 'build' mode: constructs and persists graph artifacts."""
+    logger.info(f"Starting 'build' mode for dataset: {dataset_name_str}...")
+    
     query_dataset = RAGQueryDataset(
-        data_dir=os.path.join(opt.data_root, opt.dataset_name)
+        data_dir=os.path.join(config_obj.data_root, dataset_name_str)
     )
     corpus = query_dataset.get_corpus()
-    # corpus = corpus[:10]
+    if not corpus:
+        logger.error(f"No corpus data found for {dataset_name_str}. Build process cannot continue.")
+        return
 
-    asyncio.run(digimon.insert(corpus))
+    # The 'insert' method will be refactored to 'build_and_persist_artifacts'
+    # For now, it performs the build steps.
+    await graphrag_instance.build_and_persist_artifacts(corpus) 
+    logger.info(f"Build process completed for dataset: {dataset_name_str}.")
+    logger.info(f"Artifacts should be saved in: {os.path.join(config_obj.working_dir, dataset_name_str)}")
 
-    save_path = wrapper_query(query_dataset, digimon, result_dir)
+async def handle_query_mode(config_obj, dataset_name_str, question_str, graphrag_instance):
+    """Handles the 'query' mode: loads artifacts and answers a question."""
+    logger.info(f"Starting 'query' mode for dataset: {dataset_name_str}...")
+    logger.info(f"Question: {question_str}")
 
-    asyncio.run(wrapper_evaluation(save_path, opt, result_dir))
+    # Placeholder: In future, GraphRAG.py will have a method to load artifacts.
+    # await graphrag_instance.setup_for_querying() # This method needs to be implemented
+    logger.info("Attempting to setup GraphRAG for querying (loading artifacts)...")
+    await graphrag_instance.setup_for_querying() # Call the new setup method
 
-    # for train_item in dataloader:
+    answer = await graphrag_instance.query(question_str)
+    logger.info(f"Answer: {answer}")
+    # print(f"Answer: {answer}") # Also print to stdout for direct user feedback
 
-    # a = asyncio.run(digimon.query("Who is Fred Gehrke?"))
+async def handle_evaluate_mode(config_obj, dataset_name_str, graphrag_instance, cmd_args_opt_path):
+    """Handles the 'evaluate' mode: loads artifacts, runs queries, and evaluates."""
+    logger.info(f"Starting 'evaluate' mode for dataset: {dataset_name_str}...")
 
-    # asyncio.run(digimon.query("Who is Scrooge?"))
+    result_dir_path, metric_dir_path = check_and_create_dirs(config_obj, cmd_args_opt_path)
+
+    # Placeholder: Ensure GraphRAG is set up for querying (loads artifacts)
+    # await graphrag_instance.setup_for_querying()
+    logger.info("Attempting to setup GraphRAG for querying (loading artifacts for evaluation)...")
+    await graphrag_instance.setup_for_querying() # Call the new setup method
+
+    query_dataset = RAGQueryDataset(
+        data_dir=os.path.join(config_obj.data_root, dataset_name_str)
+    )
+    if len(query_dataset) == 0:
+        logger.error(f"No questions found in {dataset_name_str} for evaluation.")
+        return
+
+    # Run queries and save results
+    results_json_path = await wrapper_query_async(query_dataset, graphrag_instance, result_dir_path)
+    
+    # Evaluate the results
+    await wrapper_evaluation_async(results_json_path, config_obj, metric_dir_path)
+    logger.info(f"Evaluation process completed for dataset: {dataset_name_str}.")
+
+# --- Main Orchestration ---
+async def main():
+    parser = argparse.ArgumentParser(description="GraphRAG CLI - Build, Query, or Evaluate.")
+    parser.add_argument(
+        "mode", 
+        choices=["build", "query", "evaluate"], 
+        help="The operational mode: 'build' to create artifacts, 'query' to ask a question, 'evaluate' to run evaluations."
+    )
+    parser.add_argument(
+        "-opt", 
+        type=str, 
+        required=True, 
+        help="Path to the primary option YAML file (e.g., specific method config)."
+    )
+    parser.add_argument(
+        "-dataset_name", 
+        type=str, 
+        required=True, 
+        help="Name of the dataset/experiment. This will also be used as opt.exp_name."
+    )
+    parser.add_argument(
+        "-question", 
+        type=str, 
+        help="The question to ask in 'query' mode."
+    )
+    # Potentially add an argument for corpus_dir if it's different from dataset_name structure
+    # parser.add_argument("-corpus_data_dir", type=str, help="Path to the directory containing Corpus.json for 'build' mode, if different from dataset_name convention.")
+
+    args = parser.parse_args()
+
+    # --- Configuration Loading ---
+    # dataset_name is also used as opt.exp_name for directory structuring
+    opt = Config.parse(Path(args.opt), dataset_name=args.dataset_name) 
+    
+    # --- GraphRAG Instance ---
+    # The GraphRAG instance is created once. Its internal state will be managed by new methods.
+    digimon = GraphRAG(config=opt)
+
+    # --- Mode Dispatch ---
+    if args.mode == "build":
+        # corpus_data_dir = args.corpus_data_dir or os.path.join(opt.data_root, args.dataset_name)
+        await handle_build_mode(opt, args.dataset_name, digimon)
+    elif args.mode == "query":
+        if not args.question:
+            parser.error("-question is required for 'query' mode.")
+        await handle_query_mode(opt, args.dataset_name, args.question, digimon)
+    elif args.mode == "evaluate":
+        await handle_evaluate_mode(opt, args.dataset_name, digimon, args.opt)
+
+if __name__ == "__main__":
+    asyncio.run(main())

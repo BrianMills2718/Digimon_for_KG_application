@@ -32,7 +32,7 @@ def define_log_level(print_level="INFO", logfile_level="DEBUG", name: str = None
     return _logger
 
 
-logger = define_log_level(name = os.path.join(default_config.working_dir, default_config.exp_name))
+logger = define_log_level(print_level="DEBUG", logfile_level="DEBUG", name = os.path.join(default_config.working_dir, default_config.exp_name))
 
 
 def log_llm_stream(msg):
