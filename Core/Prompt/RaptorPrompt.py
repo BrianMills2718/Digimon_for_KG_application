@@ -1,3 +1,3 @@
 SUMMARIZE = """You are a helpful assistant. Write a summary of the following, including as many key details as possible: {context}:"""
 
-ANSWER_QUESTION = """Given Context: {context} Give the best full answer amongst the option to question {question}"""
+ANSWER_QUESTION = """Given the following context:\n--- START OF CONTEXT ---\n{context}\n--- END OF CONTEXT ---\n\nPlease answer the following question based *only* on the provided context. If the context does not contain the answer, say 'I cannot answer based on the provided context.'\nQuestion: {question}\nAnswer:"""
