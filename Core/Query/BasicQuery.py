@@ -2,7 +2,7 @@ from Core.Query.BaseQuery import BaseQuery
 from Core.Common.Logger import logger
 from Core.Common.Constants import Retriever
 from Core.Common.Utils import list_to_quoted_csv_string, truncate_list_by_token_size, combine_contexts
-from Core.Prompt import QueryPrompt
+from Core.Prompt import QueryPrompt, RaptorPrompt
 
 
 class BasicQuery(BaseQuery):
@@ -10,11 +10,25 @@ class BasicQuery(BaseQuery):
         super().__init__(config, retriever_context)
 
     async def _retrieve_relevant_contexts(self, query):
-
         if self.config.tree_search:
-            # For RAPTOR
-            return await self._retriever.retrieve_relevant_content(seed=query, tree_node=True, type=Retriever.ENTITY,
-                                                                   mode="vdb")
+            logger.info(f"RAPTOR Mode: Retrieving tree nodes for query: '{query}'")
+            tree_nodes_texts = await self._retriever.retrieve_relevant_content(
+                seed=query,
+                tree_node=True, 
+                type=Retriever.ENTITY, 
+                mode="vdb"
+            )
+
+            if not tree_nodes_texts:
+                logger.warning("RAPTOR Mode: No relevant tree nodes found.")
+                return QueryPrompt.FAIL_RESPONSE 
+
+            logger.info(f"RAPTOR Mode: Retrieved {len(tree_nodes_texts)} tree node texts.")
+            for i, node_text in enumerate(tree_nodes_texts):
+                logger.info(f"RAPTOR Node {i+1}/{len(tree_nodes_texts)} Content (snippet): {node_text[:150].replace(chr(10), ' ')}...")
+
+            context_string = "\n\n---\n\n".join(tree_nodes_texts) 
+            return context_string
 
         entities_context, relations_context, text_units_context, communities_context = None, None, None, None
         if self.config.use_global_query and self.config.use_community:
@@ -22,7 +36,7 @@ class BasicQuery(BaseQuery):
         if self.config.use_keywords and self.config.use_global_query:
             entities_context, relations_context, text_units_context = await self._retrieve_relevant_contexts_global_keywords(
                 query)
-        if self.config.enable_local or self.config.enable_hybrid_query:
+        if self.config.enable_local or self.config.enable_hybrid_query: 
             entities_context, relations_context, text_units_context, communities_context = await self._retrieve_relevant_contexts_local(
                 query)
         if self.config.enable_hybrid_query:
@@ -31,18 +45,23 @@ class BasicQuery(BaseQuery):
             entities_context, relations_context, text_units_context = combine_contexts(
                 entities=[entities_context, hl_entities_context], relationships=[relations_context, hl_relations_context],
                 sources=[text_units_context, hl_text_units_context])
+        
+        if entities_context is None and relations_context is None and text_units_context is None and communities_context is None:
+             logger.warning("No context retrieved for non-RAPTOR path.")
+             return QueryPrompt.FAIL_RESPONSE
+
         results = f"""
             -----Entities-----
             ```csv
-            {entities_context}
+            {entities_context if entities_context else "N/A"}
             ```
             -----Relationships-----
             ```csv
-            {relations_context}
+            {relations_context if relations_context else "N/A"}
             ```
             -----Sources-----
             ```csv
-            {text_units_context}
+            {text_units_context if text_units_context else "N/A"}
             ```
             """
 
@@ -57,9 +76,6 @@ class BasicQuery(BaseQuery):
         return results
 
     async def _retrieve_relevant_contexts_local(self, query):
-        """
-        Local query for GraphRAG and lightRAG 
-        """
         if self.config.use_keywords:
             query = await self.extract_query_keywords(query)
 
@@ -209,40 +225,69 @@ class BasicQuery(BaseQuery):
         return entities_context, relations_context, text_units_context
 
     async def generation_qa(self, query, context):
-        if context is None:
+        if context is None or context == QueryPrompt.FAIL_RESPONSE:
+            logger.warning("generation_qa: No context provided or failed to retrieve context.")
             return QueryPrompt.FAIL_RESPONSE
-        if self.config.tree_search:
-            instruction = f"Given Context: {context} Give the best full answer amongst the option to question {query}"
+
+        if self.config.tree_search: 
+            try:
+                instruction = RaptorPrompt.ANSWER_QUESTION.format(context=context, question=query)
+            except ImportError:
+                logger.error("Could not import RaptorPrompt. Using generic prompt.")
+                instruction = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+            except AttributeError:
+                logger.error("ANSWER_QUESTION not found in RaptorPrompt. Using generic prompt.")
+                instruction = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+                
+            logger.info("RAPTOR Mode: Generating answer with retrieved tree context.")
             response = await self.llm.aask(msg=instruction)
             return response
-        if self.config.community_information and self.config.use_global_query:
+        
+        elif self.config.community_information and self.config.use_global_query: 
             sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
-        elif not self.config.community_information and self.config.use_keywords:
-            sys_prompt_temp = QueryPrompt.RAG_RESPONSE
-        elif self.config.community_information and not self.config.use_keywords and self.config.enable_local:
-            sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
-        else:
-            logger.error("Invalid query configuration")
-            return QueryPrompt.FAIL_RESPONSE
-        response = await self.llm.aask(
-            query,
-            system_msgs=[sys_prompt_temp.format(
+            instruction = query 
+            system_msgs = [sys_prompt_temp.format(
                 report_data=context, response_type=self.config.response_type
-            )],
-        )
-        return response
-  
+            )]
+            logger.info("Global Mode (Communities): Generating answer.")
+            response = await self.llm.aask(
+                msg=instruction, 
+                system_msgs=system_msgs
+            )
+            return response
+        
+        else:
+            if not self.config.community_information and self.config.use_keywords: 
+                sys_prompt_temp = QueryPrompt.RAG_RESPONSE
+            elif self.config.community_information and not self.config.use_keywords and self.config.enable_local: 
+                sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
+            else:
+                logger.warning(f"generation_qa: Unhandled config combination for prompts. Using default. tree_search={self.config.tree_search}, community_info={self.config.community_information}, use_global_query={self.config.use_global_query}, use_keywords={self.config.use_keywords}, enable_local={self.config.enable_local}")
+                instruction = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+                response = await self.llm.aask(msg=instruction)
+                return response
+
+            instruction = query 
+            system_msgs = [sys_prompt_temp.format(
+                context_data=context, response_type=self.config.response_type
+            )]
+            logger.info("Standard RAG Mode: Generating answer.")
+            response = await self.llm.aask(
+                msg=instruction, 
+                system_msgs=system_msgs
+            )
+            return response
 
     async def generation_summary(self, query, context):
 
         if context is None:
             return QueryPrompt.FAIL_RESPONSE
 
-        if self.config.community_information and self.config.use_global_query:
+        if self.config.community_information and self.config.use_global_query: 
             sys_prompt_temp = QueryPrompt.GLOBAL_REDUCE_RAG_RESPONSE
-        elif not self.config.community_information and self.config.use_keywords:
+        elif not self.config.community_information and self.config.use_keywords: 
             sys_prompt_temp = QueryPrompt.RAG_RESPONSE
-        elif self.config.community_information and not self.config.use_keywords and self.config.enable_local:
+        elif self.config.community_information and not self.config.use_keywords and self.config.enable_local: 
             sys_prompt_temp = QueryPrompt.LOCAL_RAG_RESPONSE
         else:
             logger.error("Invalid query configuration")
