@@ -30,23 +30,39 @@ class CommunityRetriever(BaseRetriever):
         community_reports = self.community.community_reports
         related_communities = []
         for node_d in seed:
-            logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Processing entity: {node_d.get('entity_name', 'Unknown Entity')}, Keys: {list(node_d.keys())}")
-            if "clusters" not in node_d:
-                continue
-            related_communities.extend(json.loads(node_d["clusters"]))
-            logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: For entity {node_d.get('entity_name', 'Unknown Entity')}, extended related_communities with: {json.loads(node_d['clusters'])}. Current total related_communities items: {len(related_communities)}")
+            logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Processing entity: {node_d.get('entity_name')}, Keys: {list(node_d.keys())}")
+            if "clusters" in node_d and node_d["clusters"]:
+                cluster_data = node_d["clusters"]
+                if isinstance(cluster_data, str):
+                    try:
+                        logger.warning(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: 'clusters' for entity {node_d.get('entity_name')} is a string. Attempting json.loads.")
+                        cluster_data = json.loads(cluster_data)
+                    except Exception as e:
+                        logger.error(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Error decoding 'clusters' string for entity {node_d.get('entity_name')}: {e}")
+                        continue
+                if isinstance(cluster_data, list):
+                    related_communities.extend(cluster_data)
+                    logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Extended related_communities from entity {node_d.get('entity_name')} with: {cluster_data}")
+                else:
+                    logger.warning(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: 'clusters' data for entity {node_d.get('entity_name')} is not a list or decodable string: {cluster_data}")
+            else:
+                logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Entity {node_d.get('entity_name')} has no 'clusters' attribute or it's empty.")
+        logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: All extracted related_communities: {related_communities}")
+        query_config_level = self.retriever_context.context["query_config"].level
+        logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Using query_config.level: {query_config_level}")
         related_community_dup_keys = [
             str(dp["cluster"])
             for dp in related_communities
-            if dp["level"] <= self.config.level
+            if dp.get("level") <= query_config_level
         ]
-
+        logger.info(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Found {len(set(related_community_dup_keys))} unique community keys from entities. Keys: {list(set(related_community_dup_keys))}")
         from collections import Counter
         related_community_keys_counts = dict(Counter(related_community_dup_keys))
-        logger.info(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Found {len(related_community_keys_counts)} unique community keys from entities. Keys: {list(related_community_keys_counts.keys())}")
+        logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Community key counts: {related_community_keys_counts}")
         _related_community_datas = await asyncio.gather(
             *[community_reports.get_by_id(k) for k in related_community_keys_counts.keys()]
         )
+        logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Data retrieved from community_reports storage for keys {list(related_community_keys_counts.keys())}: {_related_community_datas}")
         logger.info(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Retrieved {len(_related_community_datas) if _related_community_datas else 0} community data objects from storage.")
         if _related_community_datas:
             logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: First retrieved community data object (raw): {_related_community_datas[0]}")
@@ -74,12 +90,12 @@ class CommunityRetriever(BaseRetriever):
         use_community_reports = truncate_list_by_token_size(
             sorted_community_datas,
             key=lambda x: x["report_string"],
-            max_token_size=self.config.local_max_token_for_community_report,
+            max_token_size=self.retriever_context.context["query_config"].local_max_token_for_community_report,
         )
         logger.info(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: Returning {len(use_community_reports) if use_community_reports else 0} community reports after truncation.")
         if use_community_reports:
-            logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: First community report to be returned (first 100 chars): {str(use_community_reports[0])[:100] if use_community_reports else 'N/A'}...")
-        if self.config.local_community_single_one:
+            logger.debug(f"COMMUNITY_RETRIEVER_FROM_ENTITIES: First returned report (sample): {str(use_community_reports[0])[:200]}")
+        if self.retriever_context.context["query_config"].local_community_single_one:
             use_community_reports = use_community_reports[:1]
         return use_community_reports
 
