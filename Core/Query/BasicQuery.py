@@ -11,24 +11,104 @@ class BasicQuery(BaseQuery):
 
     async def _retrieve_relevant_contexts(self, query):
         if self.config.tree_search:
-            logger.info(f"RAPTOR Mode: Retrieving tree nodes for query: '{query}'")
-            tree_nodes_texts = await self._retriever.retrieve_relevant_content(
+            logger.info(f"RAPTOR Mode: Retrieving tree nodes with metadata for query: '{query}'")
+            tree_nodes_data = await self._retriever.retrieve_relevant_content(
                 seed=query,
                 tree_node=True, 
                 type=Retriever.ENTITY, 
                 mode="vdb"
             )
 
-            if not tree_nodes_texts:
-                logger.warning("RAPTOR Mode: No relevant tree nodes found.")
+            if not tree_nodes_data:
+                logger.warning("RAPTOR Mode: No relevant tree nodes with metadata found.")
                 return QueryPrompt.FAIL_RESPONSE 
 
-            logger.info(f"RAPTOR Mode: Retrieved {len(tree_nodes_texts)} tree node texts.")
-            for i, node_text in enumerate(tree_nodes_texts):
-                logger.info(f"RAPTOR Node {i+1}/{len(tree_nodes_texts)} Content (snippet): {node_text[:150].replace(chr(10), ' ')}...")
+            logger.info(f"RAPTOR Mode: Retrieved {len(tree_nodes_data)} tree nodes with metadata.")
 
-            context_string = "\n\n---\n\n".join(tree_nodes_texts) 
-            return context_string
+            # --- START OF NEW RE-RANKING LOGIC ---
+            # --- START OF NEW RE-RANKING LOGIC ---
+            try:
+                max_tree_layer = 0  # Default if graph info is not available
+                # Access the graph object from the retriever's context
+                # self._retriever.context should have 'graph' (TreeGraphStorage instance)
+                # and 'config' (QueryConfig instance for retriever options)
+                graph_storage = None
+                # Accept both dict-like and attribute access for context
+                context_obj = self._retriever.context
+                if isinstance(context_obj, dict):
+                    graph_storage = context_obj.get('graph')
+                else:
+                    graph_storage = getattr(context_obj, 'graph', None)
+
+                if graph_storage and hasattr(graph_storage, 'num_layers'):
+                    # num_layers is the count of layers. If 1 layer, its index is 0.
+                    # If num_layers is 0 (e.g., empty graph), max_tree_layer should be -1 or handled.
+                    # Let's ensure num_layers is at least 1 for a valid max_tree_layer index.
+                    if graph_storage.num_layers > 0:
+                        max_tree_layer = graph_storage.num_layers - 1
+                    else:
+                        max_tree_layer = 0
+                    logger.info(f"RAPTOR Re-ranking: Determined max_tree_layer: {max_tree_layer} (from graph.num_layers: {graph_storage.num_layers})")
+                else:
+                    logger.warning("RAPTOR Re-ranking: Could not determine max_tree_layer from graph context. Defaulting to 0.")
+                    # max_tree_layer remains 0 as initialized
+
+                # Configurable: positive boosts nodes with higher layer numbers (more abstract).
+                # Layer 0 is assumed to be the leaf layer. Higher layer numbers are summaries.
+                layer_boost_factor = 0.1
+
+                processed_nodes_for_ranking = []
+                for i, node in enumerate(tree_nodes_data):
+                    try:
+                        original_vdb_score = float(node.get("vdb_score", 0.0))
+                    except (ValueError, TypeError):
+                        logger.warning(f"Could not parse vdb_score '{node.get('vdb_score')}' for node {node.get('id')}. Using 0.0.")
+                        original_vdb_score = 0.0
+                    node_layer = int(node.get("layer", 0))
+
+                    # Re-ranking formula:
+                    # Boosts nodes with higher layer numbers (more abstract).
+                    # If all nodes are layer 0 (e.g. single-layer tree), node_layer will be 0,
+                    # and the boost term (layer_boost_factor * node_layer) will be 0.
+                    # So, final_score will equal original_vdb_score. This is expected for single-layer trees.
+                    # The re-ranking effect will be visible with multi-layered trees.
+                    final_score = original_vdb_score * (1 + (layer_boost_factor * node_layer))
+
+                    node['final_score'] = final_score
+                    node['original_vdb_score'] = original_vdb_score
+                    processed_nodes_for_ranking.append(node)
+                    logger.debug(f"RAPTOR Re-ranking: Node ID {node.get('id')}, Layer {node_layer}, VDB Score {original_vdb_score:.4f}, Final Score {final_score:.4f}")
+
+                tree_nodes_data = sorted(processed_nodes_for_ranking, key=lambda x: x['final_score'], reverse=True)
+                logger.info("RAPTOR Re-ranking: Nodes re-ranked based on final_score.")
+            except Exception as e:
+                logger.exception(f"Error during RAPTOR node re-ranking: {e}. Proceeding with original VDB ranking.")
+            # --- END OF NEW RE-RANKING LOGIC ---
+
+            final_context_parts = []
+            logger.info(f"RAPTOR Mode: Top {len(tree_nodes_data)} retrieved tree nodes after potential re-ranking:")
+            for i, node_info in enumerate(tree_nodes_data):
+                node_text_snippet = node_info.get("text", "")[:200] + "..."
+                log_msg = (
+                    f"RAPTOR Node {i+1}/{len(tree_nodes_data)} "
+                    f"ID: {node_info.get('id')}, Layer: {node_info.get('layer')}, "
+                    f"VDB Score: {node_info.get('original_vdb_score', 'N/A')}, "
+                    f"Final Score: {node_info.get('final_score', 'N/A')}, "
+                    f"Content (snippet): {node_text_snippet}"
+                )
+                logger.info(log_msg)
+                final_context_parts.append(node_info.get("text", ""))
+
+            if not final_context_parts:
+                return QueryPrompt.FAIL_RESPONSE
+
+            # Use top_k_for_llm from config if available, else fallback to retrieve_top_k
+            top_k_for_llm = getattr(self.config, 'retrieve_top_k', len(tree_nodes_data))
+            final_context_for_llm = "\n\n---\n\n".join([node.get("text","") for node in tree_nodes_data[:top_k_for_llm]])
+
+            logger.info(f"RAPTOR Mode: Generating answer with retrieved tree context ({len(tree_nodes_data[:top_k_for_llm])} nodes).")
+            return final_context_for_llm
+
 
         entities_context, relations_context, text_units_context, communities_context = None, None, None, None
         if self.config.use_global_query and self.config.use_community:
