@@ -1,0 +1,25 @@
+2025-05-20 04:17:42.795 | INFO     | __main__:handle_query_mode:119 - Starting 'query' mode for dataset: MySampleTexts...
+2025-05-20 04:17:42.795 | INFO     | __main__:handle_query_mode:120 - Question: What were the key causes of the American Revolution?
+2025-05-20 04:17:42.795 | INFO     | __main__:handle_query_mode:124 - Attempting to setup GraphRAG for querying (loading artifacts)...
+2025-05-20 04:17:42.795 | INFO     | Core.GraphRAG:setup_for_querying:263 - --- Starting Artifact Loading Process for test ---
+2025-05-20 04:17:42.795 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:17:42.795 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:134 - Successfully loaded chunk data (idx and key) from: ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/kg_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:17:42.796 | INFO     | Core.GraphRAG:setup_for_querying:268 - Chunks loaded successfully.
+2025-05-20 04:17:42.796 | INFO     | Core.Graph.BaseGraph:load_persisted_graph:32 - Attempting to load persisted graph via NetworkXStorage.load_graph(force=False)
+2025-05-20 04:17:42.796 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:33 - Attempting to load the graph from: ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 04:17:42.799 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:37 - Successfully loaded graph from: ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml with 105 nodes and 61 edges
+2025-05-20 04:17:42.799 | INFO     | Core.GraphRAG:setup_for_querying:273 - Graph loaded successfully.
+2025-05-20 04:17:43.321 | INFO     | Core.GraphRAG:setup_for_querying:279 - Entities VDB loaded. Index object: <llama_index.core.indices.vector_store.base.VectorStoreIndex object at 0x7f15862f5c30>
+2025-05-20 04:17:43.321 | INFO     | Core.Storage.JsonKVStorage:load:37 - Load KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 14 data
+2025-05-20 04:17:43.321 | INFO     | Core.Community.LeidenCommunity:_load_cluster_map:284 - ✅ Successfully loaded community <-> node map.
+2025-05-20 04:17:43.321 | INFO     | Core.GraphRAG:setup_for_querying:298 - Community node map loaded successfully.
+2025-05-20 04:17:43.321 | INFO     | Core.Storage.JsonKVStorage:load:37 - Load KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 2 data
+2025-05-20 04:17:43.322 | INFO     | Core.Community.LeidenCommunity:_load_community_report:268 - Successfully loaded community report.
+2025-05-20 04:17:43.322 | INFO     | Core.GraphRAG:setup_for_querying:303 - Community reports loaded successfully.
+2025-05-20 04:17:43.322 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:17:43.322 | INFO     | Core.GraphRAG:setup_for_querying:330 - --- Artifact Loading Process for test Completed ---
+2025-05-20 04:17:43.322 | INFO     | Core.GraphRAG:query:343 - Processing query: 'What were the key causes of the American Revolution?'
+2025-05-20 04:17:43.322 | INFO     | Core.Query.BasicQuery:_retrieve_relevant_contexts:13 - BASIC_QUERY_MAIN_RETRIEVE: Entered _retrieve_relevant_contexts for query: 'What were the key causes of the American Revolution?'
+2025-05-20 04:17:43.322 | INFO     | Core.Query.BasicQuery:_retrieve_relevant_contexts:14 - BASIC_QUERY_MAIN_RETRIEVE: Config - tree_search: False, use_global_query: True, use_community: True, use_keywords: False, enable_local: False, enable_hybrid_query: False
+2025-05-20 04:17:43.322 | INFO     | Core.Query.BasicQuery:_retrieve_relevant_contexts:15 - BASIC_QUERY_MAIN_RETRIEVE: Checking for tree_search path...
+2025-05-20 04:17:43.322 | INFO     | Core.Query.BasicQuery:_retrieve_relevant_contexts:117 - BASIC_QUERY_MAIN_RETRIEVE: Checking for global query with community path...

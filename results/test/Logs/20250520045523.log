@@ -1,0 +1,49 @@
+2025-05-20 04:55:31.059 | INFO     | __main__:handle_query_mode:119 - Starting 'query' mode for dataset: MySampleTexts...
+2025-05-20 04:55:31.059 | INFO     | __main__:handle_query_mode:120 - Question: What were the key causes of the American Revolution?
+2025-05-20 04:55:31.059 | INFO     | __main__:handle_query_mode:124 - Attempting to setup GraphRAG for querying (loading artifacts)...
+2025-05-20 04:55:31.059 | INFO     | Core.GraphRAG:setup_for_querying:263 - --- Starting Artifact Loading Process for test ---
+2025-05-20 04:55:31.059 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:55:31.060 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:134 - Successfully loaded chunk data (idx and key) from: ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:55:31.060 | INFO     | Core.GraphRAG:setup_for_querying:268 - Chunks loaded successfully.
+2025-05-20 04:55:31.060 | INFO     | Core.Graph.BaseGraph:load_persisted_graph:32 - Attempting to load persisted graph via NetworkXStorage.load_graph(force=False)
+2025-05-20 04:55:31.060 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:33 - Attempting to load the graph from: ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml
+2025-05-20 04:55:31.066 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:37 - Successfully loaded graph from: ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml with 320 nodes and 208 edges
+2025-05-20 04:55:31.067 | INFO     | Core.GraphRAG:setup_for_querying:273 - Graph loaded successfully.
+2025-05-20 04:55:32.657 | INFO     | Core.GraphRAG:setup_for_querying:279 - Entities VDB loaded. Index object: <llama_index.core.indices.vector_store.base.VectorStoreIndex object at 0x7f4f82ec9720>
+2025-05-20 04:55:32.657 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:55:32.657 | INFO     | Core.GraphRAG:setup_for_querying:330 - --- Artifact Loading Process for test Completed ---
+2025-05-20 04:55:32.657 | INFO     | Core.GraphRAG:query:343 - Processing query: 'What were the key causes of the American Revolution?'
+2025-05-20 04:55:33.324 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.000 | Max budget: $10.000 | Current cost: $0.000, prompt_tokens: 197, completion_tokens: 10
+2025-05-20 04:55:36.609 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.001 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 137, completion_tokens: 303
+2025-05-20 04:55:38.589 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.002 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 158, completion_tokens: 153
+2025-05-20 04:55:40.413 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.002 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 389, completion_tokens: 82
+2025-05-20 04:55:41.415 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.003 | Max budget: $10.000 | Current cost: $0.000, prompt_tokens: 239, completion_tokens: 56
+2025-05-20 04:55:44.278 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.004 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 212, completion_tokens: 268
+2025-05-20 04:55:46.217 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.005 | Max budget: $10.000 | Current cost: $0.001, prompt_tokens: 490, completion_tokens: 196
+2025-05-20 04:55:46.217 | INFO     | Core.Query.DalkQuery:query:75 - What were the key causes of the American Revolution?
+2025-05-20 04:55:46.217 | INFO     | Core.Query.DalkQuery:query:76 - The key causes of the American Revolution were:
+
+1. Taxation Grievances: The British colonists felt unfairly taxed without proper representation in the British Parliament.
+   
+2. Influence of Enlightenment Ideas: Enlightenment ideas, such as individual rights and self-governance, fueled the independence movement and desire for self-determination among the colonists.
+
+3. Boston Tea Party and Intolerable Acts: The Boston Tea Party, a protest against the British tea tax, led to the British government passing the Intolerable Acts, escalating tensions and resistance.
+
+4. Discontent with British Policies: The Thirteen Colonies were discontent with various British policies that restricted their economic activities and political freedoms, leading to growing resentment and opposition.
+
+5. Taxation Without Representation: The imposition of taxes on the American colonies without providing them with representation in decision-making processes was a significant trigger for the American Revolution.
+
+These factors combined to create a complex situation that ultimately led to the outbreak of the American Revolution.
+2025-05-20 04:55:46.218 | INFO     | __main__:handle_query_mode:128 - Answer: The key causes of the American Revolution were:
+
+1. Taxation Grievances: The British colonists felt unfairly taxed without proper representation in the British Parliament.
+   
+2. Influence of Enlightenment Ideas: Enlightenment ideas, such as individual rights and self-governance, fueled the independence movement and desire for self-determination among the colonists.
+
+3. Boston Tea Party and Intolerable Acts: The Boston Tea Party, a protest against the British tea tax, led to the British government passing the Intolerable Acts, escalating tensions and resistance.
+
+4. Discontent with British Policies: The Thirteen Colonies were discontent with various British policies that restricted their economic activities and political freedoms, leading to growing resentment and opposition.
+
+5. Taxation Without Representation: The imposition of taxes on the American colonies without providing them with representation in decision-making processes was a significant trigger for the American Revolution.
+
+These factors combined to create a complex situation that ultimately led to the outbreak of the American Revolution.

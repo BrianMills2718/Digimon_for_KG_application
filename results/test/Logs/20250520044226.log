@@ -1,0 +1,60 @@
+2025-05-20 04:42:34.576 | INFO     | __main__:handle_query_mode:119 - Starting 'query' mode for dataset: MySampleTexts...
+2025-05-20 04:42:34.577 | INFO     | __main__:handle_query_mode:120 - Question: What were the key causes of the American Revolution?
+2025-05-20 04:42:34.577 | INFO     | __main__:handle_query_mode:124 - Attempting to setup GraphRAG for querying (loading artifacts)...
+2025-05-20 04:42:34.577 | INFO     | Core.GraphRAG:setup_for_querying:263 - --- Starting Artifact Loading Process for test ---
+2025-05-20 04:42:34.577 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:121 - Attempting to load chunk data from: ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:42:34.577 | INFO     | Core.Storage.ChunkKVStorage:load_chunk:134 - Successfully loaded chunk data (idx and key) from: ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_idx.pkl and ./results/MySampleTexts/er_graph/chunk_storage_chunk_data_key.pkl
+2025-05-20 04:42:34.577 | INFO     | Core.GraphRAG:setup_for_querying:268 - Chunks loaded successfully.
+2025-05-20 04:42:34.577 | INFO     | Core.Graph.BaseGraph:load_persisted_graph:32 - Attempting to load persisted graph via NetworkXStorage.load_graph(force=False)
+2025-05-20 04:42:34.577 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:33 - Attempting to load the graph from: ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml
+2025-05-20 04:42:34.582 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:37 - Successfully loaded graph from: ./results/MySampleTexts/er_graph/graph_storage_nx_data.graphml with 206 nodes and 135 edges
+2025-05-20 04:42:34.582 | INFO     | Core.GraphRAG:setup_for_querying:273 - Graph loaded successfully.
+2025-05-20 04:42:35.568 | INFO     | Core.GraphRAG:setup_for_querying:279 - Entities VDB loaded. Index object: <llama_index.core.indices.vector_store.base.VectorStoreIndex object at 0x7fd2b0c8dc60>
+2025-05-20 04:42:36.237 | INFO     | Core.GraphRAG:setup_for_querying:286 - Relations VDB loaded successfully.
+2025-05-20 04:42:36.238 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:42:36.238 | INFO     | Core.GraphRAG:setup_for_querying:330 - --- Artifact Loading Process for test Completed ---
+2025-05-20 04:42:36.238 | INFO     | Core.GraphRAG:query:343 - Processing query: 'What were the key causes of the American Revolution?'
+2025-05-20 04:42:36.242 | INFO     | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:38 - ENTITY_VDB_RETRIEVAL: Querying VDB with seed: 'Question: What were the key causes of the American Revolution?
+Answer: ' for top_k: None
+2025-05-20 04:42:36.681 | INFO     | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:54 - ENTITY_VDB_RETRIEVAL: Raw VDB nodes count: 3
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:56 - ENTITY_VDB_RETRIEVAL: First raw VDB node (with score if available): {'source_id': 'chunk-41b312f13f5f70362056f212ec061600', 'entity_name': 'timeline of the american revolution', 'entity_type': '', 'description': '', 'content': 'timeline of the american revolution'}, Score: 0.5214122233208838
+2025-05-20 04:42:36.681 | INFO     | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:68 - ENTITY_VDB_RETRIEVAL: Processed node_datas count: 3
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:70 - ENTITY_VDB_RETRIEVAL: First processed node_data: {'source_id': 'chunk-41b312f13f5f70362056f212ec061600', 'entity_name': 'timeline of the american revolution', 'entity_type': '', 'description': '', 'content': 'timeline of the american revolution'}
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:106 - ENTITY_VDB_CONSTRUCT: Constructed current_node_data: {'text': 'timeline of the american revolution', 'id': 'timeline of the american revolution', 'entity_name': 'timeline of the american revolution', 'layer': 0, 'vdb_score': 0.5214122233208838, 'source_id': 'chunk-41b312f13f5f70362056f212ec061600', 'description': '', 'entity_type': ''}
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:123 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'timeline of the american revolution'.
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:126 - ENTITY_VDB_DIAG: About to check for community and community_node_map for entity 'timeline of the american revolution'
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:129 - ENTITY_VDB_DIAG: self.community type: <class 'NoneType'>, repr: None
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:131 - ENTITY_VDB_DIAG: self.community.community_node_map type: <class 'NoneType'>, repr: None
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:144 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'timeline of the american revolution'.
+2025-05-20 04:42:36.681 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:146 - ENTITY_VDB_DIAG: Finished cluster attachment attempt for entity 'timeline of the american revolution'
+2025-05-20 04:42:36.681 | WARNING  | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:151 - ENTITY_VDB_POST_CLUSTER_ATTACH: Entity 'timeline of the american revolution' still MISSING 'clusters' attribute after attachment attempt.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:106 - ENTITY_VDB_CONSTRUCT: Constructed current_node_data: {'text': 'causes of the french revolution', 'id': 'causes of the french revolution', 'entity_name': 'causes of the french revolution', 'layer': 0, 'vdb_score': 0.5127410252303795, 'source_id': 'chunk-368c7113ca6d5c34ca1cc15cf9e2825a', 'description': '', 'entity_type': ''}
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:123 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'causes of the french revolution'.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:126 - ENTITY_VDB_DIAG: About to check for community and community_node_map for entity 'causes of the french revolution'
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:144 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'causes of the french revolution'.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:146 - ENTITY_VDB_DIAG: Finished cluster attachment attempt for entity 'causes of the french revolution'
+2025-05-20 04:42:36.682 | WARNING  | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:151 - ENTITY_VDB_POST_CLUSTER_ATTACH: Entity 'causes of the french revolution' still MISSING 'clusters' attribute after attachment attempt.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:106 - ENTITY_VDB_CONSTRUCT: Constructed current_node_data: {'text': 'american revolution', 'id': 'american revolution', 'entity_name': 'american revolution', 'layer': 0, 'vdb_score': 0.5019778175217899, 'source_id': 'chunk-41b312f13f5f70362056f212ec061600<SEP>chunk-368c7113ca6d5c34ca1cc15cf9e2825a', 'description': '', 'entity_type': ''}
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:123 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'american revolution'.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:126 - ENTITY_VDB_DIAG: About to check for community and community_node_map for entity 'american revolution'
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:144 - ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'american revolution'.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:146 - ENTITY_VDB_DIAG: Finished cluster attachment attempt for entity 'american revolution'
+2025-05-20 04:42:36.682 | WARNING  | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:151 - ENTITY_VDB_POST_CLUSTER_ATTACH: Entity 'american revolution' still MISSING 'clusters' attribute after attachment attempt.
+2025-05-20 04:42:36.682 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:154 - ENTITY_VDB_FINAL_LIST: Final list of processed_node_datas before assignment (first item if any): {'text': 'timeline of the american revolution', 'id': 'timeline of the american revolution', 'entity_name': 'timeline of the american revolution', 'layer': 0, 'vdb_score': 0.5214122233208838, 'source_id': 'chunk-41b312f13f5f70362056f212ec061600', 'description': '', 'entity_type': ''}
+2025-05-20 04:42:36.683 | INFO     | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:175 - ENTITY_VDB_RANKING: Added 'rank' (node degree) to 3 entities.
+2025-05-20 04:42:36.683 | DEBUG    | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:177 - ENTITY_VDB_RANKING: First entity after adding rank: {'text': 'timeline of the american revolution', 'id': 'timeline of the american revolution', 'entity_name': 'timeline of the american revolution', 'layer': 0, 'vdb_score': 0.5214122233208838, 'source_id': 'chunk-41b312f13f5f70362056f212ec061600', 'description': '', 'entity_type': '', 'rank': 0}
+2025-05-20 04:42:36.683 | INFO     | Core.Retriever.EntitiyRetriever:_find_relevant_entities_vdb:189 - Processed 3 nodes with metadata for RAPTOR.
+2025-05-20 04:42:39.801 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.000 | Max budget: $10.000 | Current cost: $0.000, prompt_tokens: 67, completion_tokens: 165
+2025-05-20 04:42:39.801 | INFO     | __main__:handle_query_mode:128 - Answer: The key causes of the American Revolution include:
+
+1. Taxation without representation: The British government imposed various taxes on the American colonies without giving them a voice in the decision-making process.
+
+2. Restrictions on trade: The British imposed trade restrictions and regulations that limited the economic opportunities of the colonies.
+
+3. British military presence: The presence of British troops in the colonies and the enforcement of British laws without colonial consent led to tensions.
+
+4. Colonial grievances: Colonists had various grievances against British rule, including the Quartering Act, the Stamp Act, and the Intolerable Acts.
+
+5. Desire for self-governance: Many colonists wanted greater autonomy and self-governance, rather than being subject to British rule.
+
+These factors, among others, contributed to the growing discontent and eventual outbreak of the American Revolution.

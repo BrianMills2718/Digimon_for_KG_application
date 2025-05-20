@@ -1,0 +1,95 @@
+2025-05-19 20:06:40.855 | INFO     | Core.Community.LeidenCommunity:_clustering:62 - Each level has communities: {0: 3}
+2025-05-19 20:06:40.855 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 10 data
+2025-05-19 20:06:40.855 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-19 20:06:40.856 | INFO     | Core.Community.LeidenCommunity:_load_community_report:255 - ☠️ Force to regenerate the community report.
+2025-05-19 20:06:40.856 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-19 20:06:40.856 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-19 20:06:40.856 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 91 nodes, 56 edges
+2025-05-19 20:06:40.860 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:81 - Generating by levels: [0]
+2025-05-19 20:06:44.735 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.067 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 2140, completion_tokens: 630
+2025-05-19 20:06:44.981 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.070 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1773, completion_tokens: 561
+2025-05-19 20:06:45.734 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.074 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1866, completion_tokens: 496
+2025-05-19 20:06:45.735 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 3 data
+2025-05-19 20:06:45.735 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-19 20:06:45.736 | INFO     | Core.GraphRAG:_update_costs_info:196 - Index Building & Community stage cost: Total prompt token: 5779, Total completion token: 1687, Total cost: 0.012042500000000012
+2025-05-19 20:06:45.736 | INFO     | Core.GraphRAG:_update_costs_info:200 - Index Building & Community time(s): 5.78
+2025-05-19 20:06:45.736 | INFO     | Core.GraphRAG:_build_retriever_context:150 - Building retriever context for the current execution
+2025-05-19 20:06:45.736 | INFO     | Core.GraphRAG:build_and_persist_artifacts:249 - --- Artifact Build Process for test Completed ---
+2025-05-19 20:06:45.736 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-19 20:06:45.736 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts
+2025-05-20 01:56:21.261 | INFO     | Core.Community.LeidenCommunity:_clustering:62 - Each level has communities: {0: 4}
+2025-05-20 01:56:21.261 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 16 data
+2025-05-20 01:56:21.261 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-20 01:56:21.262 | INFO     | Core.Community.LeidenCommunity:_load_community_report:255 - ☠️ Force to regenerate the community report.
+2025-05-20 01:56:21.262 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-20 01:56:21.262 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 01:56:21.262 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 99 nodes, 67 edges
+2025-05-20 01:56:21.266 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:81 - Generating by levels: [0]
+2025-05-20 01:56:24.096 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.067 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1918, completion_tokens: 425
+2025-05-20 01:56:24.825 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.072 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 2234, completion_tokens: 515
+2025-05-20 01:56:25.437 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.076 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1768, completion_tokens: 604
+2025-05-20 01:56:25.644 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.080 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1973, completion_tokens: 524
+2025-05-20 01:56:25.645 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 4 data
+2025-05-20 01:56:25.645 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-20 01:56:25.645 | INFO     | Core.GraphRAG:_update_costs_info:196 - Index Building & Community stage cost: Total prompt token: 7893, Total completion token: 2068, Total cost: 0.01597549999999999
+2025-05-20 01:56:25.645 | INFO     | Core.GraphRAG:_update_costs_info:200 - Index Building & Community time(s): 5.74
+2025-05-20 01:56:25.646 | INFO     | Core.GraphRAG:_build_retriever_context:150 - Building retriever context for the current execution
+2025-05-20 01:56:25.646 | INFO     | Core.GraphRAG:build_and_persist_artifacts:249 - --- Artifact Build Process for test Completed ---
+2025-05-20 01:56:25.646 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 01:56:25.646 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts
+2025-05-20 04:09:10.401 | INFO     | Core.Community.LeidenCommunity:_clustering:67 - Each level has communities: {0: 2}
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 14 data
+2025-05-20 04:09:10.402 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-20 04:09:10.402 | INFO     | Core.Community.LeidenCommunity:_load_community_report:260 - ☠️ Force to regenerate the community report.
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 04:09:10.402 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 105 nodes, 61 edges
+2025-05-20 04:09:10.407 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:86 - Generating by levels: [0]
+2025-05-20 04:09:13.812 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.069 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1852, completion_tokens: 428
+2025-05-20 04:09:20.134 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.074 | Max budget: $10.000 | Current cost: $0.005, prompt_tokens: 2412, completion_tokens: 654
+2025-05-20 04:09:20.134 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 2 data
+2025-05-20 04:09:20.135 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 4264, Total completion token: 1082, Total cost: 0.008559999999999998
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 11.10
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 04:09:20.135 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 04:09:20.135 | INFO     | __main__:handle_build_mode:114 - Build process completed for dataset: MySampleTexts.
+2025-05-20 04:09:20.135 | INFO     | __main__:handle_build_mode:115 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts
+2025-05-20 05:30:22.839 | INFO     | Core.Community.LeidenCommunity:_clustering:67 - Each level has communities: {0: 3}
+2025-05-20 05:30:22.839 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 10 data
+2025-05-20 05:30:22.839 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-20 05:30:22.839 | INFO     | Core.Community.LeidenCommunity:_load_community_report:260 - ☠️ Force to regenerate the community report.
+2025-05-20 05:30:22.839 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-20 05:30:22.840 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 05:30:22.840 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 110 nodes, 61 edges
+2025-05-20 05:30:22.844 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:86 - Generating by levels: [0]
+2025-05-20 05:30:27.907 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.068 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1906, completion_tokens: 537
+2025-05-20 05:30:28.637 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.072 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1930, completion_tokens: 555
+2025-05-20 05:30:30.115 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.076 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1898, completion_tokens: 450
+2025-05-20 05:30:30.116 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 3 data
+2025-05-20 05:30:30.116 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-20 05:30:30.116 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 5734, Total completion token: 1542, Total cost: 0.011685000000000001
+2025-05-20 05:30:30.117 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 10.55
+2025-05-20 05:30:30.117 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 05:30:30.117 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 05:30:30.117 | INFO     | __main__:handle_build_mode:117 - Build process completed for dataset: MySampleTexts.
+2025-05-20 05:30:30.117 | INFO     | __main__:handle_build_mode:118 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts
+2025-05-20 05:36:50.949 | INFO     | Core.Community.LeidenCommunity:_clustering:67 - Each level has communities: {0: 3}
+2025-05-20 05:36:50.950 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_node_map.json with 11 data
+2025-05-20 05:36:50.950 | INFO     | Core.Community.BaseCommunity:generate_community_report:26 - Generating community report...
+2025-05-20 05:36:50.950 | INFO     | Core.Community.LeidenCommunity:_load_community_report:260 - ☠️ Force to regenerate the community report.
+2025-05-20 05:36:50.950 | INFO     | Core.Storage.NetworkXStorage:_cluster_data_to_subgraphs:165 - Rewrite the graph with cluster data
+2025-05-20 05:36:50.950 | INFO     | Core.Storage.NetworkXStorage:_persist:115 - Writing graph into ./results/MySampleTexts/kg_graph/graph_storage_nx_data.graphml
+2025-05-20 05:36:50.950 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 115 nodes, 67 edges
+2025-05-20 05:36:50.956 | INFO     | Core.Community.LeidenCommunity:_generate_community_report:86 - Generating by levels: [0]
+2025-05-20 05:36:55.529 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.070 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1957, completion_tokens: 434
+2025-05-20 05:36:56.489 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.074 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 1795, completion_tokens: 590
+2025-05-20 05:36:57.128 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.078 | Max budget: $10.000 | Current cost: $0.004, prompt_tokens: 2147, completion_tokens: 611
+2025-05-20 05:36:57.129 | INFO     | Core.Storage.JsonKVStorage:persist:33 - Write KV ./results/MySampleTexts/kg_graph/community_storage_community_report.json with 3 data
+2025-05-20 05:36:57.129 | INFO     | Core.Community.BaseCommunity:generate_community_report:34 - ✅ [Community Report]  Finished
+2025-05-20 05:36:57.129 | INFO     | Core.GraphRAG:_update_costs_info:203 - Index Building & Community stage cost: Total prompt token: 5899, Total completion token: 1635, Total cost: 0.012118500000000004
+2025-05-20 05:36:57.130 | INFO     | Core.GraphRAG:_update_costs_info:207 - Index Building & Community time(s): 7.45
+2025-05-20 05:36:57.130 | INFO     | Core.GraphRAG:_build_retriever_context:151 - Building retriever context for the current execution
+2025-05-20 05:36:57.130 | INFO     | Core.GraphRAG:build_and_persist_artifacts:256 - --- Artifact Build Process for test Completed ---
+2025-05-20 05:36:57.130 | INFO     | __main__:handle_build_mode:117 - Build process completed for dataset: MySampleTexts.
+2025-05-20 05:36:57.130 | INFO     | __main__:handle_build_mode:118 - Artifacts should be saved in: ./results/MySampleTexts/MySampleTexts

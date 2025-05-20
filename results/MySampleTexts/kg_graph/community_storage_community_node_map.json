@@ -1,0 +1,68 @@
+{
+  "ancien r gime": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "french revolution": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "coup of 18 brumaire": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "crisis of the ancien r gime": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "storming of the bastille": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "committee of public safety": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "reign of terror": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "revolutionary tribunal": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "thermidorian reaction": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "estates general": [
+    {
+      "level": 0,
+      "cluster": "2"
+    }
+  ],
+  "tax laws": [
+    {
+      "level": 0,
+      "cluster": "2"
+    }
+  ]
+}

@@ -12,9 +12,15 @@ class DalkQuery(BaseQuery):
         if path_list is None: return ""
         # import pdb
         # pdb.set_trace()
-        path_str = [(path[0]["src_id"]
-                     + ("->" + e["content"] + "-> " + e["tgt_id"]) for edge in path)
-                     for path in path_list]
+        path_str = [
+            path[0]["src_id"] + ''.join(
+                [
+                    "->" + edge.get("relation_name", edge.get("description", "unknown_relation")) + "->" + edge["tgt_id"]
+                    for edge in path
+                ]
+            )
+            for path in path_list
+        ]
         context = DALK_RERANK_PROMPT.format(graph=path_str, question=query)
 
         return await self.llm.aask(context)
@@ -23,8 +29,14 @@ class DalkQuery(BaseQuery):
         # import pdb
         # pdb.set_trace()
         if nei_list is None: return ""
-        nei_str_list = ["->".join([e["src_id"], e["content"], e["tgt_id"]])
-                        for e in nei_list]
+        nei_str_list = [
+            "->".join([
+                e["src_id"],
+                e.get("relation_name", e.get("description", "unknown_relation")),
+                e["tgt_id"]
+            ])
+            for e in nei_list
+        ]
         if len(nei_str_list) > 5:
             nei_str_list = nei_str_list[:-5]
         neighbor_str = "\n".join(nei_str_list)
