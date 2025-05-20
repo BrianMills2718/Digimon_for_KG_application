@@ -10,7 +10,9 @@ class MixRetriever:
 
     def register_retrievers(self):
         self.retrievers[Retriever.ENTITY] = EntityRetriever(**self.context.as_dict)
-        self.retrievers[Retriever.COMMUNITY] = CommunityRetriever(**self.context.as_dict)
+        init_kwargs_with_context = self.context.as_dict.copy()
+        init_kwargs_with_context['retriever_context'] = self.context
+        self.retrievers[Retriever.COMMUNITY] = CommunityRetriever(**init_kwargs_with_context)
         self.retrievers[Retriever.CHUNK] = ChunkRetriever(**self.context.as_dict)
         self.retrievers[Retriever.RELATION] = RelationshipRetriever(**self.context.as_dict)
         self.retrievers[Retriever.SUBGRAPH] = SubgraphRetriever(**self.context.as_dict)

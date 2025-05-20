@@ -10,6 +10,9 @@ class BasicQuery(BaseQuery):
         super().__init__(config, retriever_context)
 
     async def _retrieve_relevant_contexts(self, query):
+        logger.info(f"BASIC_QUERY_MAIN_RETRIEVE: Entered _retrieve_relevant_contexts for query: '{query}'")
+        logger.info(f"BASIC_QUERY_MAIN_RETRIEVE: Config - tree_search: {self.config.tree_search}, use_global_query: {self.config.use_global_query}, use_community: {self.config.use_community}, use_keywords: {self.config.use_keywords}, enable_local: {self.config.enable_local}, enable_hybrid_query: {self.config.enable_hybrid_query}")
+        logger.info("BASIC_QUERY_MAIN_RETRIEVE: Checking for tree_search path...")
         if self.config.tree_search:
             logger.info(f"RAPTOR Mode: Retrieving tree nodes with metadata for query: '{query}'")
             tree_nodes_data = await self._retriever.retrieve_relevant_content(
@@ -111,11 +114,14 @@ class BasicQuery(BaseQuery):
 
 
         entities_context, relations_context, text_units_context, communities_context = None, None, None, None
+        logger.info("BASIC_QUERY_MAIN_RETRIEVE: Checking for global query with community path...")
         if self.config.use_global_query and self.config.use_community:
             return await self._retrieve_relevant_contexts_global(query)
+        logger.info("BASIC_QUERY_MAIN_RETRIEVE: Checking for global query with keywords path...")
         if self.config.use_keywords and self.config.use_global_query:
             entities_context, relations_context, text_units_context = await self._retrieve_relevant_contexts_global_keywords(
                 query)
+        logger.info("BASIC_QUERY_MAIN_RETRIEVE: Checking for local or hybrid query path (this should lead to _retrieve_relevant_contexts_local)...")
         if self.config.enable_local or self.config.enable_hybrid_query: 
             entities_context, relations_context, text_units_context, communities_context = await self._retrieve_relevant_contexts_local(
                 query)
@@ -127,6 +133,7 @@ class BasicQuery(BaseQuery):
                 sources=[text_units_context, hl_text_units_context])
         
         if entities_context is None and relations_context is None and text_units_context is None and communities_context is None:
+             logger.warning("BASIC_QUERY_MAIN_RETRIEVE: No specific retrieval path matched, proceeding to default/fallback.")
              logger.warning("No context retrieved for non-RAPTOR path.")
              return QueryPrompt.FAIL_RESPONSE
 
@@ -156,23 +163,43 @@ class BasicQuery(BaseQuery):
         return results
 
     async def _retrieve_relevant_contexts_local(self, query):
+        logger.info(f"BASIC_QUERY_LOCAL: Entered _retrieve_relevant_contexts_local for query: '{query}'")
+        use_communities = None  # Initialize to avoid UnboundLocalError
         if self.config.use_keywords:
             query = await self.extract_query_keywords(query)
 
         node_datas = await self._retriever.retrieve_relevant_content(seed=query, type=Retriever.ENTITY, mode="vdb")
+        if node_datas:
+            logger.info(f"BASIC_QUERY_LOCAL: Retrieved {len(node_datas)} entities for query '{query}'.")
+            logger.debug(f"BASIC_QUERY_LOCAL: First entity object received: {node_datas[0]}")
+            if not isinstance(node_datas[0], dict):
+                logger.error(f"BASIC_QUERY_LOCAL: First entity is NOT a dict: {type(node_datas[0])}")
+            elif "entity_name" not in node_datas[0]:
+                logger.error(f"BASIC_QUERY_LOCAL: 'entity_name' key MISSING in first entity. Keys: {list(node_datas[0].keys())}")
+            elif not node_datas[0]["entity_name"]:
+                logger.warning(f"BASIC_QUERY_LOCAL: 'entity_name' IS EMPTY/None in first entity: {node_datas[0]}")
+        else:
+            logger.warning(f"BASIC_QUERY_LOCAL: No entities retrieved by VDB for query '{query}'.")
 
-        if self.config.use_communiy_info:
+        if self.config.use_community_info:
             use_communities = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.COMMUNITY,
                                                                               mode="from_entity")
         use_relations = await self._retriever.retrieve_relevant_content(seed=node_datas, type=Retriever.RELATION,
                                                                         mode="from_entity")
+        logger.info(f"BASIC_QUERY_LOCAL: Attempting to retrieve text_units using 'entity_occurrence' mode.")
+        if not node_datas:
+            logger.warning("BASIC_QUERY_LOCAL: Skipping text_unit retrieval as no entities were found.")
         use_text_units = await self._retriever.retrieve_relevant_content(node_datas=node_datas, type=Retriever.CHUNK,
-                                                                         mode="entity_occurrence")
+                                                                        mode="entity_occurrence")
+        if use_text_units:
+            logger.info(f"BASIC_QUERY_LOCAL: Retrieved {len(use_text_units)} text units. First unit (first 50 chars): {use_text_units[0][:50] if use_text_units else 'None'}...")
+        else:
+            logger.warning(f"BASIC_QUERY_LOCAL: No text units retrieved by 'entity_occurrence'.")
         logger.info(
             f"Using {len(node_datas)} entities, {len(use_relations)} relations, {len(use_text_units)} text units"
         )
 
-        if self.config.use_communiy_info:
+        if self.config.use_community_info:
             logger.info(f"Using {len(use_communities)} communities")
         entites_section_list = [["id", "entity", "type", "description", "rank"]]
         for i, n in enumerate(node_datas):
@@ -206,10 +233,15 @@ class BasicQuery(BaseQuery):
         relations_context = list_to_quoted_csv_string(relations_section_list)
         communities_context = None
         if self.config.use_community:
-            communities_section_list = [["id", "content"]]
-            for i, c in enumerate(use_communities):
-                communities_section_list.append([i, c["report_string"]])
-            communities_context = list_to_quoted_csv_string(communities_section_list)
+            if use_communities:
+                communities_section_list = [["id", "content"]]
+                for i, c in enumerate(use_communities):
+                    communities_section_list.append([i, c["report_string"]])
+                communities_context = list_to_quoted_csv_string(communities_section_list)
+                logger.info(f"BASIC_QUERY_LOCAL: Formatted {len(use_communities)} communities into context.")
+            else:
+                logger.warning(f"BASIC_QUERY_LOCAL: 'use_community' is True, but 'use_communities' was not populated (e.g., 'use_communiy_info' might be False or no communities were retrieved). Setting communities_context to None or empty.")
+                communities_context = None  # Or: list_to_quoted_csv_string([["id", "content"]])
 
         text_units_section_list = [["id", "content"]]
         for i, t in enumerate(use_text_units):

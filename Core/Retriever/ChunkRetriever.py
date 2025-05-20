@@ -17,6 +17,9 @@ class ChunkRetriever(BaseRetriever):
 
     @register_retriever_method(type="chunk", method_name="entity_occurrence")
     async def _find_relevant_chunks_from_entity_occurrence(self, node_datas: list[dict]):
+        logger.info(f"CHUNK_ENTITY_OCCURRENCE: Received {len(node_datas) if node_datas else 0} node_datas for chunk retrieval.")
+        if node_datas:
+            logger.debug(f"CHUNK_ENTITY_OCCURRENCE: First input node_data: {node_datas[0]}")
 
         if len(node_datas) == 0:
             return None
@@ -63,7 +66,6 @@ class ChunkRetriever(BaseRetriever):
         all_text_units = [
             {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
         ]
-        # for node_data in node_datas:
         all_text_units = sorted(
             all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
         )
@@ -74,6 +76,9 @@ class ChunkRetriever(BaseRetriever):
         )
         all_text_units = [t["data"] for t in all_text_units]
 
+        logger.info(f"CHUNK_ENTITY_OCCURRENCE: Returning {len(all_text_units) if all_text_units else 0} text units.")
+        if all_text_units:
+            logger.debug(f"CHUNK_ENTITY_OCCURRENCE: First returned text unit (first 50 chars): {all_text_units[0][:50] if all_text_units else 'N/A'}...")
         return all_text_units
 
     @register_retriever_method(type="chunk", method_name="from_relation")

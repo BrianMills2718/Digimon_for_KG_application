@@ -33,7 +33,166 @@ class EntityRetriever(BaseRetriever):
         return nodes, ppr_node_matrix
 
     @register_retriever_method(type="entity", method_name="vdb")
+    @register_retriever_method(type="entity", method_name="vdb")
     async def _find_relevant_entities_vdb(self, seed, tree_node=False, top_k=None):
+        logger.info(f"ENTITY_VDB_RETRIEVAL: Querying VDB with seed: '{seed}' for top_k: {top_k}")
+        try:
+            if top_k is None:
+                top_k = self.config.top_k
+
+            raw_vdb_results = await self.entities_vdb.retrieval_nodes(
+                query=seed,
+                top_k=top_k,
+                graph=self.graph,
+                tree_node=tree_node,
+                need_score=True
+            )
+
+            # Detailed logging for VDB results
+            if isinstance(raw_vdb_results, tuple) and len(raw_vdb_results) == 2:
+                raw_nodes, raw_scores = raw_vdb_results
+                logger.info(f"ENTITY_VDB_RETRIEVAL: Raw VDB nodes count: {len(raw_nodes) if raw_nodes else 0}")
+                if raw_nodes:
+                    logger.debug(f"ENTITY_VDB_RETRIEVAL: First raw VDB node (with score if available): {raw_nodes[0]}, Score: {raw_scores[0] if raw_scores else 'N/A'}")
+            else:
+                logger.info(f"ENTITY_VDB_RETRIEVAL: Raw VDB nodes count: {len(raw_vdb_results) if raw_vdb_results else 0}")
+                if raw_vdb_results:
+                    logger.debug(f"ENTITY_VDB_RETRIEVAL: First raw VDB node: {raw_vdb_results[0]}")
+
+            if isinstance(raw_vdb_results, tuple) and len(raw_vdb_results) == 2:
+                retrieved_nodes_data, scores = raw_vdb_results
+            else:
+                retrieved_nodes_data = raw_vdb_results
+                scores = None
+
+            logger.info(f"ENTITY_VDB_RETRIEVAL: Processed node_datas count: {len(retrieved_nodes_data) if retrieved_nodes_data else 0}")
+            if retrieved_nodes_data:
+                logger.debug(f"ENTITY_VDB_RETRIEVAL: First processed node_data: {retrieved_nodes_data[0]}")
+            else:
+                logger.warning("ENTITY_VDB_RETRIEVAL: No processed node_datas to return.")
+                logger.warning("ENTITY_VDB_RETRIEVAL: No processed node_datas to return.")
+
+            nodes_with_metadata = []
+            for i, node_data_item in enumerate(retrieved_nodes_data):
+                if node_data_item is None:
+                    logger.warning(f"Encountered a None node_data_item at index {i}. Skipping.")
+                    continue
+
+                if tree_node:
+                    node_id = node_data_item.get('id', node_data_item.get('index', i))
+                    node_layer = node_data_item.get('layer', 0)
+                    node_text = node_data_item.get('text', '')
+
+                    if node_id is None:
+                        logger.warning(f"Tree node item at index {i} is missing 'id' or 'index'. Using loop index. Item: {node_data_item}")
+                        node_id = i
+                else:
+                    node_id = node_data_item.get(self.graph.entity_metakey, f"missing_id_{i}")
+                    node_layer = node_data_item.get("layer", 0) # Assuming 'layer' might be a direct attribute or in metadata
+                    node_text = node_data_item.get("content", "")
+
+                vdb_score = scores[i] if scores and scores[i] is not None else "N/A"
+                
+                current_node_data = {
+                    "text": node_text,
+                    "id": node_id,
+                    "entity_name": node_id,  # Ensure this is present for downstream consumers
+                    "layer": node_layer,
+                    "vdb_score": vdb_score,
+                    "source_id": node_data_item.get("source_id", "Unknown"),
+                    "description": node_data_item.get("description", ""),
+                    "entity_type": node_data_item.get("entity_type", "")
+                }
+                logger.debug(f"ENTITY_VDB_CONSTRUCT: Constructed current_node_data: {current_node_data}")
+                if "entity_name" not in current_node_data:
+                    logger.warning(f"ENTITY_VDB_CONSTRUCT: 'entity_name' key MISSING in current_node_data for VDB metadata: {getattr(node_data_item, 'metadata', node_data_item) if node_data_item else 'N/A'}")
+                elif not current_node_data["entity_name"]:
+                    logger.warning(f"ENTITY_VDB_CONSTRUCT: 'entity_name' IS EMPTY/None in current_node_data for VDB metadata: {getattr(node_data_item, 'metadata', node_data_item) if node_data_item else 'N/A'}. Full dict: {current_node_data}")
+                # --- BEGIN: Attach clusters from community_node_map if available ---
+                if hasattr(self, 'community') and self.community and hasattr(self.community, 'community_node_map') and self.community.community_node_map:
+                    try:
+                        entity_cluster_info = await self.community.community_node_map.get_by_id(node_id)  # node_id is the entity_name
+                        if entity_cluster_info:
+                            current_node_data["clusters"] = entity_cluster_info  # Should be a list of dicts
+                            logger.debug(f"ENTITY_VDB_CLUSTERS: Attached clusters for entity '{node_id}': {entity_cluster_info}")
+                        else:
+                            logger.debug(f"ENTITY_VDB_CLUSTERS: No cluster info found in community_node_map for entity '{node_id}'.")
+                    except Exception as e:
+                        logger.warning(f"ENTITY_VDB_CLUSTERS: Exception while fetching clusters for entity '{node_id}': {e}")
+                else:
+                    logger.debug(f"ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity '{node_id}'.")
+                # --- END: Attach clusters ---
+                # --- DIAGNOSTIC LOGGING ---
+                logger.debug(f"ENTITY_VDB_DIAG: About to check for community and community_node_map for entity '{node_id}'")
+                # Log type and repr for first entity only
+                if i == 0:
+                    logger.debug(f"ENTITY_VDB_DIAG: self.community type: {type(getattr(self, 'community', None))}, repr: {repr(getattr(self, 'community', None))}")
+                    cm_map = getattr(getattr(self, 'community', None), 'community_node_map', None)
+                    logger.debug(f"ENTITY_VDB_DIAG: self.community.community_node_map type: {type(cm_map)}, repr: {repr(cm_map)}")
+                # --- BEGIN: Attach clusters from community_node_map if available ---
+                if hasattr(self, 'community') and self.community and hasattr(self.community, 'community_node_map') and self.community.community_node_map:
+                    try:
+                        entity_cluster_info = await self.community.community_node_map.get_by_id(node_id)  # node_id is the entity_name
+                        if entity_cluster_info:
+                            current_node_data["clusters"] = entity_cluster_info  # Should be a list of dicts
+                            logger.debug(f"ENTITY_VDB_CLUSTERS: Attached clusters for entity '{node_id}': {entity_cluster_info}")
+                        else:
+                            logger.debug(f"ENTITY_VDB_CLUSTERS: No cluster info found in community_node_map for entity '{node_id}'.")
+                    except Exception as e:
+                        logger.warning(f"ENTITY_VDB_CLUSTERS: Exception while fetching clusters for entity '{node_id}': {e}")
+                else:
+                    logger.debug(f"ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity '{node_id}'.")
+                # --- END: Attach clusters ---
+                logger.debug(f"ENTITY_VDB_DIAG: Finished cluster attachment attempt for entity '{node_id}'")
+                # Log the state of current_node_data AFTER attempting to add clusters
+                if "clusters" in current_node_data:
+                    logger.debug(f"ENTITY_VDB_POST_CLUSTER_ATTACH: Entity '{current_node_data.get('entity_name', node_id)}' HAS 'clusters' attribute: {current_node_data['clusters']}")
+                else:
+                    logger.warning(f"ENTITY_VDB_POST_CLUSTER_ATTACH: Entity '{current_node_data.get('entity_name', node_id)}' still MISSING 'clusters' attribute after attachment attempt.")
+                nodes_with_metadata.append(current_node_data)
+
+            logger.debug(f"ENTITY_VDB_FINAL_LIST: Final list of processed_node_datas before assignment (first item if any): {nodes_with_metadata[0] if nodes_with_metadata else 'Empty list'}")
+            for idx, p_node in enumerate(nodes_with_metadata):
+                if not isinstance(p_node, dict) or "entity_name" not in p_node:
+                    logger.error(f"ENTITY_VDB_FINAL_LIST_CHECK: Item at index {idx} is problematic: {p_node}")
+
+            # Add the 'rank' key based on node degree
+            if nodes_with_metadata:
+                entity_names_for_degree = [node.get("entity_name") for node in nodes_with_metadata if node.get("entity_name")]
+                if entity_names_for_degree:
+                    try:
+                        node_degrees = await asyncio.gather(
+                            *[self.graph.node_degree(name) for name in entity_names_for_degree]
+                        )
+                        name_to_degree_map = dict(zip(entity_names_for_degree, node_degrees))
+                        for node_dict in nodes_with_metadata:
+                            entity_name = node_dict.get("entity_name")
+                            if entity_name in name_to_degree_map:
+                                node_dict["rank"] = name_to_degree_map[entity_name]
+                            else:
+                                node_dict["rank"] = 0
+                                logger.warning(f"ENTITY_VDB_RANKING: Could not determine rank for node: {node_dict.get('id', 'Unknown ID')}, entity_name: {entity_name}")
+                        logger.info(f"ENTITY_VDB_RANKING: Added 'rank' (node degree) to {len(nodes_with_metadata)} entities.")
+                        if nodes_with_metadata:
+                            logger.debug(f"ENTITY_VDB_RANKING: First entity after adding rank: {nodes_with_metadata[0]}")
+                    except Exception as e:
+                        logger.error(f"ENTITY_VDB_RANKING: Error calculating node degrees or adding rank: {e}")
+                        for node_dict in nodes_with_metadata:
+                            node_dict["rank"] = 0
+                else:
+                    logger.warning("ENTITY_VDB_RANKING: No valid entity names found in processed_node_datas to calculate degrees.")
+                    for node_dict in nodes_with_metadata:
+                        node_dict["rank"] = 0
+            else:
+                logger.info("ENTITY_VDB_RANKING: No processed_node_datas to add rank to.")
+
+            logger.info(f"Processed {len(nodes_with_metadata)} nodes with metadata for RAPTOR.")
+            return nodes_with_metadata
+
+        except Exception as e:
+            logger.exception(f"Failed to find relevant entities_vdb: {e}")
+            return None
+
         try:
             if top_k is None:
                 top_k = self.config.top_k
@@ -45,11 +204,49 @@ class EntityRetriever(BaseRetriever):
             if not all([n is not None for n in node_datas]):
                 logger.warning("Some nodes are missing, maybe the storage is damaged")
             if tree_node:
-                try:
-                    node_datas = [node.text for node in node_datas]
-                    return node_datas
-                except:
-                    logger.warning("Only tree graph support this! Please check the `graph_type' item in your config file")
+                # node_datas is already a list of dicts [{id, text, layer}, ...] or tuple (list_of_dicts, scores)
+                retrieved_data = node_datas
+                if not retrieved_data:
+                    logger.warning(f"No tree_node data returned from VDB for seed: {seed}")
+                    return []
+                if not retrieved_data: # Check if retrieved_data itself is None or empty
+                    logger.warning(f"No data returned from self.entities_vdb.retrieval_nodes for seed: {seed}")
+                    return []
+                
+                if isinstance(retrieved_data, tuple) and len(retrieved_data) == 2:
+                    nodes_with_metadata, scores = retrieved_data
+                    logger.info(f"Scores retrieved from VDB (tuple): {scores}") # LOG THE SCORES
+                else: 
+                    # This path implies retrieval_nodes did not return scores as a tuple
+                    nodes_with_metadata = retrieved_data # Assuming it's just the list of nodes
+                    scores = [None] * len(nodes_with_metadata) if nodes_with_metadata else []
+                    logger.warning(f"VDB did not return scores as a tuple. Scores set to: {scores}") # LOG THE SCORES
+                
+                if not nodes_with_metadata: # Check after potential unpacking
+                    logger.warning(f"Empty node_with_metadata list after VDB retrieval for seed: {seed}")
+                    return []
+
+                # Ensure nodes_with_metadata is a list of mutable dicts
+                processed_nodes_with_metadata = []
+                for i, node_data_item in enumerate(nodes_with_metadata):
+                    # If node_data_item is not a dict (e.g., a TextNode object still), convert or handle
+                    if not isinstance(node_data_item, dict):
+                        logger.warning(f"Node data item is not a dict: {type(node_data_item)}. Attempting to use as is or convert if known type.")
+                        current_node_meta = dict(node_data_item) if hasattr(node_data_item, '__dict__') else {}
+                        if not current_node_meta and isinstance(node_data_item, dict): # if it was already a dict
+                            current_node_meta = node_data_item
+                    else:
+                        current_node_meta = dict(node_data_item) # Make a mutable copy if it's already a dict
+
+                    if i < len(scores) and scores[i] is not None: 
+                        current_node_meta['vdb_score'] = scores[i]
+                    else:
+                        current_node_meta['vdb_score'] = "N/A" # Explicitly set to N/A if no score
+                    processed_nodes_with_metadata.append(current_node_meta)
+                
+                logger.info(f"Retrieved {len(processed_nodes_with_metadata)} tree nodes with metadata for RAPTOR.")
+                return processed_nodes_with_metadata
+
             node_degrees = await asyncio.gather(
                 *[self.graph.node_degree(node["entity_name"]) for node in node_datas]
             )

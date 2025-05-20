@@ -5,11 +5,15 @@ from Core.Storage.BaseKVStorage import (
 )
 
 
+from dataclasses import field
+
 class JsonKVStorage(BaseKVStorage):
+    name: str = field(default=None, init=False, repr=False)
+
     def __init__(self, namespace, name):
         super().__init__()
         self._data = {}
-        self.name: str = "{name}.json".format(name=name)
+        self.name = f"{name}.json"
         self.namespace = namespace
 
     async def all_keys(self) -> list[str]:

@@ -126,10 +126,25 @@ class TreeGraphStorage(BaseGraphStorage):
         return await self._persist(force)
 
     async def get_nodes_data(self):
-        return [{"content": node.text, "index": node.index} for node in self.tree.all_nodes]
+        node_id_to_layer = {}
+        if self.tree and self.tree.layer_to_nodes:
+            for layer_idx, nodes_in_layer in enumerate(self.tree.layer_to_nodes):
+                for node in nodes_in_layer:
+                    if node and hasattr(node, 'index'):
+                        node_id_to_layer[node.index] = layer_idx
+        results = []
+        if self.tree and self.tree.all_nodes:
+            for node in self.tree.all_nodes:
+                if node and hasattr(node, 'index') and hasattr(node, 'text'):
+                    results.append({
+                        "content": node.text,
+                        "index": node.index,
+                        "layer": node_id_to_layer.get(node.index, -1)
+                    })
+        return results
 
     async def get_node_metadata(self):
-        return ["index"]
+        return ["index", "layer"] # Add "layer"
 
     def get_node_num(self):
         return self.num_nodes

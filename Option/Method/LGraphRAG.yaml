@@ -57,9 +57,12 @@ retriever:
     damping: 0.1
     top_k: 5
     max_token_for_local_context: 4800  # 12000 * 0.4
+    local_max_token_for_community_report: 3200
+    local_community_single_one: False
     
 query: 
     query_type: qa
+    enable_local: True
     only_need_context: False
     augmentation_ppr: True
     response_type: Multiple Paragraphs
@@ -75,7 +78,10 @@ query:
     entities_max_tokens: 2000
     relationships_max_tokens: 2000
 
-
+    use_community: True
+    use_community_info: True
+    use_keywords: False
+    
     local_max_token_for_community_report: 3200  # 12000 * 0.27
     local_community_single_one: False
     # global search
@@ -85,5 +91,3 @@ query:
     global_special_community_map_llm_kwargs: {"response_format": {"type": "json_object"}}
     # For IR-COT
     max_ir_steps: 2
-    
- 

@@ -10,23 +10,33 @@ class BaseIndex(ABC):
         self._index = None
 
     async def build_index(self, elements, meta_data, force=False):
-        logger.info("Starting insert elements of the given graph into vector database")
- 
-        from_load = False
-        if self.exist_index() and not force:
-            logger.info("Loading index from the file {}".format(self.config.persist_path))
-            from_load = await self._load_index()
-        else:
+        logger.info(f"Starting build_index for VDB at {self.config.persist_path}. Force flag is: {force}")
+
+        should_load_existing = self.exist_index() and not force
+        index_loaded_successfully = False
+
+        if should_load_existing:
+            logger.info(f"Attempting to load existing index from: {self.config.persist_path}")
+            index_loaded_successfully = await self._load_index()
+            if index_loaded_successfully:
+                logger.info(f"Successfully loaded existing index from: {self.config.persist_path}")
+            else:
+                logger.warning(f"Failed to load existing index from: {self.config.persist_path}. Will proceed to build a new one.")
         
-            self._index = self._get_index()
-        if not from_load:
-            # Note: When you successfully load the index from a file, you don't need to rebuild it.
-            await self.clean_index()
-            logger.info("Building index for input elements")
-            await self._update_index(elements, meta_data)
-            self._storage_index()
-            logger.info("Index successfully built and stored.")
-        logger.info("✅ Finished starting insert entities of the given graph into vector database")
+        if not index_loaded_successfully: # This covers: (not exist_index) OR (force=True) OR (load_failed)
+            if self.exist_index(): 
+                logger.info(f"Deleting existing index at {self.config.persist_path} before rebuilding (force={force}, load_failed={not index_loaded_successfully and should_load_existing}).")
+                await self.clean_index() 
+
+            logger.info(f"Initializing new index structure for VDB at {self.config.persist_path}.")
+            self._index = self._get_index() 
+            
+            logger.info(f"Building and persisting new index with {len(elements)} elements using metadata keys: {meta_data}.") # Added metadata keys logging
+            await self._update_index(elements, meta_data) 
+            self._storage_index() 
+            logger.info("New index successfully built and stored.")
+        
+        logger.info("✅ Finished VDB index setup process.")
 
     def exist_index(self):
         return os.path.exists(self.config.persist_path)
