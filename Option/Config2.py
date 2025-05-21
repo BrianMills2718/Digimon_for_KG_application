@@ -8,7 +8,9 @@ from pydantic import BaseModel
 from Config import *
 from Core.Common.Constants import CONFIG_ROOT, GRAPHRAG_ROOT
 from Core.Utils.YamlModel import YamlModel
-
+import json
+from pathlib import Path
+# from Core.Common.Logger import logger  # Moved to inside parse to avoid circular import
 
 class WorkingParams(BaseModel):
     """Working parameters"""
@@ -59,6 +61,57 @@ class Config(WorkingParams, YamlModel):
     index_name: str = "nbits_2"
     similarity_max: float = 1.0
     # Graph Augmentation
+
+    @classmethod
+    def parse(cls, options_yaml_path: Path, dataset_name: str = "DefaultDataset", exp_name: str = "DefaultExp") -> 'Config':
+        from Core.Common.Logger import logger  # Import here to avoid circular import
+        if not options_yaml_path.exists():
+            logger.error(f"Configuration file not found: {options_yaml_path}")
+            raise FileNotFoundError(f"Configuration file not found: {options_yaml_path}")
+
+        import yaml
+        with open(options_yaml_path, 'r') as f:
+            options = yaml.safe_load(f)
+
+        llm_config = LLMConfig(**options.get("llm_config", {}))
+        emb_config = EmbConfig(**options.get("emb_config", {}))
+        chunk_config = ChunkConfig(**options.get("chunk_config", {}))
+        graph_config = GraphConfig(**options.get("graph_config", {}))
+        retriever_config = RetrieverConfig(**options.get("retriever_config", {}))
+        query_config = QueryConfig(**options.get("query_config", {}))
+
+        # --- Load Custom Ontology ---
+        if getattr(graph_config, 'custom_ontology_path', None):
+            ontology_file = Path(graph_config.custom_ontology_path)
+            if ontology_file.exists() and ontology_file.is_file():
+                try:
+                    with open(ontology_file, 'r') as f_ont:
+                        graph_config.loaded_custom_ontology = json.load(f_ont)
+                    logger.info(f"Successfully loaded custom ontology from: {ontology_file}")
+                except json.JSONDecodeError as e:
+                    logger.error(f"Error decoding JSON from custom ontology file {ontology_file}: {e}")
+                    graph_config.loaded_custom_ontology = None
+                except Exception as e:
+                    logger.error(f"Failed to load custom ontology file {ontology_file}: {e}")
+                    graph_config.loaded_custom_ontology = None
+            else:
+                logger.warning(f"Custom ontology file not found at: {ontology_file}. Proceeding without custom ontology.")
+                graph_config.loaded_custom_ontology = None
+        else:
+            logger.info("No custom ontology path specified. Proceeding without custom ontology.")
+            graph_config.loaded_custom_ontology = None
+        # --- End Load Custom Ontology ---
+
+        return cls(
+            dataset_name=dataset_name,
+            exp_name=exp_name,
+            llm=llm_config,
+            embedding=emb_config,
+            chunk=chunk_config,
+            graph=graph_config,
+            retriever=retriever_config,
+            raw_yaml_path=str(options_yaml_path)
+        )
     enable_graph_augmentation: bool = True
 
     # Query Config 

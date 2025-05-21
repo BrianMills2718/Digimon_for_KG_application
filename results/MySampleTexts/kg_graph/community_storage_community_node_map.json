@@ -1,62 +1,98 @@
 {
-  "articles of confederation": [
+  "british soldiers": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "second continental congress": [
+  "native americans": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "continental army": [
+  "white colonists": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "george washington": [
-    {
-      "level": 0,
-      "cluster": "0"
-    }
-  ],
-  "charles cornwallis": [
+  "appalachian mountains": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "siege of yorktown": [
+  "royal proclamation of 1763": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "marquis de lafayette": [
+  "colonies": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "declaration of independence": [
+  "british parliament": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "land speculators": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "english empire": [
     {
       "level": 0,
       "cluster": "2"
     }
   ],
-  "lee resolution": [
+  "thirteen colonies": [
     {
       "level": 0,
       "cluster": "2"
     }
   ],
-  "thomas jefferson": [
+  "grenville ministry": [
     {
       "level": 0,
       "cluster": "2"
+    }
+  ],
+  "navigation acts": [
+    {
+      "level": 0,
+      "cluster": "2"
+    }
+  ],
+  "british government": [
+    {
+      "level": 0,
+      "cluster": "3"
+    }
+  ],
+  "french and indian war": [
+    {
+      "level": 0,
+      "cluster": "3"
+    }
+  ],
+  "great britain": [
+    {
+      "level": 0,
+      "cluster": "3"
+    }
+  ],
+  "mississippi river": [
+    {
+      "level": 0,
+      "cluster": "3"
     }
   ]
 }

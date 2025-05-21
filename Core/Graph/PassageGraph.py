@@ -147,20 +147,46 @@ class PassageGraph(BaseGraph):
                 merge_wikis[k].extend(v)
 
         for chunk_pair in chunk_list:
-          
-            node_data = Entity(entity_name=chunk_pair[0], description=chunk_pair[1].content, source_id=chunk_pair[0])
+            custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+            entity_attributes = {}
+            final_entity_type = ''
+            if custom_ontology and custom_ontology.get('entities'):
+                for entity_def in custom_ontology['entities']:
+                    if entity_def.get('name') == chunk_pair[0]:
+                        final_entity_type = entity_def['name']
+                        # Populate defined custom attributes if present
+                        if 'properties' in entity_def and hasattr(chunk_pair[1], 'attributes'):
+                            for prop_def in entity_def['properties']:
+                                prop_name = prop_def.get('name')
+                                if hasattr(chunk_pair[1], prop_name):
+                                    entity_attributes[prop_name] = getattr(chunk_pair[1], prop_name)
+                        break
+            node_data = Entity(entity_name=chunk_pair[0], entity_type=final_entity_type, description=chunk_pair[1].content, source_id=chunk_pair[0], attributes=entity_attributes)
             maybe_nodes[chunk_pair[0]].append(node_data)
-        # Merge edge information
 
         for wiki_key, chunks in tqdm(merge_wikis.items(), total=len(merge_wikis)):
             chunks = set(chunks)
             # Use itertools.combinations to generate all possible pairs of chunk-keys
             for chunk1, chunk2 in combinations(chunks, 2):
                 src_id, tgt_id = tuple(sorted((chunk1, chunk2)))
-                if (src_id, tgt_id) in edge_exist: continue
+                if (src_id, tgt_id) in edge_exist:
+                    continue
                 edge_exist.add((src_id, tgt_id))
-                edge_data = Relationship(src_id=src_id, tgt_id=tgt_id, relation_name=wiki_key,
-                                         source_id=GRAPH_FIELD_SEP.join([chunk1, chunk2]))
+                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                relation_attributes = {}
+                final_relation_name = wiki_key
+                if custom_ontology and custom_ontology.get('relations'):
+                    for relation_def in custom_ontology['relations']:
+                        if relation_def.get('name') == wiki_key:
+                            final_relation_name = relation_def['name']
+                            # Populate defined custom attributes if present
+                            if 'properties' in relation_def:
+                                for prop_def in relation_def['properties']:
+                                    prop_name = prop_def.get('name')
+                                    # If property present in chunk1/chunk2, add (not likely in this context, but placeholder)
+                            break
+                edge_data = Relationship(src_id=src_id, tgt_id=tgt_id, relation_name=final_relation_name,
+                                         source_id=GRAPH_FIELD_SEP.join([chunk1, chunk2]), attributes=relation_attributes)
                 maybe_edges[(src_id, tgt_id)].append(edge_data)
 
         # Asynchronously merge and upsert nodes

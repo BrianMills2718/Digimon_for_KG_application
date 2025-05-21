@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict, field
-
+from typing import Dict, Any
 
 @dataclass
 class Entity:
@@ -7,12 +7,11 @@ class Entity:
     source_id: str  # Unique identifier of the source from which this node is derived
     entity_type: str = field(default="")  # Entity type
     description: str = field(default="")  # The description of this entity
-
+    attributes: Dict[str, Any] = field(default_factory=dict)  # New field for generic attributes
 
     @property
     def as_dict(self):
         return asdict(self)
-
 
 @dataclass
 class Relationship:
@@ -39,8 +38,7 @@ class Relationship:
     description: str = field(default="")  # Description of the edge, used in GraphRAG and LightRAG
     keywords: str = field(default="")  # Keywords associated with the edge, used in LightRAG
     rank: int = field(default=0)  # Rank of the edge, used in LightRAG
-
-
+    attributes: Dict[str, Any] = field(default_factory=dict)  # New field for generic attributes
 
     @property
     def as_dict(self):

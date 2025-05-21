@@ -30,10 +30,7 @@ class RKGraph(BaseGraph):
         super().__init__(config, llm, encoder)
         self._graph = NetworkXStorage()
 
-    @classmethod
-    async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> Union[
-        Entity, None]:
-
+    async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> 'Entity | None':
         if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
             return None
 
@@ -41,13 +38,31 @@ class RKGraph(BaseGraph):
         if not entity_name.strip():
             return None
 
+        custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+        entity_attributes = {}
+        final_entity_type = clean_str(record_attributes[2])
+        if custom_ontology and custom_ontology.get('entities'):
+            for entity_def in custom_ontology['entities']:
+                if entity_def.get('name') == final_entity_type:
+                    final_entity_type = entity_def['name']
+                    if 'properties' in entity_def:
+                        for prop_def in entity_def['properties']:
+                            prop_name = prop_def.get('name')
+                            # If property is in record_attributes, add to attributes
+                            if prop_name in record_attributes:
+                                idx = record_attributes.index(prop_name)
+                                if idx + 1 < len(record_attributes):
+                                    entity_attributes[prop_name] = record_attributes[idx + 1]
+                                else:
+                                    entity_attributes[prop_name] = None
+                    break
         entity = Entity(
             entity_name=entity_name,
-            entity_type=clean_str(record_attributes[2]),
+            entity_type=final_entity_type,
             description=clean_str(record_attributes[3]),
-            source_id=chunk_key
+            source_id=chunk_key,
+            attributes=entity_attributes
         )
-
         return entity
 
     async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]):
@@ -133,18 +148,36 @@ class RKGraph(BaseGraph):
 
         return dict(maybe_nodes), dict(maybe_edges)
 
-    async def _handle_single_relationship_extraction(self, record_attributes: list[str], chunk_key: str) -> Union[
-        Relationship, None]:
+    async def _handle_single_relationship_extraction(self, record_attributes: list[str], chunk_key: str) -> 'Relationship | None':
         if len(record_attributes) < 5 or record_attributes[0] != '"relationship"':
             return None
 
+        custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+        relation_attributes = {}
+        final_relation_name = clean_str(record_attributes[0])
+        if custom_ontology and custom_ontology.get('relations'):
+            for relation_def in custom_ontology['relations']:
+                if relation_def.get('name') == final_relation_name:
+                    final_relation_name = relation_def['name']
+                    if 'properties' in relation_def:
+                        for prop_def in relation_def['properties']:
+                            prop_name = prop_def.get('name')
+                            if prop_name in record_attributes:
+                                idx = record_attributes.index(prop_name)
+                                if idx + 1 < len(record_attributes):
+                                    relation_attributes[prop_name] = record_attributes[idx + 1]
+                                else:
+                                    relation_attributes[prop_name] = None
+                    break
         return Relationship(
             src_id=clean_str(record_attributes[1]),
             tgt_id=clean_str(record_attributes[2]),
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
-            keywords=clean_str(record_attributes[4]) if self.config.enable_edge_keywords else ""
+            keywords=clean_str(record_attributes[4]) if self.config.enable_edge_keywords else "",
+            relation_name=final_relation_name,
+            attributes=relation_attributes
         )
 
     @classmethod

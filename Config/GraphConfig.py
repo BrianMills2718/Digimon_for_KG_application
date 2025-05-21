@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from Core.Utils.YamlModel import YamlModel
-
 
 class GraphConfig(YamlModel):
     graph_type: str = "er_graph"
@@ -45,6 +44,10 @@ class GraphConfig(YamlModel):
     tol: float = 1e-4
     max_iter: int = 300
     size_of_clusters: int = 10
+
+    # For Custom Ontology
+    custom_ontology_path: Optional[str] = "Config/custom_ontology.json"  # Default path for the custom ontology file
+    loaded_custom_ontology: Optional[Dict[str, Any]] = None  # Populated at runtime after loading
 
     # For graph augmentation
     similarity_threshold: float = 0.8

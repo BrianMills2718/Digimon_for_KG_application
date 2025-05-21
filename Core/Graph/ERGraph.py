@@ -102,7 +102,19 @@ class ERGraph(BaseGraph):
             entity_name = clean_str(entity_name)
             entity_type = clean_str(entity_type)
             if entity_name not in maybe_nodes:
-                entity = Entity(entity_name=entity_name, entity_type=entity_type, source_id=chunk_key)
+                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                entity_attributes = {}
+                final_entity_type = entity_type
+                if custom_ontology and custom_ontology.get('entities'):
+                    for entity_def in custom_ontology['entities']:
+                        if entity_def.get('name') == entity_type:
+                            final_entity_type = entity_def['name']
+                            if 'properties' in entity_def:
+                                for prop_def in entity_def['properties']:
+                                    prop_name = prop_def.get('name')
+                                    # No additional properties in this context, but placeholder
+                            break
+                entity = Entity(entity_name=entity_name, entity_type=final_entity_type, source_id=chunk_key, attributes=entity_attributes)
                 maybe_nodes[entity_name].append(entity)
 
         # Extract relationships
@@ -113,9 +125,22 @@ class ERGraph(BaseGraph):
             tgt_id = clean_str(tgt_id)
             rel_type = clean_str(rel_type)
             if src_id in maybe_nodes and tgt_id in maybe_nodes:
+                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                relation_attributes = {}
+                final_relation_name = clean_str(rel_type)
+                if custom_ontology and custom_ontology.get('relations'):
+                    for relation_def in custom_ontology['relations']:
+                        if relation_def.get('name') == rel_type:
+                            final_relation_name = relation_def['name']
+                            if 'properties' in relation_def:
+                                for prop_def in relation_def['properties']:
+                                    prop_name = prop_def.get('name')
+                                    # No additional properties in this context, but placeholder
+                            break
                 relationship = Relationship(
                     src_id=clean_str(src_id), tgt_id=clean_str(tgt_id), source_id=chunk_key,
-                    relation_name=clean_str(rel_type)
+                    relation_name=final_relation_name,
+                    attributes=relation_attributes
                 )
                 maybe_edges[(src_id, tgt_id)].append(relationship)
 
@@ -142,7 +167,24 @@ class ERGraph(BaseGraph):
             if entity_name == '':
                 logger.warning(f"entity name is not valid, entity is: {_entity}, so skip it")
                 continue
-            entity = Entity(entity_name=entity_name, source_id=chunk_key)
+            custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+            entity_attributes = {}
+            final_entity_type = ''
+            if custom_ontology and custom_ontology.get('entities'):
+                # Try to match type if possible
+                for entity_def in custom_ontology['entities']:
+                    if entity_def.get('name') == entity_name or (isinstance(_entity, dict) and entity_def.get('name') == _entity.get('type', '')):
+                        final_entity_type = entity_def['name']
+                        # Populate defined custom attributes if present
+                        if 'properties' in entity_def and isinstance(_entity, dict):
+                            for prop_def in entity_def['properties']:
+                                prop_name = prop_def.get('name')
+                                if prop_name in _entity:
+                                    entity_attributes[prop_name] = _entity[prop_name]
+                        break
+            if not final_entity_type:
+                final_entity_type = _entity.get('type', '') if isinstance(_entity, dict) and 'type' in _entity else ''
+            entity = Entity(entity_name=entity_name, entity_type=final_entity_type, source_id=chunk_key, attributes=entity_attributes)
             maybe_nodes[entity_name].append(entity)
 
         for triple in triples:
@@ -158,11 +200,25 @@ class ERGraph(BaseGraph):
                     f"triple is not valid, since we have empty entity or relation, triple is: {triple}, so skip it")
                 continue
             if isinstance(src_entity, str) and isinstance(tgt_entity, str) and isinstance(relation_name, str):
+                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                relation_attributes = {}
+                final_relation_name = relation_name
+                if custom_ontology and custom_ontology.get('relations'):
+                    for relation_def in custom_ontology['relations']:
+                        if relation_def.get('name') == relation_name:
+                            final_relation_name = relation_def['name']
+                            # Populate defined custom attributes if present
+                            if 'properties' in relation_def and isinstance(triple, dict):
+                                for prop_def in relation_def['properties']:
+                                    prop_name = prop_def.get('name')
+                                    if prop_name in triple:
+                                        relation_attributes[prop_name] = triple[prop_name]
+                            break
                 relationship = Relationship(src_id=src_entity,
                                             tgt_id=tgt_entity,
                                             weight=1.0, source_id=chunk_key,
-                                            relation_name=relation_name)
-
+                                            relation_name=final_relation_name,
+                                            attributes=relation_attributes)
                 maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)
