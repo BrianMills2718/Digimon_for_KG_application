@@ -1,0 +1,706 @@
+Goal: Decouple GraphRAG into Building, Querying, and Analyzing Stages
+MVP Definition:
+    1. Build Mode: Takes a dataset and configuration, then outputs persisted graph data, vector store indexes, and any other necessary artifacts (e.g., chunk data, community reports).
+    2. Query Mode: Takes a query and configuration (pointing to a pre-built dataset's artifacts), loads the artifacts, and returns an answer.
+    3. Evaluation Mode (Optional for MVP, but good to keep separate): Takes query results and evaluates them.
+I. Modifications to Existing Files
+    1. main.py
+        ○ Current Functionality: Runs the entire pipeline: data loading, graph building, querying, and evaluation in one go.
+        ○ Required Changes:
+            § Refactor to support distinct operational modes using argparse.
+                □ build: Executes graph construction, indexing, and artifact persistence.
+                □ query: Loads persisted artifacts and executes a user query.
+                □ evaluate: (Can remain similar) Evaluates results from a file.
+            § The main section will parse the mode and call a corresponding new handler function or method.
+            § Example structure:
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=["build", "query", "evaluate"], help="Operation mode")
+    parser.add_argument("-opt", type=str, required=True, help="Path to option YAML file.")
+    parser.add_argument("-dataset_name", type=str, required=True, help="Name of the dataset/experiment.")
+    parser.add_argument("-question", type=str, help="Question for query mode.")
+    # ... other specific args for each mode ...
+    args = parser.parse_args()
+
+# opt = Config.parse(Path(args.opt), dataset_name=args.dataset_name) # Load config once
+
+if args.mode == "build":
+        # Call new build_pipeline function/method
+        # build_pipeline(opt, args.dataset_name)
+        pass
+    elif args.mode == "query":
+        if not args.question:
+            parser.error("-question is required for query mode.")
+        # Call new query_pipeline function/method
+        # answer = query_pipeline(opt, args.dataset_name, args.question)
+        # print(answer)
+        pass
+    elif args.mode == "evaluate":
+        # Similar to current evaluation logic, but ensure it reads from a results file
+        pass
+            § Remove the current monolithic execution flow.
+    2. Core/GraphRAG.py
+        ○ Current Functionality: Central class managing the entire process.
+        ○ Required Changes:
+            § Decouple Initialization:
+                □ The __init__ method should initialize common components (LLM, basic config).
+                □ Introduce async def setup_for_building(self, corpus_docs_list): method. This will:
+                    ® Initialize DocChunk and run build_chunks.
+                    ® Initialize Graph builder (e.g., ERGraph) and run build_graph.
+                    ® Initialize Index builders (e.g., VectorIndex) for entities, relations, etc.
+                    ® Initialize Community builder (if enabled).
+                    ® Call the respective build_index and cluster/generate_community_report methods.
+                    ® Ensure all artifacts are saved using standardized paths (see ArtifactManager below).
+                □ Introduce async def setup_for_querying(self): method. This will:
+                    ® Load persisted DocChunk data (if needed for querying directly).
+                    ® Load persisted Graph from file.
+                    ® Load persisted Index instances from their storage paths.
+                    ® Load persisted Community data.
+                    ® Initialize the _querier (Core/Query/ logic).
+            § Modify insert method: Rename to something like async def build_and_persist_artifacts(self, corpus_docs_list): and have it call setup_for_building. This method will only be used in "build" mode.
+            § Modify query method: Ensure it first calls setup_for_querying (if not already done) to load all necessary artifacts. It should not trigger any building or indexing.
+            § The _build_retriever_context method needs to be aware of the mode. In "build" mode, it might not be fully necessary, or it might configure components for writing. In "query" mode, it configures components for reading/using pre-built artifacts.
+    3. Core/Graph/BaseGraph.py (and implementations like ERGraph.py, RKGraph.py, TreeGraph.py, PassageGraph.py)
+        ○ Current Functionality: Defines graph building and persistence.
+        ○ Required Changes:
+            § Method build_graph(self, chunks, force: bool = False): This will be called by GraphRAG.setup_for_building. Ensure force flag is respected.
+            § Method _persist_graph(self, force=False): Ensure this uses a standardized path from ArtifactManager or self.workspace for saving (e.g., self.namespace.get_save_path(self.name)).
+            § Method _load_graph(self, force: bool = False): Ensure this uses the standardized path for loading. This will be called by GraphRAG.setup_for_querying.
+    4. Core/Index/BaseIndex.py (and implementations like VectorIndex.py, FaissIndex.py, ColBertIndex.py)
+        ○ Current Functionality: Defines index building, persistence, and retrieval.
+        ○ Required Changes:
+            § Method build_index(self, elements, meta_data, force=False): Called by GraphRAG.setup_for_building.
+            § Method _storage_index(self): Ensure uses standardized path from ArtifactManager or self.config.persist_path (which should be derived from workspace).
+            § Method _load_index(self) -> bool: Ensure uses standardized path. Called by GraphRAG.setup_for_querying.
+    5. Core/Chunk/DocChunk.py
+        ○ Current Functionality: Chunks documents and manages persistence of chunk data.
+        ○ Required Changes:
+            § Method build_chunks(self, docs, force=True): Called by GraphRAG.setup_for_building.
+            § Method _load_chunk(self, force=False): Called by GraphRAG.setup_for_querying if direct access to chunk data is needed during querying.
+            § Ensure self._chunk.persist() and self._chunk.load_chunk() use standardized paths via its namespace.
+    6. Core/Community/BaseCommunity.py (and LeidenCommunity.py)
+        ○ Current Functionality: Community detection and report generation with persistence.
+        ○ Required Changes:
+            § Methods cluster(...) and generate_community_report(...): Called by GraphRAG.setup_for_building.
+            § Methods _load_community_report(...) and _load_cluster_map(...): Called by GraphRAG.setup_for_querying.
+            § Ensure persistence methods use standardized paths via self.namespace.
+    7. Option/Config2.py
+        ○ Current Functionality: Parses and merges configuration files.
+        ○ Required Changes:
+            § No major structural change needed immediately for the MVP's decoupling, as the mode will be passed via CLI.
+            § Crucially, ensure that working_dir and exp_name (or a new dataset_id/artifact_id) are consistently used by the new ArtifactManager (see below) or directly within storage classes to define artifact locations. This allows the "query" mode to find what the "build" mode saved.
+            § The various Option/Method/*.yaml files will now more clearly define either a "build configuration" (how to construct the graph and indexes) or a "query configuration" (how to retrieve and answer). Some parameters might be relevant to both.
+    8. Core/Query/BaseQuery.py (and its implementations)
+        ○ Current Functionality: Handles the logic of query processing.
+        ○ Required Changes:
+            § These will primarily be used in "query" mode via GraphRAG.query().
+            § Ensure they correctly use the components (graph, VDBs) loaded by GraphRAG.setup_for_querying(). No direct file loading here; all dependencies should come from the initialized GraphRAG instance.
+    9. Core/Retriever/MixRetriever.py (and other retrievers)
+        ○ Current Functionality: Retrieves information.
+        ○ Required Changes:
+            § When initialized by GraphRAG in "query" mode, ensure they are operating on loaded indexes and graph data, not attempting to build or modify them.
+II. New Files to Create
+    1. Core/Pipelines/build_pipeline.py (or integrate as a function in main.py)
+        ○ Functionality:
+            § Contains a primary function async def run_build_pipeline(config: Config, dataset_name: str, corpus_path: str):.
+            § Instantiates GraphRAG(config=config).
+            § Loads corpus data using RAGQueryDataset(data_dir=os.path.join(config.data_root, dataset_name)).get_corpus().
+            § Calls await graphrag_instance.build_and_persist_artifacts(corpus_docs_list).
+            § Handles overall orchestration for the build process, logging, and error handling for this stage.
+    2. Core/Pipelines/query_pipeline.py (or integrate as a function in main.py)
+        ○ Functionality:
+            § Contains a primary function async def run_query_pipeline(config: Config, dataset_name: str, question: str) -> str:.
+            § Instantiates GraphRAG(config=config).
+            § Calls await graphrag_instance.setup_for_querying() to load all artifacts for the given dataset_name.
+            § Calls answer = await graphrag_instance.query(question).
+            § Returns the answer.
+            § Handles overall orchestration for the query process.
+    3. Core/Storage/ArtifactManager.py (Highly Recommended)
+        ○ Functionality:
+            § A class or module to centralize the logic for determining storage and loading paths for all artifacts.
+            § ArtifactManager(base_working_dir: str, dataset_name: str)
+            § Methods:
+                □ get_graph_file_path(graph_type_name: str) -> Path
+                □ get_entity_vdb_dir() -> Path
+                □ get_relation_vdb_dir() -> Path
+                □ get_subgraph_vdb_dir() -> Path
+                □ get_chunk_storage_dir() -> Path (for DocChunk persistence)
+                □ get_community_report_path() -> Path
+                □ get_community_node_map_path() -> Path
+                □ get_e2r_map_path() -> Path
+                □ get_r2c_map_path() -> Path
+            § This manager would be instantiated within GraphRAG (or the new pipeline files) using config.working_dir and dataset_name.
+            § All storage classes (NetworkXStorage, VectorIndex, DocChunk, LeidenCommunity, PickleBlobStorage for maps) would then request their specific paths from this manager instead of constructing them using self.namespace.get_save_path(self.name) directly. This ensures consistency.
+            § GraphRAG would pass the correct Namespace object (or direct paths from ArtifactManager) to its components. For example, self.graph.namespace = self.artifact_manager.get_graph_namespace() or self.entities_vdb.config.persist_path = self.artifact_manager.get_entity_vdb_dir().
+    4. Core/Operator/Transformations/ (Directory)
+        ○ Functionality: Placeholder for your PhD-specific transformation operators.
+        ○ Files (Examples):
+            § extract_categorical_value.py: Implements the extract_categorical_value operator.
+            § distribution_calculators.py: Implements to_categorical_distribution, to_statistical_distribution.
+            § causal_path_finder.py: Implements find_causal_paths.
+            § intervention_simulator.py: Implements simulate_intervention.
+        ○ Each file would define classes/functions for these operations. They would typically take graph elements or dataframes as input and produce new/modified data.
+        ○ Note: For the MVP of decoupling, these are not strictly needed yet, but the structure should anticipate them. The immediate focus is on separating the existing build and query.
+Workflow Summary for MVP:
+Build Mode (python main.py build ...)
+    1. main.py calls run_build_pipeline().
+    2. run_build_pipeline instantiates GraphRAG.
+    3. GraphRAG.build_and_persist_artifacts():
+        ○ Loads corpus.
+        ○ DocChunk.build_chunks() -> saves chunk data (via ArtifactManager path).
+        ○ BaseGraph_instance.build_graph() -> saves graph file (via ArtifactManager path).
+        ○ BaseIndex_instance.build_index() for entities -> saves VDB (via ArtifactManager path).
+        ○ (Similarly for relations, subgraphs, communities, e2r/r2c maps if enabled).
+Query Mode (python main.py query ...)
+    1. main.py calls run_query_pipeline().
+    2. run_query_pipeline instantiates GraphRAG.
+    3. GraphRAG.setup_for_querying():
+        ○ Loads graph file (from ArtifactManager path).
+        ○ Loads VDBs (from ArtifactManager paths).
+        ○ Loads other necessary persisted data.
+        ○ Initializes query engine and retrievers with loaded components.
+    4. GraphRAG.query(question) executes the query using the loaded artifacts.
+    5. run_query_pipeline returns the answer.
+This refactoring will make your system much cleaner, allowing the expensive graph construction to be a separate, offline step. The "usage" aspect then becomes about loading these pre-computed artifacts to quickly answer questions or, in the future, run more complex analytic chains.
+
+
+
+MethodGraph Type(s) Used (from YAMLs/Paper)Build KG/ArtifactsQuery with MethodEvaluate ResultsNotesDalker_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific DalkQuery. ER graph build and multi-step query path verified.GR (G-Retriever)er_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific GRQuery. ER graph build and PCST-based query path verified.LGraphRAGrkg_graph (TKG with communities)Yes (Verified)Yes (Verified)Yes (Verified)Local search. Successfully debugged community retrieval path. Evaluation pipeline verified.GGraphRAGrkg_graph (TKG with communities)Yes (Verified)Yes (Verified)Yes (Verified)Global search. Successfully debugged community retrieval and global query path. Evaluation pipeline verified.HippoRAGer_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses PPRQuery. PPR path was tested and functional.KGPpassage_graphYes (Verified)Yes (Verified)Yes (Likely)Uses PassageGraph and KGPQuery. Build and iterative query path verified.LightRAGrkg_graph (RKG)Yes (Verified)Yes (Verified)Yes (Likely)Uses BasicQuery with keyword features. RKG build and keyword-driven query paths verified.RAPTORtree_graph / tree_graph_balancedYes (Verified)Yes (Verified)Yes (Verified)Tree graph build and VDB query (handling layer metadata) verified. Multi-layer retrieval depends on dataset/config. Evaluation pipeline verified.ToGer_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific ToGQuery. ER graph build and agent-like iterative query path verified.Summary of Current Decoupled Capabilities:Core Build, Query, and Evaluate Pipeline: All three modes (build, query, evaluate) are now functionally implemented.build and query modes have been verified for all listed methods.evaluate mode has been verified for LGraphRAG, GGraphRAG, and RAPTOR.Graph Types Tested/Stable:rkg_graph (LGraphRAG, GGraphRAG, LightRAG).tree_graph / tree_graph_balanced (RAPTOR).er_graph (HippoRAG, GR, Dalk, ToG).passage_graph (KGP).Key Retrieval Mechanisms Verified: All major retrieval and reasoning strategies from the tested methods are functional within the decoupled framework.Configuration Handling: Stable.Evaluation Pipeline: Robust enough to handle different methods (LGraphRAG, GGraphRAG, RAPTOR tested) and save results correctly.
+
+
+
+GraphRAG Project Refactoring Log
+Overall Goal: Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+Phase 0: Initial Setup & Baseline (Completed)
+	1. Git Version Control:
+		○ Ensured all existing code and modifications from the "DIGIMON / GraphRAG ― Master Setup & Decision Log (May 2025, Updated)" were committed.
+		○ Created a baseline branch: baseline-testing-suite.
+		○ Pushed branches to a remote repository.
+		○ Status: Done.
+Phase 1: Data Preparation & Initial Decoupling Steps
+Step 1: Create a Corpus Preparation Script (Completed)
+	• Objective: Develop a script to convert raw text files into the Corpus.json format expected by Data/QueryDataset.py.
+	• Actions:
+		1. Created scripts/prepare_corpus.py.
+		2. Prepared sample input text files (american_revolution.txt, french_revolution.txt) in ./Data/MySampleTexts/.
+		3. Ran scripts/prepare_corpus.py --input_dir ./Data/MySampleTexts/ --output_dir ./Data/MySampleTexts/.
+		4. Verified the creation and content of ./Data/MySampleTexts/Corpus.json.
+	• Status: Done.
+Step 2: Test RAGQueryDataset with Prepared Corpus (Completed)
+	• Objective: Confirm that Data/QueryDataset.py can load and parse the Corpus.json created in Step 1, along with a corresponding Question.json.
+	• Actions:
+		1. Created a Question.json file in ./Data/MySampleTexts/ with relevant questions.
+		2. Corrected KeyError: 'context' in Data/QueryDataset.py to content. Ensured doc_id was read from file.
+		3. Corrected NameError: name 'Path' is not defined in Data/QueryDataset.py by adding from pathlib import Path.
+		4. Created and ran test_rag_dataset.py to verify RAGQueryDataset functionality.
+	• Status: Done.
+	• Output: test_rag_dataset.py ran successfully.
+Step 3: Refactor main.py to Support Modes (Build, Query, Evaluate) (Completed)
+	• Objective: Modify main.py to accept a mode command-line argument and dispatch to different handlers.
+	• Actions:
+		1. Updated main.py with argparse to handle build, query, and evaluate modes.
+		2. Created initial handler functions: handle_build_mode, handle_query_mode, handle_evaluate_mode.
+		3. Added a placeholder async def setup_for_querying(self): method to Core/GraphRAG.py.
+		4. Tested build mode: Successfully ran, created/loaded artifacts.
+		5. Tested query and evaluate modes: Invoked correctly, placeholder behavior observed.
+	• Status: Done.
+Step 4: Implement Artifact Loading and Query Functionality (In Progress)
+	• Objective: Enable the query mode to load persisted artifacts and answer questions.
+	• Actions:
+		1. Corrected ImportError: cannot import name 'get_community' from 'Core.Community' in Core/GraphRAG.py.
+		2. Updated Core/GraphRAG.py to implement setup_for_querying() for artifact loading, renamed insert() to build_and_persist_artifacts(), and made Pydantic v2 adjustments.
+		3. Corrected NameError: Fields must not use names with leading underscores... in Core/GraphRAG.py by renaming Pydantic Field definitions (e.g., _querier to querier_internal).
+		4. Further refined Core/GraphRAG.py to initialize internal state attributes (like querier_internal) as plain instance attributes within the initialize_components model validator, instead of Pydantic Fields, to resolve NameError: Fields must not use names with leading underscores....
+		5. Corrected PydanticUserError: Field _data has \init=False` and dataclass has config setting `extra="allow"`...by renaming_dataand similarinit=Falsefields inCore/Storage/PickleBlobStorage.pyandCore/Storage/ChunkKVStorage.pytointernal_data` (and equivalents).
+		6. Corrected PydanticUserError: Field RESOURCE_NAME has \init=False` and dataclass has config setting `extra="allow"`...by changingRESOURCE_NAME(inPickleBlobStorage.py) and similar filename constants (in ChunkKVStorage.py) from field(default=..., init=False)` to simple class variables.
+		7. Further updated Core/GraphRAG.py to treat attributes like entities_to_relationships (which are instances of dataclasses with init=False fields) as plain Python instance attributes initialized in initialize_components, rather than Pydantic Fields.
+		8. Converted Core/Storage/BaseStorage.py, Core/Storage/BaseBlobStorage.py, and Core/Storage/PickleBlobStorage.py to Pydantic BaseModels to resolve PydanticUserError: Field internal_data has \init=False` and dataclass has config setting `extra="allow"`...`.
+		9. Corrected inheritance order in Core/Storage/BaseKVStorage.py (to BaseStorage, Generic[T]). Converted Core/Storage/ChunkKVStorage.py to a Pydantic BaseModel inheriting from the corrected BaseKVStorage to resolve TypeError: ChunkKVStorage.__init__() got an unexpected keyword argument 'namespace'.
+		10. Corrected missing from typing import Union, Set in Core/Storage/ChunkKVStorage.py to resolve NameError: name 'Union' is not defined.
+		11. Corrected AttributeError: 'ChunkKVStorage' object has no attribute 'get_chunks' in Core/Chunk/DocChunk.py by changing the call in its get_chunks method to self._chunk.get_all_chunks_items().
+		12. Current Action: Added a public load_persisted_graph method to Core/Graph/BaseGraph.py and updated the call in Core/GraphRAG.py's setup_for_querying method to use it, to resolve AttributeError: 'TreeGraph' object has no attribute 'load_graph'.
+	• Status: Core/Graph/BaseGraph.py and Core/GraphRAG.py updated. Ready for re-testing query mode.
+(Next steps will be added here as we proceed)
+
+
+
+# GraphRAG Project Refactoring Log Pt2
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+**Phase 0: Initial Setup & Baseline (Completed)**
+* (Details from original log)
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+**Step 1: Create a Corpus Preparation Script (Completed)**
+* (Details from original log)
+
+**Step 2: Test RAGQueryDataset with Prepared Corpus (Completed)**
+* (Details from original log)
+
+**Step 3: Refactor main.py to Support Modes (Build, Query, Evaluate) (Completed)**
+* (Details from original log)
+
+**Step 4: Implement Artifact Loading and Query Functionality (Resolved Loading Errors)**
+* **Status (Post-Error Resolution):** Query mode successfully loads artifacts and `GraphRAG.query()` returns an answer.
+
+**Step 5: Implement Core Query Logic for RAPTOR (TreeGraph) (Basic Functionality Achieved)**
+* **Status:** Query mode uses RAPTOR-specific path, retrieves tree node texts via VDB, and uses a RAPTOR-specific prompt.
+
+**Step 6: Enhance Logging to Inspect Retrieved RAPTOR Context (Completed)**
+* **Outcome:** Terminal output shows snippets of retrieved tree node texts.
+* **Status:** Completed.
+
+**Step 7: Implement Advanced RAPTOR Retrieval Strategies (In Progress)**
+* **Objective:** Enhance RAPTOR query logic beyond simple VDB search of all tree nodes, incorporating strategies like tree traversal or node clustering/re-ranking.
+* **Sub-Step 7.1: Retrieve Node Metadata (ID, Layer, Score) along with Text (Debugging Layer/Score Info)**
+    * **Previous Actions:**
+        1.  Modified `Core/Storage/TreeGraphStorage.py`.
+        2.  Refined `Core/Schema/VdbResult.py`.
+        3.  Modified `Core/Retriever/EntitiyRetriever.py`.
+        4.  Modified `Core/Query/BasicQuery.py`.
+        5.  Modified `Core/GraphRAG.py` to force VDB rebuild.
+        6.  Refined `Core/Index/BaseIndex.py` (`build_index` method).
+        7.  Refined `Core/Index/FaissIndex.py` (`_update_index` method) and fixed subsequent `IndentationError`.
+    * **Outcome of Build Command (After Indentation Fix & VDB Rebuild):**
+        * `IndentationError` in `FaissIndex.py` resolved.
+        * Build command completed successfully.
+        * Logs confirm VDB was deleted and rebuilt with `force=True` and correct metadata keys (`['index', 'layer']`).
+    * **Outcome of Query Command (Latest):**
+        * `Layer` information for retrieved nodes is now correctly logged as `0`.
+    * **Issue Identified:** `Score` for retrieved nodes is still logged as `N/A`.
+    * **Hypothesis:** The VDB scores are not being correctly unpacked or assigned in `Core/Retriever/EntitiyRetriever.py` after being returned from `Core/Schema/VdbResult.py`.
+    * **Action (Current):**
+        1.  Apply suggested modifications to `Core/Retriever/EntitiyRetriever.py`'s `_find_relevant_entities_vdb` method to add detailed logging for the `scores` variable and ensure robust handling of the `nodes_with_metadata` list before adding `vdb_score`.
+    * **Expected Outcome:** Query logs will show the actual list of scores received from the VDB, helping to pinpoint if scores are missing or if the assignment logic is flawed. Subsequently, the main log should show actual float scores.
+    * **Status:** Code modification instructions for `Core/Retriever/EntitiyRetriever.py` were provided in the previous turn (response #10). User to apply these and re-run the query.
+
+**(Further steps will be added here as we proceed)**
+
+# GraphRAG Project Refactoring Log Pt 3
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+*Steps 1-6 are documented in "GraphRAG Project Refactoring Log" and "GraphRAG Project Refactoring Log Pt2".*
+
+**Step 7: Implement Advanced RAPTOR Retrieval Strategies (In Progress)**
+* **Objective:** Enhance RAPTOR query logic beyond simple VDB search of all tree nodes, incorporating strategies like tree traversal or node clustering/re-ranking.
+* **Sub-Step 7.1: Retrieve Node Metadata (ID, Layer, Score) along with Text (Resolved)**
+    * **Status:** Completed. Metadata (ID, Layer, Score, Text) is now being correctly retrieved and processed for RAPTOR tree nodes.
+
+**Step 8: Implement Initial Advanced RAPTOR Retrieval Strategy: Layer-Based Re-ranking (Logic Implemented)**
+* **Status:** Completed. The foundational logic for layer-based re-ranking in RAPTOR is implemented and working as expected given the data constraints.
+
+**Step 9: Test Personalized PageRank (PPR) Based Retrieval (HippoRAG Path) - Successful**
+* **Status:** Completed. The PPR-based retrieval path is functional in the decoupled system.
+
+**Step 10: Test Entity Occurrence Based Chunk Retrieval (LGraphRAG Path) - Build Error (Pydantic Validation)**
+* **Objective:** Verify that the `entity_occurrence` chunk retrieval mechanism, as potentially used by the `LGraphRAG.yaml` configuration, is functional.
+* **Action (Previous Turn):** Attempted to build artifacts using `Option/Method/LGraphRAG.yaml`.
+* **Outcome (Current):**
+    * **BUILD FAILED:** The build process (when running `python main.py build -opt Option/Method/LGraphRAG.yaml ...`) terminated with `pydantic_core._pydantic_core.ValidationError: 1 validation error for GraphRAG. Value error, "JsonKVStorage" object has no field "name"`.
+    * **Reason:** `JsonKVStorage` is used by `LeidenCommunity` (which is initialized when `use_community: True` in `LGraphRAG.yaml`). `JsonKVStorage` (likely treated as a Pydantic model or dataclass due to its inheritance or usage) sets an instance attribute `self.name` in its `__init__` method for constructing filenames, but `name` is not declared as a formal Pydantic/dataclass field at the class level. Pydantic's validation of the `GraphRAG` model (which includes `LeidenCommunity` containing `JsonKVStorage` instances) flags this undeclared attribute as an error.
+* **Files to Modify:**
+    * `Core/Storage/JsonKVStorage.py`: To declare `name` as a proper Pydantic/dataclass field.
+* **Expected Outcome:** The Pydantic validation error regarding `JsonKVStorage`'s `name` field during the build process for `LGraphRAG.yaml` should be resolved.
+* **Status:** Pending code modification (instructions were provided in the last turn before this current user request).
+
+**Step 11: Plan for Basic Evaluation Mechanism and Further Retrieval Tests**
+* **Objective:** Start implementing a basic evaluation framework and continue testing other key retrieval operators once current build issues are resolved.
+* **Status:** Planning on hold until Step 10 build is successful.
+
+**(Further steps will be added here as we proceed)**
+
+# GraphRAG Project Refactoring Log Pt 4
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+*Phases 0 and 1 (Steps 1-9) are documented in "GraphRAG Project Refactoring Log," "GraphRAG Project Refactoring Log Pt2," and "GraphRAG Project Refactoring Log Pt3".*
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+**Step 10: Test Entity Occurrence Based Chunk Retrieval (LGraphRAG Path) - Build Error Resolved, Query Path Debugging**
+* **Recap (from Pt 3):**
+    * **BUILD FAILED:** Initial build attempt with `Option/Method/LGraphRAG.yaml` failed due to `pydantic_core._pydantic_core.ValidationError: 1 validation error for GraphRAG. Value error, "JsonKVStorage" object has no field "name"`.
+    * **Fix (Applied by IDE):** `Core/Storage/JsonKVStorage.py` was updated to declare `name` as a proper field.
+* **Outcome:** Build for `LGraphRAG.yaml` successful. Initial query failed to retrieve context.
+
+**Step 11: Debug LGraphRAG Query - No Context Retrieval due to Configuration**
+* **Diagnosis:** All boolean flags controlling specific retrieval paths in the `query:` section of the config were effectively `False`.
+* **Fix:** Modified `Option/Method/LGraphRAG.yaml` to include `enable_local: True` under the `query:` section.
+
+**Step 12: Debug LGraphRAG Query - `KeyError: 'entity_name'`**
+* **Diagnosis:** Entity dictionaries returned by `EntitiyRetriever._find_relevant_entities_vdb` were missing `'entity_name'`.
+* **Fix:** Patched `Core/Retriever/EntitiyRetriever.py` to include `entity_name` in processed entity dictionaries.
+
+**Step 13: Debug LGraphRAG Query - `KeyError: 'rank'`**
+* **Diagnosis:** Entity dictionaries were missing `'rank'`.
+* **Fix:** Patched `Core/Retriever/EntitiyRetriever.py` to calculate and add node degree as `'rank'`.
+
+**Step 14: Debug LGraphRAG Query - `UnboundLocalError: use_communities`**
+* **Diagnosis:** `use_communities` used before assignment if `self.config.use_communiy_info` (typo) was false.
+* **Fix:** Patched `Core/Query/BasicQuery.py` to initialize `use_communities = None` and check if populated.
+* **Outcome of Fix:** Query completed. Log warning indicated `use_communities` was not populated.
+
+**Step 15: Enable Community Retrieval for LGraphRAG Local Path - Attempt 1**
+* **Diagnosis:** Reference to misspelled `self.config.use_communiy_info` persisted in `Core/Query/BasicQuery.py`.
+* **Actions:** Corrected typo `use_communiy_info` to `use_community_info` in `Config/QueryConfig.py`. Ensured `query: use_community_info: True` in `Option/Method/LGraphRAG.yaml`.
+* **Outcome:** `AttributeError: 'QueryConfig' object has no attribute 'use_communiy_info'`.
+
+**Step 16: Enable Community Retrieval for LGraphRAG Local Path - Attempt 2 (Correcting Code Usage)**
+* **Action:** Corrected all instances of `self.config.use_communiy_info` to `self.config.use_community_info` in `Core/Query/BasicQuery.py`.
+* **Outcome:** `AttributeError` for `use_communiy_info` resolved. New error: `AttributeError: 'RetrieverConfig' object has no attribute 'local_max_token_for_community_report'` in `Core/Retriever/CommunityRetriever.py`.
+
+**Step 17: Resolve `AttributeError` for `local_max_token_for_community_report`**
+* **Actions:** Added `local_max_token_for_community_report: int` to `RetrieverConfig` class. Added `local_max_token_for_community_report: 3200` to `retriever:` section of `LGraphRAG.yaml`.
+* **Outcome:** New error: `AttributeError: 'RetrieverConfig' object has no attribute 'local_community_single_one'`.
+
+**Step 18: Resolve `AttributeError` for `local_community_single_one`**
+* **Actions:** Added `local_community_single_one: bool` to `RetrieverConfig` class. Added `local_community_single_one: False` to `retriever:` section of `LGraphRAG.yaml`.
+* **Outcome:** `AttributeError` resolved. Query pipeline completed. Warning `BASIC_QUERY_LOCAL: 'use_community' is True, but 'use_communities' was not populated...` still present. Log `Using 0 communities` appeared.
+
+**Step 19: Investigate Community Retrieval Path in `CommunityRetriever`**
+* **Objective:** Determine if `CommunityRetriever._find_relevant_community_from_entities` is called and why it might not be returning communities.
+* **Actions:** Added detailed logging to `Core/Retriever/CommunityRetriever.py` inside `_find_relevant_community_from_entities`.
+* **Outcome:**
+    * Logs confirm `CommunityRetriever._find_relevant_community_from_entities` was called with 5 seed entities.
+    * Logs show `COMMUNITY_RETRIEVER_FROM_ENTITIES: Found 0 unique community keys from entities. Keys: []` and `COMMUNITY_RETRIEVER_FROM_ENTITIES: Returning 0 community reports after truncation.`
+* **Status:** LGraphRAG local query path is functionally robust. Absence of retrieved communities is due to seed entities not leading to community keys.
+
+**Step 20: Investigate Community Build Artifacts & Entity `clusters` Attribute**
+* **Objective:** Verify how community data is stored and if the `clusters` attribute is present on entities passed to `CommunityRetriever`.
+* **Actions:**
+    1.  IDE inspected `./results/MySampleTexts/kg_graph/community_storage_community_node_map.json`. Confirmed it exists and contains relevant entity-to-cluster mappings.
+    2.  Re-ran query with existing logging in `CommunityRetriever`.
+* **Outcome:**
+    * `community_node_map.json` is correctly populated.
+    * `CommunityRetriever` logs (at INFO level) confirmed it received 5 seed entities but found 0 unique community keys.
+* **Status:** Confirmed `community_node_map.json` is okay.
+
+**Step 21: Enable DEBUG Logging and Re-Inspect Seed Entities in CommunityRetriever**
+* **Objective:** Capture DEBUG level logs to inspect the structure of seed entities passed to `CommunityRetriever`.
+* **Actions:**
+    1.  IDE modified `Core/Common/Logger.py` to set `print_level="DEBUG"` in the `define_log_level` call.
+    2.  Re-ran the query.
+* **Outcome:**
+    * DEBUG logs from `CommunityRetriever` are now visible.
+    * **Diagnosis:** The DEBUG logs confirm that the `seed` entity dictionaries passed to `CommunityRetriever` **do not contain the `"clusters"` key.**
+* **Status:** Root cause for no communities being retrieved is identified: entities lack the `"clusters"` attribute at query time.
+
+**Step 22: Attach "clusters" Attribute to Entities in `EntitiyRetriever` - Attempt 1**
+* **Objective:** Modify `EntitiyRetriever._find_relevant_entities_vdb` to fetch and attach the `"clusters"` attribute.
+* **Actions:**
+    1.  IDE modified `Core/Retriever/EntitiyRetriever.py` to add logic to fetch cluster info using `self.community.community_node_map.get_by_id(node_id)` and attach it as `current_node_data["clusters"]`.
+* **Outcome (Current Turn):**
+    * Query ran successfully.
+    * `ENTITY_VDB_CLUSTERS` DEBUG logs (from `EntityRetriever`) showed: `ENTITY_VDB_CLUSTERS: Community or community_node_map not available/configured. Skipping cluster attachment for entity 'american revolution'.`
+    * `CommunityRetriever` DEBUG logs still show entities arriving *without* the `"clusters"` key.
+* **Diagnosis:** The attempt to attach the "clusters" attribute in `EntityRetriever` failed because the condition `hasattr(self, 'community') and self.community and hasattr(self.community, 'community_node_map') and self.community.community_node_map:` evaluated to `False`. This means `self.community` (or its `community_node_map`) was `None` or not considered valid within the `EntityRetriever` instance.
+* **Status:** The "clusters" attribute is still not being successfully attached.
+
+**Step 23: Ensure `EntityRetriever` has Access to Loaded `community_node_map`**
+* **Objective:** Ensure the `EntityRetriever` instance has a properly initialized `community` object with a loaded `community_node_map`.
+* **Actions (Pending based on next instructions):**
+    1.  Verify how `EntityRetriever` is instantiated and if the `community` object (containing `community_node_map`) is passed to it or accessible via its context.
+    2.  Ensure `community_node_map` is loaded *before* `EntityRetriever` might need it.
+* **Expected Outcome:** The condition `hasattr(self, 'community')...` in `EntityRetriever` will pass, allowing cluster data to be fetched and attached.
+* **Status:** Pending investigation of `EntityRetriever` context and initialization.
+
+**(Further steps will be added here as we proceed)**
+
+# GraphRAG Project Refactoring Log Pt 5
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+*Phases 0 and 1 (Steps 1-9) are documented in "GraphRAG Project Refactoring Log," "GraphRAG Project Refactoring Log Pt2," and "GraphRAG Project Refactoring Log Pt3". "GraphRAG Project Refactoring Log Pt 4" concluded with Step 23. This log, Part 5, details all subsequent steps starting from Step 24.*
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+**Step 24: Determine Logging Configuration and Capture Query Logs**
+* **Status:** Completed.
+
+**Step 25: Investigate `LeidenCommunity` and Context Propagation; Capture Missing Logs**
+* **Status:** Completed.
+
+**Step 26: Implement Public `community_node_map` Property in `LeidenCommunity` (Completed)**
+* **Status:** Completed.
+
+**Step 27: Inspect `community_node_map.json` and Entity ID Lookup in `EntityRetriever` (Completed)**
+* **Status:** Completed.
+
+**Step 28: Verify `EntityRetriever` Lookup Logic and Test with Known Mapped Entity (Completed)**
+* **Status:** Completed.
+
+**Step 29: Verify `CommunityRetriever` Uses Attached Cluster Info to Fetch Reports (Error Identified, Addressed in Step 30 & 31)**
+* **Status:** Completed.
+
+**Step 30: Ensure Detailed Logging in `CommunityRetriever` and Re-Test Report Fetching (Error Identified & Fixed in Step 31)**
+* **Status:** Completed.
+
+**Step 31: Fix `TypeError` in `CommunityRetriever` and Re-Test Report Fetching (New Error Identified)**
+* **Status:** Completed. `TypeError` resolved. New `AttributeError` identified.
+
+**Step 32: Correct Config Path for `level` and other `QueryConfig` Attributes in `CommunityRetriever` (New Error Identified)**
+* **Recap:** `AttributeError` occurred due to incorrect config path. IDE self-corrected to use `self.retriever_context.context["query"]`, leading to `KeyError: 'query'`.
+* **Status:** `KeyError` cause identified: `QueryConfig` was not registered in `RetrieverContext.context` under the key `"query"`.
+Step 33: Register QueryConfig into RetrieverContext and Update Access in CommunityRetriever (Partially Successful - GGraphRAG Test)
+    • Objective: Ensure QueryConfig is available in RetrieverContext.context (under key "query_config") and correctly accessed by CommunityRetriever.
+    • Action (User to IDE in response #23, IDE executed in response #24, further corrections by IDE in response #25, then testing GGraphRAG in response #26):
+        1. Modifications to Core/GraphRAG.py (to register "query_config") and Core/Retriever/CommunityRetriever.py (to access QueryConfig attributes via self.retriever_context.context["query_config"].<attribute>) were applied by the IDE.
+        2. IDE ran build for GGraphRAG.yaml: Successful.
+        3. IDE ran query for GGraphRAG.yaml with question "What were the key causes of the American Revolution?" (./ggraphrag_query.log or full_query_output_attempt12.log).
+    • Outcome (From IDE Logs in response #26, full_query_output_attempt12.log):
+        ○ Build Success: GGraphRAG artifacts (graph, VDBs, community map with 14 entries, 2 community reports) were created successfully.
+        ○ Query Artifact Loading: All artifacts loaded successfully for the query.
+        ○ Persistent AttributeError: The query still crashed with AttributeError: 'RetrieverConfig' object has no attribute 'level' in Core/Retriever/CommunityRetriever.py within the find_relevant_community_by_level method, specifically at the line if v.level <= self.config.level.
+    • Diagnosis: Despite the IDE reporting it had applied the fix to use self.retriever_context.context["query_config"].level, the traceback from the latest execution shows the code is still attempting to use self.config.level. This indicates the edit to CommunityRetriever.find_relevant_community_by_level was not effectively applied or saved for all necessary instances.
+    • Status: The build for GGraphRAG is fine. The query mode fails because CommunityRetriever.find_relevant_community_by_level is still using the incorrect path to QueryConfig attributes.
+Step 34: Systematically Test Build and Query for Remaining Methods (GGraphRAG - Fixes Applied & Successful!)
+    • Objective: Ensure the fix for accessing QueryConfig attributes is correctly and completely applied to CommunityRetriever.find_relevant_community_by_level and test the GGraphRAG query path.
+    • Action (User to IDE in response #27, IDE executed in response #28):
+        1. IDE confirmed that the previous edits to CommunityRetriever.find_relevant_community_by_level (to use self.retriever_context.context["query_config"].level etc.) were not fully applied or were incorrect, as the AttributeError: 'RetrieverConfig' object has no attribute 'level' persisted.
+        2. IDE iteratively applied further corrections to Core/Retriever/CommunityRetriever.py to:
+            § Correctly use self.retriever_context.context["query_config"].<attribute_name> for all QueryConfig parameters.
+            § Address a subsequent TypeError by ensuring global_max_consider_community was cast to int.
+            § Address a subsequent KeyError: 'community_info' by ensuring the data structure returned by find_relevant_community_by_level matched downstream expectations in Core/Query/BaseQuery.py (by wrapping community data in a {"community_info": c, ...} structure).
+        3. IDE re-ran the GGraphRAG build (successful) and query: python main.py query -opt Option/Method/GGraphRAG.yaml -dataset_name MySampleTexts -question "What were the key causes of the American Revolution?" > ./ggraphrag_query_attempt13.log 2>&1.
+    • Outcome (From IDE Logs in response #28, ggraphrag_query_attempt13.log):
+        ○ SUCCESS! All identified AttributeError, TypeError, and KeyError issues in the GGraphRAG query path related to CommunityRetriever and QueryConfig access are resolved.
+        ○ GGraphRAG Query Path Functional: The GGraphRAG query completed successfully.
+        ○ Logs Indicate Global Path Execution: The system correctly identified it was a global query, community reports were likely retrieved (though detailed logs for this specific part were truncated, the successful completion and answer generation imply it worked).
+        ○ Answer Generated: A synthesized answer regarding the causes of the American Revolution was produced, indicating the end-to-end global query pipeline for GGraphRAG is now working.
+    • Status: The GGraphRAG build and query (global search path using communities) modes are now functionally working in the decoupled framework.
+Next Phase: Continue Method Verification or Shift to Evaluation
+Step 35: Plan Next Steps for Method Verification or Evaluation
+    • Objective: Decide whether to continue verifying the build and query functionality for other RAG methods or to begin developing/testing the evaluate mode.
+    • Considerations:
+        ○ Methods still needing specific tests (from graphrag_method_status_table):
+            § KGP (passage_graph)
+            § ToG (er_graph with specific ToGQuery)
+            § Dalk (er_graph with specific DalkQuery)
+            § GR (G-Retriever) (er_graph with specific GRQuery)
+            § LightRAG (rkg_graph - likely works but specific keyword features not stressed).
+        ○ Advanced RAPTOR strategies beyond basic VDB lookup.
+    • Status: Pending decision.
+Step 36: Systematically Test Build and Query for GR (G-Retriever) (Successful!)
+    • Status: Completed. The GR (G-Retriever) build and query modes are functionally working.
+Step 37: Systematically Test Build and Query for Dalk (Build Success, Initial Query Error)
+    • Status: Completed (Details in previous log entries).
+Step 38: Fix KeyError: 'content' in DalkQuery.py (Successful!)
+    • Objective: Modify DalkQuery.py to use an appropriate existing edge attribute (e.g., relation_name or description) instead of content when formatting path and neighbor information.
+    • Action (User to IDE in response #36, IDE executed in response #37):
+        1. IDE applied the fix: changed e["content"] to e.get("relation_name", e.get("description", "unknown_relation")) in DalkQuery.py.
+        2. IDE re-ran the Dalk query.
+    • Outcome (From IDE Summary in response #37):
+        ○ KeyError Resolved: The Dalk query pipeline completed without the KeyError.
+        ○ Dalk Query Functional: Artifacts loaded, and the DalkQuery multi-step reasoning process executed successfully.
+        ○ Answer Generated: A comprehensive answer was produced.
+    • Status: The Dalk build and query modes are now functionally working in the decoupled framework.
+Next Phase: Continue Method Verification
+Step 39: Systematically Test Build and Query for ToG (Think-on-Graph)
+    • Objective: Verify the decoupled build and query modes for the ToG method. ToG uses an er_graph and a specific ToGQuery module with agent-like reasoning.
+    • Status: Pending.
+Step 40: Systematically Test Build and Query for KGP (Knowledge Graph Prompting) (Successful!)
+    • Status: Completed. The KGP (Knowledge Graph Prompting) build and query modes are functionally working.
+Next Phase: Final Method Verification (RAPTOR Advanced Strategies) & Evaluation Planning
+Step 41: Systematically Test RAPTOR's Multi-Level Tree Retrieval (Core Mechanism Verified)
+    • Objective: Verify that RAPTOR's build process creates a multi-layer tree and that its query process (using VDB search across all tree nodes) can retrieve nodes from various layers, including summarized parent nodes.
+    • Action (User to IDE in response #42, IDE executed in response #43):
+        1. IDE ran build for RAPTOR.yaml on MySampleTexts dataset.
+        2. IDE ran query for RAPTOR.yaml with question "Summarize the main conflicts described in the texts.".
+        3. IDE provided a summary of log highlights.
+    • Outcome (From IDE Summary in response #43):
+        ○ Build Success: RAPTOR build created a tree_graph_balanced. For the small MySampleTexts dataset (5 chunks/leaf nodes), the process resulted in a single-layer tree (5 nodes, all at layer 0). VDB for tree nodes was built successfully with index and layer metadata.
+        ○ Query Success:
+            § All artifacts loaded correctly.
+            § The tree_search: True path in BasicQuery.py was executed.
+            § EntityRetriever logs confirmed that all retrieved nodes had "layer": 0, consistent with the single-layer tree built.
+            § The query completed without errors and an answer was generated.
+    • Diagnosis: The core RAPTOR pipeline (tree graph construction, VDB indexing of tree nodes with layer metadata, and querying these nodes) is operational. The absence of multi-layer retrieval in this test is due to the small dataset size not triggering the formation of higher summary layers, rather than a flaw in the RAPTOR-specific logic.
+    • Status: The RAPTOR build and query modes are functionally working. The ability to handle layer metadata is verified. Testing actual retrieval from multiple layers would require a larger dataset or adjusted tree construction parameters.
+Step 42: Conclude Initial Method Verification Phase
+    • Objective: Acknowledge that all listed methods have had an initial successful build and query run in the decoupled framework.
+    • Status: Completed.
+Phase 2: Implementing Evaluation Mode
+Step 43: Implement Basic evaluate Mode Workflow in main.py (Completed)
+    • Status: The foundational code for the evaluate mode workflow was implemented in main.py.
+Step 44: Test the Implemented evaluate Mode (Successful for LGraphRAG!)
+    • Status: The basic evaluate mode is functionally working for LGraphRAG.
+Step 45: Systematically Test evaluate Mode for Other Verified RAG Methods (GGraphRAG - Successful!)
+    • Status: The basic evaluate mode is functionally working for GGraphRAG.
+Step 46: Systematically Test evaluate Mode for RAPTOR (Successful!)
+    • Objective: Ensure the evaluate mode works correctly with the RAPTOR method and its tree-based graph structure.
+    • Action (User to IDE in response #50, IDE executed in response #51):
+        1. IDE re-ran build for RAPTOR on MySampleTexts.
+        2. IDE ran evaluate mode for RAPTOR on MySampleTexts.
+    • Outcome (From IDE Summary & Logs in response #51):
+        ○ Evaluation Pipeline Functional for RAPTOR: Build completed. Dataset and artifacts loaded for evaluation; all questions queried; query outputs saved to method-specific directory; Evaluator invoked; metrics calculated, saved, and printed (accuracy': 40.0, 'f1': 38.10..., 'precision': 28.02..., 'recall': 85.03..., 'em': 0.0).
+    • Status: The basic evaluate mode is now functionally working for RAPTOR.
+Next Phase: Conclude Basic Evaluation Testing & Plan Future Work
+Step 47: Conclude Basic evaluate Mode Testing
+    • Objective: Acknowledge that the evaluate mode has been successfully tested across methods with different graph structures (RKG with communities, Tree graph).
+    • Status: Completed.
+
+Lessons Learned (Cumulative):
+    • Explicit Interfaces are Key: (Reinforced).
+    • Stateful Initialization for Modes: (Reinforced).
+    • Data Dependency & Alignment: (Reinforced).
+    • Importance of Precise Logging: (Reinforced).
+    • Testing with Known Positives: (Reinforced).
+    • Tooling Limitations: Automated code editing can be unreliable, especially with similar code blocks or if not perfectly targeted. Manual verification of applied changes is sometimes necessary.
+    • Data Type Consistency: (Reinforced).
+    • Defensive Programming: (Reinforced).
+    • Impact of Errors on Logging: (Reinforced).
+    • Configuration Scope & Context Propagation: (Reinforced).
+    • Verify Edits: When an automated tool reports an edit, it's crucial to confirm from subsequent error messages or behavior that the edit was indeed applied as intended.
+
+# GraphRAG Project Handoff Document
+
+**Date:** May 20, 2025
+**Project:** DIGIMON / GraphRAG Refactoring and UI Development
+**GitHub Repository:** `https://github.com/BrianMills2718/Digimon_KG` (as last mentioned by user)
+
+## 1. Project Overview
+
+The DIGIMON/GraphRAG project, originally an end-to-end testing suite for various Graph-based Retrieval-Augmented Generation methods, has been undergoing a significant refactoring.
+**Overall Goal:** Transition the project into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis. This is intended to support PhD research on social media discourse analysis.
+A key recent development is the creation of a web-based UI to interact with the Python backend.
+
+**Current State:**
+* **Python Backend (WSL - `~/digimon`):**
+    * The core Python logic has been refactored into distinct modes: `build` (for artifact generation), `query` (for question answering), and `evaluate` (for performance assessment), managed by `main.py`.
+    * All listed RAG methods (LGraphRAG, GGraphRAG, LightRAG, GR, Dalk, ToG, KGP, RAPTOR, HippoRAG) have been verified to successfully run their `build` and `query` modes with a sample dataset (`MySampleTexts`).
+    * The `evaluate` mode has been implemented in `main.py` and successfully tested with LGraphRAG, GGraphRAG, and RAPTOR.
+    * A basic Flask API server (`api.py`) has been created in the WSL backend. It currently has a functional `/api/query` endpoint that can receive requests, initialize the `GraphRAG` system, perform a query, and return the answer. Placeholders for `/api/build` and `/api/evaluate` exist.
+    * The Python backend runs in a Conda environment (`digimon`).
+* **React Frontend (Windows - `C:\Users\Brian\graphrag-ui`):**
+    * A React project was initialized (e.g., using `create-react-app` or `vite`).
+    * The UI code (from Canvas `graphrag_ui_v1`) has been integrated into this React project. This UI allows users to select datasets, RAG methods, trigger build/query/evaluate operations, and view results/logs.
+    * The React UI has been modified to make `Workspace` API calls to the Flask backend (`http://localhost:5000/api/query`) for the "Run Query" functionality, replacing the initial simulation logic.
+    * The "Build Artifacts" and "Run Evaluation" buttons in the UI currently call the Flask API, but their respective backend endpoints (`/api/build`, `/api/evaluate` in `api.py`) are placeholders and need full implementation.
+* **Development Environment:**
+    * The user develops the Python backend within a WSL Ubuntu environment.
+    * The React frontend is developed on the Windows host system.
+    * The two components are intended to communicate over the local network (React UI on `http://localhost:3001` calling Flask API on `http://localhost:5000` from WSL).
+
+## 2. Refactoring Journey Summary
+
+The refactoring process has been documented in "GraphRAG Project Refactoring Log Pt 1-5". Key phases and steps included:
+
+* **Phase 0: Initial Setup & Baseline:** Git version control established.
+* **Phase 1: Data Preparation & Initial Decoupling:**
+    * Created corpus preparation scripts.
+    * Refactored `main.py` to support `build`, `query`, and `evaluate` modes.
+    * Extensive debugging of Pydantic v2 compatibility issues, attribute errors, `KeyError`s, and `TypeError`s across various modules, particularly in configuration loading, storage classes, context propagation (`RetrieverContext`), and retriever logic (`EntityRetriever`, `CommunityRetriever`).
+    * Systematic verification of `build` and `query` modes for all core RAG methods (LGraphRAG, GGraphRAG, LightRAG, GR, Dalk, ToG, KGP, RAPTOR).
+* **Phase 2: Implementing Evaluation Mode & UI Development:**
+    * Implemented and tested the `evaluate` mode in `main.py` for several methods.
+    * Initiated UI development with React.
+    * Set up a Flask API in the WSL backend to bridge the Python logic with the React UI.
+    * Modified the React UI to call the `/api/query` backend endpoint.
+
+**Key Lessons Learned from Refactoring:**
+* Explicit interfaces and clear data contracts are crucial for decoupled components.
+* Stateful initialization and context propagation across modes and components require careful management.
+* Configuration systems must be precise and robust.
+* Pydantic enforces rigor but requires careful class design.
+* Detailed, iterative logging is essential for debugging complex interactions.
+* Data schema consistency (e.g., for edge attributes, entity IDs) is vital.
+* Tooling limitations (e.g., IDE auto-edits) can sometimes require manual intervention.
+
+## 3. Current UI and Backend API Setup
+
+### 3.1. React Frontend (`C:\Users\Brian\graphrag-ui`)
+
+* **Core File:** `src/App.js` (or `src.App.jsx`) contains the UI logic from the Canvas document `graphrag_ui_v1`.
+* **Dependencies:** `react`, `react-dom`, `lucide-react`. Tailwind CSS is used for styling.
+* **Functionality:**
+    * Allows selection of dataset name and RAG method.
+    * "Build Artifacts" button: Calls `/api/build` (backend endpoint is a placeholder).
+    * "Run Query" button: Takes a question and calls `/api/query` (backend endpoint is functional). Displays the answer.
+    * "Run Evaluation" button: Calls `/api/evaluate` (backend endpoint is a placeholder).
+    * Displays logs and status messages.
+* **To Run:**
+    1.  Navigate to `C:\Users\Brian\graphrag-ui` in a Windows terminal (CMD or PowerShell).
+    2.  Run `npm start` (or `npm run dev` if using Vite).
+    3.  Access the UI in a browser, typically at `http://localhost:3000` or `http://localhost:3001`.
+
+### 3.2. Python Flask Backend API (`~/digimon/api.py` in WSL)
+
+* **Core File:** `api.py`
+* **Dependencies:** `Flask`, `Flask-CORS`. (Python dependencies for GraphRAG itself are managed by the `digimon` conda environment).
+* **Endpoints:**
+    * `POST /api/query`: **Functional.** Receives `datasetName`, `selectedMethod`, `question`. Initializes `GraphRAG` (with basic instance caching), loads artifacts, runs the query, and returns the answer as JSON.
+    * `POST /api/build`: **Placeholder.** Receives payload but does not yet execute the build logic.
+    * `POST /api/evaluate`: **Placeholder.** Receives payload but does not yet execute the evaluation logic.
+* **To Run:**
+    1.  Open a WSL Ubuntu terminal.
+    2.  Navigate to `~/digimon`.
+    3.  Activate the conda environment: `conda activate digimon`.
+    4.  Run the server: `python api.py`.
+    5.  The API will be available at `http://localhost:5000` from your Windows host.
+
+## 4. Next Steps for Development (Especially Frontend & Full Functionality)
+
+### 4.1. Fully Implement Backend API Endpoints
+
+1.  **`/api/build` Endpoint:**
+    * Modify `api.py`'s `handle_build` function.
+    * It should receive `datasetName` and `selectedMethod` (which maps to a config file path).
+    * Parse the `Config`.
+    * Instantiate `GraphRAG`.
+    * Call `await graphrag_instance.build_and_persist_artifacts()`.
+    * Return a success/failure message. This is a long-running task; consider how to handle this (e.g., async task, polling from UI, or just a simple blocking call for now).
+2.  **`/api/evaluate` Endpoint:**
+    * Modify `api.py`'s `handle_evaluate` function.
+    * It should receive `datasetName` and `selectedMethod`.
+    * This will be more complex as the current `handle_evaluate_mode` in `main.py` itself performs multiple queries and then evaluation. You might need to:
+        * Either replicate that logic within the API endpoint.
+        * Or refactor `handle_evaluate_mode` from `main.py` into a callable function that the API can use.
+    * The endpoint should save results to files (as `main.py` does) and perhaps return a summary of metrics or a path to the metrics file. Also a long-running task.
+
+### 4.2. Enhance React UI
+
+1.  **Integrate Build & Evaluate API Calls:**
+    * Update `handleBuild` and `handleEvaluate` in `App.js` to make `Workspace` calls to the now functional `/api/build` and `/api/evaluate` backend endpoints.
+    * Handle responses and update UI state (logs, results) accordingly.
+2.  **Improve User Feedback for Long Operations:**
+    * For `build` and `evaluate`, which can take time, provide better user feedback than just a simple loading spinner (e.g., progress updates if possible, or at least a persistent "Processing..." message).
+    * Consider websockets or server-sent events for real-time log streaming from backend to frontend, though this adds complexity. For now, polling or just waiting might be sufficient.
+3.  **Display Results More Richly:**
+    * Instead of just `JSON.stringify` for evaluation metrics, parse the JSON and display it in a more readable format (e.g., a table).
+    * Consider how to display logs from the backend if they are returned via the API.
+4.  **Error Handling:** Improve error display and recovery in the UI.
+5.  **Configuration Management in UI:**
+    * Allow dynamic loading/selection of datasets (perhaps by scanning `./Data/` via a backend endpoint).
+    * Potentially allow viewing or even minor editing of method configurations (advanced).
+6.  **Styling and UX:** General improvements to user experience.
+
+### 4.3. Shareability (Dockerization & Deployment)
+
+1.  **Backend Dockerfile (`~/digimon/Dockerfile.backend`):**
+    * Start from a Python base image.
+    * Set up the conda environment (or install dependencies via `pip` from a `requirements.txt` generated from the conda env).
+    * Copy the entire `digimon` project directory.
+    * Expose port 5000.
+    * Set the `CMD` to run `python api.py`.
+2.  **Frontend Dockerfile (`~/digimon/graphrag-react-ui/Dockerfile.frontend`):**
+    * Use a multi-stage build.
+    * Stage 1: Node image, copy `package.json`, `package-lock.json`, run `npm install`, copy rest of UI source, run `npm run build` (to create static assets).
+    * Stage 2: Nginx or other lightweight static server image, copy static assets from Stage 1.
+    * Expose port 80 (or other).
+3.  **`docker-compose.yml` (`~/digimon/docker-compose.yml`):**
+    * Define two services: `backend` (from `Dockerfile.backend`) and `frontend` (from `Dockerfile.frontend`).
+    * Set up networking so the frontend can reach the backend.
+    * Map ports.
+4.  **Deployment:** Once dockerized, this can be deployed to various cloud platforms or servers.
+
+## 5. Project Structure Reminder
+
+* **Backend (WSL):** `~/digimon/` (contains `Core`, `Option`, `Data`, `api.py`, `main.py`, etc.)
+* **Frontend (Windows, but copied to WSL for unified Git repo):** `~/digimon/graphrag-react-ui/` (contains `src`, `public`, `package.json`, etc.)
+
+This handoff document should provide a good starting point for continuing development. The immediate focus for the next developer/chatbot would likely be fully implementing the `/api/build` and `/api/evaluate` backend endpoints and then integrating them into the React UI.

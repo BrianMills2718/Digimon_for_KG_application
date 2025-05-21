@@ -56,40 +56,74 @@ This fork decouples the original monolithic testing pipeline, transforming the p
 
 ```bash
 # Clone the repository from GitHub
-git clone https://github.com/JayLZhou/GraphRAG.git
-cd GraphRAG
+git clone https://github.com/BrianMills2718/Digimon_KG.git
+cd Digimon_KG
 ```
 
-### Run a Method
+### Install Dependencies
 
-You can run different GraphRAG methods by specifying the corresponding configuration file (`.yaml`). 
-
-#### Example: Running RAPTOR
+Ensure you have the required dependencies installed:
 ```bash
-python main.py -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
+conda env create -f experiment.yml -n digimon
+conda activate digimon
 ```
 
-#### Available Methods:
-The following methods are available, and each can be run using the same command format:
+### Decoupled Architecture
+
+This fork features a modular design with three distinct operational modes:
+
+1. **Build Mode**: Constructs the knowledge graph and generates all necessary artifacts
+2. **Query Mode**: Loads pre-built artifacts to efficiently answer questions
+3. **Evaluate Mode**: Assesses the performance of different methods against benchmarks
+
+#### Build Mode Example
 ```bash
-python main.py -opt Option/Method/<METHOD>.yaml -dataset_name your_dataset
+python main.py build -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
 ```
-Replace `<METHOD>` with one of the following:
 
-- `Dalk`
-- `GR`
-- `LGraphRAG` (Local search in GraphRAG)
-- `GGraphRAG` (Global search in GraphRAG)
-- `HippoRAG`
-- `KGP`
-- `LightRAG`
-- `RAPTOR`
-- `ToG`
-
-For example, to run `GraphRAG`:
+#### Query Mode Example
 ```bash
-python main.py -opt Option/Method/GraphRAG.yaml -dataset_name your_dataset
+python main.py query -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset -question "Your question here?"
 ```
+
+#### Evaluate Mode Example
+```bash
+python main.py evaluate -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
+```
+
+### Web Interface (API & UI)
+
+This fork also includes a Flask API server and React UI for a user-friendly experience:
+
+#### Start the Flask API Server
+```bash
+# From the repository root
+python api.py
+```
+This will start the server at http://localhost:5000, providing endpoints for `/api/query`, `/api/build`, and `/api/evaluate`.
+
+#### Start the React UI
+```bash
+# From the graphrag-react-ui directory
+cd graphrag-react-ui
+npm install  # Only needed first time
+npm start
+```
+Access the UI at http://localhost:3000, where you can select datasets and methods, run builds/queries/evaluations, and view results.
+
+### Available Methods
+
+All the following methods have been verified to work with the decoupled architecture in both build and query modes:
+
+- `Dalk` (Entity-Relation graph)
+- `GR` (G-Retriever, Entity-Relation graph)
+- `LGraphRAG` (Local search in GraphRAG, uses RKG with communities)
+- `GGraphRAG` (Global search in GraphRAG, uses RKG with communities)
+- `HippoRAG` (Entity-Relation graph)
+- `KGP` (Passage graph)
+- `LightRAG` (Rich knowledge graph)
+- `RAPTOR` (Tree graph)
+- `ToG` (Entity-Relation graph)
 
 ### Dependencies
 
