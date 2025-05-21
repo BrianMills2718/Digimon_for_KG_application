@@ -1,1 +1,46 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+*build*/
+*dist*/
+*.egg-info/
+venv/
+env/
+.env
+*.log
+*.pot
+*.sqlite3
+instance/
+.webassets-cache
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# Node / React UI (assuming UI is in 'graphrag-react-ui')
+graphrag-react-ui/node_modules/
+graphrag-react-ui/build/
+graphrag-react-ui/dist/
+graphrag-react-ui/.pnp
+graphrag-react-ui/.pnp.js
+graphrag-react-ui/coverage/
+graphrag-react-ui/.DS_Store
+graphrag-react-ui/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE / OS specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Results / Artifacts (customize as needed)
+results/
