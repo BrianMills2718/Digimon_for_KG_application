@@ -44,3 +44,6 @@ Thumbs.db
 
 # Results / Artifacts (customize as needed)
 results/
+decoupling_logs/
+# If you have specific large data files in ./Data that shouldn't be in Git
+# Data/MyLargeDataset/
