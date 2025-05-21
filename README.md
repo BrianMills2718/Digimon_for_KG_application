@@ -1,4 +1,13 @@
 
+## Credits
+
+This project is a fork of [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG).
+All credit for the original design and implementation goes to the original authors.
+
+### About this Fork
+
+This fork decouples the original monolithic testing pipeline, transforming the project into a functional Knowledge Graph (KG) system. You can now **separately format your documents, build the KG, query the KG, and evaluate your results**. This modular approach enables more flexible experimentation and integration into other workflows.
+
 ## 👾 DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems
 
 
