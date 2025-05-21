@@ -1,7 +1,5 @@
 {
-    "accuracy": 20.0,
-    "f1": 6.346704042630757,
-    "precision": 3.349488268470322,
-    "recall": 85.0,
-    "em": 0.0
+  "total_questions_in_file": 5,
+  "questions_processed": 5,
+  "questions_failed_to_answer": 0
 }

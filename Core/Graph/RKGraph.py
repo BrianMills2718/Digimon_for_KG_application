@@ -1,5 +1,6 @@
 import re
 import asyncio
+import json
 from collections import defaultdict
 from typing import Union, List, Any
 from Core.Graph.BaseGraph import BaseGraph
@@ -88,6 +89,7 @@ class RKGraph(BaseGraph):
             glean_result = await self.llm.aask(context)
             working_memory.add(Message(content=glean_result, role="assistant"))
             final_result += glean_result
+            logger.info(f"Gleaning step {glean_idx + 1}: Accumulated LLM output so far: {glean_result[:500]}...")
 
             if glean_idx == self.config.max_gleaning - 1:
                 break
@@ -97,29 +99,36 @@ class RKGraph(BaseGraph):
             if_loop_result = await self.llm.aask(context)
             if if_loop_result.strip().strip('"').strip("'").lower() != "yes":
                 break
+        logger.info(f"Raw LLM output for chunk {chunk_info.chunk_id} before splitting: >>>\n{final_result}\n<<<")
         working_memory.clear()
-        return split_string_by_multi_markers(final_result, [
+        extracted_records = split_string_by_multi_markers(final_result, [
             DEFAULT_RECORD_DELIMITER, DEFAULT_COMPLETION_DELIMITER
         ])
+        logger.info(f"Split records for chunk {chunk_info.chunk_id}: {extracted_records}")
+        return extracted_records
 
     async def _build_graph_from_records(self, records: list[str], chunk_key: str):
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 
         for record in records:
+            logger.info(f"Processing record: '{record}'")
             match = re.search(r"\((.*)\)", record)
             if match is None:
                 continue
 
             record_attributes = split_string_by_multi_markers(match.group(1), [DEFAULT_TUPLE_DELIMITER])
+            logger.info(f"Record attributes after splitting by tuple delimiter: {record_attributes}")
             entity = await self._handle_single_entity_extraction(record_attributes, chunk_key)
 
             if entity is not None:
+                logger.info(f"Successfully extracted entity: {json.dumps(entity.as_dict, indent=2)}")
                 maybe_nodes[entity.entity_name].append(entity)
                 continue
 
             relationship = await self._handle_single_relationship_extraction(record_attributes, chunk_key)
 
             if relationship is not None:
+                logger.info(f"Successfully extracted relationship: {json.dumps(relationship.as_dict, indent=2)}")
                 maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
         return dict(maybe_nodes), dict(maybe_edges)

@@ -76,7 +76,7 @@ class Config(WorkingParams, YamlModel):
         return Config(**opt)
 
     @classmethod
-    def parse(cls, _path, dataset_name):
+    def parse(cls, _path, dataset_name, exp_name: Optional[str] = None):
         """Parse config from yaml file"""
         opt = [parse(_path)]
 
@@ -89,6 +89,11 @@ class Config(WorkingParams, YamlModel):
         final = merge_dict(opt)
         final["dataset_name"] = dataset_name
         final["working_dir"] = os.path.join(final["working_dir"], dataset_name)
+        if exp_name is not None:
+            final["exp_name"] = exp_name
+        elif "exp_name" not in final:
+            final["exp_name"] = cls.exp_name
+        # else: use exp_name from YAML if present
         return Config(**final)
     
     @classmethod

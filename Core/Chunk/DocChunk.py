@@ -1,5 +1,7 @@
 import asyncio
 from Core.Chunk.ChunkFactory import create_chunk_method
+from pathlib import Path
+import os
 from Core.Common.Utils import mdhash_id
 from Core.Common.Logger import logger
 from Core.Schema.ChunkSchema import TextChunk
@@ -27,29 +29,74 @@ class DocChunk:
         is_exist = await self._load_chunk(force)
         if not is_exist or force:
             processed_docs_dict = {}
+            docs_input_path = None
+
             if isinstance(docs, str):
-                processed_docs_dict = {mdhash_id(docs.strip(), prefix="doc-"): {"content": docs.strip(), "title": ""}}
+                docs_input_path = Path(docs)
+
+            if docs_input_path and docs_input_path.is_dir():
+                logger.info(f"Processing documents from directory: {docs_input_path}")
+                for filepath in docs_input_path.glob("*.txt"):
+                    try:
+                        doc_content = filepath.read_text(encoding='utf-8').strip()
+                        if doc_content:
+                            doc_id = mdhash_id(doc_content, prefix="doc-")
+                            processed_docs_dict[doc_id] = {"content": doc_content, "title": filepath.name}
+                            logger.info(f"Read and processed file: {filepath.name}")
+                        else:
+                            logger.warning(f"File {filepath.name} is empty. Skipping.")
+                    except Exception as e:
+                        logger.error(f"Error reading or processing file {filepath}: {e}")
+            elif docs_input_path and docs_input_path.is_file():
+                logger.info(f"Processing single document file: {docs_input_path}")
+                try:
+                    doc_content = docs_input_path.read_text(encoding='utf-8').strip()
+                    if doc_content:
+                        doc_id = mdhash_id(doc_content, prefix="doc-")
+                        processed_docs_dict[doc_id] = {"content": doc_content, "title": docs_input_path.name}
+                        logger.info(f"Read and processed file: {docs_input_path.name}")
+                    else:
+                        logger.warning(f"File {docs_input_path.name} is empty. Skipping.")
+                except Exception as e:
+                    logger.error(f"Error reading or processing file {docs_input_path}: {e}")
             elif isinstance(docs, list):
                 if all(isinstance(doc, dict) and "content" in doc for doc in docs):
+                    logger.info("Processing list of document dictionaries.")
                     processed_docs_dict = {
-                        # Use doc_id from input if available, else generate
                         doc.get("doc_id", mdhash_id(doc["content"].strip(), prefix="doc-")): {
                             "content": doc["content"].strip(),
                             "title": doc.get("title", ""),
                         }
-                        for doc in docs
+                        for doc in docs if doc["content"].strip()
                     }
-                elif all(isinstance(doc, str) for doc in docs): # List of strings
+                elif all(isinstance(doc, str) for doc in docs):
+                    logger.info("Processing list of document content strings.")
                     processed_docs_dict = {
                         mdhash_id(doc.strip(), prefix="doc-"): {
                             "content": doc.strip(),
                             "title": "",
                         }
-                        for doc in docs
+                        for doc in docs if doc.strip()
                     }
                 else:
                     logger.error("Unsupported format for 'docs' list. Expected list of dicts with 'content' or list of strings.")
                     return
+            elif isinstance(docs, str):
+                logger.info("Processing 'docs' as a single string content.")
+                doc_content = docs.strip()
+                if doc_content:
+                    processed_docs_dict = {mdhash_id(doc_content, prefix="doc-"): {"content": doc_content, "title": ""}}
+                else:
+                    logger.warning("Input string 'docs' is empty. No documents to process.")
+            else:
+                logger.error(f"Unsupported type for 'docs' input: {type(docs)}. Expected path string, list of dicts, or list of strings.")
+                return
+
+            if not processed_docs_dict:
+                logger.error("No documents were processed or found from the input. Chunking cannot proceed.")
+                await self._chunk.persist()
+                logger.info("✅ Finished the chunking stage (no documents processed).")
+                return
 
 
             flatten_list = list(processed_docs_dict.items())
