@@ -1,226 +1,31 @@
 {
-  "2": {
-    "report_string": "# Thirteen Colonies and American Revolution\n\nImpact of Navigation Acts\n\n## Historical Significance of Thirteen Colonies\n\nThe Thirteen Colonies, established in the 17th century, were pivotal in the American Revolution, playing a crucial role in shaping the future of the United States. Their interactions with the English Empire, including governance and development, laid the foundation for American identity and independence. The colonies' strategic location and economic contributions made them key players in the historical landscape of North America.\n\n## Impact of Royal Proclamation of 1763\n\nThe Royal Proclamation of 1763 significantly impacted the Thirteen Colonies by affecting their territorial expansion and relations with Native Americans. This policy, issued by the English Empire, aimed to regulate westward migration and stabilize the region but instead fueled tensions and resistance among the colonists. The proclamation's repercussions reverberated throughout the colonies, shaping their political and social dynamics.\n\n## Role of Grenville Ministry\n\nThe Grenville Ministry, through actions like issuing the Royal Proclamation of 1763, played a crucial role in shaping the relationship between the Thirteen Colonies and the English Empire. The ministry's policies and decisions directly impacted the colonies' governance, trade relations, and interactions with Native Americans. Understanding the Grenville Ministry's influence provides insights into the power dynamics and conflicts that characterized the colonial period.\n\n## Impact of Navigation Acts\n\nThe Navigation Acts, a series of laws regulating colonial trade and restricting interactions with foreign countries, had a profound impact on the economic activities of the Thirteen Colonies. These acts, imposed by the English Empire, aimed to centralize trade and maximize imperial control but often clashed with the colonies' aspirations for economic autonomy. The Navigation Acts shaped the colonies' trade networks, economic development, and resistance to external regulations.",
-    "report_json": {
-      "title": "Thirteen Colonies and American Revolution",
-      "summary": "The community is centered around the Thirteen Colonies, which were established in the 17th century as part of the English Empire and played a crucial role in the American Revolution. The colonies were affected by the Royal Proclamation of 1763, tensions with Native Americans, and the Navigation Acts. The English Empire influenced the development of American identity, while the Grenville Ministry issued the Royal Proclamation of 1763 impacting westward migration and relations with Native Americans.",
-      "rating": 8.5,
-      "rating_explanation": "The impact severity rating is high due to the significant historical importance of the Thirteen Colonies in shaping the American Revolution and the impact of key policies and events on their development.",
-      "findings": [
-        {
-          "summary": "Historical Significance of Thirteen Colonies",
-          "explanation": "The Thirteen Colonies, established in the 17th century, were pivotal in the American Revolution, playing a crucial role in shaping the future of the United States. Their interactions with the English Empire, including governance and development, laid the foundation for American identity and independence. The colonies' strategic location and economic contributions made them key players in the historical landscape of North America."
-        },
-        {
-          "summary": "Impact of Royal Proclamation of 1763",
-          "explanation": "The Royal Proclamation of 1763 significantly impacted the Thirteen Colonies by affecting their territorial expansion and relations with Native Americans. This policy, issued by the English Empire, aimed to regulate westward migration and stabilize the region but instead fueled tensions and resistance among the colonists. The proclamation's repercussions reverberated throughout the colonies, shaping their political and social dynamics."
-        },
-        {
-          "summary": "Role of Grenville Ministry",
-          "explanation": "The Grenville Ministry, through actions like issuing the Royal Proclamation of 1763, played a crucial role in shaping the relationship between the Thirteen Colonies and the English Empire. The ministry's policies and decisions directly impacted the colonies' governance, trade relations, and interactions with Native Americans. Understanding the Grenville Ministry's influence provides insights into the power dynamics and conflicts that characterized the colonial period."
-        },
-        {
-          "summary": "Impact of Navigation Acts",
-          "explanation": "The Navigation Acts, a series of laws regulating colonial trade and restricting interactions with foreign countries, had a profound impact on the economic activities of the Thirteen Colonies. These acts, imposed by the English Empire, aimed to centralize trade and maximize imperial control but often clashed with the colonies' aspirations for economic autonomy. The Navigation Acts shaped the colonies' trade networks, economic development, and resistance to external regulations."
-        }
-      ]
-    },
-    "level": 0,
-    "title": "Cluster 2",
-    "edges": [
-      [
-        "royal proclamation of 1763",
-        "thirteen colonies"
-      ],
-      [
-        "navigation acts",
-        "thirteen colonies"
-      ],
-      [
-        "english empire",
-        "thirteen colonies"
-      ],
-      [
-        "grenville ministry",
-        "thirteen colonies"
-      ]
-    ],
-    "nodes": [
-      "thirteen colonies",
-      "grenville ministry",
-      "english empire",
-      "navigation acts"
-    ],
-    "chunk_ids": [
-      "chunk-541c2fb47007dc4d93603094626a6541",
-      "chunk-41b312f13f5f70362056f212ec061600",
-      "chunk-7421266e36f8a3a10735faa45747264e"
-    ],
-    "occurrence": 1.0,
-    "sub_communities": []
-  },
-  "1": {
-    "report_string": "# Royal Proclamation of 1763 and Thirteen Colonies\n\nImpact on Land Speculators\n\n## Significance of the Royal Proclamation of 1763\n\nThe Royal Proclamation of 1763 played a crucial role in shaping colonial relations, territorial boundaries, and policies post the French and Indian War. It defined the limits of westward expansion, impacting land speculators and white colonists. The proclamation's influence on the Thirteen Colonies and Native American relations set the stage for future conflicts and resistance movements.\n\n## Impact on Colonial Boundaries and Policies\n\nThe Royal Proclamation of 1763 significantly influenced colonial boundaries and policies, particularly in relation to westward migration and territorial claims. The proclamation's restrictions on white settlement and land speculation angered various groups, leading to tensions and disputes over land rights. This impact reverberated through the Thirteen Colonies, shaping their interactions with Native Americans and the British government.\n\n## Role of the Thirteen Colonies\n\nThe Thirteen Colonies were directly affected by the Royal Proclamation of 1763, as it imposed restrictions on their territorial expansion and interactions with Native American tribes. The proclamation's influence on colonial policies and boundaries prompted responses from the colonies, contributing to growing discontent and resistance against British rule. This dynamic relationship between the colonies and the proclamation set the stage for future revolutionary movements.\n\n## British Government's Involvement\n\nThe British government's role in imposing taxes and regulations on the colonies, coupled with the policies outlined in the Royal Proclamation of 1763, fueled tensions and resistance among the colonists. The collaboration between the British government and the colonies during the French and Indian War laid the groundwork for future conflicts, as colonial contributions to the war effort were not reciprocated in terms of autonomy and territorial rights.\n\n## Impact on Land Speculators\n\nLand speculators were significantly impacted by the Royal Proclamation of 1763, as it restricted their interests in westward expansion and land acquisition. The proclamation's delineation of territorial boundaries and policies disrupted the plans of speculators, leading to economic losses and discontent within this group. The tensions between land speculators and the proclamation highlighted the economic implications of colonial policies on private interests.",
-    "report_json": {
-      "title": "Royal Proclamation of 1763 and Thirteen Colonies",
-      "summary": "The community is centered around the Royal Proclamation of 1763 and its impact on the Thirteen Colonies. The proclamation defined territorial boundaries and policies post the French and Indian War, affecting relationships with Native Americans and white colonists. It also influenced colonial boundaries and policies, leading to tensions and resistance.",
-      "rating": 7.5,
-      "rating_explanation": "The impact severity rating is high due to the significant historical implications of the Royal Proclamation of 1763 on colonial relations, territorial boundaries, and resistance movements.",
-      "findings": [
-        {
-          "summary": "Significance of the Royal Proclamation of 1763",
-          "explanation": "The Royal Proclamation of 1763 played a crucial role in shaping colonial relations, territorial boundaries, and policies post the French and Indian War. It defined the limits of westward expansion, impacting land speculators and white colonists. The proclamation's influence on the Thirteen Colonies and Native American relations set the stage for future conflicts and resistance movements."
-        },
-        {
-          "summary": "Impact on Colonial Boundaries and Policies",
-          "explanation": "The Royal Proclamation of 1763 significantly influenced colonial boundaries and policies, particularly in relation to westward migration and territorial claims. The proclamation's restrictions on white settlement and land speculation angered various groups, leading to tensions and disputes over land rights. This impact reverberated through the Thirteen Colonies, shaping their interactions with Native Americans and the British government."
-        },
-        {
-          "summary": "Role of the Thirteen Colonies",
-          "explanation": "The Thirteen Colonies were directly affected by the Royal Proclamation of 1763, as it imposed restrictions on their territorial expansion and interactions with Native American tribes. The proclamation's influence on colonial policies and boundaries prompted responses from the colonies, contributing to growing discontent and resistance against British rule. This dynamic relationship between the colonies and the proclamation set the stage for future revolutionary movements."
-        },
-        {
-          "summary": "British Government's Involvement",
-          "explanation": "The British government's role in imposing taxes and regulations on the colonies, coupled with the policies outlined in the Royal Proclamation of 1763, fueled tensions and resistance among the colonists. The collaboration between the British government and the colonies during the French and Indian War laid the groundwork for future conflicts, as colonial contributions to the war effort were not reciprocated in terms of autonomy and territorial rights."
-        },
-        {
-          "summary": "Impact on Land Speculators",
-          "explanation": "Land speculators were significantly impacted by the Royal Proclamation of 1763, as it restricted their interests in westward expansion and land acquisition. The proclamation's delineation of territorial boundaries and policies disrupted the plans of speculators, leading to economic losses and discontent within this group. The tensions between land speculators and the proclamation highlighted the economic implications of colonial policies on private interests."
-        }
-      ]
-    },
-    "level": 0,
-    "title": "Cluster 1",
-    "edges": [
-      [
-        "colonies",
-        "royal proclamation of 1763"
-      ],
-      [
-        "royal proclamation of 1763",
-        "thirteen colonies"
-      ],
-      [
-        "british government",
-        "colonies"
-      ],
-      [
-        "appalachian mountains",
-        "royal proclamation of 1763"
-      ],
-      [
-        "british parliament",
-        "colonies"
-      ],
-      [
-        "land speculators",
-        "royal proclamation of 1763"
-      ],
-      [
-        "royal proclamation of 1763",
-        "white colonists"
-      ]
-    ],
-    "nodes": [
-      "land speculators",
-      "royal proclamation of 1763",
-      "appalachian mountains",
-      "british parliament",
-      "colonies"
-    ],
-    "chunk_ids": [
-      "chunk-41b312f13f5f70362056f212ec061600",
-      "chunk-7421266e36f8a3a10735faa45747264e"
-    ],
-    "occurrence": 0.6666666666666666,
-    "sub_communities": []
-  },
-  "3": {
-    "report_string": "# British Government and French and Indian War Community\n\nMississippi River's Geopolitical Significance\n\n## British Government's Military Involvement\n\nThe British Government played a pivotal role in the French and Indian War by fielding soldiers and volunteers, which led to significant territorial acquisitions. This military involvement not only shaped the outcome of the war but also influenced future relationships between the British Government, the colonies, and other entities involved.\n\n## Great Britain's Territorial Expansion\n\nGreat Britain's victory over France in the French and Indian War resulted in the acquisition of territory east of the Mississippi River. This territorial expansion marked a significant geopolitical shift and established Great Britain as a dominant colonial power in the region, impacting the balance of power and trade dynamics.\n\n## French and Indian War's Collaborative Nature\n\nThe French and Indian War was characterized by collaboration between the British Government, colonial volunteers, and other entities. This collaborative effort not only defined the military strategy of the war but also laid the foundation for future alliances and conflicts, shaping the course of history in the region.\n\n## Mississippi River's Geopolitical Significance\n\nThe Mississippi River served as a crucial geographical marker, delineating the eastern boundary of the territory acquired by Great Britain after defeating France. This boundary played a key role in defining the extent of British territorial control and influence in the region, impacting trade routes and colonial expansion.",
-    "report_json": {
-      "title": "British Government and French and Indian War Community",
-      "summary": "The community is centered around the British Government and the French and Indian War, where the British Government fielded soldiers and contributed to the war effort, leading to territorial acquisitions. Great Britain, as a key entity, defeated France during the war and acquired territory east of the Mississippi River. The Mississippi River marked the eastern boundary of the acquired territory, showcasing the geographical significance of the community.",
-      "rating": 7.5,
-      "rating_explanation": "The impact severity rating is high due to the historical significance of the British Government's actions during the French and Indian War and the resulting territorial acquisitions, shaping future relationships and geopolitical boundaries.",
-      "findings": [
-        {
-          "summary": "British Government's Military Involvement",
-          "explanation": "The British Government played a pivotal role in the French and Indian War by fielding soldiers and volunteers, which led to significant territorial acquisitions. This military involvement not only shaped the outcome of the war but also influenced future relationships between the British Government, the colonies, and other entities involved."
-        },
-        {
-          "summary": "Great Britain's Territorial Expansion",
-          "explanation": "Great Britain's victory over France in the French and Indian War resulted in the acquisition of territory east of the Mississippi River. This territorial expansion marked a significant geopolitical shift and established Great Britain as a dominant colonial power in the region, impacting the balance of power and trade dynamics."
-        },
-        {
-          "summary": "French and Indian War's Collaborative Nature",
-          "explanation": "The French and Indian War was characterized by collaboration between the British Government, colonial volunteers, and other entities. This collaborative effort not only defined the military strategy of the war but also laid the foundation for future alliances and conflicts, shaping the course of history in the region."
-        },
-        {
-          "summary": "Mississippi River's Geopolitical Significance",
-          "explanation": "The Mississippi River served as a crucial geographical marker, delineating the eastern boundary of the territory acquired by Great Britain after defeating France. This boundary played a key role in defining the extent of British territorial control and influence in the region, impacting trade routes and colonial expansion."
-        }
-      ]
-    },
-    "level": 0,
-    "title": "Cluster 3",
-    "edges": [
-      [
-        "british government",
-        "colonies"
-      ],
-      [
-        "british government",
-        "french and indian war"
-      ],
-      [
-        "great britain",
-        "mississippi river"
-      ],
-      [
-        "british government",
-        "great britain"
-      ]
-    ],
-    "nodes": [
-      "great britain",
-      "french and indian war",
-      "mississippi river",
-      "british government"
-    ],
-    "chunk_ids": [
-      "chunk-541c2fb47007dc4d93603094626a6541",
-      "chunk-7421266e36f8a3a10735faa45747264e"
-    ],
-    "occurrence": 0.6666666666666666,
-    "sub_communities": []
-  },
   "0": {
-    "report_string": "# Native Americans, White Colonists, and British Soldiers\n\nTerritorial Disputes and Power Struggles\n\n## Historical Conflicts and Interventions\n\nThe community's history is marked by conflicts between Native Americans and White Colonists in newly acquired territories, with British soldiers intervening in these conflicts. These interactions have shaped the power dynamics and relationships within the community, leading to long-lasting impacts on the involved entities.\n\n## Role of White Colonists\n\nWhite colonists played a significant role in instigating conflicts with Native Americans, leading to tensions and confrontations in the newly acquired territories. Their actions and motivations have influenced the community's development and relationships, contributing to the overall complexity of the historical narrative.\n\n## British Soldiers' Interventions\n\nBritish soldiers intervened in conflicts between Native Americans and White Colonists, attempting to maintain order and control in the acquired territories. Their presence and actions have had a profound impact on the community dynamics, influencing the outcomes of various interactions and shaping the historical trajectory of the community.\n\n## Impact of the Royal Proclamation of 1763\n\nThe Royal Proclamation of 1763 significantly impacted the community by angering white colonists through its restrictions on white settlement in certain territories. This proclamation altered the power dynamics and territorial claims within the community, leading to further tensions and conflicts among the involved entities.\n\n## Territorial Disputes and Power Struggles\n\nTerritorial disputes and power struggles between Native Americans, White Colonists, and British Soldiers have been central to the community's history. These conflicts over land, resources, and control have shaped the relationships and interactions between the entities, contributing to the ongoing complexities and challenges within the community.",
+    "report_string": "# French Revolution and Key Events\n\nRelationship between Entities\n\n## Role of the Ancien Régime\n\nThe Ancien Régime played a crucial role in the French Revolution as its social, political, and economic factors contributed to the unrest that led to the revolution. The inability of the Ancien Régime to address key issues paved the way for significant changes in France, marking the beginning of a new era.\n\n## Significance of the Coup of 18 Brumaire\n\nThe Coup of 18 Brumaire marked a pivotal moment in the French Revolution, signaling the end of the revolutionary period and the establishment of the Consulate under Napoleon Bonaparte. This event reshaped the political landscape of France and set the stage for Napoleon's rise to power, impacting the course of European history.\n\n## Influence of Revolts of the 1780s\n\nThe Revolts of the 1780s, including the American Revolution, inspired public debate on key revolutionary ideals such as patriotism, liberty, and democracy in France. These revolts influenced the discourse surrounding the French Revolution, shaping the aspirations and motivations of the revolutionaries as they sought to redefine the social and political order.\n\n## Symbolism of the Storming of the Bastille\n\nThe Storming of the Bastille on 14 July symbolized the people's uprising against the monarchy and became a defining moment in the French Revolution. This event represented the popular discontent with the existing regime and marked the beginning of a revolutionary movement that sought to challenge traditional power structures and demand greater political representation.\n\n## Relationship between Entities\n\nThe relationships between the entities within this community highlight the interconnected nature of the French Revolution and its key events. From the Ancien Régime's failures to the symbolic significance of the Storming of the Bastille, each entity and relationship contributed to the revolutionary fervor that reshaped France and reverberated across Europe.",
     "report_json": {
-      "title": "Native Americans, White Colonists, and British Soldiers",
-      "summary": "The community involves interactions between Native Americans, White Colonists, and British Soldiers in newly acquired territories. White colonists instigated conflicts with Native Americans, leading to interventions by British soldiers. The Royal Proclamation of 1763 further complicated relations by restricting white settlement in certain territories.",
-      "rating": 7.5,
-      "rating_explanation": "The impact severity rating is high due to the historical conflicts and interventions between Native Americans, White Colonists, and British Soldiers, as well as the significant impact of the Royal Proclamation of 1763 on the community dynamics.",
+      "title": "French Revolution and Key Events",
+      "summary": "The community is centered around the French Revolution, a period of significant political and societal change in France. Key entities include the Ancien Régime, Coup of 18 Brumaire, Revolts of the 1780s, and Storming of the Bastille, all interconnected through various relationships that shaped the course of the revolution.",
+      "rating": 8.5,
+      "rating_explanation": "The impact severity rating is high due to the transformative nature of the French Revolution and its lasting influence on modern political systems.",
       "findings": [
         {
-          "summary": "Historical Conflicts and Interventions",
-          "explanation": "The community's history is marked by conflicts between Native Americans and White Colonists in newly acquired territories, with British soldiers intervening in these conflicts. These interactions have shaped the power dynamics and relationships within the community, leading to long-lasting impacts on the involved entities."
+          "summary": "Role of the Ancien Régime",
+          "explanation": "The Ancien Régime played a crucial role in the French Revolution as its social, political, and economic factors contributed to the unrest that led to the revolution. The inability of the Ancien Régime to address key issues paved the way for significant changes in France, marking the beginning of a new era."
         },
         {
-          "summary": "Role of White Colonists",
-          "explanation": "White colonists played a significant role in instigating conflicts with Native Americans, leading to tensions and confrontations in the newly acquired territories. Their actions and motivations have influenced the community's development and relationships, contributing to the overall complexity of the historical narrative."
+          "summary": "Significance of the Coup of 18 Brumaire",
+          "explanation": "The Coup of 18 Brumaire marked a pivotal moment in the French Revolution, signaling the end of the revolutionary period and the establishment of the Consulate under Napoleon Bonaparte. This event reshaped the political landscape of France and set the stage for Napoleon's rise to power, impacting the course of European history."
         },
         {
-          "summary": "British Soldiers' Interventions",
-          "explanation": "British soldiers intervened in conflicts between Native Americans and White Colonists, attempting to maintain order and control in the acquired territories. Their presence and actions have had a profound impact on the community dynamics, influencing the outcomes of various interactions and shaping the historical trajectory of the community."
+          "summary": "Influence of Revolts of the 1780s",
+          "explanation": "The Revolts of the 1780s, including the American Revolution, inspired public debate on key revolutionary ideals such as patriotism, liberty, and democracy in France. These revolts influenced the discourse surrounding the French Revolution, shaping the aspirations and motivations of the revolutionaries as they sought to redefine the social and political order."
         },
         {
-          "summary": "Impact of the Royal Proclamation of 1763",
-          "explanation": "The Royal Proclamation of 1763 significantly impacted the community by angering white colonists through its restrictions on white settlement in certain territories. This proclamation altered the power dynamics and territorial claims within the community, leading to further tensions and conflicts among the involved entities."
+          "summary": "Symbolism of the Storming of the Bastille",
+          "explanation": "The Storming of the Bastille on 14 July symbolized the people's uprising against the monarchy and became a defining moment in the French Revolution. This event represented the popular discontent with the existing regime and marked the beginning of a revolutionary movement that sought to challenge traditional power structures and demand greater political representation."
         },
         {
-          "summary": "Territorial Disputes and Power Struggles",
-          "explanation": "Territorial disputes and power struggles between Native Americans, White Colonists, and British Soldiers have been central to the community's history. These conflicts over land, resources, and control have shaped the relationships and interactions between the entities, contributing to the ongoing complexities and challenges within the community."
+          "summary": "Relationship between Entities",
+          "explanation": "The relationships between the entities within this community highlight the interconnected nature of the French Revolution and its key events. From the Ancien Régime's failures to the symbolic significance of the Storming of the Bastille, each entity and relationship contributed to the revolutionary fervor that reshaped France and reverberated across Europe."
         }
       ]
     },
@@ -228,27 +33,163 @@
     "title": "Cluster 0",
     "edges": [
       [
-        "british soldiers",
-        "native americans"
+        "french revolution",
+        "revolts of the 1780s"
       ],
       [
-        "native americans",
-        "white colonists"
+        "french revolution",
+        "storming of the bastille"
       ],
       [
-        "royal proclamation of 1763",
-        "white colonists"
+        "estates general",
+        "french revolution"
+      ],
+      [
+        "ancien r gime",
+        "french revolution"
+      ],
+      [
+        "coup of 18 brumaire",
+        "french revolution"
       ]
     ],
     "nodes": [
-      "native americans",
-      "british soldiers",
-      "white colonists"
+      "coup of 18 brumaire",
+      "storming of the bastille",
+      "revolts of the 1780s",
+      "ancien r gime",
+      "french revolution"
     ],
     "chunk_ids": [
-      "chunk-7421266e36f8a3a10735faa45747264e"
+      "chunk-368c7113ca6d5c34ca1cc15cf9e2825a"
     ],
-    "occurrence": 0.3333333333333333,
+    "occurrence": 0.5,
+    "sub_communities": []
+  },
+  "1": {
+    "report_string": "# Estates General and French Revolution\n\nParlement of Paris's Role in Voting Dynamics\n\n## Significance of the Estates General\n\nThe Estates General played a crucial role in the French Revolution, particularly in 1789, marking the beginning of significant political changes in France. Its summoning to address tax and representation issues was a turning point that led to the formation of the National Assembly and ultimately the revolution itself. The Estates General's decisions and actions had a profound impact on the course of French history.\n\n## Brienne's Resignation and Impact\n\nBrienne's resignation in the face of rejection of new taxes was a key event that triggered the summoning of the Estates General. This decision set off a chain of events that culminated in the revolution. Brienne's involvement and subsequent actions influenced the political landscape and contributed to the escalating tensions that led to the revolution.\n\n## Assembly of Notables Advocacy\n\nThe Assembly of Notables played a significant role in advocating for the approval of new taxes by the Estates General. Their advocacy impacted legislative processes and decision-making within the community. The Assembly's stance on taxation and representation issues influenced the direction of political reforms and set the stage for broader societal changes.\n\n## Jacques Necker's Financial Challenges\n\nJacques Necker's appointment as finance minister following Brienne's resignation placed him in a challenging position regarding financial management. Necker inherited a complex financial situation and faced difficulties in navigating the economic landscape of the time. His decisions and policies had far-reaching consequences on the community's economic stability and contributed to the revolutionary fervor.\n\n## Parlement of Paris's Role in Voting Dynamics\n\nThe Parlement of Paris played a crucial role in shaping the voting dynamics of the Estates General through its rulings on the format of the assembly. These decisions influenced the representation and power dynamics within the community, impacting the outcomes of key legislative processes. The Parlement's involvement in the community underscored the intricate interplay between political institutions during this transformative period.",
+    "report_json": {
+      "title": "Estates General and French Revolution",
+      "summary": "The community is centered around the Estates General and its role in the French Revolution. Key entities include Brienne, Assembly of Notables, Jacques Necker, and Parlement of Paris, all interconnected through political and financial events leading up to the revolution.",
+      "rating": 8.5,
+      "rating_explanation": "The impact severity rating is high due to the pivotal role of the Estates General in initiating the French Revolution and the significant political changes it brought about in France.",
+      "findings": [
+        {
+          "summary": "Significance of the Estates General",
+          "explanation": "The Estates General played a crucial role in the French Revolution, particularly in 1789, marking the beginning of significant political changes in France. Its summoning to address tax and representation issues was a turning point that led to the formation of the National Assembly and ultimately the revolution itself. The Estates General's decisions and actions had a profound impact on the course of French history."
+        },
+        {
+          "summary": "Brienne's Resignation and Impact",
+          "explanation": "Brienne's resignation in the face of rejection of new taxes was a key event that triggered the summoning of the Estates General. This decision set off a chain of events that culminated in the revolution. Brienne's involvement and subsequent actions influenced the political landscape and contributed to the escalating tensions that led to the revolution."
+        },
+        {
+          "summary": "Assembly of Notables Advocacy",
+          "explanation": "The Assembly of Notables played a significant role in advocating for the approval of new taxes by the Estates General. Their advocacy impacted legislative processes and decision-making within the community. The Assembly's stance on taxation and representation issues influenced the direction of political reforms and set the stage for broader societal changes."
+        },
+        {
+          "summary": "Jacques Necker's Financial Challenges",
+          "explanation": "Jacques Necker's appointment as finance minister following Brienne's resignation placed him in a challenging position regarding financial management. Necker inherited a complex financial situation and faced difficulties in navigating the economic landscape of the time. His decisions and policies had far-reaching consequences on the community's economic stability and contributed to the revolutionary fervor."
+        },
+        {
+          "summary": "Parlement of Paris's Role in Voting Dynamics",
+          "explanation": "The Parlement of Paris played a crucial role in shaping the voting dynamics of the Estates General through its rulings on the format of the assembly. These decisions influenced the representation and power dynamics within the community, impacting the outcomes of key legislative processes. The Parlement's involvement in the community underscored the intricate interplay between political institutions during this transformative period."
+        }
+      ]
+    },
+    "level": 0,
+    "title": "Cluster 1",
+    "edges": [
+      [
+        "brienne",
+        "estates general"
+      ],
+      [
+        "estates general",
+        "french revolution"
+      ],
+      [
+        "brienne",
+        "calonne"
+      ],
+      [
+        "brienne",
+        "jacques necker"
+      ],
+      [
+        "assembly of notables",
+        "estates general"
+      ],
+      [
+        "estates general",
+        "parlement of paris"
+      ]
+    ],
+    "nodes": [
+      "brienne",
+      "parlement of paris",
+      "assembly of notables",
+      "jacques necker",
+      "estates general"
+    ],
+    "chunk_ids": [
+      "chunk-517dd89f19429314e274bd8c27777e5c",
+      "chunk-368c7113ca6d5c34ca1cc15cf9e2825a"
+    ],
+    "occurrence": 1.0,
+    "sub_communities": []
+  },
+  "2": {
+    "report_string": "# French Revolution and Financial Crisis\n\nBrienne's Involvement and the Estates General\n\n## Calonne's Tax Reforms and Financial Crisis\n\nCalonne proposed tax reforms that were rejected, leading to financial strain and a debt crisis for the Monarchy. This rejection had significant implications for the economic stability of France, ultimately contributing to the downfall of the Monarchy and the establishment of the French First Republic.\n\n## Monarchy's Debt Crisis\n\nThe Monarchy faced a debt crisis as a result of the rejection of Calonne's tax reforms. This crisis had profound effects on the financial stability of the Monarchy, leading to increased borrowing post-war and exacerbating the economic challenges faced by the ruling establishment.\n\n## Establishment of the French First Republic\n\nThe French First Republic was established after the abolition of the Monarchy during the French Revolution. This marked a significant shift in France's political structure, transitioning from a monarchy to a republic. The establishment of the republic was a pivotal moment in French history, symbolizing the end of the old regime and the beginning of a new era.\n\n## Brienne's Involvement and the Estates General\n\nCalonne's proposed reforms being rejected led to Brienne's involvement and the summoning of the Estates General. This event was a crucial turning point in the lead-up to the French Revolution, as it highlighted the growing discontent with the Monarchy and set the stage for further revolutionary actions.",
+    "report_json": {
+      "title": "French Revolution and Financial Crisis",
+      "summary": "The community is centered around the French Revolution and the subsequent financial crisis, with key entities including Calonne, Monarchy, and the French First Republic. Calonne's proposed tax reforms were rejected, leading to financial strain and a debt crisis for the Monarchy, ultimately resulting in the establishment of the French First Republic.",
+      "rating": 7.5,
+      "rating_explanation": "The impact severity rating is high due to the significant historical implications of the French Revolution and the financial crisis on the political and economic landscape of France.",
+      "findings": [
+        {
+          "summary": "Calonne's Tax Reforms and Financial Crisis",
+          "explanation": "Calonne proposed tax reforms that were rejected, leading to financial strain and a debt crisis for the Monarchy. This rejection had significant implications for the economic stability of France, ultimately contributing to the downfall of the Monarchy and the establishment of the French First Republic."
+        },
+        {
+          "summary": "Monarchy's Debt Crisis",
+          "explanation": "The Monarchy faced a debt crisis as a result of the rejection of Calonne's tax reforms. This crisis had profound effects on the financial stability of the Monarchy, leading to increased borrowing post-war and exacerbating the economic challenges faced by the ruling establishment."
+        },
+        {
+          "summary": "Establishment of the French First Republic",
+          "explanation": "The French First Republic was established after the abolition of the Monarchy during the French Revolution. This marked a significant shift in France's political structure, transitioning from a monarchy to a republic. The establishment of the republic was a pivotal moment in French history, symbolizing the end of the old regime and the beginning of a new era."
+        },
+        {
+          "summary": "Brienne's Involvement and the Estates General",
+          "explanation": "Calonne's proposed reforms being rejected led to Brienne's involvement and the summoning of the Estates General. This event was a crucial turning point in the lead-up to the French Revolution, as it highlighted the growing discontent with the Monarchy and set the stage for further revolutionary actions."
+        }
+      ]
+    },
+    "level": 0,
+    "title": "Cluster 2",
+    "edges": [
+      [
+        "brienne",
+        "calonne"
+      ],
+      [
+        "french first republic",
+        "monarchy"
+      ],
+      [
+        "calonne",
+        "monarchy"
+      ]
+    ],
+    "nodes": [
+      "monarchy",
+      "french first republic",
+      "calonne"
+    ],
+    "chunk_ids": [
+      "chunk-517dd89f19429314e274bd8c27777e5c",
+      "chunk-368c7113ca6d5c34ca1cc15cf9e2825a"
+    ],
+    "occurrence": 1.0,
     "sub_communities": []
   }
 }

@@ -147,7 +147,7 @@ class PassageGraph(BaseGraph):
                 merge_wikis[k].extend(v)
 
         for chunk_pair in chunk_list:
-            custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+            custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
             entity_attributes = {}
             final_entity_type = ''
             if custom_ontology and custom_ontology.get('entities'):
@@ -172,7 +172,7 @@ class PassageGraph(BaseGraph):
                 if (src_id, tgt_id) in edge_exist:
                     continue
                 edge_exist.add((src_id, tgt_id))
-                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 relation_attributes = {}
                 final_relation_name = wiki_key
                 if custom_ontology and custom_ontology.get('relations'):

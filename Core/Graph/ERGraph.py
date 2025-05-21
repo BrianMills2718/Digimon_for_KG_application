@@ -102,7 +102,7 @@ class ERGraph(BaseGraph):
             entity_name = clean_str(entity_name)
             entity_type = clean_str(entity_type)
             if entity_name not in maybe_nodes:
-                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 entity_attributes = {}
                 final_entity_type = entity_type
                 if custom_ontology and custom_ontology.get('entities'):
@@ -125,7 +125,7 @@ class ERGraph(BaseGraph):
             tgt_id = clean_str(tgt_id)
             rel_type = clean_str(rel_type)
             if src_id in maybe_nodes and tgt_id in maybe_nodes:
-                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 relation_attributes = {}
                 final_relation_name = clean_str(rel_type)
                 if custom_ontology and custom_ontology.get('relations'):
@@ -167,7 +167,7 @@ class ERGraph(BaseGraph):
             if entity_name == '':
                 logger.warning(f"entity name is not valid, entity is: {_entity}, so skip it")
                 continue
-            custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+            custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
             entity_attributes = {}
             final_entity_type = ''
             if custom_ontology and custom_ontology.get('entities'):
@@ -200,7 +200,7 @@ class ERGraph(BaseGraph):
                     f"triple is not valid, since we have empty entity or relation, triple is: {triple}, so skip it")
                 continue
             if isinstance(src_entity, str) and isinstance(tgt_entity, str) and isinstance(relation_name, str):
-                custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 relation_attributes = {}
                 final_relation_name = relation_name
                 if custom_ontology and custom_ontology.get('relations'):

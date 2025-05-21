@@ -1,98 +1,80 @@
 {
-  "british soldiers": [
+  "ancien r gime": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "native americans": [
+  "french revolution": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "white colonists": [
+  "coup of 18 brumaire": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "appalachian mountains": [
+  "revolts of the 1780s": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "storming of the bastille": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "assembly of notables": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "royal proclamation of 1763": [
+  "estates general": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "colonies": [
+  "brienne": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "british parliament": [
+  "jacques necker": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "land speculators": [
+  "parlement of paris": [
     {
       "level": 0,
       "cluster": "1"
     }
   ],
-  "english empire": [
+  "calonne": [
     {
       "level": 0,
       "cluster": "2"
     }
   ],
-  "thirteen colonies": [
+  "monarchy": [
     {
       "level": 0,
       "cluster": "2"
     }
   ],
-  "grenville ministry": [
+  "french first republic": [
     {
       "level": 0,
       "cluster": "2"
-    }
-  ],
-  "navigation acts": [
-    {
-      "level": 0,
-      "cluster": "2"
-    }
-  ],
-  "british government": [
-    {
-      "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "french and indian war": [
-    {
-      "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "great britain": [
-    {
-      "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "mississippi river": [
-    {
-      "level": 0,
-      "cluster": "3"
     }
   ]
 }

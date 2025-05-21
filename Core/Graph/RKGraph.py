@@ -38,7 +38,7 @@ class RKGraph(BaseGraph):
         if not entity_name.strip():
             return None
 
-        custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
         entity_attributes = {}
         final_entity_type = clean_str(record_attributes[2])
         if custom_ontology and custom_ontology.get('entities'):
@@ -152,7 +152,8 @@ class RKGraph(BaseGraph):
         if len(record_attributes) < 5 or record_attributes[0] != '"relationship"':
             return None
 
-        custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+        #custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
+        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
         relation_attributes = {}
         final_relation_name = clean_str(record_attributes[0])
         if custom_ontology and custom_ontology.get('relations'):

@@ -1,1 +1,316 @@
-{"entities": [], "relations": []}
+{
+  "entities": [
+    {
+      "name": "User",
+      "properties": [
+        {
+          "description": "Social media username",
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "description": "Unique identifier for the user account",
+          "name": "userID",
+          "type": "string"
+        },
+        {
+          "description": "Social media platform (e.g., Twitter, Facebook)",
+          "name": "platform",
+          "type": "string"
+        },
+        {
+          "description": "Date the user account was created",
+          "name": "creationDate",
+          "type": "datetime"
+        },
+        {
+          "description": "Number of followers",
+          "name": "followerCount",
+          "type": "integer"
+        },
+        {
+          "description": "Number of accounts the user is following",
+          "name": "followingCount",
+          "type": "integer"
+        },
+        {
+          "description": "User's profile biography",
+          "name": "bio",
+          "type": "text"
+        },
+        {
+          "description": "User's specified location",
+          "name": "location",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Post",
+      "properties": [
+        {
+          "description": "Unique identifier for the post",
+          "name": "postID",
+          "type": "string"
+        },
+        {
+          "description": "The text or media content of the post",
+          "name": "content",
+          "type": "text"
+        },
+        {
+          "description": "Timestamp when the post was created",
+          "name": "creationTimestamp",
+          "type": "datetime"
+        },
+        {
+          "description": "Social media platform where the post originated",
+          "name": "platform",
+          "type": "string"
+        },
+        {
+          "description": "Type of post (e.g., original, retweet, comment)",
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "description": "Number of likes or positive reactions",
+          "name": "likesCount",
+          "type": "integer"
+        },
+        {
+          "description": "Number of shares or reposts",
+          "name": "sharesCount",
+          "type": "integer"
+        },
+        {
+          "description": "Number of comments or replies",
+          "name": "commentsCount",
+          "type": "integer"
+        },
+        {
+          "description": "URL of the post, if available",
+          "name": "url",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Hashtag",
+      "properties": [
+        {
+          "description": "The actual text of the hashtag (e.g., #SocialMedia)",
+          "name": "hashtagText",
+          "type": "string"
+        },
+        {
+          "description": "Platform where the hashtag is used (optional)",
+          "name": "platform",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Topic",
+      "properties": [
+        {
+          "description": "Name of the topic",
+          "name": "topicName",
+          "type": "string"
+        },
+        {
+          "description": "Description of the topic",
+          "name": "description",
+          "type": "text"
+        },
+        {
+          "description": "Related keywords or terms (represented as a string)",
+          "name": "keywords",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "URL",
+      "properties": [
+        {
+          "description": "The full URL address",
+          "name": "urlAddress",
+          "type": "string"
+        },
+        {
+          "description": "The domain name of the URL",
+          "name": "domain",
+          "type": "string"
+        },
+        {
+          "description": "Title of the linked page",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "description": "Description of the linked page",
+          "name": "description",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "name": "POSTED",
+      "properties": [
+        {
+          "description": "Timestamp of the posting action",
+          "name": "timestamp",
+          "type": "datetime"
+        }
+      ],
+      "source_entity": "User",
+      "target_entity": "Post"
+    },
+    {
+      "name": "REPLIED_TO",
+      "properties": [
+        {
+          "description": "Timestamp of the reply",
+          "name": "timestamp",
+          "type": "datetime"
+        },
+        {
+          "description": "Order in the reply thread",
+          "name": "order",
+          "type": "integer"
+        }
+      ],
+      "source_entity": "Post",
+      "target_entity": "Post"
+    },
+    {
+      "name": "MENTIONED",
+      "properties": [
+        {
+          "description": "The ID of the post where the mention occurred",
+          "name": "inPostID",
+          "type": "string"
+        },
+        {
+          "description": "Timestamp of the mention occurrence",
+          "name": "timestamp",
+          "type": "datetime"
+        }
+      ],
+      "source_entity": "User",
+      "target_entity": "User"
+    },
+    {
+      "name": "CONTAINS_HASHTAG",
+      "properties": [
+        {
+          "description": "Position of the hashtag in the post text",
+          "name": "position",
+          "type": "integer"
+        }
+      ],
+      "source_entity": "Post",
+      "target_entity": "Hashtag"
+    },
+    {
+      "name": "CONTAINS_URL",
+      "properties": [
+        {
+          "description": "Position of the URL in the post text",
+          "name": "position",
+          "type": "integer"
+        },
+        {
+          "description": "The text used for the link in the post",
+          "name": "linkText",
+          "type": "string"
+        }
+      ],
+      "source_entity": "Post",
+      "target_entity": "URL"
+    },
+    {
+      "name": "REPOSTED",
+      "properties": [
+        {
+          "description": "Timestamp of the repost action",
+          "name": "timestamp",
+          "type": "datetime"
+        },
+        {
+          "description": "The ID of the new post created by the repost action",
+          "name": "repostPostID",
+          "type": "string"
+        }
+      ],
+      "source_entity": "User",
+      "target_entity": "Post"
+    },
+    {
+      "name": "LIKED",
+      "properties": [
+        {
+          "description": "Timestamp of the like/reaction",
+          "name": "timestamp",
+          "type": "datetime"
+        },
+        {
+          "description": "Type of reaction (e.g., 'like', 'love')",
+          "name": "reactionType",
+          "type": "string"
+        }
+      ],
+      "source_entity": "User",
+      "target_entity": "Post"
+    },
+    {
+      "name": "FOLLOWS",
+      "properties": [
+        {
+          "description": "Timestamp when the follow relationship was established",
+          "name": "timestamp",
+          "type": "datetime"
+        }
+      ],
+      "source_entity": "User",
+      "target_entity": "User"
+    },
+    {
+      "name": "RELATES_TO_POST",
+      "properties": [
+        {
+          "description": "Method used to determine the relationship (e.g., 'keyword match', 'topic modeling')",
+          "name": "method",
+          "type": "string"
+        },
+        {
+          "description": "Confidence score of the relationship",
+          "name": "score",
+          "type": "double"
+        }
+      ],
+      "source_entity": "Post",
+      "target_entity": "Topic"
+    },
+    {
+      "name": "RELATES_TO_HASHTAG",
+      "properties": [
+        {
+          "description": "Method used to determine the relationship (e.g., 'keyword match', 'topic modeling')",
+          "name": "method",
+          "type": "string"
+        },
+        {
+          "description": "Confidence score of the relationship",
+          "name": "score",
+          "type": "double"
+        }
+      ],
+      "source_entity": "Hashtag",
+      "target_entity": "Topic"
+    }
+  ]
+}

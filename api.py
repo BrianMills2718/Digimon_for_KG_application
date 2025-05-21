@@ -364,12 +364,22 @@ def handle_ontology_chat():
 
         suggested_ontology_object = None
         try:
-            cleaned_json_str = json_reply_str.strip()
-            if cleaned_json_str.startswith("```json"):
-                cleaned_json_str = cleaned_json_str[7:]
-            if cleaned_json_str.endswith("```"):
-                cleaned_json_str = cleaned_json_str[:-3]
+            import re
+            def extract_json_from_llm_output(llm_output: str) -> str:
+                # Remove markdown code block markers and extract JSON
+                match = re.search(r"```json\s*(\{[\s\S]*?\})\s*```", llm_output)
+                if match:
+                    return match.group(1)
+                match = re.search(r"```\s*(\{[\s\S]*?\})\s*```", llm_output)
+                if match:
+                    return match.group(1)
+                # Fallback: try to find the first JSON object in the text
+                match = re.search(r"(\{[\s\S]*\})", llm_output)
+                if match:
+                    return match.group(1)
+                return llm_output.strip()  # Last resort, may still fail
 
+            cleaned_json_str = extract_json_from_llm_output(json_reply_str)
             suggested_ontology_object = json.loads(cleaned_json_str.strip())
             if not isinstance(suggested_ontology_object, dict) or \
                not isinstance(suggested_ontology_object.get("entities"), list) or \
