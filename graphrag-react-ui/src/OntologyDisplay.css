@@ -1,0 +1,62 @@
+.ontology-display-container {
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+    margin-top: 20px;
+}
+
+.ontology-display-container h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.ontology-display-container h4 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.ontology-display-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.ontology-item {
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.ontology-item strong {
+    color: #007bff;
+}
+
+.properties-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.properties-list li {
+    margin-bottom: 3px;
+}
+
+.properties-list em {
+    color: #6c757d;
+}
+
+.relation-details {
+    font-size: 0.9em;
+    color: #444;
+    margin: 5px 0;
+}
+.relation-details span {
+    display: block;
+    margin-left: 10px;
+}
