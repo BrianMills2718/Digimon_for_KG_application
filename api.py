@@ -179,6 +179,44 @@ def handle_build():
 
 
 @app.route('/api/evaluate', methods=['POST'])
+
+@app.route('/api/graph_sample', methods=['POST'])
+async def handle_graph_sample():
+    try:
+        data = request.get_json()
+        logger.info(f"Received /api/graph_sample request: {data}")
+
+        dataset_name = data.get('datasetName')
+        selected_method_stem = data.get('selectedMethod')
+        num_nodes = data.get('num_nodes', 10) # Optional: allow frontend to specify sample size
+        num_edges = data.get('num_edges', 20) # Optional: allow frontend to specify sample size
+
+        if not all([dataset_name, selected_method_stem]):
+            logger.error("Missing parameters in /api/graph_sample request")
+            return jsonify({"error": "Missing parameters: datasetName and selectedMethod are required."}), 400
+
+        graphrag_instance = await get_or_create_graphrag_instance(dataset_name, selected_method_stem, setup_for_querying_required=True)
+
+        if graphrag_instance is None:
+            logger.error(f"Could not initialize GraphRAG instance for graph sample: {dataset_name}, {selected_method_stem}")
+            return jsonify({"error": "Failed to initialize RAG system. Ensure artifacts are built. Check backend logs."}), 500
+
+        logger.info(f"Fetching graph sample for {dataset_name} with method {selected_method_stem}...")
+        
+        # Call the new method
+        sample_data = await graphrag_instance.get_graph_sample(num_nodes_to_sample=num_nodes, num_edges_to_sample=num_edges)
+
+        if "error" in sample_data:
+            logger.error(f"Error fetching graph sample: {sample_data['error']}")
+            return jsonify(sample_data), 500
+        
+        logger.info(f"Successfully fetched graph sample. Nodes: {len(sample_data.get('nodes',[]))}, Edges: {len(sample_data.get('edges',[]))}")
+        return jsonify({"sample": sample_data}), 200
+
+    except Exception as e:
+        logger.error(f"Error in /api/graph_sample: {e}", exc_info=True)
+        return jsonify({"error": f"Failed to retrieve graph sample: {str(e)}"}), 500
+
 def handle_evaluate():
     data = request.get_json()
     logger.info(f"Received /api/evaluate request: {data}")
@@ -346,6 +384,7 @@ def handle_ontology_chat():
             "The JSON output MUST have a top-level object with two keys: 'entities' and 'relations'.\n"
             "Each item in the 'entities' list MUST be an object with a 'name' (string) and a 'properties' list. Each item in 'properties' MUST be an object with 'name' (string), 'type' (string, e.g., 'string', 'integer', 'text', 'datetime', 'boolean'), and 'description' (string).\n"
             "Each item in the 'relations' list MUST be an object with a 'name' (string), 'source_entity' (string, matching an entity name), 'target_entity' (string, matching an entity name), and a 'properties' list (structured like entity properties). A top-level 'description' for the relation itself is also good if appropriate.\n"
+            "IMPORTANT: Ensure that all string values in the JSON are correctly formatted. Any newline characters within a string value MUST be escaped as '\\n'. For example, a description spanning multiple lines like 'This is a\ndescription.' should be represented in the JSON string as 'This is a\\ndescription.'.\n"
             "Output ONLY the valid JSON object. Do NOT include any explanations, apologies, or surrounding text like ```json or ```."
         )
 

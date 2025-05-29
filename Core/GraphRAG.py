@@ -17,6 +17,7 @@ from colorama import Fore, Style, init
 import os
 import json
 from pathlib import Path
+import networkx as nx
 
 init(autoreset=True)
 
@@ -178,6 +179,67 @@ class GraphRAG(ContextMixin, BaseModel):
             raise
 
     async def build_e2r_r2c_maps(self, force=False):
+        pass
+
+    async def get_graph_sample(self, num_nodes_to_sample: int = 10, num_edges_to_sample: int = 20):
+        """
+        Retrieves a sample of nodes and edges from the built graph.
+        Returns them in a format suitable for JSON serialization.
+        """
+        logger.info(f"Attempting to retrieve graph sample for {self.config.exp_name}...")
+
+        if not self.artifacts_loaded_internal:
+            logger.info("Artifacts not loaded for graph sample, attempting to load now...")
+            if not await self.setup_for_querying():
+                return {"error": "Failed to load necessary artifacts. Please run 'build' mode first.", "nodes": [], "edges": []}
+        
+        if not hasattr(self.graph, 'graph') or not isinstance(self.graph.graph, nx.Graph):
+            logger.error("Graph object is not available or not a NetworkX graph in self.graph.graph.")
+            return {"error": "Graph data is not available or not in the expected format.", "nodes": [], "edges": []}
+
+        G = self.graph.graph
+        if G.number_of_nodes() == 0:
+            logger.info("Graph is empty. Returning empty sample.")
+            return {"nodes": [], "edges": [], "message": "Graph is empty."}
+
+        sampled_nodes_data = []
+        node_ids_to_sample = list(G.nodes())[:num_nodes_to_sample]
+
+        for node_id in node_ids_to_sample:
+            if node_id in G:
+                node_attrs = G.nodes[node_id]
+                # Ensure all attributes are serializable, convert complex objects if necessary
+                serializable_attrs = {}
+                for k, v in node_attrs.items():
+                    if isinstance(v, (list, dict, str, int, float, bool)) or v is None:
+                        serializable_attrs[k] = v
+                    else:
+                        serializable_attrs[k] = str(v) # Convert non-serializable to string
+                sampled_nodes_data.append({"id": node_id, **serializable_attrs})
+            else:
+                 logger.warning(f"Node ID {node_id} from sample list not found in graph during node iteration.")
+
+        sampled_edges_data = []
+        edges_count = 0
+        # Iterate over edges connected to the sampled nodes, up to num_edges_to_sample
+        for u, v, data in G.edges(data=True):
+            if u in node_ids_to_sample or v in node_ids_to_sample:
+                if edges_count < num_edges_to_sample:
+                    edge_attrs = data
+                    serializable_edge_attrs = {}
+                    for k, val in edge_attrs.items():
+                        if isinstance(val, (list, dict, str, int, float, bool)) or val is None:
+                            serializable_edge_attrs[k] = val
+                        else:
+                            serializable_edge_attrs[k] = str(val)
+                    sampled_edges_data.append({"source": u, "target": v, **serializable_edge_attrs})
+                    edges_count += 1
+                else:
+                    break 
+        
+        logger.info(f"Returning sample with {len(sampled_nodes_data)} nodes and {len(sampled_edges_data)} edges.")
+        return {"nodes": sampled_nodes_data, "edges": sampled_edges_data}
+
         if not self.config.use_entity_link_chunk or self.config.graph.graph_type == "tree_graph":
             logger.info("Skipping E2R/R2C map building as it's not configured or not applicable for tree graph.")
             return
