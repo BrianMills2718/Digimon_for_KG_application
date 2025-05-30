@@ -10,7 +10,7 @@ enable_graph_augmentation: False
 
 index_name: kg_graph
 
-vdb_type: vector  # vector/colbert
+vdb_type: faiss  # vector/colbert
 # Chunk Config 
 chunk:
   chunk_token_size: 1200
@@ -23,7 +23,7 @@ graph:
   # enable LightRAG
     enable_edge_keywords: False
     graph_type: rkg_graph # rkg_graph/er_graph/tree_graph/passage_graph
-    force: True
+    force: False
     # Building graph
     extract_two_step: True
     max_gleaning: 1

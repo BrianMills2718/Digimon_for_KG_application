@@ -21,6 +21,23 @@ class WorkingParams(BaseModel):
     dataset_name: str = ""
 
 
+import os
+import yaml
+from pathlib import Path
+from typing import Optional, Any, Dict, List
+from pydantic import BaseModel, Field
+from Core.Utils.YamlModel import YamlModel
+from Config.LLMConfig import LLMConfig
+from Config.EmbConfig import EmbeddingConfig
+from Config.GraphConfig import GraphConfig
+from Config.ChunkConfig import ChunkConfig
+from Config.QueryConfig import QueryConfig
+from Config.RetrieverConfig import RetrieverConfig
+
+class StorageConfig(BaseModel):
+    root_dir: str = "./results"
+    artifact_dir: str = "artifacts"
+
 class Config(WorkingParams, YamlModel):
     """Configurations for our project"""
 
@@ -49,11 +66,13 @@ class Config(WorkingParams, YamlModel):
     use_entity_link_chunk: bool = True  # Only set True for HippoRAG and FastGraphRAG
     
     # Graph Config
-    graph: GraphConfig = GraphConfig()
+    graph: GraphConfig = Field(default_factory=GraphConfig)
     
     # Retrieval Parameters
-    retriever: RetrieverConfig = RetrieverConfig()
+    retriever: RetrieverConfig = Field(default_factory=RetrieverConfig)
 
+    # Storage Config
+    storage: StorageConfig = Field(default_factory=StorageConfig)
 
     # ColBert Option
     use_colbert: bool = True
@@ -61,6 +80,17 @@ class Config(WorkingParams, YamlModel):
     index_name: str = "nbits_2"
     similarity_max: float = 1.0
     # Graph Augmentation
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @classmethod
+    def from_yaml_file(cls, path: str):
+        """Load config from YAML file"""
+        path = Path(path).resolve()
+        with open(path, 'r') as f:
+            options = yaml.safe_load(f)
+        return cls(**options)
 
     @classmethod
     def parse(cls, options_yaml_path: Path, dataset_name: str = "DefaultDataset", exp_name: str = "DefaultExp") -> 'Config':
@@ -74,10 +104,12 @@ class Config(WorkingParams, YamlModel):
             options = yaml.safe_load(f)
 
         llm_config = LLMConfig(**options.get("llm_config", {}))
-        emb_config = EmbConfig(**options.get("emb_config", {}))
+        emb_config = EmbeddingConfig(**options.get("emb_config", {}))
         chunk_config = ChunkConfig(**options.get("chunk_config", {}))
         graph_config = GraphConfig(**options.get("graph_config", {}))
         retriever_config = RetrieverConfig(**options.get("retriever_config", {}))
+        query_config = QueryQueryConfig(**options.get("query_config", {}))
+        storage_config = StorageConfig(**options.get("storage_config", {}))
         query_config = QueryConfig(**options.get("query_config", {}))
 
         # --- Load Custom Ontology ---

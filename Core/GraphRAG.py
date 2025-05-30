@@ -299,8 +299,11 @@ class GraphRAG(ContextMixin, BaseModel):
                 logger.warning("No node metadata found. Skipping entity indexing.")
             else:
                 logger.info(f"Found {len(nodes_data_for_index)} nodes to index for entities VDB.")
-                logger.info("Forcing rebuild of entities VDB for testing metadata propagation.")
-                await self.entities_vdb.build_index(nodes_data_for_index, node_metadata, True) # force=True for testing
+                if self.config.graph.force:
+                    logger.info("Rebuilding entities VDB (force=True in graph config).")
+                else:
+                    logger.info("Attempting to load or build entities VDB as needed (force=False in graph config).")
+                await self.entities_vdb.build_index(nodes_data_for_index, node_metadata, force=self.config.graph.force)
 
         if self.config.enable_graph_augmentation: 
             await self.graph.augment_graph_by_similarity_search(self.entities_vdb) # type: ignore

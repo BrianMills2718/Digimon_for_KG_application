@@ -1,74 +1,116 @@
 {
-  "assembly of notables": [
+  "abb  siey s": [
     {
       "level": 0,
       "cluster": "0"
     }
   ],
-  "calonne": [
+  "national assembly": [
     {
       "level": 0,
       "cluster": "0"
+    }
+  ],
+  "third estate": [
+    {
+      "level": 0,
+      "cluster": "0"
+    }
+  ],
+  "society of thirty": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "antoine barnave": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "jean joseph mounier": [
+    {
+      "level": 0,
+      "cluster": "1"
+    }
+  ],
+  "maximilien robespierre": [
+    {
+      "level": 0,
+      "cluster": "1"
     }
   ],
   "brienne": [
     {
       "level": 0,
-      "cluster": "1"
+      "cluster": "2"
+    }
+  ],
+  "estates general": [
+    {
+      "level": 0,
+      "cluster": "2"
     }
   ],
   "jacques necker": [
     {
       "level": 0,
-      "cluster": "1"
+      "cluster": "2"
+    }
+  ],
+  "coup of 18 brumaire": [
+    {
+      "level": 0,
+      "cluster": "2"
+    }
+  ],
+  "french revolution": [
+    {
+      "level": 0,
+      "cluster": "2"
+    }
+  ],
+  "calonne": [
+    {
+      "level": 0,
+      "cluster": "3"
+    }
+  ],
+  "monarchy": [
+    {
+      "level": 0,
+      "cluster": "3"
+    }
+  ],
+  "debt crisis": [
+    {
+      "level": 0,
+      "cluster": "3"
     }
   ],
   "parlements": [
     {
       "level": 0,
-      "cluster": "1"
-    }
-  ],
-  "crown": [
-    {
-      "level": 0,
-      "cluster": "1"
+      "cluster": "4"
     }
   ],
   "public opinion": [
     {
       "level": 0,
-      "cluster": "2"
+      "cluster": "4"
     }
   ],
-  "political pamphlets": [
+  "tax laws": [
     {
       "level": 0,
-      "cluster": "2"
+      "cluster": "4"
     }
   ],
-  "nobility": [
+  "riots": [
     {
       "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "church": [
-    {
-      "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "peasants": [
-    {
-      "level": 0,
-      "cluster": "3"
-    }
-  ],
-  "tax farmers": [
-    {
-      "level": 0,
-      "cluster": "3"
+      "cluster": "4"
     }
   ]
 }

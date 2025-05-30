@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, ConfigDict # Import Pydantic components
 
 from Core.Common.Logger import logger
 from Core.Storage.BaseBlobStorage import BaseBlobStorage # This should now be a Pydantic BaseModel
-from Core.Storage.NameSpace import Namespace
+from Core.Storage.NameSpace import NameSpace
 
 
 class PickleBlobStorage(BaseBlobStorage):

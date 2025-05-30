@@ -5,6 +5,26 @@ from Core.Common.Logger import logger
 from Core.Schema.VdbResult import * 
 
 class BaseIndex(ABC):
+    async def load(self) -> bool:
+        """
+        Public method to load an existing index.
+        Calls the underlying _load_index() implemented by subclasses.
+        """
+        if not self.exist_index():
+            logger.warning(f"Attempted to load index from {self.config.persist_path}, but it does not exist.")
+            return False
+        logger.info(f"Attempting to load existing index from: {self.config.persist_path}")
+        try:
+            loaded_successfully = await self._load_index()
+            if loaded_successfully:
+                logger.info(f"Successfully loaded existing index from: {self.config.persist_path}")
+            else:
+                logger.warning(f"Failed to load existing index from: {self.config.persist_path} (returned False from _load_index).")
+            return loaded_successfully
+        except Exception as e:
+            logger.error(f"Exception during index load from {self.config.persist_path}: {e}")
+            return False
+
     def __init__(self, config):
         self.config = config
         self._index = None

@@ -19,8 +19,8 @@ class Workspace:
         if not os.path.exists(working_dir):
             os.makedirs(working_dir)
 
-    def make_for(self, namespace: str) -> "Namespace":
-        return Namespace(self, namespace)
+    def make_for(self, namespace: str) -> "NameSpace":
+        return NameSpace(self, namespace)
 
     def get_load_path(self) -> Optional[str]:
         load_path = self.get_path(self.working_dir, self.exp_name)
@@ -39,7 +39,7 @@ class Workspace:
         return os.path.join(save_path)
 
 
-class Namespace:
+class NameSpace:
     def __init__(self, workspace: Workspace, namespace: Optional[str] = None):
         self.namespace = namespace
         self.workspace = workspace

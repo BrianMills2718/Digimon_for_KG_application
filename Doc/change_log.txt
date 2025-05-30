@@ -1,0 +1,4 @@
+[2025-05-30 05:06] Updated Core/GraphRAG.py:
+- In build_and_persist_artifacts, replaced hardcoded force=True with force=self.config.graph.force for entities_vdb.build_index.
+- Updated preceding logger.info to a conditional log statement based on self.config.graph.force, for clarity and accuracy.
+

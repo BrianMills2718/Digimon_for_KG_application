@@ -22,11 +22,11 @@
       <data key="d4">american revolution: the american revolution was an ideological and political movement in the thirteen colonies that led to the american revolutionary war and the establishment of the united states of america</data>
     </node>
     <node id="thirteen colonies">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">thirteen colonies</data>
       <data key="d2" />
-      <data key="d3">the thirteen colonies were affected by the royal proclamation of 1763  leading to discontent among settlers  fur traders  and land speculators&lt;SEP&gt;the thirteen colonies were the british colonies in north america that played a significant role in the american revolution</data>
-      <data key="d4">thirteen colonies: the thirteen colonies were affected by the royal proclamation of 1763  leading to discontent among settlers  fur traders  and land speculators&lt;SEP&gt;the thirteen colonies were the british colonies in north america that played a significant role in the american revolution</data>
+      <data key="d3">the thirteen colonies were the british colonies in north america that played a significant role in the american revolution</data>
+      <data key="d4">thirteen colonies: the thirteen colonies were the british colonies in north america that played a significant role in the american revolution</data>
     </node>
     <node id="british america">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
@@ -39,8 +39,8 @@
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">american revolutionary war</data>
       <data key="d2" />
-      <data key="d3">the american revolutionary war was a conflict between the thirteen colonies and great britain  culminating in american independence</data>
-      <data key="d4">american revolutionary war: the american revolutionary war was a conflict between the thirteen colonies and great britain  culminating in american independence</data>
+      <data key="d3">the american revolutionary war was a conflict between the thirteen colonies and great britain  resulting in the colonies  independence</data>
+      <data key="d4">american revolutionary war: the american revolutionary war was a conflict between the thirteen colonies and great britain  resulting in the colonies  independence</data>
     </node>
     <node id="battles of lexington and concord">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
@@ -53,281 +53,239 @@
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">leaders of the american revolution</data>
       <data key="d2" />
-      <data key="d3">leaders of the american revolution were colonial separatist figures who advocated for independence from great britain</data>
-      <data key="d4">leaders of the american revolution: leaders of the american revolution were colonial separatist figures who advocated for independence from great britain</data>
+      <data key="d3">leaders of the american revolution were colonial separatist figures who advocated for independence from britain and played key roles in the war</data>
+      <data key="d4">leaders of the american revolution: leaders of the american revolution were colonial separatist figures who advocated for independence from britain and played key roles in the war</data>
     </node>
     <node id="second continental congress">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">second continental congress</data>
       <data key="d2" />
-      <data key="d3">the second continental congress represented the colonies and played a crucial role in the american revolution  including appointing george washington as commander in chief</data>
-      <data key="d4">second continental congress: the second continental congress represented the colonies and played a crucial role in the american revolution  including appointing george washington as commander in chief</data>
+      <data key="d3">the second continental congress represented the colonies  formed the continental army  and adopted the declaration of independence</data>
+      <data key="d4">second continental congress: the second continental congress represented the colonies  formed the continental army  and adopted the declaration of independence</data>
+    </node>
+    <node id="independence hall">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">independence hall</data>
+      <data key="d2" />
+      <data key="d3">independence hall in philadelphia was the location where the second continental congress convened and adopted the declaration of independence</data>
+      <data key="d4">independence hall: independence hall in philadelphia was the location where the second continental congress convened and adopted the declaration of independence</data>
     </node>
     <node id="george washington">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">george washington</data>
       <data key="d2" />
-      <data key="d3">george washington was appointed as the commander in chief of the continental army during the american revolutionary war</data>
-      <data key="d4">george washington: george washington was appointed as the commander in chief of the continental army during the american revolutionary war</data>
+      <data key="d3">george washington was appointed as the commander in chief of the continental army and played a crucial role in the american revolution</data>
+      <data key="d4">george washington: george washington was appointed as the commander in chief of the continental army and played a crucial role in the american revolution</data>
     </node>
     <node id="declaration of independence">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">declaration of independence</data>
       <data key="d2" />
-      <data key="d3">the declaration of independence was adopted in 1776  declaring the thirteen colonies  independence from great britain</data>
-      <data key="d4">declaration of independence: the declaration of independence was adopted in 1776  declaring the thirteen colonies  independence from great britain</data>
+      <data key="d3">the declaration of independence was a document that declared the thirteen colonies  independence from great britain</data>
+      <data key="d4">declaration of independence: the declaration of independence was a document that declared the thirteen colonies  independence from great britain</data>
     </node>
     <node id="siege of yorktown">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">siege of yorktown</data>
       <data key="d2" />
-      <data key="d3">the siege of yorktown in 1781 was a decisive victory for the continental army  leading to the british acknowledgment of american independence</data>
-      <data key="d4">siege of yorktown: the siege of yorktown in 1781 was a decisive victory for the continental army  leading to the british acknowledgment of american independence</data>
+      <data key="d3">the siege of yorktown was a decisive victory for the continental army led by george washington  leading to the end of the revolutionary war</data>
+      <data key="d4">siege of yorktown: the siege of yorktown was a decisive victory for the continental army led by george washington  leading to the end of the revolutionary war</data>
     </node>
     <node id="king george iii">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">king george iii</data>
       <data key="d2" />
-      <data key="d3">king george iii played a significant role in the events leading to the american revolution and the subsequent negotiations for independence</data>
-      <data key="d4">king george iii: king george iii played a significant role in the events leading to the american revolution and the subsequent negotiations for independence</data>
+      <data key="d3">king george iii acknowledged the independence of the colonies after the victory at yorktown  leading to the treaty of paris</data>
+      <data key="d4">king george iii: king george iii acknowledged the independence of the colonies after the victory at yorktown  leading to the treaty of paris</data>
     </node>
     <node id="treaty of paris">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">treaty of paris</data>
       <data key="d2" />
-      <data key="d3">the treaty of paris in 1783 formally ended the american revolutionary war and recognized the united states as an independent nation</data>
-      <data key="d4">treaty of paris: the treaty of paris in 1783 formally ended the american revolutionary war and recognized the united states as an independent nation</data>
+      <data key="d3">the treaty of paris in 1783 officially ended the american revolutionary war and recognized the independence of the united states</data>
+      <data key="d4">treaty of paris: the treaty of paris in 1783 officially ended the american revolutionary war and recognized the independence of the united states</data>
     </node>
     <node id="stamp act congress">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">stamp act congress</data>
       <data key="d2" />
-      <data key="d3">the stamp act congress in 1765 protested against taxation without representation  a key grievance that fueled the american revolution</data>
-      <data key="d4">stamp act congress: the stamp act congress in 1765 protested against taxation without representation  a key grievance that fueled the american revolution</data>
+      <data key="d3">the stamp act congress in 1765 protested against taxation without representation  a key grievance that fueled the revolution</data>
+      <data key="d4">stamp act congress: the stamp act congress in 1765 protested against taxation without representation  a key grievance that fueled the revolution</data>
     </node>
     <node id="boston massacre">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">boston massacre</data>
       <data key="d2" />
-      <data key="d3">the boston massacre in 1770 was a violent confrontation between colonists and british troops  escalating tensions in the lead up to the revolution</data>
-      <data key="d4">boston massacre: the boston massacre in 1770 was a violent confrontation between colonists and british troops  escalating tensions in the lead up to the revolution</data>
+      <data key="d3">the boston massacre in 1770 heightened tensions between the colonies and britain  leading to further resistance</data>
+      <data key="d4">boston massacre: the boston massacre in 1770 heightened tensions between the colonies and britain  leading to further resistance</data>
     </node>
     <node id="boston tea party">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">boston tea party</data>
       <data key="d2" />
-      <data key="d3">the boston tea party in 1773 was a protest against british taxation policies  symbolizing colonial resistance to british authority</data>
-      <data key="d4">boston tea party: the boston tea party in 1773 was a protest against british taxation policies  symbolizing colonial resistance to british authority</data>
+      <data key="d3">the boston tea party in 1773 was a protest against british taxation policies  symbolizing colonial resistance</data>
+      <data key="d4">boston tea party: the boston tea party in 1773 was a protest against british taxation policies  symbolizing colonial resistance</data>
     </node>
     <node id="first continental congress">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">first continental congress</data>
       <data key="d2" />
-      <data key="d3">the first continental congress in 1774 marked a united colonial response to british policies  laying the groundwork for the revolution</data>
-      <data key="d4">first continental congress: the first continental congress in 1774 marked a united colonial response to british policies  laying the groundwork for the revolution</data>
-    </node>
-    <node id="articles of confederation">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">articles of confederation</data>
-      <data key="d2" />
-      <data key="d3">the articles of confederation were debated in the second continental congress as an early attempt at self governance for the colonies</data>
-      <data key="d4">articles of confederation: the articles of confederation were debated in the second continental congress as an early attempt at self governance for the colonies</data>
-    </node>
-    <node id="thomas jefferson">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">thomas jefferson</data>
-      <data key="d2" />
-      <data key="d3">thomas jefferson played a key role in drafting the declaration of independence  embodying revolutionary ideals of liberty and equality</data>
-      <data key="d4">thomas jefferson: thomas jefferson played a key role in drafting the declaration of independence  embodying revolutionary ideals of liberty and equality</data>
-    </node>
-    <node id="marquis de lafayette">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">marquis de lafayette</data>
-      <data key="d2" />
-      <data key="d3">marquis de lafayette supported the american cause during the revolution  contributing to the victory at yorktown</data>
-      <data key="d4">marquis de lafayette: marquis de lafayette supported the american cause during the revolution  contributing to the victory at yorktown</data>
-    </node>
-    <node id="british parliament">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">british parliament</data>
-      <data key="d2" />
-      <data key="d3">british parliament imposed taxes and policies that fueled colonial discontent and resistance  leading to the american revolution</data>
-      <data key="d4">british parliament: british parliament imposed taxes and policies that fueled colonial discontent and resistance  leading to the american revolution</data>
-    </node>
-    <node id="french and indian war">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-541c2fb47007dc4d93603094626a6541&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">french and indian war</data>
-      <data key="d2" />
-      <data key="d3">the french and indian war  ending in 1763  contributed to british taxation policies that sparked colonial unrest and resistance&lt;SEP&gt;the french and indian war involved british and colonial forces fighting against france  shaping territorial control in north america&lt;SEP&gt;the french and indian war lasted from 1754 to 1763 and involved british and colonial forces against france  resulting in territorial changes</data>
-      <data key="d4">french and indian war: the french and indian war  ending in 1763  contributed to british taxation policies that sparked colonial unrest and resistance&lt;SEP&gt;the french and indian war involved british and colonial forces fighting against france  shaping territorial control in north america&lt;SEP&gt;the french and indian war lasted from 1754 to 1763 and involved british and colonial forces against france  resulting in territorial changes</data>
-    </node>
-    <node id="gaspee affair">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">gaspee affair</data>
-      <data key="d2" />
-      <data key="d3">the gaspee affair in 1772 involved anti tax demonstrators destroying a british customs schooner  symbolizing colonial resistance to british authority</data>
-      <data key="d4">gaspee affair: the gaspee affair in 1772 involved anti tax demonstrators destroying a british customs schooner  symbolizing colonial resistance to british authority</data>
-    </node>
-    <node id="sons of liberty">
-      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">sons of liberty</data>
-      <data key="d2" />
-      <data key="d3">the sons of liberty were activists who protested british policies  notably organizing the boston tea party as a demonstration of resistance</data>
-      <data key="d4">sons of liberty: the sons of liberty were activists who protested british policies  notably organizing the boston tea party as a demonstration of resistance</data>
-    </node>
-    <node id="royal proclamation of 1763">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">royal proclamation of 1763</data>
-      <data key="d2" />
-      <data key="d3">the royal proclamation of 1763 aimed to regulate settlement and interactions between colonists and native americans in newly acquired territories&lt;SEP&gt;the royal proclamation of 1763 defined territorial boundaries and policies following the french and indian war  impacting colonial relations with britain</data>
-      <data key="d4">royal proclamation of 1763: the royal proclamation of 1763 aimed to regulate settlement and interactions between colonists and native americans in newly acquired territories&lt;SEP&gt;the royal proclamation of 1763 defined territorial boundaries and policies following the french and indian war  impacting colonial relations with britain</data>
+      <data key="d3">the first continental congress in 1774 coordinated resistance efforts and laid the groundwork for the revolution</data>
+      <data key="d4">first continental congress: the first continental congress in 1774 coordinated resistance efforts and laid the groundwork for the revolution</data>
     </node>
     <node id="carpenters  hall">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d1">carpenters  hall</data>
       <data key="d2" />
-      <data key="d3">carpenters  hall in philadelphia hosted the first continental congress  a significant event in colonial resistance and unity against british policies</data>
-      <data key="d4">carpenters  hall: carpenters  hall in philadelphia hosted the first continental congress  a significant event in colonial resistance and unity against british policies</data>
+      <data key="d3">carpenters  hall in philadelphia was the venue for the first continental congress  a pivotal event in the revolution</data>
+      <data key="d4">carpenters  hall: carpenters  hall in philadelphia was the venue for the first continental congress  a pivotal event in the revolution</data>
     </node>
-    <node id="province of georgia">
+    <node id="articles of confederation">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">province of georgia</data>
+      <data key="d1">articles of confederation</data>
       <data key="d2" />
-      <data key="d3">the province of georgia joined the first continental congress in 1775  contributing to colonial unity and resistance against british rule</data>
-      <data key="d4">province of georgia: the province of georgia joined the first continental congress in 1775  contributing to colonial unity and resistance against british rule</data>
+      <data key="d3">the articles of confederation were debated by the second continental congress as a framework for self governance in the colonies</data>
+      <data key="d4">articles of confederation: the articles of confederation were debated by the second continental congress as a framework for self governance in the colonies</data>
+    </node>
+    <node id="thomas jefferson">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">thomas jefferson</data>
+      <data key="d2" />
+      <data key="d3">thomas jefferson authored the declaration of independence  embodying key political philosophies of the revolution</data>
+      <data key="d4">thomas jefferson: thomas jefferson authored the declaration of independence  embodying key political philosophies of the revolution</data>
+    </node>
+    <node id="france">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c&lt;SEP&gt;chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">france</data>
+      <data key="d2" />
+      <data key="d3">france is the primary location where the events related to tax laws and reforms take place&lt;SEP&gt;france supported the american colonies during the revolutionary war  contributing to their victory</data>
+      <data key="d4">france: france is the primary location where the events related to tax laws and reforms take place&lt;SEP&gt;france supported the american colonies during the revolutionary war  contributing to their victory</data>
+    </node>
+    <node id="marquis de lafayette">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">marquis de lafayette</data>
+      <data key="d2" />
+      <data key="d3">marquis de lafayette supported washington and the continental army  aiding in the victory at yorktown</data>
+      <data key="d4">marquis de lafayette: marquis de lafayette supported washington and the continental army  aiding in the victory at yorktown</data>
+    </node>
+    <node id="charles cornwallis">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">charles cornwallis</data>
+      <data key="d2" />
+      <data key="d3">charles cornwallis was a british general defeated by washington at the siege of yorktown  leading to british surrender</data>
+      <data key="d4">charles cornwallis: charles cornwallis was a british general defeated by washington at the siege of yorktown  leading to british surrender</data>
+    </node>
+    <node id="british parliament">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">british parliament</data>
+      <data key="d2" />
+      <data key="d3">british parliament imposed taxes and policies on the colonies  leading to increased tensions and resistance</data>
+      <data key="d4">british parliament: british parliament imposed taxes and policies on the colonies  leading to increased tensions and resistance</data>
+    </node>
+    <node id="gaspee">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">gaspee</data>
+      <data key="d2" />
+      <data key="d3">the destruction of the royal navy customs schooner gaspee in 1772 was a significant act of anti tax protest</data>
+      <data key="d4">gaspee: the destruction of the royal navy customs schooner gaspee in 1772 was a significant act of anti tax protest</data>
+    </node>
+    <node id="sons of liberty">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">sons of liberty</data>
+      <data key="d2" />
+      <data key="d3">the sons of liberty instigated events like the boston tea party as acts of resistance against british policies</data>
+      <data key="d4">sons of liberty: the sons of liberty instigated events like the boston tea party as acts of resistance against british policies</data>
+    </node>
+    <node id="native americans">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">native americans</data>
+      <data key="d2" />
+      <data key="d3">costumes of native americans were worn by activists during the boston tea party as a symbolic protest&lt;SEP&gt;native americans were involved in conflicts with white colonists and british soldiers in newly acquired territories</data>
+      <data key="d4">native americans: costumes of native americans were worn by activists during the boston tea party as a symbolic protest&lt;SEP&gt;native americans were involved in conflicts with white colonists and british soldiers in newly acquired territories</data>
+    </node>
+    <node id="royal proclamation of 1763">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600&lt;SEP&gt;chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">royal proclamation of 1763</data>
+      <data key="d2" />
+      <data key="d3">the royal proclamation of 1763 defined territorial boundaries and policies affecting the thirteen colonies&lt;SEP&gt;the royal proclamation of 1763 designated territories closed to white settlement  impacting colonial expansion</data>
+      <data key="d4">royal proclamation of 1763: the royal proclamation of 1763 defined territorial boundaries and policies affecting the thirteen colonies&lt;SEP&gt;the royal proclamation of 1763 designated territories closed to white settlement  impacting colonial expansion</data>
+    </node>
+    <node id="salutary neglect">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">salutary neglect</data>
+      <data key="d2" />
+      <data key="d3">salutary neglect was a british policy of non interference that changed after the french and indian war  leading to increased tensions</data>
+      <data key="d4">salutary neglect: salutary neglect was a british policy of non interference that changed after the french and indian war  leading to increased tensions</data>
     </node>
     <node id="capt  levi preston">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600&lt;SEP&gt;chunk-541c2fb47007dc4d93603094626a6541</data>
       <data key="d1">capt  levi preston</data>
       <data key="d2" />
-      <data key="d3">capt  levi preston is a historical figure from danvers  massachusetts  known for his response regarding the american rebellion against england</data>
-      <data key="d4">capt  levi preston: capt  levi preston is a historical figure from danvers  massachusetts  known for his response regarding the american rebellion against england</data>
+      <data key="d3">capt  levi preston expressed the sentiment of self governance and autonomy that fueled the american rebellion against england&lt;SEP&gt;capt  levi preston is a colonist from danvers  massachusetts  who expressed the sentiment of self governance and rebellion against england</data>
+      <data key="d4">capt  levi preston: capt  levi preston expressed the sentiment of self governance and autonomy that fueled the american rebellion against england&lt;SEP&gt;capt  levi preston is a colonist from danvers  massachusetts  who expressed the sentiment of self governance and rebellion against england</data>
     </node>
     <node id="charles ii">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
       <data key="d1">charles ii</data>
       <data key="d2" />
-      <data key="d3">charles ii is mentioned in relation to the stuart restoration and the opposition faced by the new england colonies</data>
-      <data key="d4">charles ii: charles ii is mentioned in relation to the stuart restoration and the opposition faced by the new england colonies</data>
+      <data key="d3">charles ii is the king whose legitimacy was not recognized by massachusetts for a period after his coronation</data>
+      <data key="d4">charles ii: charles ii is the king whose legitimacy was not recognized by massachusetts for a period after his coronation</data>
     </node>
     <node id="james ii">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
       <data key="d1">james ii</data>
       <data key="d2" />
-      <data key="d3">james ii is mentioned in relation to attempts to bring new england under direct english control  leading to colonial opposition</data>
-      <data key="d4">james ii: james ii is mentioned in relation to attempts to bring new england under direct english control  leading to colonial opposition</data>
+      <data key="d3">james ii attempted to bring new england under direct english control  facing fierce opposition from the colonists</data>
+      <data key="d4">james ii: james ii attempted to bring new england under direct english control  facing fierce opposition from the colonists</data>
     </node>
     <node id="edmund andros">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
       <data key="d1">edmund andros</data>
       <data key="d2" />
-      <data key="d3">edmund andros is appointed as royal governor of the dominion of new england  facing resistance and triggering resentment in the colonies</data>
-      <data key="d4">edmund andros: edmund andros is appointed as royal governor of the dominion of new england  facing resistance and triggering resentment in the colonies</data>
-    </node>
-    <node id="william and mary">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">william and mary</data>
-      <data key="d2" />
-      <data key="d3">william and mary are mentioned in relation to the granting of new charters to the new england colonies after the glorious revolution</data>
-      <data key="d4">william and mary: william and mary are mentioned in relation to the granting of new charters to the new england colonies after the glorious revolution</data>
-    </node>
-    <node id="british empire">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">british empire</data>
-      <data key="d2" />
-      <data key="d3">the british empire is described as a constitutional monarchy with sovereignty in the king in parliament  influencing colonial governance</data>
-      <data key="d4">british empire: the british empire is described as a constitutional monarchy with sovereignty in the king in parliament  influencing colonial governance</data>
-    </node>
-    <node id="house of lords">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">house of lords</data>
-      <data key="d2" />
-      <data key="d3">the house of lords is mentioned in relation to aristocratic representation in the british government</data>
-      <data key="d4">house of lords: the house of lords is mentioned in relation to aristocratic representation in the british government</data>
-    </node>
-    <node id="house of commons">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">house of commons</data>
-      <data key="d2" />
-      <data key="d3">the house of commons is mentioned in relation to elected representation in the british government</data>
-      <data key="d4">house of commons: the house of commons is mentioned in relation to elected representation in the british government</data>
-    </node>
-    <node id="colonial assemblies">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">colonial assemblies</data>
-      <data key="d2" />
-      <data key="d3">colonial assemblies are mentioned as bodies with legislative powers in the colonies  subject to british oversight</data>
-      <data key="d4">colonial assemblies: colonial assemblies are mentioned as bodies with legislative powers in the colonies  subject to british oversight</data>
-    </node>
-    <node id="navigation acts">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">navigation acts</data>
-      <data key="d2" />
-      <data key="d3">the navigation acts are a series of laws passed by parliament to regulate colonial trade and economic activities&lt;SEP&gt;the navigation acts were laws restricting colonial trade and requiring certain commodities to be shipped to britain</data>
-      <data key="d4">navigation acts: the navigation acts are a series of laws passed by parliament to regulate colonial trade and economic activities&lt;SEP&gt;the navigation acts were laws restricting colonial trade and requiring certain commodities to be shipped to britain</data>
-    </node>
-    <node id="colonists">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">colonists</data>
-      <data key="d2" />
-      <data key="d3">colonists are individuals who sought greater autonomy from britain and rebelled against english control</data>
-      <data key="d4">colonists: colonists are individuals who sought greater autonomy from britain and rebelled against english control</data>
-    </node>
-    <node id="king charles i">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">king charles i</data>
-      <data key="d2" />
-      <data key="d3">king charles i was executed during the english civil war  leading to support for the commonwealth government in the puritan colonies</data>
-      <data key="d4">king charles i: king charles i was executed during the english civil war  leading to support for the commonwealth government in the puritan colonies</data>
+      <data key="d3">edmund andros was appointed royal governor to govern the dominion of new england  facing resentment and opposition from the colonists</data>
+      <data key="d4">edmund andros: edmund andros was appointed royal governor to govern the dominion of new england  facing resentment and opposition from the colonists</data>
     </node>
     <node id="king philip s war">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
       <data key="d1">king philip s war</data>
       <data key="d2" />
-      <data key="d3">king philip s war involved conflicts between new england colonies and native american tribes  shaping a distinct american identity</data>
-      <data key="d4">king philip s war: king philip s war involved conflicts between new england colonies and native american tribes  shaping a distinct american identity</data>
+      <data key="d3">king philip s war was a conflict where the new england colonies fought native american tribes without english military assistance  contributing to the development of a unique american identity</data>
+      <data key="d4">king philip s war: king philip s war was a conflict where the new england colonies fought native american tribes without english military assistance  contributing to the development of a unique american identity</data>
     </node>
-    <node id="new england colonies">
+    <node id="glorious revolution of 1688">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">new england colonies</data>
+      <data key="d1">glorious revolution of 1688</data>
       <data key="d2" />
-      <data key="d3">the new england colonies were part of the thirteen colonies and played a significant role in early american history</data>
-      <data key="d4">new england colonies: the new england colonies were part of the thirteen colonies and played a significant role in early american history</data>
+      <data key="d3">the glorious revolution of 1688 resulted in the removal of james ii from power and the restoration of colonial self government in new england</data>
+      <data key="d4">glorious revolution of 1688: the glorious revolution of 1688 resulted in the removal of james ii from power and the restoration of colonial self government in new england</data>
     </node>
-    <node id="dominion of new england">
+    <node id="navigation acts">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">dominion of new england</data>
+      <data key="d1">navigation acts</data>
       <data key="d2" />
-      <data key="d3">the dominion of new england was a consolidation of colonies by james ii  facing resistance and eventual overthrow</data>
-      <data key="d4">dominion of new england: the dominion of new england was a consolidation of colonies by james ii  facing resistance and eventual overthrow</data>
+      <data key="d3">the navigation acts were a series of laws passed by parliament to regulate colonial trade and restrict certain commodities  impacting the economic activities of the thirteen colonies</data>
+      <data key="d4">navigation acts: the navigation acts were a series of laws passed by parliament to regulate colonial trade and restrict certain commodities  impacting the economic activities of the thirteen colonies</data>
     </node>
-    <node id="glorious revolution">
+    <node id="wool act 1698">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">glorious revolution</data>
+      <data key="d1">wool act 1698</data>
       <data key="d2" />
-      <data key="d3">the glorious revolution of 1688 led to the removal of james ii from power and the restoration of colonial self government</data>
-      <data key="d4">glorious revolution: the glorious revolution of 1688 led to the removal of james ii from power and the restoration of colonial self government</data>
+      <data key="d3">the wool act 1698 was a law regulating the colonial wool industry  affecting trade and production in the colonies</data>
+      <data key="d4">wool act 1698: the wool act 1698 was a law regulating the colonial wool industry  affecting trade and production in the colonies</data>
     </node>
-    <node id="parliament">
+    <node id="hat act 1731">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">parliament</data>
+      <data key="d1">hat act 1731</data>
       <data key="d2" />
-      <data key="d3">parliament passed laws such as the navigation acts to regulate colonial trade and economic activities</data>
-      <data key="d4">parliament: parliament passed laws such as the navigation acts to regulate colonial trade and economic activities</data>
+      <data key="d3">the hat act 1731 was a law regulating the colonial hat industry  influencing manufacturing practices in the colonies</data>
+      <data key="d4">hat act 1731: the hat act 1731 was a law regulating the colonial hat industry  influencing manufacturing practices in the colonies</data>
     </node>
-    <node id="mercantilism">
+    <node id="iron act 1750">
       <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">mercantilism</data>
+      <data key="d1">iron act 1750</data>
       <data key="d2" />
-      <data key="d3">mercantilism was a policy pursued by the british government to benefit the mother country economically  impacting colonial trade</data>
-      <data key="d4">mercantilism: mercantilism was a policy pursued by the british government to benefit the mother country economically  impacting colonial trade</data>
-    </node>
-    <node id="molasses act 1733">
-      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d1">molasses act 1733</data>
-      <data key="d2" />
-      <data key="d3">the molasses act 1733 imposed duties on foreign molasses  leading to colonial protests and increased smuggling</data>
-      <data key="d4">molasses act 1733: the molasses act 1733 imposed duties on foreign molasses  leading to colonial protests and increased smuggling</data>
+      <data key="d3">the iron act 1750 was a law regulating the colonial iron industry  impacting production and trade within the colonies</data>
+      <data key="d4">iron act 1750: the iron act 1750 was a law regulating the colonial iron industry  impacting production and trade within the colonies</data>
     </node>
     <node id="british government">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
@@ -340,71 +298,92 @@
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d1">colonies</data>
       <data key="d2" />
-      <data key="d3">the colonies contributed money to the war effort during the french and indian war and were involved in the conflict</data>
-      <data key="d4">colonies: the colonies contributed money to the war effort during the french and indian war and were involved in the conflict</data>
+      <data key="d3">the colonies contributed money to the war effort during the french and indian war</data>
+      <data key="d4">colonies: the colonies contributed money to the war effort during the french and indian war</data>
     </node>
     <node id="great britain">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d1">great britain</data>
       <data key="d2" />
-      <data key="d3">great britain defeated france during the french and indian war and acquired french territory east of the mississippi river</data>
-      <data key="d4">great britain: great britain defeated france during the french and indian war and acquired french territory east of the mississippi river</data>
+      <data key="d3">great britain defeated france and acquired territory east of the mississippi river during the french and indian war</data>
+      <data key="d4">great britain: great britain defeated france and acquired territory east of the mississippi river during the french and indian war</data>
     </node>
     <node id="bute ministry">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d1">bute ministry</data>
       <data key="d2" />
-      <data key="d3">the bute ministry decided to garrison soldiers in north america and make provisions for defense and administration in the newly acquired territories</data>
-      <data key="d4">bute ministry: the bute ministry decided to garrison soldiers in north america and make provisions for defense and administration in the newly acquired territories</data>
+      <data key="d3">the bute ministry decided to permanently garrison soldiers in north america and station a standing army to provide defense and prevent conflicts</data>
+      <data key="d4">bute ministry: the bute ministry decided to permanently garrison soldiers in north america and station a standing army to provide defense and prevent conflicts</data>
     </node>
-    <node id="british army officers">
+    <node id="french">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">british army officers</data>
+      <data key="d1">french</data>
       <data key="d2" />
-      <data key="d3">approximately 1 500 politically well connected british army officers were allowed to remain on active duty with full pay in north america  contributing to defense and administration</data>
-      <data key="d4">british army officers: approximately 1 500 politically well connected british army officers were allowed to remain on active duty with full pay in north america  contributing to defense and administration</data>
+      <data key="d3">the french were defeated by great britain during the french and indian war  leading to territorial changes</data>
+      <data key="d4">french: the french were defeated by great britain during the french and indian war  leading to territorial changes</data>
     </node>
-    <node id="native americans">
+    <node id="spanish">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">native americans</data>
+      <data key="d1">spanish</data>
       <data key="d2" />
-      <data key="d3">native americans were involved in conflicts with white colonists and british soldiers in the newly acquired territories  leading to tensions and wars</data>
-      <data key="d4">native americans: native americans were involved in conflicts with white colonists and british soldiers in the newly acquired territories  leading to tensions and wars</data>
-    </node>
-    <node id="pontiac s war">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">pontiac s war</data>
-      <data key="d2" />
-      <data key="d3">pontiac s war was launched by native americans in response to westward migration and british presence in the newly acquired territories</data>
-      <data key="d4">pontiac s war: pontiac s war was launched by native americans in response to westward migration and british presence in the newly acquired territories</data>
-    </node>
-    <node id="grenville ministry">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">grenville ministry</data>
-      <data key="d2" />
-      <data key="d3">the grenville ministry issued the royal proclamation of 1763  attempting to regulate westward migration and settlement in the newly acquired territories</data>
-      <data key="d4">grenville ministry: the grenville ministry issued the royal proclamation of 1763  attempting to regulate westward migration and settlement in the newly acquired territories</data>
-    </node>
-    <node id="mississippi river">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">mississippi river</data>
-      <data key="d2" />
-      <data key="d3">the mississippi river served as a geographical boundary during the french and indian war and territorial acquisitions</data>
-      <data key="d4">mississippi river: the mississippi river served as a geographical boundary during the french and indian war and territorial acquisitions</data>
+      <data key="d3">the spanish were present in florida and were a foreign population in newly acquired territories during the french and indian war</data>
+      <data key="d4">spanish: the spanish were present in florida and were a foreign population in newly acquired territories during the french and indian war</data>
     </node>
     <node id="appalachian mountains">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d1">appalachian mountains</data>
       <data key="d2" />
-      <data key="d3">the appalachian mountains were a significant geographical feature mentioned in relation to westward migration and territorial designations</data>
-      <data key="d4">appalachian mountains: the appalachian mountains were a significant geographical feature mentioned in relation to westward migration and territorial designations</data>
+      <data key="d3">the appalachian mountains were designated as an indian reserve closed to white settlement by the royal proclamation of 1763</data>
+      <data key="d4">appalachian mountains: the appalachian mountains were designated as an indian reserve closed to white settlement by the royal proclamation of 1763</data>
     </node>
-    <node id="westward migration">
+    <node id="mississippi river">
       <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">westward migration</data>
+      <data key="d1">mississippi river</data>
       <data key="d2" />
-      <data key="d3">westward migration increased after the french threat was removed  leading to conflicts and tensions with native americans</data>
-      <data key="d4">westward migration: westward migration increased after the french threat was removed  leading to conflicts and tensions with native americans</data>
+      <data key="d3">the mississippi river marked the eastern boundary of the territory acquired by great britain after defeating france during the french and indian war</data>
+      <data key="d4">mississippi river: the mississippi river marked the eastern boundary of the territory acquired by great britain after defeating france during the french and indian war</data>
+    </node>
+    <node id="french and indian war">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">french and indian war</data>
+      <data key="d2" />
+      <data key="d3">the french and indian war involved conflicts between great britain  france  and native american tribes  leading to significant territorial changes&lt;SEP&gt;the french and indian war was a significant conflict involving great britain  france  and native american tribes  resulting in territorial changes</data>
+      <data key="d4">french and indian war: the french and indian war involved conflicts between great britain  france  and native american tribes  leading to significant territorial changes&lt;SEP&gt;the french and indian war was a significant conflict involving great britain  france  and native american tribes  resulting in territorial changes</data>
+    </node>
+    <node id="pontiac s war">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">pontiac s war</data>
+      <data key="d2" />
+      <data key="d3">pontiac s war was a conflict initiated by native americans in response to westward migration and british actions after the french and indian war</data>
+      <data key="d4">pontiac s war: pontiac s war was a conflict initiated by native americans in response to westward migration and british actions after the french and indian war</data>
+    </node>
+    <node id="british regulars">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">british regulars</data>
+      <data key="d2" />
+      <data key="d3">british regulars were part of the soldiers fielded by the british government during the french and indian war</data>
+      <data key="d4">british regulars: british regulars were part of the soldiers fielded by the british government during the french and indian war</data>
+    </node>
+    <node id="colonial volunteers">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">colonial volunteers</data>
+      <data key="d2" />
+      <data key="d3">colonial volunteers were part of the soldiers fielded by the british government during the french and indian war</data>
+      <data key="d4">colonial volunteers: colonial volunteers were part of the soldiers fielded by the british government during the french and indian war</data>
+    </node>
+    <node id="money contribution">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">money contribution</data>
+      <data key="d2" />
+      <data key="d3">the colonies contributed money to the war effort during the french and indian war  with partial reimbursement from the british government</data>
+      <data key="d4">money contribution: the colonies contributed money to the war effort during the french and indian war  with partial reimbursement from the british government</data>
+    </node>
+    <node id="grenville ministry">
+      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d1">grenville ministry</data>
+      <data key="d2" />
+      <data key="d3">the grenville ministry issued the royal proclamation of 1763  affecting westward migration and relations with native americans</data>
+      <data key="d4">grenville ministry: the grenville ministry issued the royal proclamation of 1763  affecting westward migration and relations with native americans</data>
     </node>
     <node id="french revolution">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
@@ -412,20 +391,23 @@
       <data key="d2" />
       <data key="d3">the french revolution was a period of political and societal change in france  marked by significant events such as the estates general of 1789 and the coup of 18 brumaire in 1799</data>
       <data key="d4">french revolution: the french revolution was a period of political and societal change in france  marked by significant events such as the estates general of 1789 and the coup of 18 brumaire in 1799</data>
+      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
     </node>
     <node id="estates general">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c&lt;SEP&gt;chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">estates general</data>
       <data key="d2" />
-      <data key="d3">the estates general is a representative body summoned by the king to address tax issues and representation&lt;SEP&gt;the estates general is summoned by the king to address tax issues and representation&lt;SEP&gt;the estates general of 1789 was a crucial event that marked the beginning of the french revolution  leading to the formation of the national assembly</data>
-      <data key="d4">estates general: the estates general is a representative body summoned by the king to address tax issues and representation&lt;SEP&gt;the estates general is summoned by the king to address tax issues and representation&lt;SEP&gt;the estates general of 1789 was a crucial event that marked the beginning of the french revolution  leading to the formation of the national assembly</data>
+      <data key="d3">the estates general is a representative body that plays a crucial role in approving new taxes and reforms&lt;SEP&gt;the estates general of 1789 was a crucial political event in france that led to the formation of the national assembly and subsequent revolutionary actions</data>
+      <data key="d4">estates general: the estates general is a representative body that plays a crucial role in approving new taxes and reforms&lt;SEP&gt;the estates general of 1789 was a crucial political event in france that led to the formation of the national assembly and subsequent revolutionary actions</data>
+      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
     </node>
     <node id="coup of 18 brumaire">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">coup of 18 brumaire</data>
       <data key="d2" />
-      <data key="d3">the coup of 18 brumaire on 9 november 1799 marked the end of the french revolution and the establishment of the consulate under napoleon bonaparte</data>
-      <data key="d4">coup of 18 brumaire: the coup of 18 brumaire on 9 november 1799 marked the end of the french revolution and the establishment of the consulate under napoleon bonaparte</data>
+      <data key="d3">the coup of 18 brumaire in 1799 marked the end of the french revolution and the establishment of a new political order</data>
+      <data key="d4">coup of 18 brumaire: the coup of 18 brumaire in 1799 marked the end of the french revolution and the establishment of a new political order</data>
+      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
     </node>
     <node id="ancien r gime">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
@@ -438,78 +420,122 @@
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">louis xvi</data>
       <data key="d2" />
-      <data key="d3">louis xvi was the king of france during the french revolution  whose attempted flight to varennes and subsequent execution were significant events</data>
-      <data key="d4">louis xvi: louis xvi was the king of france during the french revolution  whose attempted flight to varennes and subsequent execution were significant events</data>
+      <data key="d3">louis xvi was the monarch of france during the french revolution  whose actions and decisions influenced the course of events</data>
+      <data key="d4">louis xvi: louis xvi was the monarch of france during the french revolution  whose actions and decisions influenced the course of events</data>
     </node>
     <node id="national assembly">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c&lt;SEP&gt;chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">national assembly</data>
       <data key="d2" />
-      <data key="d3">the national assembly is proposed by siey s as a representation of the nation  advocating for the third estate s rights&lt;SEP&gt;the national assembly was formed by the representatives of the third estate during the french revolution  signifying a shift in political power</data>
-      <data key="d4">national assembly: the national assembly is proposed by siey s as a representation of the nation  advocating for the third estate s rights&lt;SEP&gt;the national assembly was formed by the representatives of the third estate during the french revolution  signifying a shift in political power</data>
+      <data key="d3">the national assembly is proposed as a representative body for the third estate by abb  siey s&lt;SEP&gt;the national assembly was formed by the representatives of the third estate during the french revolution  signifying a shift in political power</data>
+      <data key="d4">national assembly: the national assembly is proposed as a representative body for the third estate by abb  siey s&lt;SEP&gt;the national assembly was formed by the representatives of the third estate during the french revolution  signifying a shift in political power</data>
+      <data key="d5">[{"level": 0, "cluster": "0"}]</data>
     </node>
     <node id="storming of the bastille">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">storming of the bastille</data>
       <data key="d2" />
-      <data key="d3">the storming of the bastille on 14 july was a pivotal event in the french revolution  symbolizing the people s uprising against the monarchy</data>
-      <data key="d4">storming of the bastille: the storming of the bastille on 14 july was a pivotal event in the french revolution  symbolizing the people s uprising against the monarchy</data>
+      <data key="d3">the storming of the bastille on 14 july was a symbolic event that marked the beginning of radical measures and changes in france</data>
+      <data key="d4">storming of the bastille: the storming of the bastille on 14 july was a symbolic event that marked the beginning of radical measures and changes in france</data>
     </node>
     <node id="reign of terror">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">reign of terror</data>
       <data key="d2" />
-      <data key="d3">the reign of terror was a period of mass executions during the french revolution  led by the radical jacobins and ending with the thermidorian reaction</data>
-      <data key="d4">reign of terror: the reign of terror was a period of mass executions during the french revolution  led by the radical jacobins and ending with the thermidorian reaction</data>
+      <data key="d3">the reign of terror during the french revolution was a period of intense violence and political repression  characterized by mass executions and radical measures&lt;SEP&gt;the reign of terror was a period of intense violence and executions during the french revolution  led by radical jacobins</data>
+      <data key="d4">reign of terror: the reign of terror during the french revolution was a period of intense violence and political repression  characterized by mass executions and radical measures&lt;SEP&gt;the reign of terror was a period of intense violence and executions during the french revolution  led by radical jacobins</data>
     </node>
     <node id="estates general of 1789">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">estates general of 1789</data>
       <data key="d2" />
-      <data key="d3">the estates general of 1789 was a crucial event that marked the beginning of the french revolution  leading to the formation of the national assembly</data>
-      <data key="d4">estates general of 1789: the estates general of 1789 was a crucial event that marked the beginning of the french revolution  leading to the formation of the national assembly</data>
+      <data key="d3">the estates general of 1789 was a crucial political event in france that led to the formation of the national assembly and subsequent revolutionary actions</data>
+      <data key="d4">estates general of 1789: the estates general of 1789 was a crucial political event in france that led to the formation of the national assembly and subsequent revolutionary actions</data>
     </node>
-    <node id="crisis of the ancien r gime">
+    <node id="financial crisis">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d1">crisis of the ancien r gime</data>
+      <data key="d1">financial crisis</data>
       <data key="d2" />
-      <data key="d3">the crisis of the ancien r gime refers to the social  economic  and political challenges faced by the old regime in france  contributing to the conditions that led to the french revolution</data>
-      <data key="d4">crisis of the ancien r gime: the crisis of the ancien r gime refers to the social  economic  and political challenges faced by the old regime in france  contributing to the conditions that led to the french revolution</data>
+      <data key="d3">the financial crisis in france during the late 1780s was a significant factor leading to the convocation of the estates general and subsequent revolutionary events</data>
+      <data key="d4">financial crisis: the financial crisis in france during the late 1780s was a significant factor leading to the convocation of the estates general and subsequent revolutionary events</data>
     </node>
-    <node id="revolutionary tribunal">
+    <node id="social distress">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d1">revolutionary tribunal</data>
+      <data key="d1">social distress</data>
       <data key="d2" />
-      <data key="d3">the revolutionary tribunal was responsible for sentencing and executing thousands of individuals during the reign of terror  reflecting the radical measures taken by the jacobins</data>
-      <data key="d4">revolutionary tribunal: the revolutionary tribunal was responsible for sentencing and executing thousands of individuals during the reign of terror  reflecting the radical measures taken by the jacobins</data>
+      <data key="d3">social distress in france contributed to the convocation of the estates general in 1789  reflecting widespread dissatisfaction with the existing social structures</data>
+      <data key="d4">social distress: social distress in france contributed to the convocation of the estates general in 1789  reflecting widespread dissatisfaction with the existing social structures</data>
     </node>
-    <node id="thermidorian reaction">
+    <node id="third estate">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d1">thermidorian reaction</data>
+      <data key="d1">third estate</data>
       <data key="d2" />
-      <data key="d3">the thermidorian reaction marked the end of the reign of terror and the radical phase of the french revolution  leading to a more moderate political environment</data>
-      <data key="d4">thermidorian reaction: the thermidorian reaction marked the end of the reign of terror and the radical phase of the french revolution  leading to a more moderate political environment</data>
+      <data key="d3">the third estate in france played a pivotal role in the formation of the national assembly during the french revolution  representing commoners and challenging the traditional order</data>
+      <data key="d4">third estate: the third estate in france played a pivotal role in the formation of the national assembly during the french revolution  representing commoners and challenging the traditional order</data>
+      <data key="d5">[{"level": 0, "cluster": "0"}]</data>
     </node>
-    <node id="committee of public safety">
+    <node id="feudalism">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d1">committee of public safety</data>
+      <data key="d1">feudalism</data>
       <data key="d2" />
-      <data key="d3">the committee of public safety was a governing body during the french revolution  dominated by radical jacobins and responsible for the reign of terror</data>
-      <data key="d4">committee of public safety: the committee of public safety was a governing body during the french revolution  dominated by radical jacobins and responsible for the reign of terror</data>
+      <data key="d3">feudalism was abolished during the french revolution  marking a significant shift in the social and economic structures of france</data>
+      <data key="d4">feudalism: feudalism was abolished during the french revolution  marking a significant shift in the social and economic structures of france</data>
+    </node>
+    <node id="state control over the catholic church">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">state control over the catholic church</data>
+      <data key="d2" />
+      <data key="d3">state control over the catholic church was established as part of the revolutionary measures in france  asserting governmental authority over religious institutions</data>
+      <data key="d4">state control over the catholic church: state control over the catholic church was established as part of the revolutionary measures in france  asserting governmental authority over religious institutions</data>
+    </node>
+    <node id="declaration of rights">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">declaration of rights</data>
+      <data key="d2" />
+      <data key="d3">the declaration of rights during the french revolution outlined fundamental principles and liberties  reflecting the revolutionary ideals of the time</data>
+      <data key="d4">declaration of rights: the declaration of rights during the french revolution outlined fundamental principles and liberties  reflecting the revolutionary ideals of the time</data>
+    </node>
+    <node id="french revolutionary wars">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">french revolutionary wars</data>
+      <data key="d2" />
+      <data key="d3">the french revolutionary wars  starting in april 1792  were a series of conflicts that shaped the course of the revolution and france s relations with other european powers</data>
+      <data key="d4">french revolutionary wars: the french revolutionary wars  starting in april 1792  were a series of conflicts that shaped the course of the revolution and france s relations with other european powers</data>
     </node>
     <node id="french first republic">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">french first republic</data>
       <data key="d2" />
-      <data key="d3">the french first republic was established in september 1792  replacing the monarchy and symbolizing the shift towards republican governance</data>
-      <data key="d4">french first republic: the french first republic was established in september 1792  replacing the monarchy and symbolizing the shift towards republican governance</data>
+      <data key="d3">the french first republic was established in september as a result of the revolution  marking the end of the monarchy and the beginning of a new political era</data>
+      <data key="d4">french first republic: the french first republic was established in september as a result of the revolution  marking the end of the monarchy and the beginning of a new political era</data>
+    </node>
+    <node id="thermidorian reaction">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">thermidorian reaction</data>
+      <data key="d2" />
+      <data key="d3">the thermidorian reaction in july 1794 marked the end of the reign of terror and a shift towards more moderate policies in post revolutionary france</data>
+      <data key="d4">thermidorian reaction: the thermidorian reaction in july 1794 marked the end of the reign of terror and a shift towards more moderate policies in post revolutionary france</data>
+    </node>
+    <node id="committee of public safety">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">committee of public safety</data>
+      <data key="d2" />
+      <data key="d3">the committee of public safety  led by radical jacobins  wielded significant power during the reign of terror  overseeing revolutionary justice and policies</data>
+      <data key="d4">committee of public safety: the committee of public safety  led by radical jacobins  wielded significant power during the reign of terror  overseeing revolutionary justice and policies</data>
     </node>
     <node id="directory">
       <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d1">directory</data>
       <data key="d2" />
-      <data key="d3">the directory was the governing body in france from 1795 to 1799  following the reign of terror and preceding the establishment of the consulate under napoleon bonaparte</data>
-      <data key="d4">directory: the directory was the governing body in france from 1795 to 1799  following the reign of terror and preceding the establishment of the consulate under napoleon bonaparte</data>
+      <data key="d3">the directory replaced the committee of public safety in november 1795  marking a transition towards a more stable but ultimately short lived government</data>
+      <data key="d4">directory: the directory replaced the committee of public safety in november 1795  marking a transition towards a more stable but ultimately short lived government</data>
+    </node>
+    <node id="consulate">
+      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d1">consulate</data>
+      <data key="d2" />
+      <data key="d3">the consulate  established after the coup of 18 brumaire  marked the beginning of napoleon bonaparte s political career in france</data>
+      <data key="d4">consulate: the consulate  established after the coup of 18 brumaire  marked the beginning of napoleon bonaparte s political career in france</data>
     </node>
     <node id="tax farmers">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
@@ -517,200 +543,258 @@
       <data key="d2" />
       <data key="d3">tax farmers are contracted to collect taxes  keeping a portion as personal profit</data>
       <data key="d4">tax farmers: tax farmers are contracted to collect taxes  keeping a portion as personal profit</data>
-      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
     </node>
     <node id="nobility">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">nobility</data>
       <data key="d2" />
-      <data key="d3">nobility benefits from exemptions  leading to a heavier tax burden on peasants</data>
-      <data key="d4">nobility: nobility benefits from exemptions  leading to a heavier tax burden on peasants</data>
-      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
+      <data key="d3">the nobility benefits from exemptions  leading to a tax burden mainly falling on peasants</data>
+      <data key="d4">nobility: the nobility benefits from exemptions  leading to a tax burden mainly falling on peasants</data>
     </node>
     <node id="church">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">church</data>
       <data key="d2" />
-      <data key="d3">the church benefits from exemptions  contributing to the tax burden on peasants</data>
-      <data key="d4">church: the church benefits from exemptions  contributing to the tax burden on peasants</data>
-      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
+      <data key="d3">the church benefits from exemptions  influencing the distribution of the tax burden</data>
+      <data key="d4">church: the church benefits from exemptions  influencing the distribution of the tax burden</data>
     </node>
     <node id="peasants">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">peasants</data>
       <data key="d2" />
-      <data key="d3">peasants bear the main tax burden due to exemptions enjoyed by the nobility and church</data>
-      <data key="d4">peasants: peasants bear the main tax burden due to exemptions enjoyed by the nobility and church</data>
-      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
-    </node>
-    <node id="reform">
-      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">reform</data>
-      <data key="d2" />
-      <data key="d3">reform is difficult due to the need for new tax laws to be registered with regional bodies that can block them</data>
-      <data key="d4">reform: reform is difficult due to the need for new tax laws to be registered with regional bodies that can block them</data>
+      <data key="d3">peasants bear the main tax burden due to exemptions benefiting the nobility and church</data>
+      <data key="d4">peasants: peasants bear the main tax burden due to exemptions benefiting the nobility and church</data>
     </node>
     <node id="anglo french war of 1778 1783">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">anglo french war of 1778 1783</data>
       <data key="d2" />
-      <data key="d3">the war was primarily funded through loans  leading to a debt crisis for france</data>
-      <data key="d4">anglo french war of 1778 1783: the war was primarily funded through loans  leading to a debt crisis for france</data>
+      <data key="d3">the anglo french war of 1778 1783 is a historical event that impacted france s finances</data>
+      <data key="d4">anglo french war of 1778 1783: the anglo french war of 1778 1783 is a historical event that impacted france s finances</data>
     </node>
     <node id="monarchy">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">monarchy</data>
       <data key="d2" />
-      <data key="d3">the monarchy borrows heavily post war  resulting in a debt crisis by 1788</data>
-      <data key="d4">monarchy: the monarchy borrows heavily post war  resulting in a debt crisis by 1788</data>
+      <data key="d3">the monarchy borrows heavily  leading to a debt crisis and financial strain</data>
+      <data key="d4">monarchy: the monarchy borrows heavily  leading to a debt crisis and financial strain</data>
+      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
     </node>
     <node id="calonne">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">calonne</data>
       <data key="d2" />
-      <data key="d3">calonne proposes tax reforms and faces rejection by nobility and parlements</data>
-      <data key="d4">calonne: calonne proposes tax reforms and faces rejection by nobility and parlements</data>
-      <data key="d5">[{"level": 0, "cluster": "0"}]</data>
+      <data key="d3">calonne  the french finance minister  proposes reforms to address the debt crisis and financial issues</data>
+      <data key="d4">calonne: calonne  the french finance minister  proposes reforms to address the debt crisis and financial issues</data>
+      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
     </node>
     <node id="brienne">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">brienne</data>
       <data key="d2" />
-      <data key="d3">brienne submits new taxes to parlements  facing rejection and leading to a political crisis</data>
-      <data key="d4">brienne: brienne submits new taxes to parlements  facing rejection and leading to a political crisis</data>
-      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
+      <data key="d3">brienne succeeds calonne and faces challenges in implementing new taxes and reforms</data>
+      <data key="d4">brienne: brienne succeeds calonne and faces challenges in implementing new taxes and reforms</data>
+      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
     </node>
     <node id="parlements">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">parlements</data>
       <data key="d2" />
-      <data key="d3">parlements oppose new taxes  leading to a political crisis with the crown</data>
-      <data key="d4">parlements: parlements oppose new taxes  leading to a political crisis with the crown</data>
-      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
-    </node>
-    <node id="public opinion">
-      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">public opinion</data>
-      <data key="d2" />
-      <data key="d3">public opinion supports the parlements in the conflict with the crown over taxes</data>
-      <data key="d4">public opinion: public opinion supports the parlements in the conflict with the crown over taxes</data>
-      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
+      <data key="d3">the parlements have the power to block new tax laws and reforms  leading to conflicts with the monarchy</data>
+      <data key="d4">parlements: the parlements have the power to block new tax laws and reforms  leading to conflicts with the monarchy</data>
+      <data key="d5">[{"level": 0, "cluster": "4"}]</data>
     </node>
     <node id="jacques necker">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">jacques necker</data>
       <data key="d2" />
-      <data key="d3">necker replaces brienne as finance minister amidst the tax crisis</data>
-      <data key="d4">jacques necker: necker replaces brienne as finance minister amidst the tax crisis</data>
-      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
+      <data key="d3">jacques necker replaces brienne as a key figure in financial decision making</data>
+      <data key="d4">jacques necker: jacques necker replaces brienne as a key figure in financial decision making</data>
+      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
     </node>
     <node id="society of thirty">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">society of thirty</data>
       <data key="d2" />
-      <data key="d3">the society of thirty campaigns for increased representation and voting rights for the third estate</data>
-      <data key="d4">society of thirty: the society of thirty campaigns for increased representation and voting rights for the third estate</data>
+      <data key="d3">the society of thirty consists of liberal nobles and activists campaigning for political reforms</data>
+      <data key="d4">society of thirty: the society of thirty consists of liberal nobles and activists campaigning for political reforms</data>
+      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
     </node>
     <node id="abb  siey s">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">abb  siey s</data>
       <data key="d2" />
-      <data key="d3">siey s publishes influential pamphlets advocating for the third estate s representation and rights</data>
-      <data key="d4">abb  siey s: siey s publishes influential pamphlets advocating for the third estate s representation and rights</data>
+      <data key="d3">abb  siey s issues influential pamphlets advocating for the representation of the third estate</data>
+      <data key="d4">abb  siey s: abb  siey s issues influential pamphlets advocating for the representation of the third estate</data>
+      <data key="d5">[{"level": 0, "cluster": "0"}]</data>
     </node>
     <node id="jean joseph mounier">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">jean joseph mounier</data>
       <data key="d2" />
-      <data key="d3">mounier organises regional meetings and petitions in support of increased third estate representation</data>
-      <data key="d4">jean joseph mounier: mounier organises regional meetings and petitions in support of increased third estate representation</data>
+      <data key="d3">jean joseph mounier is an activist supporting the demands for political representation</data>
+      <data key="d4">jean joseph mounier: jean joseph mounier is an activist supporting the demands for political representation</data>
+      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
     </node>
-    <node id="state revenue">
+    <node id="antoine barnave">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">state revenue</data>
+      <data key="d1">antoine barnave</data>
       <data key="d2" />
-      <data key="d3">state revenue is required to service the monarchy s debt  with half of it allocated for debt servicing</data>
-      <data key="d4">state revenue: state revenue is required to service the monarchy s debt  with half of it allocated for debt servicing</data>
+      <data key="d3">antoine barnave is an activist involved in regional meetings and petitions for political change</data>
+      <data key="d4">antoine barnave: antoine barnave is an activist involved in regional meetings and petitions for political change</data>
+      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
+    </node>
+    <node id="maximilien robespierre">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">maximilien robespierre</data>
+      <data key="d2" />
+      <data key="d3">maximilien robespierre is an activist advocating for political reforms and representation</data>
+      <data key="d4">maximilien robespierre: maximilien robespierre is an activist advocating for political reforms and representation</data>
+      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
+    </node>
+    <node id="tax laws">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">tax laws</data>
+      <data key="d2" />
+      <data key="d3">tax laws are subject to regional registration and approval processes  impacting the implementation of new taxes</data>
+      <data key="d4">tax laws: tax laws are subject to regional registration and approval processes  impacting the implementation of new taxes</data>
+      <data key="d5">[{"level": 0, "cluster": "4"}]</data>
     </node>
     <node id="debt crisis">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">debt crisis</data>
       <data key="d2" />
-      <data key="d3">france faces a debt crisis by 1788 due to heavy borrowing post war</data>
-      <data key="d4">debt crisis: france faces a debt crisis by 1788 due to heavy borrowing post war</data>
+      <data key="d3">the debt crisis arises from heavy borrowing by the monarchy  leading to financial strain and revenue allocation issues</data>
+      <data key="d4">debt crisis: the debt crisis arises from heavy borrowing by the monarchy  leading to financial strain and revenue allocation issues</data>
+      <data key="d5">[{"level": 0, "cluster": "3"}]</data>
     </node>
-    <node id="assembly of notables">
+    <node id="public opinion">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">assembly of notables</data>
+      <data key="d1">public opinion</data>
       <data key="d2" />
-      <data key="d3">the assembly of notables rejects new taxes proposed by calonne  leading to further political tensions</data>
-      <data key="d4">assembly of notables: the assembly of notables rejects new taxes proposed by calonne  leading to further political tensions</data>
-      <data key="d5">[{"level": 0, "cluster": "0"}]</data>
+      <data key="d3">public opinion strongly supports the parlements in the conflict with the crown over tax laws and reforms</data>
+      <data key="d4">public opinion: public opinion strongly supports the parlements in the conflict with the crown over tax laws and reforms</data>
+      <data key="d5">[{"level": 0, "cluster": "4"}]</data>
+    </node>
+    <node id="riots">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">riots</data>
+      <data key="d2" />
+      <data key="d3">riots break out in several towns due to public discontent over proposed taxes and financial policies</data>
+      <data key="d4">riots: riots break out in several towns due to public discontent over proposed taxes and financial policies</data>
+      <data key="d5">[{"level": 0, "cluster": "4"}]</data>
+    </node>
+    <node id="relaxation of censorship">
+      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d1">relaxation of censorship</data>
+      <data key="d2" />
+      <data key="d3">the relaxation of censorship allows for increased political discourse and the publication of political pamphlets</data>
+      <data key="d4">relaxation of censorship: the relaxation of censorship allows for increased political discourse and the publication of political pamphlets</data>
     </node>
     <node id="political pamphlets">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d1">political pamphlets</data>
       <data key="d2" />
-      <data key="d3">political pamphlets are published extensively during the public debate  influencing opinions and actions</data>
-      <data key="d4">political pamphlets: political pamphlets are published extensively during the public debate  influencing opinions and actions</data>
-      <data key="d5">[{"level": 0, "cluster": "2"}]</data>
+      <data key="d3">political pamphlets play a significant role in shaping public discourse and advocating for political change</data>
+      <data key="d4">political pamphlets: political pamphlets play a significant role in shaping public discourse and advocating for political change</data>
     </node>
-    <node id="colonial discontent">
+    <node id="declaration of rights and grievances">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">colonial discontent</data>
+      <data key="d1">declaration of rights and grievances</data>
       <data key="d2" />
       <data key="d3" />
-      <data key="d4">colonial discontent</data>
+      <data key="d4">declaration of rights and grievances</data>
     </node>
-    <node id="colonial relations">
+    <node id="colonies  western lands">
       <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d1">colonial relations</data>
+      <data key="d1">colonies  western lands</data>
       <data key="d2" />
       <data key="d3" />
-      <data key="d4">colonial relations</data>
+      <data key="d4">colonies  western lands</data>
     </node>
-    <node id="british soldiers">
-      <data key="d0">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d1">british soldiers</data>
+    <node id="anti tax demonstrators">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">anti tax demonstrators</data>
       <data key="d2" />
       <data key="d3" />
-      <data key="d4">british soldiers</data>
+      <data key="d4">anti tax demonstrators</data>
     </node>
-    <node id="consulate">
-      <data key="d0">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d1">consulate</data>
+    <node id="colonists">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">colonists</data>
       <data key="d2" />
       <data key="d3" />
-      <data key="d4">consulate</data>
+      <data key="d4">colonists</data>
     </node>
-    <node id="crown">
+    <node id="american rebellion">
+      <data key="d0">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d1">american rebellion</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">american rebellion</data>
+    </node>
+    <node id="england">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">england</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">england</data>
+    </node>
+    <node id="massachusetts">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">massachusetts</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">massachusetts</data>
+    </node>
+    <node id="new england">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new england</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">new england</data>
+    </node>
+    <node id="new england colonies">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">new england colonies</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">new england colonies</data>
+    </node>
+    <node id="colonial wool industry">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial wool industry</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">colonial wool industry</data>
+    </node>
+    <node id="colonial hat industry">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial hat industry</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">colonial hat industry</data>
+    </node>
+    <node id="colonial iron industry">
+      <data key="d0">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d1">colonial iron industry</data>
+      <data key="d2" />
+      <data key="d3" />
+      <data key="d4">colonial iron industry</data>
+    </node>
+    <node id="public debate">
       <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">crown</data>
+      <data key="d1">public debate</data>
       <data key="d2" />
       <data key="d3" />
-      <data key="d4">crown</data>
-      <data key="d5">[{"level": 0, "cluster": "1"}]</data>
-    </node>
-    <node id="third estate">
-      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">third estate</data>
-      <data key="d2" />
-      <data key="d3" />
-      <data key="d4">third estate</data>
-    </node>
-    <node id="tax issues">
-      <data key="d0">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d1">tax issues</data>
-      <data key="d2" />
-      <data key="d3" />
-      <data key="d4">tax issues</data>
+      <data key="d4">public debate</data>
     </node>
     <edge source="american revolution" target="american revolutionary war">
       <data key="d6">9.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the american revolution led to the american revolutionary war  a pivotal conflict for american independence</data>
+      <data key="d10">the american revolution culminated in the american revolutionary war  a significant armed conflict for independence</data>
       <data key="d11">american revolution</data>
       <data key="d12">american revolutionary war</data>
     </edge>
@@ -719,269 +803,188 @@
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the leaders of the american revolution advocated for independence and played key roles in shaping the movement</data>
+      <data key="d10">the leaders of the american revolution played key roles in advocating for independence and shaping the course of the war</data>
       <data key="d11">american revolution</data>
       <data key="d12">leaders of the american revolution</data>
     </edge>
-    <edge source="thirteen colonies" target="grenville ministry">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the royal proclamation of 1763 issued by the grenville ministry affected the thirteen colonies  leading to discontent among settlers and traders</data>
-      <data key="d11">grenville ministry</data>
-      <data key="d12">thirteen colonies</data>
-    </edge>
-    <edge source="second continental congress" target="george washington">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the second continental congress appointed george washington as commander in chief  a crucial decision for the revolution</data>
-      <data key="d11">george washington</data>
-      <data key="d12">second continental congress</data>
-    </edge>
-    <edge source="second continental congress" target="declaration of independence">
+    <edge source="american revolution" target="france">
       <data key="d6">8.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the second continental congress adopted the declaration of independence  a foundational document for american independence</data>
+      <data key="d10">france s support for the american colonies was crucial to their victory in the revolutionary war</data>
+      <data key="d11">american revolution</data>
+      <data key="d12">france</data>
+    </edge>
+    <edge source="thirteen colonies" target="royal proclamation of 1763">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the royal proclamation of 1763 defined territorial boundaries affecting the thirteen colonies</data>
+      <data key="d11">royal proclamation of 1763</data>
+      <data key="d12">thirteen colonies</data>
+    </edge>
+    <edge source="thirteen colonies" target="navigation acts">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the navigation acts regulated colonial trade  impacting the economic activities and trade relationships of the thirteen colonies</data>
+      <data key="d11">navigation acts</data>
+      <data key="d12">thirteen colonies</data>
+    </edge>
+    <edge source="american revolutionary war" target="battles of lexington and concord">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the battles of lexington and concord marked the beginning of the american revolutionary war</data>
+      <data key="d11">american revolutionary war</data>
+      <data key="d12">battles of lexington and concord</data>
+    </edge>
+    <edge source="second continental congress" target="george washington">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the second continental congress appointed george washington as the commander in chief of the continental army</data>
+      <data key="d11">george washington</data>
+      <data key="d12">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="declaration of independence">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the second continental congress adopted the declaration of independence  a pivotal document in the revolution</data>
       <data key="d11">declaration of independence</data>
       <data key="d12">second continental congress</data>
+    </edge>
+    <edge source="second continental congress" target="articles of confederation">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the second continental congress debated the articles of confederation as a framework for self governance</data>
+      <data key="d11">articles of confederation</data>
+      <data key="d12">second continental congress</data>
+    </edge>
+    <edge source="declaration of independence" target="thomas jefferson">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">thomas jefferson authored the declaration of independence  embodying key political principles of the revolution</data>
+      <data key="d11">declaration of independence</data>
+      <data key="d12">thomas jefferson</data>
     </edge>
     <edge source="siege of yorktown" target="king george iii">
       <data key="d6">9.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the siege of yorktown led to king george iii acknowledging american independence  marking a turning point in the war</data>
+      <data key="d10">the victory at the siege of yorktown led king george iii to negotiate the treaty of paris and recognize american independence</data>
       <data key="d11">king george iii</data>
       <data key="d12">siege of yorktown</data>
     </edge>
-    <edge source="stamp act congress" target="boston tea party">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the stamp act congress and the boston tea party were key events protesting british policies  fueling revolutionary sentiments</data>
-      <data key="d11">boston tea party</data>
-      <data key="d12">stamp act congress</data>
-    </edge>
-    <edge source="boston tea party" target="gaspee affair">
+    <edge source="siege of yorktown" target="marquis de lafayette">
       <data key="d6">9.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the gaspee affair and the boston tea party were acts of colonial defiance against british authority  escalating tensions in the lead up to the revolution</data>
-      <data key="d11">boston tea party</data>
-      <data key="d12">gaspee affair</data>
+      <data key="d10">marquis de lafayette supported washington in the victory at yorktown  contributing to british surrender</data>
+      <data key="d11">marquis de lafayette</data>
+      <data key="d12">siege of yorktown</data>
+    </edge>
+    <edge source="stamp act congress" target="declaration of rights and grievances">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the stamp act congress articulated grievances in the declaration of rights and grievances  challenging british policies</data>
+      <data key="d11">declaration of rights and grievances</data>
+      <data key="d12">stamp act congress</data>
+    </edge>
+    <edge source="boston massacre" target="boston tea party">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the boston massacre and boston tea party were events that fueled colonial resistance against british actions</data>
+      <data key="d11">boston massacre</data>
+      <data key="d12">boston tea party</data>
     </edge>
     <edge source="boston tea party" target="sons of liberty">
       <data key="d6">9.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the sons of liberty orchestrated the boston tea party as a protest against british taxation policies  symbolizing colonial resistance</data>
+      <data key="d10">the sons of liberty orchestrated the boston tea party as a protest against british taxation policies</data>
       <data key="d11">boston tea party</data>
       <data key="d12">sons of liberty</data>
     </edge>
-    <edge source="first continental congress" target="articles of confederation">
-      <data key="d6">7.0</data>
+    <edge source="boston tea party" target="native americans">
+      <data key="d6">8.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the first continental congress laid the groundwork for self governance through discussions on the articles of confederation</data>
-      <data key="d11">articles of confederation</data>
-      <data key="d12">first continental congress</data>
+      <data key="d10">activists dressed as native americans during the boston tea party to symbolize resistance against british actions</data>
+      <data key="d11">boston tea party</data>
+      <data key="d12">native americans</data>
     </edge>
     <edge source="first continental congress" target="carpenters  hall">
-      <data key="d6">9.0</data>
+      <data key="d6">8.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">carpenters  hall hosted the first continental congress  a pivotal event in colonial resistance and unity against british policies</data>
+      <data key="d10">the first continental congress met at carpenters  hall  laying the groundwork for coordinated resistance</data>
       <data key="d11">carpenters  hall</data>
       <data key="d12">first continental congress</data>
     </edge>
-    <edge source="british parliament" target="colonial discontent">
+    <edge source="france" target="anglo french war of 1778 1783">
+      <data key="d6">6.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">france s funding of the war impacts its financial situation</data>
+      <data key="d11">anglo french war of 1778 1783</data>
+      <data key="d12">france</data>
+    </edge>
+    <edge source="british parliament" target="colonies  western lands">
       <data key="d6">8.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">british parliament s policies and taxes fueled colonial discontent  leading to resistance and revolutionary sentiments</data>
+      <data key="d10">british parliament transferred control of the colonies  western lands  contributing to colonial discontent and resistance</data>
       <data key="d11">british parliament</data>
-      <data key="d12">colonial discontent</data>
+      <data key="d12">colonies  western lands</data>
     </edge>
-    <edge source="french and indian war" target="british government">
-      <data key="d6">17.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e&lt;SEP&gt;chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the british government fielded soldiers and colonial volunteers during the french and indian war  shaping territorial control&lt;SEP&gt;the british government fielded soldiers and contributed to the war effort during the french and indian war</data>
-      <data key="d11">british government</data>
-      <data key="d12">french and indian war</data>
-    </edge>
-    <edge source="french and indian war" target="colonies">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the colonies contributed money to the war effort during the french and indian war and were involved in the conflict</data>
-      <data key="d11">colonies</data>
-      <data key="d12">french and indian war</data>
-    </edge>
-    <edge source="royal proclamation of 1763" target="colonial relations">
+    <edge source="gaspee" target="anti tax demonstrators">
       <data key="d6">8.0</data>
       <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the royal proclamation of 1763 influenced colonial relations with britain by defining territorial boundaries and policies post french and indian war</data>
-      <data key="d11">colonial relations</data>
-      <data key="d12">royal proclamation of 1763</data>
+      <data key="d10">the destruction of the gaspee by anti tax demonstrators was a direct act of protest against british policies</data>
+      <data key="d11">anti tax demonstrators</data>
+      <data key="d12">gaspee</data>
     </edge>
-    <edge source="capt  levi preston" target="charles ii">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">capt  levi preston s response reflects the opposition faced by the new england colonies during the stuart restoration</data>
-      <data key="d11">capt  levi preston</data>
-      <data key="d12">charles ii</data>
-    </edge>
-    <edge source="james ii" target="edmund andros">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">james ii s attempts to control new england lead to the appointment of edmund andros as royal governor</data>
-      <data key="d11">edmund andros</data>
-      <data key="d12">james ii</data>
-    </edge>
-    <edge source="edmund andros" target="colonial assemblies">
+    <edge source="native americans" target="bute ministry">
       <data key="d6">6.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">edmund andros s governance triggers resentment and restrictions on colonial assemblies</data>
-      <data key="d11">colonial assemblies</data>
-      <data key="d12">edmund andros</data>
-    </edge>
-    <edge source="william and mary" target="colonial assemblies">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">william and mary grant new charters to the colonies  restoring local self government</data>
-      <data key="d11">colonial assemblies</data>
-      <data key="d12">william and mary</data>
-    </edge>
-    <edge source="british empire" target="colonial assemblies">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the british empire influences colonial governance through the oversight of colonial assemblies</data>
-      <data key="d11">british empire</data>
-      <data key="d12">colonial assemblies</data>
-    </edge>
-    <edge source="navigation acts" target="parliament">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">parliament passed the navigation acts to regulate colonial trade and economic activities</data>
-      <data key="d11">navigation acts</data>
-      <data key="d12">parliament</data>
-    </edge>
-    <edge source="colonists" target="king charles i">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">colonists rebelled against english control following the execution of king charles i during the english civil war</data>
-      <data key="d11">colonists</data>
-      <data key="d12">king charles i</data>
-    </edge>
-    <edge source="colonists" target="molasses act 1733">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the molasses act 1733 led to colonial protests and increased smuggling of foreign molasses</data>
-      <data key="d11">colonists</data>
-      <data key="d12">molasses act 1733</data>
-    </edge>
-    <edge source="king philip s war" target="new england colonies">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the new england colonies fought in king philip s war  contributing to the development of a distinct american identity</data>
-      <data key="d11">king philip s war</data>
-      <data key="d12">new england colonies</data>
-    </edge>
-    <edge source="dominion of new england" target="glorious revolution">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the dominion of new england faced resistance and was overthrown following the glorious revolution of 1688</data>
-      <data key="d11">dominion of new england</data>
-      <data key="d12">glorious revolution</data>
-    </edge>
-    <edge source="mercantilism" target="colonies">
-      <data key="d6">6.0</data>
-      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">mercantilism impacted colonial trade  prioritizing the economic benefit of the mother country</data>
-      <data key="d11">colonies</data>
-      <data key="d12">mercantilism</data>
-    </edge>
-    <edge source="british government" target="colonies">
-      <data key="d6">8.0</data>
       <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the british government and the colonies collaborated in the french and indian war  with the colonies contributing money to the war effort</data>
-      <data key="d11">british government</data>
-      <data key="d12">colonies</data>
-    </edge>
-    <edge source="british government" target="great britain">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the british government collaborated with great britain in the french and indian war  leading to territorial acquisitions</data>
-      <data key="d11">british government</data>
-      <data key="d12">great britain</data>
-    </edge>
-    <edge source="great britain" target="native americans">
-      <data key="d6">7.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">great britain s defeat of france and acquisition of territory led to conflicts with native americans  including pontiac s war</data>
-      <data key="d11">great britain</data>
+      <data key="d10">the bute ministry stationed soldiers to defend against native americans in newly acquired territories</data>
+      <data key="d11">bute ministry</data>
       <data key="d12">native americans</data>
     </edge>
-    <edge source="bute ministry" target="british army officers">
-      <data key="d6">6.0</data>
-      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the bute ministry s decision to garrison soldiers in north america affected british army officers  allowing some to remain on active duty</data>
-      <data key="d11">british army officers</data>
-      <data key="d12">bute ministry</data>
-    </edge>
-    <edge source="bute ministry" target="native americans">
+    <edge source="native americans" target="british government">
       <data key="d6">7.0</data>
       <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the decisions of the bute ministry regarding soldiers in north america impacted interactions with native americans and defense strategies</data>
-      <data key="d11">bute ministry</data>
+      <data key="d10">native americans were involved in conflicts with british soldiers and white colonists during the french and indian war</data>
+      <data key="d11">british government</data>
       <data key="d12">native americans</data>
     </edge>
     <edge source="native americans" target="pontiac s war">
@@ -989,34 +992,205 @@
       <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">native americans launched pontiac s war in response to westward migration and british presence in the newly acquired territories</data>
+      <data key="d10">pontiac s war was initiated by native americans in response to westward migration and british actions after the french and indian war</data>
       <data key="d11">native americans</data>
       <data key="d12">pontiac s war</data>
     </edge>
-    <edge source="native americans" target="british soldiers">
-      <data key="d6">6.0</data>
+    <edge source="royal proclamation of 1763" target="grenville ministry">
+      <data key="d6">8.0</data>
       <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">native americans engaged in conflicts with british soldiers in the newly acquired territories  influencing military strategies</data>
-      <data key="d11">british soldiers</data>
-      <data key="d12">native americans</data>
+      <data key="d10">the grenville ministry issued the royal proclamation of 1763  affecting territorial policies and relations with native americans</data>
+      <data key="d11">grenville ministry</data>
+      <data key="d12">royal proclamation of 1763</data>
     </edge>
-    <edge source="grenville ministry" target="westward migration">
+    <edge source="salutary neglect" target="colonists">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">salutary neglect allowed the colonists to govern themselves  fostering a sense of autonomy that later fueled rebellion</data>
+      <data key="d11">colonists</data>
+      <data key="d12">salutary neglect</data>
+    </edge>
+    <edge source="capt  levi preston" target="american rebellion">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-41b312f13f5f70362056f212ec061600</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">capt  levi preston s statement reflects the colonists  long standing desire for self governance and autonomy</data>
+      <data key="d11">american rebellion</data>
+      <data key="d12">capt  levi preston</data>
+    </edge>
+    <edge source="capt  levi preston" target="england">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">capt  levi preston expressed the sentiment of self governance and rebellion against england  reflecting the colonists  defiance</data>
+      <data key="d11">capt  levi preston</data>
+      <data key="d12">england</data>
+    </edge>
+    <edge source="charles ii" target="massachusetts">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">massachusetts did not recognize charles ii as the legitimate king immediately after his coronation  indicating a period of disagreement and resistance</data>
+      <data key="d11">charles ii</data>
+      <data key="d12">massachusetts</data>
+    </edge>
+    <edge source="james ii" target="new england">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">james ii s attempts to bring new england under direct english control were fiercely opposed by the colonists  leading to conflict and resistance</data>
+      <data key="d11">james ii</data>
+      <data key="d12">new england</data>
+    </edge>
+    <edge source="james ii" target="glorious revolution of 1688">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the glorious revolution of 1688 resulted in the removal of james ii from power  indicating a significant political change in colonial governance</data>
+      <data key="d11">glorious revolution of 1688</data>
+      <data key="d12">james ii</data>
+    </edge>
+    <edge source="edmund andros" target="colonists">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">edmund andros faced resentment and opposition from the colonists in his role as royal governor  highlighting tensions and challenges in governance</data>
+      <data key="d11">colonists</data>
+      <data key="d12">edmund andros</data>
+    </edge>
+    <edge source="king philip s war" target="new england colonies">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the new england colonies fought native american tribes in king philip s war without english military assistance  shaping their identity separate from the british</data>
+      <data key="d11">king philip s war</data>
+      <data key="d12">new england colonies</data>
+    </edge>
+    <edge source="wool act 1698" target="colonial wool industry">
+      <data key="d6">6.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the wool act 1698 regulated the colonial wool industry  affecting production and trade within the colonies</data>
+      <data key="d11">colonial wool industry</data>
+      <data key="d12">wool act 1698</data>
+    </edge>
+    <edge source="hat act 1731" target="colonial hat industry">
+      <data key="d6">6.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the hat act 1731 regulated the colonial hat industry  influencing manufacturing practices and trade in the colonies</data>
+      <data key="d11">colonial hat industry</data>
+      <data key="d12">hat act 1731</data>
+    </edge>
+    <edge source="iron act 1750" target="colonial iron industry">
+      <data key="d6">6.0</data>
+      <data key="d7">chunk-541c2fb47007dc4d93603094626a6541</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the iron act 1750 regulated the colonial iron industry  impacting production and trade activities within the colonies</data>
+      <data key="d11">colonial iron industry</data>
+      <data key="d12">iron act 1750</data>
+    </edge>
+    <edge source="british government" target="colonies">
       <data key="d6">7.0</data>
       <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the royal proclamation of 1763 issued by the grenville ministry aimed to regulate westward migration and settlement</data>
-      <data key="d11">grenville ministry</data>
-      <data key="d12">westward migration</data>
+      <data key="d10">the british government and the colonies collaborated in the war effort during the french and indian war</data>
+      <data key="d11">british government</data>
+      <data key="d12">colonies</data>
+    </edge>
+    <edge source="british government" target="great britain">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">great britain  under the british government  defeated france during the french and indian war</data>
+      <data key="d11">british government</data>
+      <data key="d12">great britain</data>
+    </edge>
+    <edge source="british government" target="money contribution">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the british government received money contributions from the colonies for the war effort during the french and indian war</data>
+      <data key="d11">british government</data>
+      <data key="d12">money contribution</data>
+    </edge>
+    <edge source="great britain" target="french">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">great britain defeated the french during the french and indian war  leading to territorial changes</data>
+      <data key="d11">french</data>
+      <data key="d12">great britain</data>
+    </edge>
+    <edge source="great britain" target="french and indian war">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">great britain was involved in the french and indian war  resulting in territorial acquisitions and changes</data>
+      <data key="d11">french and indian war</data>
+      <data key="d12">great britain</data>
+    </edge>
+    <edge source="bute ministry" target="french">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the bute ministry s decisions impacted the french presence in the territories acquired by great britain</data>
+      <data key="d11">bute ministry</data>
+      <data key="d12">french</data>
+    </edge>
+    <edge source="bute ministry" target="spanish">
+      <data key="d6">6.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the bute ministry s actions were influenced by the presence of the spanish in florida and other territories</data>
+      <data key="d11">bute ministry</data>
+      <data key="d12">spanish</data>
+    </edge>
+    <edge source="appalachian mountains" target="mississippi river">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the territory between the appalachian mountains and the mississippi river was designated as an indian reserve by the royal proclamation of 1763</data>
+      <data key="d11">appalachian mountains</data>
+      <data key="d12">mississippi river</data>
+    </edge>
+    <edge source="british regulars" target="colonial volunteers">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-7421266e36f8a3a10735faa45747264e</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">british regulars and colonial volunteers served together as soldiers during the french and indian war</data>
+      <data key="d11">british regulars</data>
+      <data key="d12">colonial volunteers</data>
     </edge>
     <edge source="french revolution" target="estates general">
       <data key="d6">8.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the french revolution began with the estates general of 1789  marking the start of significant political changes in france</data>
+      <data key="d10">the french revolution began with the estates general of 1789  a pivotal event that set the revolution in motion</data>
       <data key="d11">estates general</data>
       <data key="d12">french revolution</data>
     </edge>
@@ -1025,17 +1199,8 @@
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the french revolution ended with the coup of 18 brumaire in 1799  leading to the establishment of the consulate</data>
+      <data key="d10">the french revolution ended with the coup of 18 brumaire in 1799  marking a significant political transition</data>
       <data key="d11">coup of 18 brumaire</data>
-      <data key="d12">french revolution</data>
-    </edge>
-    <edge source="french revolution" target="crisis of the ancien r gime">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the crisis of the ancien r gime contributed to the conditions that led to the french revolution  highlighting the social  economic  and political challenges of the old regime</data>
-      <data key="d11">crisis of the ancien r gime</data>
       <data key="d12">french revolution</data>
     </edge>
     <edge source="estates general" target="national assembly">
@@ -1043,79 +1208,88 @@
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the estates general transformed into the national assembly in 1789  representing a shift in political power during the revolution</data>
+      <data key="d10">the estates general transformed into the national assembly  representing a shift in political authority during the revolution</data>
       <data key="d11">estates general</data>
       <data key="d12">national assembly</data>
     </edge>
-    <edge source="estates general" target="tax issues">
-      <data key="d6">7.0</data>
+    <edge source="estates general" target="brienne">
+      <data key="d6">8.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the estates general is summoned to address tax issues and representation concerns</data>
-      <data key="d11">estates general</data>
-      <data key="d12">tax issues</data>
+      <data key="d10">the estates general plays a crucial role in approving or rejecting new taxes and reforms proposed by brienne</data>
+      <data key="d11">brienne</data>
+      <data key="d12">estates general</data>
     </edge>
     <edge source="louis xvi" target="reign of terror">
-      <data key="d6">9.0</data>
+      <data key="d6">7.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">louis xvi s actions  including his attempted flight and subsequent execution  were significant events during the reign of terror</data>
+      <data key="d10">louis xvi s actions and the monarchy s instability contributed to the onset of the reign of terror during the revolution</data>
       <data key="d11">louis xvi</data>
       <data key="d12">reign of terror</data>
     </edge>
     <edge source="national assembly" target="third estate">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the national assembly is proposed to represent the nation  advocating for the third estate s rights</data>
-      <data key="d11">national assembly</data>
-      <data key="d12">third estate</data>
-    </edge>
-    <edge source="reign of terror" target="revolutionary tribunal">
-      <data key="d6">9.0</data>
-      <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">the revolutionary tribunal played a key role in the reign of terror  sentencing thousands of individuals to execution as part of the radical measures taken by the jacobins</data>
-      <data key="d11">reign of terror</data>
-      <data key="d12">revolutionary tribunal</data>
-    </edge>
-    <edge source="reign of terror" target="thermidorian reaction">
       <data key="d6">7.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the thermidorian reaction marked the end of the reign of terror  signifying a shift towards a more moderate phase in the french revolution</data>
-      <data key="d11">reign of terror</data>
-      <data key="d12">thermidorian reaction</data>
+      <data key="d10">the third estate s transformation into the national assembly symbolized a shift in political power towards commoners and away from traditional elites</data>
+      <data key="d11">national assembly</data>
+      <data key="d12">third estate</data>
+    </edge>
+    <edge source="national assembly" target="abb  siey s">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">abb  siey s advocates for the creation of the national assembly as a representative body for the third estate</data>
+      <data key="d11">abb  siey s</data>
+      <data key="d12">national assembly</data>
+    </edge>
+    <edge source="reign of terror" target="french revolutionary wars">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the outbreak of the french revolutionary wars contributed to the radicalization of policies and the onset of the reign of terror  reflecting the external and internal pressures faced by revolutionary france</data>
+      <data key="d11">french revolutionary wars</data>
+      <data key="d12">reign of terror</data>
     </edge>
     <edge source="reign of terror" target="committee of public safety">
       <data key="d6">9.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the committee of public safety  led by radical jacobins  was responsible for the reign of terror  during which thousands were executed as part of the revolutionary measures</data>
+      <data key="d10">the committee of public safety played a central role in the reign of terror  overseeing revolutionary justice and policies during a period of intense political repression</data>
       <data key="d11">committee of public safety</data>
       <data key="d12">reign of terror</data>
     </edge>
-    <edge source="french first republic" target="monarchy">
+    <edge source="estates general of 1789" target="financial crisis">
       <data key="d6">8.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the french first republic was established in september 1792  replacing the monarchy and symbolizing the transition towards republican governance in france</data>
-      <data key="d11">french first republic</data>
-      <data key="d12">monarchy</data>
+      <data key="d10">the financial crisis in france directly led to the convocation of the estates general in 1789  setting the stage for revolutionary actions</data>
+      <data key="d11">estates general of 1789</data>
+      <data key="d12">financial crisis</data>
+    </edge>
+    <edge source="feudalism" target="state control over the catholic church">
+      <data key="d6">9.0</data>
+      <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the abolition of feudalism was part of the revolutionary measures that included state control over the catholic church  restructuring social and religious institutions</data>
+      <data key="d11">feudalism</data>
+      <data key="d12">state control over the catholic church</data>
     </edge>
     <edge source="directory" target="consulate">
       <data key="d6">7.0</data>
       <data key="d7">chunk-368c7113ca6d5c34ca1cc15cf9e2825a</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the directory governed france from 1795 to 1799  preceding the establishment of the consulate under napoleon bonaparte  marking a transitional period in french politics</data>
+      <data key="d10">the directory s replacement by the consulate marked a shift in the french government towards a more centralized authority under napoleon bonaparte</data>
       <data key="d11">consulate</data>
       <data key="d12">directory</data>
     </edge>
@@ -1124,7 +1298,7 @@
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">tax farmers keep a portion of collected taxes  impacting the tax burden on peasants</data>
+      <data key="d10">tax farmers  collection practices impact the tax burden on peasants</data>
       <data key="d11">peasants</data>
       <data key="d12">tax farmers</data>
     </edge>
@@ -1133,108 +1307,135 @@
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">nobility s exemptions contribute to a heavier tax burden on peasants</data>
+      <data key="d10">exemptions benefiting the nobility contribute to the tax burden on peasants</data>
       <data key="d11">nobility</data>
       <data key="d12">peasants</data>
     </edge>
-    <edge source="nobility" target="calonne">
-      <data key="d6">6.0</data>
-      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">calonne s tax reform proposals face rejection by the nobility</data>
-      <data key="d11">calonne</data>
-      <data key="d12">nobility</data>
-    </edge>
-    <edge source="church" target="peasants">
+    <edge source="monarchy" target="calonne">
       <data key="d6">7.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">church s exemptions contribute to a heavier tax burden on peasants</data>
-      <data key="d11">church</data>
-      <data key="d12">peasants</data>
-    </edge>
-    <edge source="calonne" target="parlements">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">calonne s tax reform proposals face rejection by the parlements  leading to a political crisis</data>
+      <data key="d10">calonne s proposed reforms aim to address the monarchy s debt crisis</data>
       <data key="d11">calonne</data>
+      <data key="d12">monarchy</data>
+    </edge>
+    <edge source="monarchy" target="parlements">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">conflicts arise between the parlements and the monarchy over new tax laws and reforms</data>
+      <data key="d11">monarchy</data>
       <data key="d12">parlements</data>
     </edge>
-    <edge source="calonne" target="assembly of notables">
+    <edge source="monarchy" target="debt crisis">
       <data key="d6">8.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the assembly of notables rejects calonne s tax proposals  escalating political tensions</data>
-      <data key="d11">assembly of notables</data>
-      <data key="d12">calonne</data>
+      <data key="d10">the monarchy s borrowing practices contribute to the debt crisis and financial instability</data>
+      <data key="d11">debt crisis</data>
+      <data key="d12">monarchy</data>
     </edge>
-    <edge source="brienne" target="parlements">
-      <data key="d6">9.0</data>
+    <edge source="calonne" target="brienne">
+      <data key="d6">6.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">brienne s tax submissions are rejected by the parlements  escalating the political crisis</data>
+      <data key="d10">brienne faces challenges in implementing the reforms proposed by calonne</data>
       <data key="d11">brienne</data>
-      <data key="d12">parlements</data>
+      <data key="d12">calonne</data>
     </edge>
     <edge source="brienne" target="jacques necker">
       <data key="d6">6.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">necker replaces brienne as finance minister amidst the tax crisis</data>
+      <data key="d10">jacques necker replaces brienne in financial decision making processes</data>
       <data key="d11">brienne</data>
       <data key="d12">jacques necker</data>
     </edge>
-    <edge source="parlements" target="crown">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">parlements and the crown engage in a political crisis over tax issues</data>
-      <data key="d11">crown</data>
-      <data key="d12">parlements</data>
-    </edge>
-    <edge source="parlements" target="public opinion">
+    <edge source="parlements" target="tax laws">
       <data key="d6">7.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">public opinion supports the parlements in the conflict with the crown over taxes</data>
+      <data key="d10">the parlements have the authority to block new tax laws  creating obstacles to financial reforms</data>
       <data key="d11">parlements</data>
-      <data key="d12">public opinion</data>
+      <data key="d12">tax laws</data>
     </edge>
-    <edge source="public opinion" target="political pamphlets">
-      <data key="d6">8.0</data>
-      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
-      <data key="d8">relationship</data>
-      <data key="d9" />
-      <data key="d10">political pamphlets influence public opinion and actions during the debate</data>
-      <data key="d11">political pamphlets</data>
-      <data key="d12">public opinion</data>
-    </edge>
-    <edge source="society of thirty" target="third estate">
+    <edge source="parlements" target="public opinion">
       <data key="d6">9.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">the society of thirty advocates for increased representation and voting rights for the third estate</data>
-      <data key="d11">society of thirty</data>
-      <data key="d12">third estate</data>
+      <data key="d10">public opinion sides with the parlements in the conflict with the crown  influencing political decisions</data>
+      <data key="d11">parlements</data>
+      <data key="d12">public opinion</data>
     </edge>
-    <edge source="state revenue" target="debt crisis">
+    <edge source="society of thirty" target="abb  siey s">
       <data key="d6">7.0</data>
       <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
       <data key="d8">relationship</data>
       <data key="d9" />
-      <data key="d10">state revenue allocation for debt servicing contributes to the debt crisis in france</data>
-      <data key="d11">debt crisis</data>
-      <data key="d12">state revenue</data>
+      <data key="d10">the society of thirty supports abb  siey s  calls for political representation</data>
+      <data key="d11">abb  siey s</data>
+      <data key="d12">society of thirty</data>
+    </edge>
+    <edge source="society of thirty" target="jean joseph mounier">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">jean joseph mounier is part of the society of thirty advocating for political change</data>
+      <data key="d11">jean joseph mounier</data>
+      <data key="d12">society of thirty</data>
+    </edge>
+    <edge source="society of thirty" target="antoine barnave">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">antoine barnave collaborates with the society of thirty in promoting political reforms</data>
+      <data key="d11">antoine barnave</data>
+      <data key="d12">society of thirty</data>
+    </edge>
+    <edge source="society of thirty" target="maximilien robespierre">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">maximilien robespierre is involved in the society of thirty s activities for political reform</data>
+      <data key="d11">maximilien robespierre</data>
+      <data key="d12">society of thirty</data>
+    </edge>
+    <edge source="public opinion" target="riots">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">riots reflect public discontent and dissatisfaction with proposed taxes and financial policies</data>
+      <data key="d11">public opinion</data>
+      <data key="d12">riots</data>
+    </edge>
+    <edge source="relaxation of censorship" target="political pamphlets">
+      <data key="d6">7.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">the relaxation of censorship enables the publication of a significant number of political pamphlets</data>
+      <data key="d11">political pamphlets</data>
+      <data key="d12">relaxation of censorship</data>
+    </edge>
+    <edge source="political pamphlets" target="public debate">
+      <data key="d6">8.0</data>
+      <data key="d7">chunk-517dd89f19429314e274bd8c27777e5c</data>
+      <data key="d8">relationship</data>
+      <data key="d9" />
+      <data key="d10">political pamphlets contribute to the public debate and discourse on political reforms</data>
+      <data key="d11">political pamphlets</data>
+      <data key="d12">public debate</data>
     </edge>
   </graph>
 </graphml>

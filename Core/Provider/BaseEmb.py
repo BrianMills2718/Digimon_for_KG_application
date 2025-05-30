@@ -21,9 +21,10 @@ from tenacity import (
 )
 
 
-from Core.Common.EmbConfig import EmbConfig
+from Config.EmbConfig import EmbeddingConfig
 from Core.Common.Constants import  USE_CONFIG_TIMEOUT
 from Core.Common.Logger import logger
+from Core.Utils.Exceptions import NotSupportedError, log_and_reraise
 
 
 
@@ -39,7 +40,7 @@ class BaseEmb(ABC):
     # pricing_plan: Optional[str] = None
 
     @abstractmethod
-    def __init__(self, config: EmbConfig):
+    def __init__(self, config: EmbeddingConfig):
         pass
 
 
@@ -59,3 +60,7 @@ class BaseEmb(ABC):
         resp = await self._achat_completion(messages, timeout=self.get_timeout(timeout), max_tokens = max_tokens)
         return self.get_choice_text(resp)
 
+
+    @abstractmethod
+    def get_embedding(self, text: str, model_name: Optional[str]=None) -> list:
+        raise NotImplementedError
