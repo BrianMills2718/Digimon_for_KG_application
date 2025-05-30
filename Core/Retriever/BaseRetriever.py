@@ -48,6 +48,7 @@ class BaseRetriever(ABC):
         return edge_datas
 
     async def _run_personalized_pagerank(self, query, query_entities):
+ # <-- NEWLY ADDED LINE
         # Run Personalized PageRank
         reset_prob_matrix = np.zeros(self.graph.node_num)
 
@@ -55,10 +56,37 @@ class BaseRetriever(ABC):
             # Here, we re-implement the key idea of the FastGraphRAG, you can refer to the source code for more details:
             # https://github.com/circlemind-ai/fast-graphrag/tree/main
 
+            # --- BEGIN DIAGNOSTIC LOGS FOR FIRST CALL ---
+            logger.debug(f"BaseRetriever: Diagnosing entities_vdb before first call in _run_personalized_pagerank:")
+            if self.entities_vdb is None:
+                logger.debug("BaseRetriever: self.entities_vdb IS NONE before first call!")
+            else:
+                logger.debug(f"BaseRetriever: type(self.entities_vdb) is {type(self.entities_vdb)}")
+                logger.debug(f"BaseRetriever: hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix') is {hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix')}")
+                if hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix'):
+                    logger.debug(f"BaseRetriever: self.entities_vdb.retrieval_nodes_with_score_matrix is {self.entities_vdb.retrieval_nodes_with_score_matrix}")
+                else:
+                    logger.error("BaseRetriever: self.entities_vdb has NO attribute 'retrieval_nodes_with_score_matrix' before first call!")
+            # --- END DIAGNOSTIC LOGS FOR FIRST CALL ---
+
             # Use entity similarity to compute the reset probability matrix
             reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query_entities, top_k=1,
                                                                                            graph=self.graph)
-            # Run Personalized PageRank on the linked entities      
+
+            # --- BEGIN DIAGNOSTIC LOGS FOR SECOND CALL ---
+            logger.debug(f"BaseRetriever: Diagnosing entities_vdb before second call in _run_personalized_pagerank:")
+            if self.entities_vdb is None:
+                logger.error("BaseRetriever: self.entities_vdb IS NONE before second call!")
+            else:
+                logger.debug(f"BaseRetriever: type(self.entities_vdb) is {type(self.entities_vdb)}")
+                logger.debug(f"BaseRetriever: hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix') is {hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix')}")
+                if hasattr(self.entities_vdb, 'retrieval_nodes_with_score_matrix'):
+                    logger.debug(f"BaseRetriever: self.entities_vdb.retrieval_nodes_with_score_matrix is {self.entities_vdb.retrieval_nodes_with_score_matrix}")
+                else:
+                    logger.error("BaseRetriever: self.entities_vdb has NO attribute 'retrieval_nodes_with_score_matrix' before second call!")
+            # --- END DIAGNOSTIC LOGS FOR SECOND CALL ---
+
+            # Run Personalized PageRank on the linked entities       
             reset_prob_matrix += await self.entities_vdb.retrieval_nodes_with_score_matrix(query,
                                                                                            top_k=self.config.top_k_entity_for_ppr,
                                                                                            graph=self.graph)

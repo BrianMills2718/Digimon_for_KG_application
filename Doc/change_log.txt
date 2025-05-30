@@ -1,4 +1,8 @@
-[2025-05-30 05:06] Updated Core/GraphRAG.py:
-- In build_and_persist_artifacts, replaced hardcoded force=True with force=self.config.graph.force for entities_vdb.build_index.
-- Updated preceding logger.info to a conditional log statement based on self.config.graph.force, for clarity and accuracy.
+2025-05-30: Verified diagnostic logging cleanup status:
+- Core/Retriever/BaseRetriever.py: 
+  - logger.critical line at start of _run_personalized_pagerank is not present
+  - Diagnostic logs in _run_personalized_pagerank are already using logger.debug
+- Core/Retriever/EntitiyRetriever.py: No logger.critical diagnostic line at start of _find_relevant_entities_by_ppr
+- Core/AgentTools/entity_tools.py: No logger.critical diagnostic line before entity_retriever._find_relevant_entities_by_ppr
 
+All requested diagnostic logging cleanup appears to have already been completed in a previous update.
