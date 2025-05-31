@@ -29,13 +29,21 @@ async def main_test():
     results_root_dir = "./results"
     # Directly construct the expected VDB path
     expected_vdb_path = os.path.join(results_root_dir, target_dataset, "kg_graph", vdb_ref_id)
-    faiss_file = os.path.join(expected_vdb_path, "vector_index.faiss")
+    print(f"Expected VDB directory: {expected_vdb_path}")
+    expected_binary_file_name = "default__vector_store.json" # The actual binary file LlamaIndex/Faiss saves
+    actual_faiss_binary_path = os.path.join(expected_vdb_path, expected_binary_file_name)
 
-    print(f"Expected VDB path: {expected_vdb_path}")
-    if not os.path.exists(faiss_file):
-        print(f"WARNING: Test Faiss VDB not found at '{faiss_file}'.")
-        print(f"Please ensure a Faiss index (vector_index.faiss and id_mapping.pkl) exists at this location for dataset '{target_dataset}' and VDB reference '{vdb_ref_id}'.")
-        print("The tool will likely return empty or fail to load the VDB.")
+    if not os.path.isdir(expected_vdb_path):
+        print(f"WARNING: Expected VDB directory not found at '{expected_vdb_path}'.")
+        print(f"Please ensure the directory exists and is populated for dataset '{target_dataset}' and VDB reference '{vdb_ref_id}'.")
+        print("The tool will likely fail to load the VDB.")
+    elif not os.path.exists(actual_faiss_binary_path):
+        print(f"WARNING: Expected Faiss binary file '{expected_binary_file_name}' not found in '{expected_vdb_path}'.")
+        print(f"Other VDB files might be present, but the key binary data file seems missing.")
+        print(f"Directory contents: {os.listdir(expected_vdb_path)}")
+        print("The tool might fail to load the VDB correctly.")
+    else:
+        print(f"INFO: Found expected VDB directory and Faiss binary file '{actual_faiss_binary_path}'.")
 
     # --- Load Main Configuration ---
     main_config: Optional[Config] = None

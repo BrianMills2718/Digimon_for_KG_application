@@ -108,51 +108,140 @@ async def entity_vdb_search_tool(
 # --- Tool Implementation for: Entity Personalized PageRank (PPR) ---
 # tool_id: "Entity.PPR"
 
+from Core.Retriever.EntitiyRetriever import EntityRetriever  # Note: typo in filename is intentional
+from Config.RetrieverConfig import RetrieverConfig
+from Core.Common.Logger import logger
+import numpy as np
+from typing import List, Tuple, Optional, Any
+from Core.AgentSchema.tool_contracts import EntityPPRInputs, EntityPPROutputs
+from Core.AgentSchema.context import GraphRAGContext
+
+from Core.Retriever.EntitiyRetriever import EntityRetriever
+from Config.RetrieverConfig import RetrieverConfig
+from Core.Common.Logger import logger
+import numpy as np
+
 async def entity_ppr_tool(
     params: EntityPPRInputs,
-    graphrag_context: Optional[Any] = None # Placeholder for GraphRAG system context/components
+    graphrag_context: GraphRAGContext
 ) -> EntityPPROutputs:
     """
-    Computes Personalized PageRank for entities in a graph.
-    This function will wrap the actual PPR logic from the GraphRAG core.
+    Computes Personalized PageRank for entities in a graph using EntityRetriever.
     """
-    print(f"Executing tool 'Entity.PPR' with parameters: {params}")
+    logger.info(f"Executing tool 'Entity.PPR' with parameters: {params}")
 
-    # 1. Validate/Extract parameters from 'params: EntityPPRInputs'
-    #    - graph_reference_id: str
-    #    - seed_entity_ids: List[str]
-    #    - personalization_weight_alpha: Optional[float]
-    #    - max_iterations: Optional[int]
-    #    - top_k_results: Optional[int]
+    # --- 1. Get necessary components from GraphRAGContext ---
+    graph_instance = graphrag_context.graph_instance
+    entities_vdb_instance = graphrag_context.entities_vdb_instance
 
-    # Placeholder: Access the graph instance using params.graph_reference_id via graphrag_context
-    # actual_graph_instance = graphrag_context.get_graph(params.graph_reference_id)
-    # if actual_graph_instance is None:
-    #     raise ValueError(f"Graph with reference ID '{params.graph_reference_id}' not found.")
-    print(f"Placeholder: Would use graph '{params.graph_reference_id}'.")
+    if not graph_instance:
+        logger.error("Entity.PPR: Graph instance not found in GraphRAGContext.")
+        raise ValueError("Graph instance not found in GraphRAGContext.")
 
-    # 2. Call the underlying GraphRAG PPR logic
-    #    This is a placeholder. This logic might come from Core/Query/PPRQuery.py
-    #    or similar graph algorithm implementations.
-    #    Example: 
-    #    ppr_results = actual_graph_instance.run_ppr(
-    #        seed_nodes=params.seed_entity_ids,
-    #        alpha=params.personalization_weight_alpha,
-    #        max_iter=params.max_iterations,
-    #        top_n=params.top_k_results
-    #    ) 
-    #    'ppr_results' would be a dictionary or list of entity_id: score.
+    # --- 2. Prepare RetrieverConfig ---
+    method_retriever_config_dict = graphrag_context.resolved_configs.get("retriever_config_dict", {})
     
-    print(f"Placeholder: Would run PPR for seeds {params.seed_entity_ids} with alpha={params.personalization_weight_alpha}, top_k={params.top_k_results}")
-    # Dummy results for PPR
-    # Ensure this dummy data matches the structure expected by EntityPPROutputs
-    dummy_ppr_results = []
-    if params.seed_entity_ids:
-        # Create some dummy scores based on seed entities
-        for i, seed_id in enumerate(params.seed_entity_ids[:params.top_k_results if params.top_k_results is not None else 3]):
-            dummy_ppr_results.append((f"related_to_{seed_id}_{i+1}", 0.8 - (i * 0.1)))
+    internal_top_k = params.top_k_results if params.top_k_results is not None else 10
+    if "top_k" in method_retriever_config_dict: # Use top_k from provided config if greater
+        internal_top_k = max(internal_top_k, method_retriever_config_dict.get("top_k", internal_top_k))
     
-    # If no seeds or to make up the numbers for top_k
+    # Set defaults carefully, allowing method_retriever_config_dict to override
+    # These are typical settings that would come from a method's YAML retriever config.
+    final_retriever_config_values = {
+        "retriever_type": "unknown", # Placeholder, actual type might be in method_retriever_config_dict
+        "llm_config": graphrag_context.resolved_configs.get("main_config_dict", {}).get("llm"),
+        "embedding_config": graphrag_context.resolved_configs.get("main_config_dict", {}).get("embedding"),
+        "top_k": internal_top_k,
+        "use_entity_similarity_for_ppr": method_retriever_config_dict.get("use_entity_similarity_for_ppr", False),
+        "node_specificity": method_retriever_config_dict.get("node_specificity", True),
+        "top_k_entity_for_ppr": method_retriever_config_dict.get("top_k_entity_for_ppr", 5)
+    }
+    # Overlay any other values from the passed method_retriever_config_dict
+    final_retriever_config_values.update(method_retriever_config_dict)
+
+    try:
+        retriever_config = RetrieverConfig(**final_retriever_config_values)
+        logger.info(f"Entity.PPR: Using RetrieverConfig: {retriever_config.model_dump(exclude_none=True, exclude_defaults=True)}")
+    except Exception as e:
+        logger.error(f"Entity.PPR: Failed to create RetrieverConfig. Error: {e}", exc_info=True)
+        logger.error(f"Entity.PPR: Provided final_retriever_config_values was: {final_retriever_config_values}")
+        raise ValueError(f"Failed to create RetrieverConfig for Entity.PPR: {e}")
+
+    entities_vdb_instance = graphrag_context.entities_vdb_instance
+    if retriever_config.use_entity_similarity_for_ppr and not entities_vdb_instance:
+        logger.error("Entity.PPR: Entities VDB instance is required for similarity-based PPR but not found in GraphRAGContext.")
+        raise ValueError("Entities VDB instance not found in GraphRAGContext (required for similarity-based PPR).")
+
+    # --- 3. Instantiate EntityRetriever ---
+    entity_retriever = EntityRetriever(
+        config=retriever_config,
+        graph=graph_instance,
+        entities_vdb=entities_vdb_instance
+    )
+    # Ensure internal top_k for retriever processing is sufficient
+    entity_retriever.config.top_k = internal_top_k 
+
+    # --- 4. Call _find_relevant_entities_by_ppr from EntityRetriever ---
+    if not params.seed_entity_ids:
+        logger.warning("Entity.PPR: No seed_entity_ids provided. Returning empty results.")
+        return EntityPPROutputs(ranked_entities=[])
+
+    placeholder_query_for_vdb = params.seed_entity_ids[0] 
+    attempt_linking = bool(entities_vdb_instance) 
+    
+    seed_entities_arg = params.seed_entity_ids
+    if not attempt_linking and not retriever_config.use_entity_similarity_for_ppr:
+        seed_entities_arg = [{"entity_name": eid} for eid in params.seed_entity_ids]
+        logger.info(f"Entity.PPR: VDB not available for linking & not using VDB for PPR sim. Passing seed entities as list of dicts.")
+    
+    logger.info(f"Entity.PPR: Calling _find_relevant_entities_by_ppr with {len(params.seed_entity_ids)} seeds. Linking: {attempt_linking}. Args: {seed_entities_arg}")
+
+    try:
+        top_k_nodes_data, full_ppr_scores = await entity_retriever._find_relevant_entities_by_ppr(
+            query=placeholder_query_for_vdb,
+            seed_entities=seed_entities_arg,
+            link_entity=attempt_linking
+        )
+    except Exception as e:
+        logger.error(f"Entity.PPR: Error during entity_retriever._find_relevant_entities_by_ppr: {e}", exc_info=True)
+        return EntityPPROutputs(ranked_entities=[])
+
+    if top_k_nodes_data is None or full_ppr_scores is None:
+        logger.warning("Entity.PPR: PPR execution in EntityRetriever returned None or empty scores. Returning empty results.")
+        return EntityPPROutputs(ranked_entities=[])
+
+    # --- 5. Format results into EntityPPROutputs ---
+    ranked_entities: List[Tuple[str, float]] = []
+    entity_meta_key = graph_instance.entity_metakey
+
+    logger.info(f"Entity.PPR: Processing {len(top_k_nodes_data)} nodes returned by retriever's PPR.")
+    for node_data in top_k_nodes_data:
+        if node_data is None:
+            logger.warning("Entity.PPR: Encountered None in top_k_nodes_data. Skipping.")
+            continue
+        
+        entity_id = node_data.get(entity_meta_key)
+        if not entity_id:
+            logger.warning(f"Entity.PPR: Node data missing '{entity_meta_key}'. Data: {node_data}. Skipping.")
+            continue
+        
+        try:
+            node_idx = await graph_instance.get_node_index(entity_id)
+            if node_idx is not None and 0 <= node_idx < len(full_ppr_scores):
+                score = full_ppr_scores[node_idx]
+                ranked_entities.append((str(entity_id), float(score)))
+            else:
+                logger.warning(f"Entity.PPR: Node index {node_idx} for entity '{entity_id}' is out of bounds or None for full_ppr_scores (len: {len(full_ppr_scores)}). Skipping.")
+        except Exception as e:
+            logger.error(f"Entity.PPR: Error processing node '{entity_id}' for PPR score: {e}", exc_info=True)
+            
+    ranked_entities.sort(key=lambda x: x[1], reverse=True)
+
+    if params.top_k_results is not None:
+        ranked_entities = ranked_entities[:params.top_k_results]
+            
+    logger.info(f"Entity.PPR tool returning {len(ranked_entities)} ranked entities.")
+    return EntityPPROutputs(ranked_entities=ranked_entities)
     num_to_add = (params.top_k_results if params.top_k_results is not None else 3) - len(dummy_ppr_results)
     for i in range(num_to_add):
         dummy_ppr_results.append((f"dummy_ppr_entity_{i}", 0.5 - (i * 0.05)))

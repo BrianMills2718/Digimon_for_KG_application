@@ -1,8 +1,10 @@
 from typing import Optional, Dict, Any
 
 from Core.Utils.YamlModel import YamlModel
+from pydantic import Field
 
 class GraphConfig(YamlModel):
+    type: str = Field(default="er_graph", description="Type of graph to build (e.g., 'er_graph', 'rkg_graph', 'tree_graph').")
     graph_type: str = "er_graph"
     # Building graph
     extract_two_step: bool = True

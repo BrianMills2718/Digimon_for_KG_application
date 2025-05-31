@@ -3,6 +3,10 @@
 from pydantic import BaseModel, Field
 from typing import Any, Optional, Dict
 
+from Core.Graph.BaseGraph import BaseGraph
+from Core.Index.BaseIndex import BaseIndex
+from Core.Community.BaseCommunity import BaseCommunity
+
 # Import specific configuration models if they will be directly part of the context
 # from Option.Config2 import Config as FullConfig # Example: If the whole config is passed
 # from Core.Config.LLMConfig import LLMConfig #
@@ -47,6 +51,12 @@ class GraphRAGContext(BaseModel):
     graph_storage_manager: Optional[GraphStorageManagerType] = Field(default=None, description="Manager to access various graph storage instances.")
     chunk_storage_manager: Optional[ChunkStorageManagerType] = Field(default=None, description="Manager to access chunk stores.")
     community_storage_manager: Optional[CommunityStorageManagerType] = Field(default=None, description="Manager to access community data artifacts.")
+
+    # New: Directly loaded resource instances for agent tools
+    graph_instance: Optional[BaseGraph] = Field(default=None, description="The loaded graph instance (e.g., NetworkX graph via a BaseGraph compatible wrapper) for the current context.")
+    entities_vdb_instance: Optional[BaseIndex] = Field(default=None, description="The loaded VDB instance for entities (e.g., FaissIndex) for the current context.")
+    relations_vdb_instance: Optional[BaseIndex] = Field(default=None, description="The loaded VDB instance for relationships (if used) for the current context.")
+    community_instance: Optional[BaseCommunity] = Field(default=None, description="The loaded community detection algorithm instance and its results for the current context.")
 
     # Potentially a workspace for the current plan execution to store/retrieve
     # intermediate results if not handled solely by ToolCall.inputs/outputs passing.

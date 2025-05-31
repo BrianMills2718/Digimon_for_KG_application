@@ -42,6 +42,7 @@ def register_retriever_method(type, method_name):
     def decorator(func):
         """ Register a new chunking method """
         RETRIEVER_REGISTRY.register_retriever_method(type, method_name, func)
+        return func  # <-- MODIFIED LINE: ADD THIS RETURN STATEMENT
 
     return decorator
 

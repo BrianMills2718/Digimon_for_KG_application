@@ -23,7 +23,7 @@ class GraphFactory():
 
     def get_graph(self, config, **kwargs) -> BaseGraph:
         """Key is PersistType."""
-        return self.creators[config.graph.graph_type](config, **kwargs)
+        return self.creators[config.graph.type](config, **kwargs)
 
     @staticmethod
     def _create_er_graph(config, **kwargs):

@@ -183,21 +183,66 @@ class Config(WorkingParams, YamlModel):
     
     @classmethod
     def default(cls):
-        """Load default config
-        - Priority: env < default_config_paths
-        - Inside default_config_paths, the latter one overwrites the former one
-        """
-        default_config_paths: List[Path] = [
-            GRAPHRAG_ROOT / "Option/Config2.yaml",
-            CONFIG_ROOT / "Config2.yaml",
-        ]
+        """Generate a default config, trying multiple sources for robustness."""
+        import yaml
+        import os
+        from Config.LLMConfig import LLMConfig, LLMType
+        from Config.EmbConfig import EmbeddingConfig, EmbeddingType
+        from Config.GraphConfig import GraphConfig
+        from Config.ChunkConfig import ChunkConfig
+        from Config.RetrieverConfig import RetrieverConfig
+        from Config.QueryConfig import QueryConfig
+        
+        final_config_data = {}
+        default_yaml_path_primary = "Option/Config2.example.yaml" # Original default target
+        default_yaml_path_secondary = "Option/Config2.yaml"     # Fallback to the main config
 
-        dicts = [dict(os.environ)]
-        dicts += [Config.read_yaml(path) for path in default_config_paths]
-
-        final = merge_dict(dicts)
-   
-        return Config(**final)
+        loaded_from_file = False
+        try:
+            if os.path.exists(default_yaml_path_primary):
+                with open(default_yaml_path_primary, 'r') as f:
+                    final_config_data = yaml.safe_load(f)
+                    if final_config_data and 'llm' in final_config_data and 'embedding' in final_config_data:
+                        loaded_from_file = True
+                        print(f"INFO [Config.default]: Loaded default config from {default_yaml_path_primary}")
+            if not loaded_from_file and os.path.exists(default_yaml_path_secondary):
+                print(f"WARNING [Config.default]: {default_yaml_path_primary} not found or incomplete. Attempting to load from {default_yaml_path_secondary}.")
+                with open(default_yaml_path_secondary, 'r') as f:
+                    final_config_data = yaml.safe_load(f)
+                    if final_config_data and 'llm' in final_config_data and 'embedding' in final_config_data:
+                        loaded_from_file = True
+                        print(f"INFO [Config.default]: Loaded default config from {default_yaml_path_secondary}")
+        except Exception as e:
+            print(f"ERROR [Config.default]: Error loading default config from YAML files ({default_yaml_path_primary}, {default_yaml_path_secondary}): {e}. Proceeding with programmatic defaults for missing sections.")
+            if not isinstance(final_config_data, dict):
+                final_config_data = {}
+        # Ensure all required fields have at least minimal valid defaults if not loaded.
+        if 'llm' not in final_config_data or not isinstance(final_config_data.get('llm'), dict):
+            print("WARNING [Config.default]: LLM config not found or invalid in default YAMLs/data, creating minimal programmatic default LLMConfig.")
+            final_config_data['llm'] = LLMConfig(api_type=LLMType.OPENAI, model="gpt-3.5-turbo", api_key="YOUR_API_KEY_OR_PLACEHOLDER").model_dump()
+        if 'embedding' not in final_config_data or not isinstance(final_config_data.get('embedding'), dict):
+            print("WARNING [Config.default]: Embedding config not found or invalid in default YAMLs/data, creating minimal programmatic default EmbeddingConfig.")
+            final_config_data['embedding'] = EmbeddingConfig(api_type=EmbeddingType.OPENAI, model="text-embedding-ada-002", api_key="YOUR_API_KEY_OR_PLACEHOLDER").model_dump()
+        if 'graph' not in final_config_data or not isinstance(final_config_data.get('graph'), dict):
+            print("WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.")
+            final_config_data['graph'] = GraphConfig().model_dump()
+        if 'chunk' not in final_config_data or not isinstance(final_config_data.get('chunk'), dict):
+            print("WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.")
+            final_config_data['chunk'] = ChunkConfig().model_dump()
+        if 'retriever' not in final_config_data or not isinstance(final_config_data.get('retriever'), dict):
+            print("WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.")
+            final_config_data['retriever'] = RetrieverConfig().model_dump()
+        if 'query_config' not in final_config_data or not isinstance(final_config_data.get('query_config'), dict):
+            print("WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.")
+            final_config_data['query_config'] = QueryConfig().model_dump()
+        try:
+            instance = cls(**final_config_data)
+            print("INFO [Config.default]: Successfully created default Config instance.")
+            return instance
+        except Exception as e:
+            print(f"ERROR [Config.default]: CRITICAL: Failed to instantiate Config with final_config_data. Error: {e}")
+            print(f"ERROR [Config.default]: Final config data used: {final_config_data}")
+            raise
 
     @property
     def extra(self):

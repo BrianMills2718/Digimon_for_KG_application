@@ -63,7 +63,8 @@ class NetworkXStorage(BaseGraphStorage):
     @property
     def graphml_xml_file(self):
         assert self.namespace is not None
-        return self.namespace.get_save_path(self.name)
+        # Ensure os is imported at the top of the file
+        return os.path.join(self.namespace.get_save_path(), self.name)
 
     @staticmethod
     def _stabilize_graph(graph: nx.Graph) -> nx.Graph:

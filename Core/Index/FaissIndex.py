@@ -22,6 +22,89 @@ class FaissIndex(BaseIndex):
     It is a lightweight and easy-to-use vector database for ANN search.
     """
 
+    async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
+        logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix called with query_list type: {type(query_list)}, top_k: {top_k}")
+        # This implementation uses existing retrieval_nodes and formats output for PPR.
+
+        if not graph:
+            logger.error("FaissIndex.retrieval_nodes_with_score_matrix: graph object is None!")
+            node_num_fallback = 100 # Arbitrary fallback if graph.node_num is not accessible
+            try:
+                node_num_fallback = self.config.graph_node_num_default_for_empty_graph if hasattr(self.config, 'graph_node_num_default_for_empty_graph') else 100
+            except: pass # Ignore if self.config is not set or lacks attribute
+            logger.warning(f"Graph object is None. Using fallback node_num: {node_num_fallback}")
+            return np.zeros(node_num_fallback)
+
+        score_vector = np.zeros(graph.node_num)
+
+        queries_to_process = []
+        if isinstance(query_list, str):
+            queries_to_process.append(query_list)
+            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Processing single query string: {query_list}")
+        elif isinstance(query_list, list):
+            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Processing list of query items (count: {len(query_list)})")
+            for i, item in enumerate(query_list):
+                if isinstance(item, dict) and "entity_name" in item:
+                    queries_to_process.append(item["entity_name"])
+                    logger.debug(f"  Item {i} is dict, using entity_name: {item['entity_name']}")
+                elif isinstance(item, str):
+                    queries_to_process.append(item)
+                    logger.debug(f"  Item {i} is str: {item}")
+                else:
+                    logger.warning(f"FaissIndex.retrieval_nodes_with_score_matrix: Skipping unrecognized item in query_list: {item} (type: {type(item)})")
+        else: 
+            logger.warning(f"FaissIndex.retrieval_nodes_with_score_matrix: Unrecognized query_list type: {type(query_list)}. Attempting to process as string.")
+            queries_to_process.append(str(query_list))
+
+        if not queries_to_process:
+            logger.warning("FaissIndex.retrieval_nodes_with_score_matrix: No valid queries to process from query_list.")
+            return score_vector
+
+        aggregated_scores_for_nodes = {} 
+
+        for target_query in queries_to_process:
+            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Performing VDB lookup for target_query: '{target_query}' with top_k={top_k}")
+            retrieved_data = await self.retrieval_nodes(
+                query=target_query,
+                top_k=top_k,
+                graph=graph,
+                need_score=True
+            )
+
+            if retrieved_data and isinstance(retrieved_data, tuple) and len(retrieved_data) == 2:
+                nodes_data, scores_from_vdb = retrieved_data
+                if nodes_data and scores_from_vdb:
+                    logger.debug(f"  Lookup for '{target_query}' found {len(nodes_data)} nodes.")
+                    for i, node_data_item in enumerate(nodes_data):
+                        entity_name = node_data_item.get(graph.entity_metakey)
+                        if entity_name:
+                            node_idx = await graph.get_node_index(entity_name)
+                            if node_idx is not None and 0 <= node_idx < len(score_vector):
+                                current_score = scores_from_vdb[i] if scores_from_vdb[i] is not None else 0.0
+                                aggregated_scores_for_nodes[node_idx] = aggregated_scores_for_nodes.get(node_idx, 0.0) + current_score
+                                logger.debug(f"    Node '{entity_name}' (idx {node_idx}): score {current_score}, new aggregated score {aggregated_scores_for_nodes[node_idx]}")
+                            else:
+                                logger.warning(f"    Node index {node_idx} for entity '{entity_name}' is out of bounds or None for score_vector (len: {len(score_vector)}).")
+                        else:
+                            logger.warning(f"    Entity name not found using metakey '{graph.entity_metakey}' in node_data_item: {node_data_item}")
+                else:
+                    logger.debug(f"  Lookup for '{target_query}' returned no nodes/scores.")
+            else:
+                logger.warning(f"  Lookup for '{target_query}': retrieval_nodes did not return a tuple of (nodes, scores). Got: {type(retrieved_data)}")
+        
+        for node_idx, summed_score in aggregated_scores_for_nodes.items():
+            if 0 <= node_idx < len(score_vector):
+                score_vector[node_idx] = summed_score
+            
+        current_sum = np.sum(score_vector)
+        if current_sum > 0:
+            score_vector = score_vector / current_sum
+            logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix: Returning normalized score vector (sum before norm: {current_sum:.4f}).")
+        else:
+            logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix: Returning zero score vector (sum is {current_sum:.4f}).")
+            
+        return score_vector
+
     def __init__(self, config):
         super().__init__(config)
         self.embedding_model =config.embed_model
@@ -297,14 +380,7 @@ class FaissIndex(BaseIndex):
         # For llama_index based vector database, we do not need it now!
         pass
 
-    async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
-        if isinstance(query_list, str):
-            query_list = [query_list]
-        results = await asyncio.gather(
-            *[self.retrieval_nodes(query, top_k, graph, need_score=True) for query in query_list])
-        reset_prob_matrix = np.zeros((len(query_list), graph.node_num))
-        entity_indices = []
-        scores = []
+
 
         async def set_idx_score(idx, res):
             for entity, score in zip(res[0], res[1]):

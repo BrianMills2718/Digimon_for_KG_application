@@ -12,19 +12,20 @@ _print_level = "INFO"
 def define_log_level(print_level="INFO", logfile_level="DEBUG", name: str = None):
     """Adjust the log level to above level"""
     global _print_level
+    # Force DEBUG for all logging
+    print_level = "DEBUG"
+    logfile_level = "DEBUG"
     _print_level = print_level
 
     current_date = datetime.now()
     formatted_date = current_date.strftime("%Y%m%d%H%M%S")
 
-    
     if name:
         log_dir = os.path.join(name, "Logs")
         os.makedirs(log_dir, exist_ok=True)  # 确保目录存在
         log_name = os.path.join(log_dir, f"{formatted_date}.log")
     else:
         log_name = f"Logs/{formatted_date}.log"
-
 
     _logger.remove()
     _logger.add(sys.stderr, level=print_level)

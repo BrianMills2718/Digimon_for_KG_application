@@ -6,3 +6,46 @@
 - Core/AgentTools/entity_tools.py: No logger.critical diagnostic line before entity_retriever._find_relevant_entities_by_ppr
 
 All requested diagnostic logging cleanup appears to have already been completed in a previous update.
+
+2025-05-30: Fixed test_agent_orchestrator.py to pass main_config as config arg to GraphFactory.get_graph
+- Only passes data_path, storage_type, and storage_instance as kwargs
+- Now matches factory expectations and avoids attribute errors
+
+2025-05-30: Fixed Core/Graph/GraphFactory.py get_graph to use config.graph.type
+- Now compatible with orchestrator and Config/GraphConfig.py changes
+
+2025-05-30: Added 'type' field to GraphConfig in Config/GraphConfig.py
+- Now supports main_config.graph.type for orchestrator and test compatibility
+
+2025-05-30: Switched to using GraphFactory class instance for graph instantiation in testing/test_agent_orchestrator.py
+- Now imports GraphFactory class, instantiates it, and calls get_graph
+- Fixes ImportError for GRAPH_FACTORY and matches actual project API
+
+2025-05-30: Fixed graph instantiation in testing/test_agent_orchestrator.py
+- Now uses GraphFactory.get_graph_instance instead of direct BaseGraph instantiation
+- Removed BaseGraph import; added logs for graph type returned by factory
+
+2025-05-30: Fixed Workspace and NameSpace instantiation in testing/test_agent_orchestrator.py
+- Now uses correct arguments: Workspace(working_dir=..., exp_name=...) and NameSpace(workspace=..., namespace=...)
+- Ensures compatibility with actual class definitions (see Core/Storage/NameSpace.py)
+
+2025-05-30: Fixed artifact/data path usage in testing/test_agent_orchestrator.py
+- Now uses main_config.working_dir instead of root_path_for_artifacts for all artifact/data paths
+- Workspace and VDB paths updated accordingly
+- Added storage_root_dir to resolved_configs in GraphRAGContext
+
+2025-05-30: Fixed embedding provider import and usage in testing/test_agent_orchestrator.py
+- Now imports get_rag_embedding directly and calls get_rag_embedding(config=main_config)
+
+2025-05-30: Created AgentOrchestrator module
+- Added Core/AgentOrchestrator/__init__.py
+- Added Core/AgentOrchestrator/orchestrator.py with initial implementation
+  - Basic tool registry system with Pydantic model support
+  - Plan execution framework with proper input resolution
+  - Support for dynamic input resolution from:
+    - Previous step outputs (via ToolInputSource)
+    - Plan inputs (via "plan_inputs.*" references)
+    - Literal values
+  - Comprehensive logging for debugging
+  - Support for named outputs between steps
+  - Pydantic model validation for tool inputs
