@@ -29,6 +29,15 @@ def define_log_level(print_level="INFO", logfile_level="DEBUG", name: str = None
 
     _logger.remove()
     _logger.add(sys.stderr, level=print_level)
+
+    # DIAGNOSTIC: Write actual log_name to a temp file
+    try:
+        with open("/tmp/logger_actual_path.txt", "w") as f_log_path_diag:
+            f_log_path_diag.write(f"Logger.py: Calculated log_name for file sink: {log_name}\n")
+    except Exception as e_log_path_write:
+        # If this fails, something is very wrong with basic file I/O even here
+        pass # Avoid crashing logger setup
+
     _logger.add(f"{log_name}", level=logfile_level)
     return _logger
 

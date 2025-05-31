@@ -194,8 +194,8 @@ class Config(WorkingParams, YamlModel):
         from Config.QueryConfig import QueryConfig
         
         final_config_data = {}
-        default_yaml_path_primary = "Option/Config2.example.yaml" # Original default target
-        default_yaml_path_secondary = "Option/Config2.yaml"     # Fallback to the main config
+        default_yaml_path_primary = "Option/Config2.yaml"     # Main config should be primary
+        default_yaml_path_secondary = "Option/Config2.example.yaml" # Example config as fallback
 
         loaded_from_file = False
         try:

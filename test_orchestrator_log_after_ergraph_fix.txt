@@ -1,0 +1,29 @@
+2025-05-30 21:03:49.571 | INFO     | __main__:<module>:24 - Orchestrator Test: main_config object type: <class 'Option.Config2.Config'>
+2025-05-30 21:03:49.572 | INFO     | __main__:<module>:25 - Orchestrator Test: Is main_config an instance of Option.Config2.Config? True
+2025-05-30 21:03:49.572 | INFO     | __main__:<module>:26 - Orchestrator Test: Does main_config have 'graph' attribute? True
+2025-05-30 21:03:49.572 | INFO     | __main__:<module>:28 - Orchestrator Test: main_config.graph is: extra_fields=None type='er_graph' graph_type='er_graph' extract_two_step=True max_gleaning=1 force=False enable_entity_description=False enable_entity_type=False enable_edge_description=False enable_edge_name=False prior_prob=0.8 enable_edge_keywords=False use_community=False graph_cluster_algorithm='leiden' max_graph_cluster_size=10 graph_cluster_seed=3735928559 summary_max_tokens=500 llm_model_max_token_size=32768 build_tree_from_leaves=False reduction_dimension=5 summarization_length=100 num_layers=10 top_k=5 threshold_cluster_num=5000 start_layer=5 graph_cluster_params=None selection_mode='top_k' max_length_in_cluster=3500 threshold=0.1 cluster_metric='cosine' verbose=False random_seed=224 enforce_sub_communities=False max_size_percentage=0.2 tol=0.0001 max_iter=300 size_of_clusters=10 custom_ontology_path='Config/custom_ontology.json' loaded_custom_ontology=None similarity_threshold=0.8 similarity_top_k=10 similarity_max=1.0
+2025-05-30 21:03:49.572 | INFO     | __main__:<module>:29 - Orchestrator Test: Type of main_config.graph: <class 'Config.GraphConfig.GraphConfig'>
+2025-05-30 21:03:49.572 | INFO     | __main__:<module>:33 - Orchestrator Test: main_config.graph.type is: er_graph
+2025-05-30 21:03:49.572 | INFO     | __main__:main_orchestrator_test:131 - --- Starting Agent Orchestrator Test ---
+2025-05-30 21:03:49.572 | INFO     | __main__:setup_graphrag_context_for_orchestrator:46 - Orchestrator Test: Setting up GraphRAGContext...
+2025-05-30 21:03:49.572 | INFO     | __main__:setup_graphrag_context_for_orchestrator:50 - Orchestrator Test: Embedding provider type: <class 'llama_index.embeddings.openai.base.OpenAIEmbedding'>
+2025-05-30 21:03:49.573 | INFO     | Core.Graph.GraphFactory:get_graph:43 - GraphFactory: Creating graph of type 'er_graph' with kwargs: {'data_path': './results/MySampleTexts/kg_graph', 'storage_type': 'networkx', 'storage_instance': NetworkXStorage(config=None, namespace=<Core.Storage.NameSpace.NameSpace object at 0x7f4a67db81c0>, name='graph_storage_nx_data.graphml')}
+2025-05-30 21:03:49.573 | DEBUG    | Core.Graph.GraphFactory:_create_er_graph:50 - GraphFactory._create_er_graph: full_config type: <class 'Option.Config2.Config'>, constructor_kwargs: {'data_path': './results/MySampleTexts/kg_graph', 'storage_type': 'networkx', 'storage_instance': NetworkXStorage(config=None, namespace=<Core.Storage.NameSpace.NameSpace object at 0x7f4a67db81c0>, name='graph_storage_nx_data.graphml')}
+INFO [Config.default]: Loaded default config from Option/Config2.example.yaml
+WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.
+WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.
+WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.
+WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.
+INFO [Config.default]: Successfully created default Config instance.
+Traceback (most recent call last):
+  File "/home/brian/digimon/testing/test_agent_orchestrator.py", line 184, in <module>
+    asyncio.run(main_orchestrator_test())
+  File "/home/brian/miniconda3/envs/digimon/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/home/brian/miniconda3/envs/digimon/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/brian/digimon/testing/test_agent_orchestrator.py", line 134, in main_orchestrator_test
+    graphrag_context = await setup_graphrag_context_for_orchestrator()
+  File "/home/brian/digimon/testing/test_agent_orchestrator.py", line 77, in setup_graphrag_context_for_orchestrator
+    await graph_instance.load()
+AttributeError: 'ERGraph' object has no attribute 'load'

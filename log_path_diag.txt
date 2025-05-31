@@ -1,0 +1,3 @@
+Effective working_dir: ./results
+Effective exp_name: test
+Absolute expected log directory: /home/brian/digimon/./results/test/Logs

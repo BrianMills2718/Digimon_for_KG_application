@@ -1,66 +1,184 @@
-# Core/AgentTools/relationship_tools.py
+import logging
+from typing import List, Tuple, Dict, Any, Optional
+import networkx as nx
 
-from typing import List, Tuple, Optional, Any, Union, Dict, Literal
-from pydantic import BaseModel, Field
-
+from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentSchema.tool_contracts import (
-    RelationshipOneHopNeighborsInputs, 
+    RelationshipOneHopNeighborsInputs,
     RelationshipOneHopNeighborsOutputs,
-    RelationshipData
+    RelationshipData,
+    RelationshipScoreAggregatorInputs,
+    RelationshipScoreAggregatorOutputs,
+    RelationshipVDBSearchInputs,
+    RelationshipVDBSearchOutputs,
+    RelationshipAgentInputs,
+    RelationshipAgentOutputs
 )
 
-# --- Tool Implementation for: Relationship One-Hop Neighbors ---
-# tool_id: "Relationship.OneHopNeighbors"
+logger = logging.getLogger(__name__)
+
 
 async def relationship_one_hop_neighbors_tool(
     params: RelationshipOneHopNeighborsInputs,
-    graphrag_context: Optional[Any] = None # Placeholder for GraphRAG system context
+    graphrag_context: GraphRAGContext
 ) -> RelationshipOneHopNeighborsOutputs:
     """
-    Finds all relationships directly connected to a given set of source entities.
-    Wraps core GraphRAG logic for this graph traversal.
+    Finds one-hop neighbors for a list of given entity IDs and details of their relationships.
+    Handles both directed and undirected NetworkX graphs. (V6: Fixes RelationshipData field names)
     """
-    print(f"Executing tool 'Relationship.OneHopNeighbors' with parameters: {params}")
+    logger.info(
+        f"Executing tool 'Relationship.OneHopNeighbors' with parameters: "
+        f"entity_ids={params.entity_ids}, "
+        f"direction='{params.direction}', " 
+        f"types_to_include='{params.relationship_types_to_include}'"
+    )
+    output_details: List[RelationshipData] = []
 
-    # 1. Extract parameters from 'params: RelationshipOneHopNeighborsInputs'
-    #    - graph_reference_id: str
-    #    - source_entity_ids: List[str]
-    #    - relationship_types_to_include: Optional[List[str]]
-    #    - direction: Optional[Literal["outgoing", "incoming", "both"]]
+    logger.info("Relationship.OneHopNeighbors: TOOL ENTERED (V6 - Correct RelationshipData fields)") # Updated version marker
+    if graphrag_context is None:
+        logger.error("Relationship.OneHopNeighbors: graphrag_context IS NONE!")
+        return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
 
-    # Placeholder: Access graph instance via graphrag_context and graph_reference_id
-    print(f"Placeholder: Would access graph '{params.graph_reference_id}'.")
-    print(f"Placeholder: Would find 1-hop relationships for entities: {params.source_entity_ids} with direction '{params.direction}'.")
+    graph_instance = graphrag_context.graph_instance
+    logger.info(f"Relationship.OneHopNeighbors: Received graph_instance from context. Type: {type(graph_instance)}")
 
-    # 2. Call underlying GraphRAG logic for 1-hop traversal
-    #    Logic could be in Core/Graph/ERGraph.py or similar graph modules.
+    if graph_instance is None:
+        logger.error("Relationship.OneHopNeighbors: graph_instance from context IS NONE!")
+        return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
+    
+    actual_nx_graph = None
+    if hasattr(graph_instance, '_graph') and graph_instance._graph is not None and \
+       hasattr(graph_instance._graph, 'graph') and graph_instance._graph.graph is not None and \
+       isinstance(graph_instance._graph.graph, nx.Graph): 
+        actual_nx_graph = graph_instance._graph.graph
+        logger.info(f"Relationship.OneHopNeighbors: Successfully accessed NetworkX graph via graph_instance._graph.graph. Type: {type(actual_nx_graph)}")
+    else:
+        logger.error("Relationship.OneHopNeighbors: CRITICAL CHECK FAILED - Could not access a valid NetworkX graph from graph_instance._graph.graph.")
+        return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
+    
+    nx_graph = actual_nx_graph
 
-    # Dummy results
-    dummy_relationships_data = []
-    for i, entity_id in enumerate(params.source_entity_ids):
-        dummy_relationships_data.append(
-            RelationshipData(
-                relationship_id=f"rel_of_{entity_id}_{i+1}",
-                source_node_id=entity_id,
-                target_node_id=f"neighbor_of_{entity_id}_{i+1}",
-                type=params.relationship_types_to_include[0] if params.relationship_types_to_include else "related_to",
-            )
-        )
-        if len(dummy_relationships_data) >= 3:
-            break
+    is_directed_graph = hasattr(nx_graph, 'successors') and hasattr(nx_graph, 'predecessors')
+    graph_type_description = 'directed' if is_directed_graph else 'undirected (using neighbors())'
+    logger.info(f"Relationship.OneHopNeighbors: Graph is considered {graph_type_description}.")
 
-    # 3. Transform results into 'RelationshipOneHopNeighborsOutputs'
-    return RelationshipOneHopNeighborsOutputs(one_hop_relationships=dummy_relationships_data)
+    for entity_id in params.entity_ids:
+        if not nx_graph.has_node(entity_id):
+            logger.warning(f"Relationship.OneHopNeighbors: Entity ID '{entity_id}' not found in the graph. Skipping.")
+            continue
 
+        try:
+            # Attribute keys used by your ERGraph when storing relationship properties on edges
+            # Based on your relationship_tools.py, these seem to be 'type' and 'description'
+            # Based on your CoreRelationship, the model field for name is 'relation_name'
+            edge_attr_for_relation_name = 'type' 
+            edge_attr_for_description = 'description'
+            edge_attr_for_weight = 'weight'
 
-# --- Tool Implementation for: Relationship Operator - Agent ---
-# tool_id: "Relationship.Agent"
+            processed_neighbor_pairs = set()
 
-from Core.AgentSchema.tool_contracts import (
-    RelationshipAgentInputs, RelationshipAgentOutputs, RelationshipData, ExtractedEntityData,
-    RelationshipVDBSearchInputs, RelationshipVDBSearchOutputs
-)
-from Core.AgentSchema.context import GraphRAGContext
+            # --- Outgoing/Neighbors Logic ---
+            if params.direction in ["outgoing", "both"] or not is_directed_graph:
+                iterator = nx_graph.successors(entity_id) if is_directed_graph else nx_graph.neighbors(entity_id)
+                
+                for neighbor_id in iterator:
+                    if not is_directed_graph and tuple(sorted((entity_id, neighbor_id))) in processed_neighbor_pairs:
+                        continue
+
+                    edge_data_dict = nx_graph.get_edge_data(entity_id, neighbor_id)
+                    if not edge_data_dict: 
+                        logger.debug(f"No edge data between {entity_id} and {neighbor_id}")
+                        continue
+
+                    items_to_process = edge_data_dict.items() if isinstance(nx_graph, (nx.MultiGraph, nx.MultiDiGraph)) else [("single_edge", edge_data_dict)]
+                    
+                    for _edge_key, attributes in items_to_process:
+                        rel_name_from_edge = attributes.get(edge_attr_for_relation_name, "unknown_relationship")
+                        if params.relationship_types_to_include and rel_name_from_edge not in params.relationship_types_to_include:
+                            continue
+                        rel_desc_from_edge = attributes.get(edge_attr_for_description)
+                        rel_weight_from_edge = attributes.get(edge_attr_for_weight)
+                        other_attributes = {k: v for k, v in attributes.items() if k not in [edge_attr_for_relation_name, edge_attr_for_description, edge_attr_for_weight]}
+
+                        output_details.append(RelationshipData(
+                            source_id="graph_traversal_tool", # Document/Chunk source ID
+                            src_id=entity_id,               # Correct field name for source node
+                            tgt_id=neighbor_id,             # Correct field name for target node
+                            relation_name=str(rel_name_from_edge) if rel_name_from_edge is not None else "unknown_relationship", # Correct field name
+                            description=str(rel_desc_from_edge) if rel_desc_from_edge is not None else None,
+                            weight=float(rel_weight_from_edge) if rel_weight_from_edge is not None else 1.0,
+                            attributes=other_attributes if other_attributes else None
+                        ))
+                    
+                    if not is_directed_graph:
+                         processed_neighbor_pairs.add(tuple(sorted((entity_id, neighbor_id))))
+
+            # --- Incoming Logic (Only for Directed Graphs if direction is "incoming" or "both") ---
+            if is_directed_graph and params.direction in ["incoming", "both"]:
+                for predecessor_id in nx_graph.predecessors(entity_id):
+                    edge_data_dict = nx_graph.get_edge_data(predecessor_id, entity_id)
+                    if not edge_data_dict:
+                        logger.debug(f"No edge data (predecessors) between {predecessor_id} and {entity_id}")
+                        continue
+                    
+                    items_to_process_incoming = edge_data_dict.items() if isinstance(nx_graph, nx.MultiDiGraph) else [("single_edge", edge_data_dict)]
+
+                    for _edge_key, attributes in items_to_process_incoming:
+                        rel_name_val_from_edge = str(attributes.get(edge_attr_for_relation_name, "unknown_relationship"))
+                        if params.relationship_types_to_include and rel_name_val_from_edge not in params.relationship_types_to_include:
+                            continue
+                        
+                        is_already_processed_as_outgoing = False
+                        if params.direction == "both":
+                            for detail in output_details:
+                                if detail.src_id == predecessor_id and \
+                                   detail.tgt_id == entity_id and \
+                                   detail.relation_name == rel_name_val_from_edge: # Check against correct fields
+                                    is_already_processed_as_outgoing = True
+                                    break
+                        if is_already_processed_as_outgoing:
+                            continue
+
+                        rel_desc_val_from_edge = attributes.get(edge_attr_for_description)
+                        rel_weight_val_from_edge = attributes.get(edge_attr_for_weight)
+                        other_attributes_incoming = {k: v for k, v in attributes.items() if k not in [edge_attr_for_relation_name, edge_attr_for_description, edge_attr_for_weight]}
+
+                        output_details.append(RelationshipData(
+                            source_id="graph_traversal_tool",
+                            src_id=predecessor_id,      # Correct field name
+                            tgt_id=entity_id,          # Correct field name
+                            relation_name=rel_name_val_from_edge, # Correct field name
+                            description=str(rel_desc_val_from_edge) if rel_desc_val_from_edge is not None else None,
+                            weight=float(rel_weight_val_from_edge) if rel_weight_val_from_edge is not None else 1.0,
+                            attributes=other_attributes_incoming if other_attributes_incoming else None
+                        ))
+                            
+        except Exception as e: 
+            logger.error(f"Relationship.OneHopNeighbors: Unexpected error processing entity ID '{entity_id}' with nx_graph type {type(nx_graph)}. Error: {e}", exc_info=True)
+
+    logger.info(f"Relationship.OneHopNeighbors: Found {len(output_details)} relationship details.")
+    return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
+
+async def relationship_score_aggregator_tool(
+    params: RelationshipScoreAggregatorInputs,
+    graphrag_context: GraphRAGContext
+) -> RelationshipScoreAggregatorOutputs:
+    logger.info(f"Executing tool 'Relationship.ScoreAggregator' with params: {params}")
+    return RelationshipScoreAggregatorOutputs(aggregated_relationship_scores={"example_rel": 0.9})
+
+async def relationship_vdb_search_tool(
+    params: RelationshipVDBSearchInputs,
+    graphrag_context: GraphRAGContext
+) -> RelationshipVDBSearchOutputs:
+    logger.info(f"Executing tool 'Relationship.VDBSearch' with params: {params}")
+    return RelationshipVDBSearchOutputs(similar_relationships=[("rel1_id", "rel1_name", 0.8)])
+
+async def relationship_agent_tool(
+    params: RelationshipAgentInputs,
+    graphrag_context: GraphRAGContext
+) -> RelationshipAgentOutputs:
+    logger.info(f"Executing tool 'Relationship.Agent' with params: {params}")
+    return RelationshipAgentOutputs(determined_relationships=["agent_rel_id_1"])
 
 async def relationship_agent_tool(
     params: RelationshipAgentInputs,

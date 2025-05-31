@@ -45,8 +45,13 @@ class EntityVDBSearchInputs(BaseToolParams):
     top_k_results: int = Field(default=5, description="Number of top similar entities to return.")
     # Add other parameters like filtering conditions, etc.
 
+class VDBSearchResultItem(BaseModel):
+    node_id: str = Field(description="Internal ID of the node in the VDB (e.g., LlamaIndex TextNode ID).")
+    entity_name: str = Field(description="The actual name/identifier of the entity used in the graph.")
+    score: float = Field(description="Similarity score from the VDB search.")
+
 class EntityVDBSearchOutputs(BaseToolOutput):
-    similar_entities: List[Tuple[str, float]] = Field(description="List of (entity_id, similarity_score) tuples.")
+    similar_entities: List[VDBSearchResultItem] = Field(description="List of VDB search result items.")
 
 # --- Tool Contract for: Chunks From Relationships (FromRelationships) ---
 # Based on conceptual contract: tool_id = "Chunk.FromRelationships"
@@ -107,8 +112,8 @@ class RelationshipData(CoreRelationship):
     pass
 
 class RelationshipOneHopNeighborsInputs(BaseToolParams):
-    graph_reference_id: str
-    source_entity_ids: List[str]
+    entity_ids: List[str]
+    graph_reference_id: str = Field(default="kg_graph", description="Reference ID for the graph to use (e.g., 'kg_graph').")
     relationship_types_to_include: Optional[List[str]] = None
     direction: Optional[Literal["outgoing", "incoming", "both"]] = Field(default="both")
 

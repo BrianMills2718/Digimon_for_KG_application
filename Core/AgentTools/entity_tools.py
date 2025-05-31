@@ -1,13 +1,28 @@
 # Core/AgentTools/entity_tools.py
 
-from typing import List, Tuple, Optional, Any
+import logging
+from typing import List, Tuple, Dict, Any, Optional # Ensure Optional is imported if not already
+import numpy as np # Ensure numpy is imported if not already
+
+from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentSchema.tool_contracts import (
-    EntityVDBSearchInputs, 
+    EntityPPRInputs,
+    EntityPPROutputs,
+    EntityVDBSearchInputs,
     EntityVDBSearchOutputs,
-    EntityPPRInputs, 
-    EntityPPROutputs
-    # We will add other entity-related tool input/output models here later,
+    VDBSearchResultItem,  # <--- ADD THIS IMPORT
+    EntityTFIDFInputs,
+    EntityTFIDFOutputs,
+    EntityAgentInputs,
+    EntityAgentOutputs,
+    ExtractedEntityData, # Ensure this is imported if used by EntityAgent
+    EntityLinkInputs,
+    EntityLinkOutputs,
+    LinkedEntityPair # Ensure this is imported if used by EntityLink
 )
+from Core.Retriever.EntitiyRetriever import EntityRetriever # Typo "EntitiyRetriever" is as per user's files
+from Core.Retriever.BaseRetriever import BaseRetriever # If direct instantiation or type hinting needed
+from Config.RetrieverConfig import RetrieverConfig # For default retriever config
 
 from Core.Schema.EntityRelation import Entity as CoreEntity # For constructing output if needed
 
@@ -48,71 +63,200 @@ class MockIndexConfig(BaseModel):
 from Core.Provider.BaseEmb import BaseEmb
 # from Core.Storage.NameSpace import NameSpace
 
+import logging
+logger = logging.getLogger(__name__)
+
 async def entity_vdb_search_tool(
     params: EntityVDBSearchInputs,
     graphrag_context: GraphRAGContext
 ) -> EntityVDBSearchOutputs:
     """
-    Performs a vector search for entities using the LlamaIndex-based FaissIndex.
+    Searches an entity vector database for entities similar to a query.
+    Wraps core GraphRAG logic for VDB search.
     """
-    print(f"Executing tool 'Entity.VDBSearch' with parameters: {params}")
+    logger.info(
+        f"Executing tool 'Entity.VDBSearch' with parameters: "
+        f"vdb_reference_id='{params.vdb_reference_id}', query_text='{params.query_text}', "
+        f"top_k_results={params.top_k_results}"
+    )
 
-    if not params.query_text:
-        raise ValueError("query_text must be provided for Entity.VDBSearch with current FaissIndex.retrieval method.")
+    if not (params.query_text or params.query_embedding):
+        logger.error("Entity.VDBSearch: Either query_text or query_embedding must be provided.")
+        raise ValueError("Either query_text or query_embedding must be provided for Entity.VDBSearch.")
 
-    llama_embed_provider = graphrag_context.embedding_provider
-    if not llama_embed_provider:
-        raise ValueError("LlamaIndex embedding provider not found in GraphRAGContext.")
-    if not isinstance(llama_embed_provider, LlamaIndexBaseEmbedding):
-        print(f"Warning: embedding_provider in context is type {type(llama_embed_provider)}, expecting LlamaIndexBaseEmbedding.")
+    vdb_instance = None
+    if params.vdb_reference_id == "entities_vdb" and graphrag_context.entities_vdb_instance:
+        vdb_instance = graphrag_context.entities_vdb_instance
+    # Add elif for other VDBs like relations_vdb if needed
+    else:
+        logger.error(f"Entity.VDBSearch: VDB reference '{params.vdb_reference_id}' not recognized or not loaded in context.")
+        # Consider how to handle: raise error or return empty
+        return EntityVDBSearchOutputs(similar_entities=[])
 
-    vdb_search_results: List[Tuple[str, float]] = []
+    # This check was for retrieval_nodes_with_score_matrix, which we are bypassing for direct LlamaIndex usage.
+    # if not hasattr(vdb_instance, 'retrieval_nodes_with_score_matrix') or not callable(vdb_instance.retrieval_nodes_with_score_matrix):
+    #     logger.error(f"Entity.VDBSearch: VDB instance for '{params.vdb_reference_id}' does not have a callable 'retrieval_nodes_with_score_matrix' method.")
+    #     return EntityVDBSearchOutputs(similar_entities=[])
+
     try:
-        root_dir = graphrag_context.resolved_configs.get("storage_root_dir", "./results")
-        vdb_folder_path = os.path.join(
-            root_dir,
-            graphrag_context.target_dataset_name,
-            "kg_graph",
-            params.vdb_reference_id
-        )
-        print(f"Attempting to use VDB from persist_path: {vdb_folder_path}")
-        index_init_config = MockIndexConfig(
-            persist_path=vdb_folder_path,
-            embed_model=llama_embed_provider,
-            retrieve_top_k=params.top_k_results,
-            name=params.vdb_reference_id
-        )
-        vdb_instance = FaissIndex(config=index_init_config)
-        if not await vdb_instance.load():
-            print(f"Warning: Failed to load VDB from {vdb_folder_path}. It might not exist or be corrupted.")
+        # Attempting to use the LlamaIndex retrieve method directly if FaissIndex._index is the LlamaIndex VectorStoreIndex
+        llamaindex_actual_index = None
+        if hasattr(vdb_instance, '_index') and vdb_instance._index is not None: # _index is where FaissIndex stores the LlamaIndex VectorStoreIndex
+            llamaindex_actual_index = vdb_instance._index
+            logger.info(f"Entity.VDBSearch: Accessing LlamaIndex VectorStoreIndex via vdb_instance._index. Type: {type(llamaindex_actual_index)}")
+        else:
+            logger.error("Entity.VDBSearch: Could not access underlying LlamaIndex VectorStoreIndex from vdb_instance._index.")
             return EntityVDBSearchOutputs(similar_entities=[])
-        print(f"Successfully loaded VDB '{params.vdb_reference_id}'.")
-        print(f"Searching VDB '{params.vdb_reference_id}' for query '{params.query_text}' with top_k={params.top_k_results}")
-        llama_index_results: List[Any] = await vdb_instance.retrieval(
-            query=params.query_text,
-            top_k=params.top_k_results
-        )
-        for node_with_score in llama_index_results:
-            entity_id = node_with_score.node.id_
-            score = node_with_score.score
-            if entity_id and score is not None:
-                vdb_search_results.append((str(entity_id), float(score)))
-    except FileNotFoundError as e:
-        print(f"VDB artifact not found or invalid at '{vdb_folder_path}': {e}")
+
+        if params.query_embedding:
+            # This part is more complex as LlamaIndex retrieve often takes query_str.
+            # If you have raw embeddings, you'd typically query the vector_store component.
+            # For now, let's focus on query_text path.
+            logger.warning("Entity.VDBSearch: Querying by direct embedding is not fully implemented in this tool version. Please use query_text.")
+            results_with_scores = [] # Placeholder
+        else:
+            # Assuming llamaindex_actual_index is a LlamaIndex BaseIndex (e.g., VectorStoreIndex)
+            retriever = llamaindex_actual_index.as_retriever(similarity_top_k=params.top_k_results)
+            results_with_scores = await retriever.aretrieve(str(params.query_text)) # list of NodeWithScore
+
+        output_entities: List[VDBSearchResultItem] = []
+        if results_with_scores:
+            for node_with_score in results_with_scores:
+                node = node_with_score.node
+                # Prefer entity_name from metadata, fallback to node.text (which might be a chunk)
+                entity_name = node.metadata.get("entity_name", None) 
+                if not entity_name:
+                    # If entity_name is not in metadata, this node might represent a chunk of text rather than a distinct entity.
+                    # For robust graph linking, nodes in VDB ideally should have 'entity_name' in metadata if they correspond to graph nodes.
+                    # Using node.text as a fallback might be noisy if node.text is a long chunk.
+                    # For now, we'll log a warning and use node.text if 'entity_name' is absent.
+                    entity_name = node.text # Fallback, could be a long chunk of text
+                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node.node_id}. Using node.text (length {len(entity_name)}) as fallback entity_name: '{entity_name[:100]}...' ")
+                
+                output_entities.append(
+                    VDBSearchResultItem(
+                        node_id=node.node_id, # This is the LlamaIndex internal hash ID
+                        entity_name=str(entity_name), # This should be the graph node ID
+                        score=float(node_with_score.score) if node_with_score.score is not None else 0.0
+                    )
+                )
+        
+        logger.info(f"Entity.VDBSearch: Found {len(output_entities)} similar entities.")
+        return EntityVDBSearchOutputs(similar_entities=output_entities)
+
     except Exception as e:
-        print(f"Error during VDB operation for '{params.vdb_reference_id}': {e}")
-        import traceback
-        traceback.print_exc()
-    return EntityVDBSearchOutputs(similar_entities=vdb_search_results)
+        logger.error(f"Entity.VDBSearch: Error during VDB search: {e}", exc_info=True)
+        return EntityVDBSearchOutputs(similar_entities=[])
 
 # --- Tool Implementation for: Entity Personalized PageRank (PPR) ---
 # tool_id: "Entity.PPR"
+from Core.Graph.BaseGraph import BaseGraph  # For type hinting graph_instance
+
+async def entity_ppr_tool(
+    params: EntityPPRInputs,
+    graphrag_context: GraphRAGContext
+) -> EntityPPROutputs:
+    """
+    Computes Personalized PageRank for entities in a graph based on seed entity IDs.
+    """
+    logger.info(f"Executing tool 'Entity.PPR' with parameters: {params.model_dump_json(indent=2)}")
+
+    graph_instance: Optional[BaseGraph] = graphrag_context.graph_instance
+    if not graph_instance:
+        logger.error("Entity.PPR: Graph instance not found in GraphRAGContext.")
+        raise ValueError("Graph instance is required for PPR.")
+
+    if not params.seed_entity_ids:
+        logger.warning("Entity.PPR: No seed_entity_ids provided. Returning empty results.")
+        return EntityPPROutputs(ranked_entities=[])
+
+    # 1. Prepare the personalization vector for PageRank
+    # For this implementation, we'll create a simple personalization vector
+    # where seed nodes get uniform non-zero probability.
+    
+    # First, ensure graph has node_num available and > 0
+    if not hasattr(graph_instance, 'node_num') or not graph_instance.node_num or graph_instance.node_num <= 0:
+        logger.error(f"Entity.PPR: graph_instance.node_num is not available or invalid: {getattr(graph_instance, 'node_num', 'Attribute Missing')}")
+        # Attempt to get it dynamically if underlying graph exists
+        if hasattr(graph_instance, '_graph') and graph_instance._graph is not None:
+             try:
+                 graph_instance.node_num = graph_instance._graph.number_of_nodes()
+                 logger.info(f"Entity.PPR: Dynamically set graph_instance.node_num to {graph_instance.node_num}")
+                 if graph_instance.node_num <= 0:
+                     raise ValueError("Graph has no nodes after dynamic check.")
+             except Exception as e:
+                 logger.error(f"Entity.PPR: Could not dynamically determine node_num: {e}")
+                 raise ValueError("Graph node count is unavailable or invalid for PPR.")
+        else:
+             raise ValueError("Graph node count is unavailable or invalid for PPR.")
+
+    personalization_vector = np.zeros(graph_instance.node_num)
+    valid_seed_indices_count = 0
+    
+    seed_node_indices = []
+    for entity_id in params.seed_entity_ids:
+        try:
+            node_idx = await graph_instance.get_node_index(entity_id)
+            if node_idx is not None and 0 <= node_idx < graph_instance.node_num:
+                seed_node_indices.append(node_idx)
+                valid_seed_indices_count += 1
+            else:
+                logger.warning(f"Entity.PPR: Seed entity_id '{entity_id}' not found in graph or index out of bounds. Skipping.")
+        except Exception as e:
+            logger.warning(f"Entity.PPR: Error getting index for seed_id '{entity_id}': {e}. Skipping.")
+    
+    if valid_seed_indices_count == 0:
+        logger.warning("Entity.PPR: None of the provided seed_entity_ids were found in the graph. Returning empty results.")
+        return EntityPPROutputs(ranked_entities=[])
+
+    for idx in seed_node_indices:
+         personalization_vector[idx] = 1.0 / valid_seed_indices_count
+    
+    logger.debug(f"Entity.PPR: Personalization vector created with {valid_seed_indices_count} active seed(s). Sum: {np.sum(personalization_vector)}")
+
+    # 2. Call the graph's personalized_pagerank method
+    # The BaseGraph.personalized_pagerank expects a list of vectors.
+    # It should also accept alpha and max_iter from kwargs.
+    try:
+        logger.info(f"Entity.PPR: Calling graph.personalized_pagerank with alpha={params.personalization_weight_alpha}, max_iter={params.max_iterations}")
+        
+        # Assuming graph_instance.personalized_pagerank returns a dictionary: {node_id: score}
+        # This matches the NetworkXGraph implementation.
+        ppr_scores_dict: Dict[str, float] = await graph_instance.personalized_pagerank(
+            personalization_vector=[personalization_vector], # Pass as a list of vectors
+            alpha=params.personalization_weight_alpha,
+            max_iter=params.max_iterations
+        )
+        logger.debug(f"Entity.PPR: Received {len(ppr_scores_dict)} scores from personalized_pagerank.")
+
+    except Exception as e:
+        logger.error(f"Entity.PPR: Error during personalized_pagerank execution: {e}", exc_info=True)
+        raise
+
+    # 3. Sort and truncate results
+    if not ppr_scores_dict:
+        logger.warning("Entity.PPR: personalized_pagerank returned empty or None scores_dict.")
+        return EntityPPROutputs(ranked_entities=[])
+
+    # Sort by score in descending order
+    sorted_ranked_entities = sorted(ppr_scores_dict.items(), key=lambda item: item[1], reverse=True)
+    
+    # Truncate to top_k_results if specified
+    top_k = params.top_k_results
+    if top_k is not None and top_k > 0:
+        final_ranked_entities = sorted_ranked_entities[:top_k]
+    else:
+        final_ranked_entities = sorted_ranked_entities
+    
+    logger.info(f"Entity.PPR: Tool execution finished. Returning {len(final_ranked_entities)} ranked entities.")
+    return EntityPPROutputs(ranked_entities=final_ranked_entities)
+from Core.Graph.BaseGraph import BaseGraph  # For type hinting graph_instance
 
 from Core.Retriever.EntitiyRetriever import EntityRetriever  # Note: typo in filename is intentional
 from Config.RetrieverConfig import RetrieverConfig
 from Core.Common.Logger import logger
 import numpy as np
-from typing import List, Tuple, Optional, Any
+from typing import List, Tuple, Optional, Any, Dict
 from Core.AgentSchema.tool_contracts import EntityPPRInputs, EntityPPROutputs
 from Core.AgentSchema.context import GraphRAGContext
 

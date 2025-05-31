@@ -23,9 +23,16 @@ from Core.Storage.NetworkXStorage import NetworkXStorage
 
 class ERGraph(BaseGraph):
 
-    def __init__(self, config, llm, encoder):
+    def __init__(self, config, llm, encoder, storage_instance=None):
+        """
+        Args:
+            config: GraphConfig
+            llm: LLM instance
+            encoder: encoder instance
+            storage_instance: Optional[NetworkXStorage], if provided will be used as the graph storage
+        """
         super().__init__(config, llm, encoder)
-        self._graph = NetworkXStorage()
+        self._graph = storage_instance if storage_instance is not None else NetworkXStorage()
 
     async def _named_entity_recognition(self, passage: str):
         ner_messages = GraphPrompt.NER.format(user_input=passage)
