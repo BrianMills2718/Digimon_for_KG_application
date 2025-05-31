@@ -1,7 +1,7 @@
 # Core/AgentOrchestrator/orchestrator.py
 
-from typing import Dict, Any, List, Optional, Tuple, Type
-from Core.AgentSchema.plan import ExecutionPlan, ExecutionStep, ToolCall, ToolInputSource
+from typing import Dict, Any, List, Optional, Tuple, Type, Union
+from Core.AgentSchema.plan import ExecutionPlan, ExecutionStep, ToolCall, ToolInputSource, DynamicToolChainConfig
 from Core.AgentSchema.tool_contracts import EntityVDBSearchOutputs, EntityVDBSearchInputs, EntityPPRInputs, RelationshipOneHopNeighborsInputs, VDBSearchResultItem
 from Core.AgentSchema.context import GraphRAGContext
 from Core.Common.Logger import logger
@@ -74,8 +74,7 @@ class AgentOrchestrator:
                     # 1. Resolve inputs for the current tool_call
                     resolved_inputs_dict = self._resolve_tool_inputs(
                         tool_call.inputs,
-                        plan.plan_inputs,
-                        self.step_outputs
+                        plan.plan_inputs
                     )
                     if hasattr(resolved_inputs_dict, "__await__"):
                         resolved_inputs_dict = await resolved_inputs_dict
@@ -131,61 +130,99 @@ class AgentOrchestrator:
         logger.info(f"Orchestrator: Plan execution finished. Final result from step '{final_step_id_for_result}': {final_result}")
         return final_result
 
+    # START (REPLACE _resolve_tool_inputs method in AgentOrchestrator)
     def _resolve_tool_inputs(
         self,
-        tool_inputs_spec: Optional[Dict[str, Any]],
-        plan_inputs: Optional[Dict[str, Any]],
-        all_step_outputs: Dict[str, Dict[str, Any]]
+        step_inputs_config: Dict[str, Union[Any, "ToolInputSource", Dict[str, Any]]],  # Allow dict for TIS
+        plan_inputs: Dict[str, Any]
     ) -> Dict[str, Any]:
-        resolved_inputs_dict: Dict[str, Any] = {}
-        if not tool_inputs_spec:
-            return resolved_inputs_dict
+        """
+        Resolves tool inputs from plan_inputs or previous step_outputs.
+        Handles direct values, references to plan_inputs, and ToolInputSource objects/dicts.
+        Also performs specific transformations (e.g., VDB output to list of entity IDs).
+        """
+        resolved_params = {}
+        for input_name, source_identifier in step_inputs_config.items():
+            source_value = None
 
-        for input_name, input_source_val in tool_inputs_spec.items():
-            if isinstance(input_source_val, str) and input_source_val.startswith("plan_inputs."):
-                plan_input_key = input_source_val.split("plan_inputs.", 1)[1]
-                if plan_inputs and plan_input_key in plan_inputs:
-                    resolved_inputs_dict[input_name] = plan_inputs[plan_input_key]
-                    logger.debug(f"Orchestrator: Resolved input '{input_name}' from plan_inputs, key '{plan_input_key}'")
-                else:
-                    logger.warning(f"Orchestrator: Plan input key '{plan_input_key}' for tool input '{input_name}' not found in plan_inputs. Skipping this input.")
-            
-            elif isinstance(input_source_val, ToolInputSource):
-                source_step_id = input_source_val.from_step_id
-                named_output_key = input_source_val.named_output_key
+            # Check if source_identifier is a dictionary representing a ToolInputSource
+            current_tis = None
+            if isinstance(source_identifier, dict) and \
+            "from_step_id" in source_identifier and \
+            "named_output_key" in source_identifier:
+                try:
+                    current_tis = ToolInputSource(**source_identifier)
+                    logger.debug(f"Orchestrator: Parsed dict into ToolInputSource for input '{input_name}'.")
+                except Exception as e_tis:
+                    logger.error(f"Orchestrator: Failed to parse dict as ToolInputSource for input '{input_name}': {source_identifier}. Error: {e_tis}")
+                    # Treat as literal if parsing fails, though this is unlikely to be correct.
+                    source_value = source_identifier
+            elif isinstance(source_identifier, ToolInputSource):
+                current_tis = source_identifier
 
-                if source_step_id not in all_step_outputs or named_output_key not in all_step_outputs[source_step_id]:
-                    logger.error(f"Orchestrator: Could not find source output for step '{source_step_id}', key '{named_output_key}' for input '{input_name}'")
-                    # Decide on error handling: skip, use default, or raise. For now, skipping.
-                    continue 
-            
-                source_value_container = all_step_outputs[source_step_id][named_output_key]
+            if current_tis:  # Process if it's a ToolInputSource object
+                from_step_id = current_tis.from_step_id
+                named_output_key = current_tis.named_output_key
 
-                # Check if the container is an EntityVDBSearchOutputs object
-                if isinstance(source_value_container, EntityVDBSearchOutputs):
-                    # Check if the target input name is one that expects a list of entity names
-                    if input_name in ["seed_entity_ids", "entity_ids"]:
-                        transformed_value = []
-                        if hasattr(source_value_container, 'similar_entities') and isinstance(source_value_container.similar_entities, list):
-                            for item in source_value_container.similar_entities:
-                                if isinstance(item, VDBSearchResultItem) and hasattr(item, 'entity_name'):
-                                    transformed_value.append(item.entity_name)
-                                else:
-                                    logger.warning(f"Orchestrator: Item in similar_entities from step '{source_step_id}' is not a VDBSearchResultItem with entity_name. Item: {item}")
-                    
-                        resolved_inputs_dict[input_name] = transformed_value
-                        logger.info(f"Orchestrator: Transformed 'similar_entities' from step '{source_step_id}' "
-                                     f"into List[str] of entity names for input '{input_name}'. Extracted {len(transformed_value)} IDs.")
+                if from_step_id in self.step_outputs and \
+                named_output_key in self.step_outputs[from_step_id]:
+
+                    raw_source_value = self.step_outputs[from_step_id][named_output_key]
+                    logger.debug(f"Orchestrator: Retrieving input '{input_name}' from step '{from_step_id}', output_key '{named_output_key}'. Raw value type: {type(raw_source_value)}")
+
+                    # --- Specific Data Transformations ---
+                    # 1. For 'seed_entity_ids' from 'EntityVDBSearchOutputs'
+                    if input_name == "seed_entity_ids" and \
+                    hasattr(raw_source_value, 'similar_entities') and \
+                    isinstance(raw_source_value.similar_entities, list):
+
+                        # raw_source_value is likely EntityVDBSearchOutputs
+                        # similar_entities is List[VDBSearchResultItem] or List[Tuple[str, float]]
+                        extracted_ids = []
+                        for item in raw_source_value.similar_entities:
+                            if hasattr(item, 'entity_name'):  # VDBSearchResultItem case
+                                extracted_ids.append(item.entity_name)
+                            elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str):  # Tuple case
+                                extracted_ids.append(item[0])
+                        source_value = extracted_ids
+                        logger.info(f"Orchestrator: Transformed 'similar_entities' from step '{from_step_id}' into List[str] of entity names for input '{input_name}'. Extracted {len(source_value)} IDs.")
+
+                    # 2. For 'entity_ids' (e.g., for Relationship.OneHopNeighbors) from 'EntityVDBSearchOutputs'
+                    elif input_name == "entity_ids" and \
+                        hasattr(raw_source_value, 'similar_entities') and \
+                        isinstance(raw_source_value.similar_entities, list):
+                        extracted_ids = []
+                        for item in raw_source_value.similar_entities:
+                            if hasattr(item, 'entity_name'):
+                                extracted_ids.append(item.entity_name)
+                            elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str):
+                                extracted_ids.append(item[0])
+                        source_value = extracted_ids
+                        logger.info(f"Orchestrator: Transformed 'similar_entities' from step '{from_step_id}' into List[str] of entity names for input '{input_name}'. Extracted {len(source_value)} IDs.")
+
+                    # Add other transformations here if needed
+
                     else:
-                        # If it's EntityVDBSearchOutputs but not for seed/entity_ids, pass it as is (or handle other specific transformations)
-                        resolved_inputs_dict[input_name] = source_value_container
-                        logger.debug(f"Orchestrator: Using EntityVDBSearchOutputs object directly for input '{input_name}' from step '{source_step_id}'.")
-                # Add more specific transformations here if needed for other input_names or source_value types
+                        # Default: use the raw output value if no specific transformation applies
+                        source_value = raw_source_value
+                        logger.debug(f"Orchestrator: Using raw output from previous step for '{input_name}'.")
                 else:
-                    # Default: use the source value directly if no specific transformation is defined
-                    resolved_inputs_dict[input_name] = source_value_container
-                    logger.debug(f"Orchestrator: Resolved input '{input_name}' from step '{source_step_id}', output_key '{named_output_key}' by direct assignment.")
-            else:
-                resolved_inputs_dict[input_name] = input_source_val
+                    logger.error(f"Orchestrator: Could not find output for key '{named_output_key}' in step '{from_step_id}' for input '{input_name}'. Available outputs for step: {self.step_outputs.get(from_step_id, {}).keys()}")
+                    source_value = None  # Or raise an error
+
+            elif isinstance(source_identifier, str) and source_identifier.startswith("plan_inputs."):
+                input_key = source_identifier.split("plan_inputs.")[1]
+                if input_key in plan_inputs:
+                    source_value = plan_inputs[input_key]
+                    logger.debug(f"Orchestrator: Resolved input '{input_name}' from plan_inputs, key '{input_key}'")
+                else:
+                    logger.error(f"Orchestrator: Input key '{input_key}' not found in plan_inputs for '{input_name}'. Plan inputs: {plan_inputs.keys()}")
+                    source_value = None  # Or raise
+
+            else:  # Literal value (or unparsed dict that wasn't a TIS)
+                source_value = source_identifier
                 logger.debug(f"Orchestrator: Resolved input '{input_name}' as literal value.")
-        return resolved_inputs_dict
+
+            resolved_params[input_name] = source_value
+        return resolved_params
+    # END (REPLACE _resolve_tool_inputs method in AgentOrchestrator)

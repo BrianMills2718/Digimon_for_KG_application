@@ -138,7 +138,7 @@ async def run_planning_agent_test():
     # 4. Define a user query
     # Start with a simple query that ideally uses one or two tools
     # user_query = "What are some entities related to 'renewable energy'?" # Expected: Entity.VDBSearch
-    user_query = "Find entities about 'climate change solutions' and then get their PPR scores." # Expected: VDB -> PPR
+    user_query = "Find entities about 'the causes of the revolutions' and then get their PPR scores." # Expected: VDB -> PPR
 
     logger.info(f"Test Query: \"{user_query}\"")
 
@@ -155,11 +155,27 @@ async def run_planning_agent_test():
     logger.info(f"Final Result from Planning Agent for query '{user_query}':")
     
     if isinstance(final_result, dict):
-        # Pretty print if it's a dictionary (common for structured output or errors)
         import json
-        logger.info(json.dumps(final_result, indent=2))
-    else:
-        logger.info(final_result)
+        # Create a new dictionary that is safe for JSON serialization
+        serializable_final_result = {}
+        if final_result: # Check if final_result is not None or empty
+            for key, value in final_result.items():
+                if hasattr(value, 'model_dump'):  # Check if it's a Pydantic model
+                    serializable_final_result[key] = value.model_dump()
+                else:
+                    serializable_final_result[key] = value # Keep as is if not a Pydantic model (e.g., error string)
+        
+        if serializable_final_result: # Ensure it's not empty after processing
+            logger.info(json.dumps(serializable_final_result, indent=2))
+        elif final_result: # If original final_result was not empty but serializable became empty (e.g. only error key)
+            logger.info(json.dumps(final_result, indent=2)) # Try dumping original if it was just an error dict
+        else:
+            logger.info(str(final_result)) # Fallback for None or other non-dict cases
+
+    elif final_result is not None: # Handle cases where final_result might not be a dict but also not None
+        logger.info(str(final_result))
+    else: # Handle None case specifically
+        logger.info("Final result is None.")
 
 if __name__ == "__main__":
     asyncio.run(run_planning_agent_test())

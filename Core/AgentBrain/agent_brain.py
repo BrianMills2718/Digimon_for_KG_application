@@ -206,7 +206,8 @@ to answer the user's query by selecting and orchestrating a sequence of availabl
       }
     }
   ]
-}"""
+}
+"""
 
         user_prompt_content = f"""
 ## Available Tools:

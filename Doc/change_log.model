@@ -1,6 +1,27 @@
 ## Change Log (.model - for Cascade Agent)
 
 ### 2025-05-31
+- **Stable Success Point:**
+    - Full end-to-end PlanningAgent flow succeeded:
+        - Natural language query processed.
+        - LLM (gpt-3.5-turbo) generated a valid multi-step plan (Entity.VDBSearch → Entity.PPR).
+        - AgentOrchestrator executed all plan steps, passing data between tools.
+        - Final result (ranked entities from PPR) printed as structured JSON.
+    - All recent orchestrator, agent, and test improvements verified in this run.
+    - This commit is a safe revert point for future development.
+
+
+### 2025-05-31
+- **Prompt and Orchestrator Robustness & Syntax Fixes:**
+    - **`/Core/AgentBrain/agent_brain.py`**:
+        - Added "Specific Tool Notes" to the system prompt in `generate_plan`, clarifying the use of `entities_vdb` and `kg_graph` for reference IDs.
+        - Fixed unterminated triple-quoted string in the system prompt.
+    - **`/Core/AgentOrchestrator/orchestrator.py`**:
+        - Replaced `_resolve_tool_inputs` to robustly handle dicts as `ToolInputSource` and perform correct input transformations.
+        - Removed leftover code from old `_resolve_tool_inputs` definition, fixing indentation error.
+
+
+### 2025-05-31
 - **Refactored LLM provider handling:**
     - **`/home/brian/digimon/Core/AgentBrain/agent_brain.py`**:
         - Added `from Config.LLMConfig import LLMType`.
