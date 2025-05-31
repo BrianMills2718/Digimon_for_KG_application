@@ -1,1 +1,3 @@
-After everything you do always update /home/brian/digimon/Doc/change_log.model
+After everything you do always update /home/brian/digimon/Doc/change_log.md
+
+if you run code you must use conda env digimon. we are in powershell so you can't use && to chain commands.

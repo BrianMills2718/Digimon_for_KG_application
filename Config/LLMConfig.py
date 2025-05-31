@@ -22,6 +22,7 @@ class LLMType(Enum):
     OPENROUTER = "openrouter"
     BEDROCK = "bedrock"
     ARK = "ark"  # https://www.volcengine.com/docs/82379/1263482#python-sdk
+    LITELLM = "litellm"  # Added for LiteLLM support
 
     def __missing__(self, key):
         return self.OPENAI
@@ -36,7 +37,7 @@ class LLMConfig(YamlModel):
 
     api_key: str = "sk-"
     api_type: LLMType = LLMType.OPENAI
-    base_url: str = "https://api.openai.com/v1"
+    base_url: Optional[str] = None
     api_version: Optional[str] = None
 
     model: Optional[str] = None  # also stands for DEPLOYMENT_NAME

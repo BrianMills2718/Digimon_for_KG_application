@@ -11,8 +11,11 @@ from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentOrchestrator.orchestrator import AgentOrchestrator
 from Core.Common.Logger import logger
 from Option.Config2 import Config
-from Config.LLMConfig import LLMConfig #
-from Config.LLMConfig import LLMType # *** ADD THIS LINE ***
+from Config.LLMConfig import LLMConfig, LLMType
+from Core.Provider.LiteLLMProvider import LiteLLMProvider # Added for LiteLLM
+from Core.Provider.LLMProviderRegister import create_llm_instance # Added for LLM factory
+from Core.Provider.LiteLLMProvider import LiteLLMProvider # Added for LiteLLM
+from Core.Provider.LLMProviderRegister import create_llm_instance # Added for LLM factory#
 
 # Import all tool contract models
 from Core.AgentSchema import tool_contracts #
@@ -64,23 +67,18 @@ class PlanningAgent:
             self.orchestrator = None
             logger.warning("PlanningAgent initialized without GraphRAGContext. Orchestrator will be None and execution will fail.")
 
-        self.llm_provider: OpenAILLM | None = None
-        if self.config.llm and self.config.llm.api_type: # *** CHANGED .provider to .api_type ***
-            if self.config.llm.api_type == LLMType.OPENAI: # *** CHANGED .provider.lower() == "openai" to .api_type == LLMType.OPENAI ***
-                try:
-                    self.llm_provider = OpenAILLM( 
-                        config=self.config.llm
-                    )
-                    logger.info(f"PlanningAgent initialized with OpenAI LLM provider (model: {self.config.llm.model}).") 
-                except Exception as e:
-                    logger.error(f"Failed to initialize OpenAILLM: {e}") 
-            else:
-                logger.warning(f"LLM api_type '{self.config.llm.api_type}' is not '{LLMType.OPENAI}'. LLM will not be available.") # *** UPDATED LOG MESSAGE ***
+        self.llm_provider: BaseLLM | None = None # Type hint to BaseLLM
+        if self.config.llm:
+            try:
+                self.llm_provider = create_llm_instance(self.config.llm) #
+                logger.info(f"PlanningAgent initialized with LLM provider for api_type: {self.config.llm.api_type}, model: {self.config.llm.model}")
+            except Exception as e:
+                logger.error(f"Failed to create LLM instance via factory for api_type {self.config.llm.api_type}: {e}", exc_info=True)
         else:
-            logger.warning("LLM configuration missing or api_type not specified in main config. LLM will not be available.") # *** UPDATED LOG MESSAGE ***
+            logger.warning("LLM configuration (self.config.llm) is missing. LLM provider not created.")
 
         if not self.llm_provider:
-            logger.error("LLM provider is NOT initialized in PlanningAgent. Plan generation will fail if LLM is called.")
+            logger.error("LLM provider is NOT initialized in PlanningAgent. Plan generation will fail.")
 
     def _get_tool_documentation_for_prompt(self) -> str:
         """
@@ -122,42 +120,48 @@ class PlanningAgent:
             
         return "\n".join(docs_parts)
 
-# START (REPLACE _call_llm method in PlanningAgent)
-    async def _call_llm(self, system_prompt: str, user_prompt_content: str) -> str:
+    async def _generate_plan_with_llm(self, system_prompt: str, user_prompt_content: str) -> ExecutionPlan | None:
         """
-        Calls the configured LLM with the given system and user prompts,
-        and returns the textual response.
+        Calls the configured LLM using LiteLLMProvider's instructor completion
+        to generate and parse an ExecutionPlan.
         """
         if not self.llm_provider:
-            logger.error("LLM provider not initialized. Cannot call LLM.")
-            return "{}" 
+            logger.error("LLM provider not initialized. Cannot call LLM for plan generation.")
+            return None
+        
+        # Check if the provider is LiteLLMProvider and has the instructor method
+        if not isinstance(self.llm_provider, LiteLLMProvider) or \
+           not hasattr(self.llm_provider, 'async_instructor_completion'):
+            logger.error(f"LLM provider is not LiteLLMProvider or does not support instructor completion. Type: {type(self.llm_provider)}. Cannot generate structured plan.")
+            # Fallback or alternative handling might be needed if other providers are used here.
+            # For now, we expect LiteLLMProvider for this direct Pydantic parsing.
+            return None
 
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt_content}
         ]
-
+        
         full_prompt_for_logging = f"System Prompt:\n{system_prompt}\n\nUser Prompt Content:\n{user_prompt_content}"
-        logger.info(f"PlanningAgent: Sending messages to LLM (approx {len(full_prompt_for_logging)} chars). Preview (first 500 chars of combined):\n{full_prompt_for_logging[:500]}...")
+        logger.info(f"PlanningAgent: Sending messages to LLM for ExecutionPlan (approx {len(full_prompt_for_logging)} chars).")
         
         try:
-            # Using acompletion_text from OpenAILLM class
-            # It expects 'messages' list. stream=False is default for acompletion_text if not streaming.
-            # max_tokens here is an override; otherwise, the one from config during init is used by _cons_kwargs.
-            # The OpenAILLM.acompletion_text already handles timeout from its config.
-            llm_output_text = await self.llm_provider.acompletion_text(
+            # Directly get the ExecutionPlan Pydantic model
+            execution_plan: Optional[ExecutionPlan] = await self.llm_provider.async_instructor_completion(
                 messages=messages,
-                stream=False, # Ensure we get the full response, not streaming for plan generation
-                # max_tokens can be specified here if needed to override default from config,
-                # but the prompt asks for a JSON object, so LLM should manage length.
-                # Let's rely on the max_token from LLMConfig for now.
+                response_model=ExecutionPlan, # Tell instructor to parse into this model
+                max_retries=2, # Instructor specific: retries for Pydantic validation
+                # temperature and max_tokens will be picked from self.llm_provider.config
             )
             
-            logger.info(f"PlanningAgent: Received LLM response (approx {len(llm_output_text)} chars). Preview (first 500 chars):\n{llm_output_text[:500]}...")
-            return llm_output_text
+            if execution_plan:
+                logger.info(f"PlanningAgent: Successfully received and parsed ExecutionPlan from LLM.")
+            else:
+                logger.error(f"PlanningAgent: LLM call for plan generation returned None or failed parsing with instructor.")
+            return execution_plan
         except Exception as e:
-            logger.error(f"PlanningAgent: Error during LLM call: {e}")
-            return "{}" # Return empty JSON on error
+            logger.error(f"PlanningAgent: Error during LLM call for plan generation with instructor: {e}", exc_info=True)
+            return None
 
     async def generate_plan(self, user_query: str) -> ExecutionPlan | None:
         """
@@ -278,28 +282,16 @@ Now, based on the user query: "{user_query}" and the available tools, generate t
 Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do not include any other text before or after the JSON.
 """
         
-        llm_response_json_str = await self._call_llm(system_prompt=system_prompt, user_prompt_content=user_prompt_content)
+        execution_plan = await self._generate_plan_with_llm(system_prompt=system_prompt, user_prompt_content=user_prompt_content)
         
-        try:
-            if llm_response_json_str.strip().startswith("```json"):
-                llm_response_json_str = llm_response_json_str.strip()[7:]
-            if llm_response_json_str.strip().endswith("```"):
-                llm_response_json_str = llm_response_json_str.strip()[:-3]
-            
-            plan_dict = json.loads(llm_response_json_str)
-            execution_plan = ExecutionPlan(**plan_dict) 
-            logger.info(f"PlanningAgent: Successfully parsed LLM response into ExecutionPlan.")
-            logger.debug(f"Generated Plan (raw dict):\n{plan_dict}")
+        if execution_plan:
+            # No need to parse JSON here, it's already an ExecutionPlan object
+            logger.info(f"PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.")
             logger.info(f"Generated Plan (Pydantic model):\n{execution_plan.model_dump_json(indent=2)}")
-            return execution_plan
-        except json.JSONDecodeError as e:
-            logger.error(f"PlanningAgent: Failed to decode LLM response JSON: {e}")
-            logger.error(f"LLM Response (string) that caused error:\n{llm_response_json_str}")
-            return None
-        except Exception as e_pydantic:
-            logger.error(f"PlanningAgent: Failed to validate LLM response against ExecutionPlan model: {e_pydantic}")
-            logger.error(f"LLM Response (string) that caused Pydantic error:\n{llm_response_json_str}")
-            return None
+        else:
+            logger.error("PlanningAgent: Failed to generate ExecutionPlan object with LLM and instructor.")
+        
+        return execution_plan
 
     async def process_query(self, user_query: str) -> Any | None:
         """

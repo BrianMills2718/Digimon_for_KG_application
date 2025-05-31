@@ -189,3 +189,84 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
 - Manually provided corrected `relationship_one_hop_neighbors_tool` code to USER after tool call failures. Integrated user's new detailed logging, retained previous fixes (param/attribute access, Pydantic models), and used user's robust graph instance check. Advised manual update, cache clearing, and re-test.
 
 - Core/AgentTools/relationship_tools.py: Updated `relationship_one_hop_neighbors_tool` to access the NetworkX graph via `graph_instance._graph.graph` and adjusted conditional checks accordingly, as per user-provided code.
+
+## Change Log (.model - for Cascade Agent)
+
+### 2025-05-31
+- **LiteLLMProvider config compatibility fix**
+    - Added `self.temperature` and `self.max_token` to `LiteLLMProvider.__init__`, loading from config.
+    - Added `self.max_tokens` as an alias to `self.max_token` for compatibility with agent_brain usage.
+    - Set `litellm.drop_params = True` after importing litellm in LiteLLMProvider.py to automatically drop unsupported parameters (like temperature) for O-series models (e.g., o4-mini) and similar, improving compatibility with OpenAI endpoints.
+    - Fixes attribute error during plan generation in PlanningAgent when using LiteLLMProvider.
+- **Fix: Circular Import in LLMProviderRegister**
+    - Removed all imports of `LiteLLMProvider` from `Core/Provider/LLMProviderRegister.py`.
+    - This resolves the circular import error and allows provider registration to work solely via the `@register_provider` decorator in each provider class.
+
+### 2025-05-31
+- **LLMConfig.yaml and LiteLLMProvider compatibility:**
+    - Changed `base_url` in LLMConfig to `Optional[str] = None` for compatibility with null YAML values.
+    - This enables use of `api_type: litellm` and `base_url: null` in Option/Config2.yaml without Pydantic errors.
+    - Ensures smooth integration of LiteLLMProvider for structured plan generation and all LiteLLM-based workflows.
+
+### 2025-05-31
+- **Prompt and Orchestrator Robustness & Syntax Fixes:**
+    - **`/Core/AgentBrain/agent_brain.py`**:
+        - Added "Specific Tool Notes" to the system prompt in `generate_plan`, clarifying the use of `entities_vdb` and `kg_graph` for reference IDs.
+        - Fixed unterminated triple-quoted string in the system prompt.
+    - **`/Core/AgentOrchestrator/orchestrator.py`**:
+        - Replaced `_resolve_tool_inputs` to robustly handle dicts as `ToolInputSource` and perform correct input transformations.
+        - Removed leftover code from old `_resolve_tool_inputs` definition, fixing indentation error.
+
+
+### 2025-05-31
+- **Refactored LLM provider handling:**
+    - **`/home/brian/digimon/Core/AgentBrain/agent_brain.py`**:
+        - Added `from Config.LLMConfig import LLMType`.
+        - `PlanningAgent.__init__`: Updated to use `config.llm.api_type` (instead of `config.llm.provider`) and check against `LLMType.OPENAI` for LLM provider initialization. Updated relevant log messages.
+    - **`/home/brian/digimon/testing/test_planning_agent.py`**:
+        - `run_planning_agent_test`: Updated log message to display `config.llm.api_type`.
+
+### 2025-05-31
+- **Modified `/home/brian/digimon/Core/AgentBrain/agent_brain.py` (ImportFix):**
+    - Changed import from `OpenaiApi` to `OpenAILLM` in `Core.Provider.OpenaiApi`.
+    - `PlanningAgent.__init__`: Updated type hint for `llm_provider` to `OpenAILLM`.
+    - `PlanningAgent.__init__`: Changed instantiation of LLM provider to `OpenAILLM(config=self.config.llm)` and updated log message.
+
+### 2025-05-31
+- **Modified `/home/brian/digimon/Core/AgentBrain/agent_brain.py`:**
+    - `PlanningAgent.__init__`: Changed `max_tokens` to `max_token` for `OpenaiApi` initialization.
+    - `PlanningAgent._call_llm`: Replaced method to use `acompletion_text` and messages format (system/user prompts).
+    - `PlanningAgent.generate_plan`: Replaced method to split prompts for the new `_call_llm` structure.
+
+### 2025-05-31
+
+- **Fix & Validation: `Relationship.OneHopNeighbors` Tool Graph Access**
+  - Confirmed that the `relationship_one_hop_neighbors_tool` in `Core/AgentTools/relationship_tools.py` is now functioning correctly within the multi-step orchestrator test plan (`testing/test_agent_orchestrator.py`).
+  - The tool successfully accesses the NetworkX graph instance via `graph_instance._graph.graph` as intended.
+  - Test logs (`test_orchestrator_log_3step.txt`) show the tool executing without Python errors and correctly returning an empty list of relationships when the input entity IDs were not found in the graph. This verifies the updated graph access mechanism and conditional checks are working as expected.
+  - This resolves the primary objective of ensuring the tool's correct integration and behavior regarding graph data access.
+
+- **Refactor: Entity ID Handling in VDB Search and Orchestrator**
+  - **Issue:** `Entity.VDBSearch` was outputting internal LlamaIndex node IDs (hashes), while graph-based tools like `Relationship.OneHopNeighbors` expect human-readable entity names as node identifiers.
+  - **Solution Components:**
+    1. **Pydantic Models (`Core/AgentSchema/tool_contracts.py`):**
+       - Introduced `VDBSearchResultItem(BaseModel)` with `node_id: str`, `entity_name: str`, and `score: float`.
+       - Modified `EntityVDBSearchOutputs.similar_entities` to be `List[VDBSearchResultItem]`.
+    2. **`entity_vdb_search_tool` (`Core/AgentTools/entity_tools.py`):**
+       - Replaced the entire function. The new version now uses the LlamaIndex `VectorStoreIndex.as_retriever().aretrieve()` method.
+       - Populates `VDBSearchResultItem`, extracting `entity_name` from `node.metadata.get("entity_name")` (with a fallback to `node.text` and a warning if `entity_name` is missing from metadata).
+    3. **Orchestrator Transformation (`Core/AgentOrchestrator/orchestrator.py`):**
+       - Updated `_resolve_tool_inputs` method to correctly transform `EntityVDBSearchOutputs.similar_entities`.
+       - When the target input is `seed_entity_ids` or `entity_ids`, it now extracts `item.entity_name` from each `VDBSearchResultItem` to form the list of strings passed to downstream tools.
+  - **Goal:** This aims to resolve the entity ID mismatch, allowing tools that consume VDB search results to correctly identify nodes in the NetworkX graph using their names.
+
+- **Verification & Orchestrator Update: Entity ID Transformation**
+  - Verified that the `entity_vdb_search_tool` in `Core/AgentTools/entity_tools.py` correctly implements the new VDB search logic, extracts `entity_name` from node metadata, and returns `VDBSearchResultItem` objects as intended.
+  - Successfully updated the `_resolve_tool_inputs` method in `Core/AgentOrchestrator/orchestrator.py` (including adding `VDBSearchResultItem` to imports) to transform `EntityVDBSearchOutputs.similar_entities` into a list of `entity_name` strings for downstream tools.
+  - **Next Step:** Run orchestrator test plan `test_plan_003_vdb_then_one_hop.json` to confirm end-to-end fix of entity ID mismatch.
+
+- **Test Execution: `test_plan_003_vdb_then_one_hop.json`**
+  - Successfully executed the command `python testing/test_agent_orchestrator.py --config Option/Config2.yaml --plan test_plans/test_plan_003_vdb_then_one_hop.json`.
+  - Breakthrough: `/tmp/config_attrs_diag.txt` WAS created, confirming the diagnostic block in `test_agent_orchestrator.py` (after `main_config` import) executes and can access config attributes & perform file I/O. 
+- However, `stderr` prints (even via captured reference) are still NOT visible in `run_command` output after `main_config`/Loguru init. This points to Loguru's `stderr` handling obscuring direct prints from `run_command`'s capture. 
+- Log directory `/home/brian/digimon/default/Logs/` not found, despite `config_attrs_diag.txt` showing `working_dir=./results` and `exp_name=test`. Investigating actual path used by Logger.py.
