@@ -198,6 +198,14 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
     - Added `self.max_tokens` as an alias to `self.max_token` for compatibility with agent_brain usage.
     - Set `litellm.drop_params = True` after importing litellm in LiteLLMProvider.py to automatically drop unsupported parameters (like temperature) for O-series models (e.g., o4-mini) and similar, improving compatibility with OpenAI endpoints.
     - Fixes attribute error during plan generation in PlanningAgent when using LiteLLMProvider.
+- Replaced the `google_gemini_completion` function in `standalone_litellm_example.py` to:
+    - Set both `GEMINI_API_KEY` and `GOOGLE_API_KEY` in the environment for Gemini calls.
+    - Pass `api_key` directly to `litellm.completion`.
+    - Restore original environment variables after execution.
+    - Improves robustness and compatibility with LiteLLM Gemini provider and avoids side effects.
+- Updated `LiteLLMProvider.py`:
+    - `_achat_completion`, `_achat_completion_stream`, and `async_instructor_completion` now set and restore `GEMINI_API_KEY` and `GOOGLE_API_KEY` environment variables when using Gemini models.
+    - Ensures robust Gemini API key handling for all async completions and instructor-based completions.
 - **Fix: Circular Import in LLMProviderRegister**
     - Removed all imports of `LiteLLMProvider` from `Core/Provider/LLMProviderRegister.py`.
     - This resolves the circular import error and allows provider registration to work solely via the `@register_provider` decorator in each provider class.
@@ -216,7 +224,6 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
     - **`/Core/AgentOrchestrator/orchestrator.py`**:
         - Replaced `_resolve_tool_inputs` to robustly handle dicts as `ToolInputSource` and perform correct input transformations.
         - Removed leftover code from old `_resolve_tool_inputs` definition, fixing indentation error.
-
 
 ### 2025-05-31
 - **Refactored LLM provider handling:**

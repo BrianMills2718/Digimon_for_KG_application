@@ -1,8 +1,8 @@
 # START: /home/brian/digimon/Core/AgentBrain/agent_brain.py
 import json
-from typing import Dict, Any, List, Tuple, Type, get_origin, get_args
+from typing import Dict, Any, List, Tuple, Type, get_origin, get_args, Optional # Added Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field # Ensure Field is imported if used explicitly in models, though not directly here
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
 
@@ -11,18 +11,17 @@ from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentOrchestrator.orchestrator import AgentOrchestrator
 from Core.Common.Logger import logger
 from Option.Config2 import Config
-from Config.LLMConfig import LLMConfig, LLMType
-from Core.Provider.LiteLLMProvider import LiteLLMProvider # Added for LiteLLM
-from Core.Provider.LLMProviderRegister import create_llm_instance # Added for LLM factory
-from Core.Provider.LiteLLMProvider import LiteLLMProvider # Added for LiteLLM
-from Core.Provider.LLMProviderRegister import create_llm_instance # Added for LLM factory#
+from Config.LLMConfig import LLMConfig, LLMType # LLMType likely used by create_llm_instance
+from Core.Provider.BaseLLM import BaseLLM # Import BaseLLM for type hinting
+from Core.Provider.LiteLLMProvider import LiteLLMProvider # Needed for isinstance check
+from Core.Provider.LLMProviderRegister import create_llm_instance
 
 # Import all tool contract models
-from Core.AgentSchema import tool_contracts #
+from Core.AgentSchema import tool_contracts
 import inspect
 
-# Import your OpenAI API client
-from Core.Provider.OpenaiApi import OpenAILLM # *** CHANGED OpenaiApi to OpenAILLM ***
+# Note: The old import for OpenAILLM from Core.Provider.OpenaiApi is no longer used directly by PlanningAgent
+# as LLM interaction is through the BaseLLM interface via self.llm_provider.
 
 
 def _format_pydantic_model_for_prompt(model_cls: Type[BaseModel]) -> str:
@@ -31,12 +30,12 @@ def _format_pydantic_model_for_prompt(model_cls: Type[BaseModel]) -> str:
     """
     if not model_cls:
         return "  Schema: Not defined.\n"
-        
+
     schema_parts = []
-    for field_name, field_info in model_cls.model_fields.items(): #
+    for field_name, field_info in model_cls.model_fields.items():
         field_type = field_info.annotation
         description = field_info.description or ""
-        
+
         type_str = str(field_type)
         if 'typing.' in type_str:
             type_str = type_str.replace('typing.', '')
@@ -47,11 +46,11 @@ def _format_pydantic_model_for_prompt(model_cls: Type[BaseModel]) -> str:
             default_value_str = f" (default: {field_info.default})"
         elif field_info.default_factory is not None:
             default_value_str = f" (default_factory exists)"
-            
+
         required_str = " (required)" if field_info.is_required() else ""
-            
-        schema_parts.append(f"    - {field_name} ({type_str}){required_str}{default_value_str}: {description}") #
-            
+
+        schema_parts.append(f"    - {field_name} ({type_str}){required_str}{default_value_str}: {description}")
+
     if not schema_parts:
         return "  Schema: Contains no fields.\n"
     return "\n".join(schema_parts) + "\n"
@@ -59,18 +58,18 @@ def _format_pydantic_model_for_prompt(model_cls: Type[BaseModel]) -> str:
 class PlanningAgent:
     def __init__(self, config: Config, graphrag_context: GraphRAGContext = None):
         self.config: Config = config
-        self.graphrag_context: GraphRAGContext | None = graphrag_context
-        
+        self.graphrag_context: Optional[GraphRAGContext] = graphrag_context # Use Optional
+
         if graphrag_context:
-            self.orchestrator: AgentOrchestrator | None = AgentOrchestrator(graphrag_context=graphrag_context)
+            self.orchestrator: Optional[AgentOrchestrator] = AgentOrchestrator(graphrag_context=graphrag_context) # Use Optional
         else:
             self.orchestrator = None
             logger.warning("PlanningAgent initialized without GraphRAGContext. Orchestrator will be None and execution will fail.")
 
-        self.llm_provider: BaseLLM | None = None # Type hint to BaseLLM
+        self.llm_provider: Optional[BaseLLM] = None # Type hint to Optional[BaseLLM]
         if self.config.llm:
             try:
-                self.llm_provider = create_llm_instance(self.config.llm) #
+                self.llm_provider = create_llm_instance(self.config.llm)
                 logger.info(f"PlanningAgent initialized with LLM provider for api_type: {self.config.llm.api_type}, model: {self.config.llm.model}")
             except Exception as e:
                 logger.error(f"Failed to create LLM instance via factory for api_type {self.config.llm.api_type}: {e}", exc_info=True)
@@ -91,36 +90,36 @@ class PlanningAgent:
             {
                 "tool_id": "Entity.VDBSearch",
                 "description": "Searches a Vector Database (VDB) for entities semantically similar to a natural language query. Returns a list of entity IDs and their similarity scores.",
-                "inputs_model": tool_contracts.EntityVDBSearchInputs, #
-                "outputs_model": tool_contracts.EntityVDBSearchOutputs, #
+                "inputs_model": tool_contracts.EntityVDBSearchInputs,
+                "outputs_model": tool_contracts.EntityVDBSearchOutputs,
             },
             {
                 "tool_id": "Entity.PPR",
                 "description": "Runs Personalized PageRank (PPR) on a graph. It starts from a list of seed entity IDs and returns a ranked list of entities based on their PPR scores.",
-                "inputs_model": tool_contracts.EntityPPRInputs, #
-                "outputs_model": tool_contracts.EntityPPROutputs, #
+                "inputs_model": tool_contracts.EntityPPRInputs,
+                "outputs_model": tool_contracts.EntityPPROutputs,
             },
             {
                 "tool_id": "Relationship.OneHopNeighbors",
                 "description": "Retrieves all directly connected (one-hop) relationships and neighboring entities for a given list of source entity IDs from the graph. Allows specifying relationship direction and types.",
-                "inputs_model": tool_contracts.RelationshipOneHopNeighborsInputs, #
-                "outputs_model": tool_contracts.RelationshipOneHopNeighborsOutputs, #
+                "inputs_model": tool_contracts.RelationshipOneHopNeighborsInputs,
+                "outputs_model": tool_contracts.RelationshipOneHopNeighborsOutputs,
             },
         ]
 
         for tool_info in tools_to_document:
             docs_parts.append(f"\n### Tool: {tool_info['tool_id']}")
             docs_parts.append(f"  Description: {tool_info['description']}")
-            
+
             docs_parts.append("  Input Schema:")
             docs_parts.append(_format_pydantic_model_for_prompt(tool_info['inputs_model']))
-            
+
             docs_parts.append("  Output Schema:")
             docs_parts.append(_format_pydantic_model_for_prompt(tool_info['outputs_model']))
-            
+
         return "\n".join(docs_parts)
 
-    async def _generate_plan_with_llm(self, system_prompt: str, user_prompt_content: str) -> ExecutionPlan | None:
+    async def _generate_plan_with_llm(self, system_prompt: str, user_prompt_content: str) -> Optional[ExecutionPlan]: # Use Optional
         """
         Calls the configured LLM using LiteLLMProvider's instructor completion
         to generate and parse an ExecutionPlan.
@@ -128,32 +127,27 @@ class PlanningAgent:
         if not self.llm_provider:
             logger.error("LLM provider not initialized. Cannot call LLM for plan generation.")
             return None
-        
-        # Check if the provider is LiteLLMProvider and has the instructor method
+
         if not isinstance(self.llm_provider, LiteLLMProvider) or \
            not hasattr(self.llm_provider, 'async_instructor_completion'):
             logger.error(f"LLM provider is not LiteLLMProvider or does not support instructor completion. Type: {type(self.llm_provider)}. Cannot generate structured plan.")
-            # Fallback or alternative handling might be needed if other providers are used here.
-            # For now, we expect LiteLLMProvider for this direct Pydantic parsing.
             return None
 
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt_content}
         ]
-        
+
         full_prompt_for_logging = f"System Prompt:\n{system_prompt}\n\nUser Prompt Content:\n{user_prompt_content}"
         logger.info(f"PlanningAgent: Sending messages to LLM for ExecutionPlan (approx {len(full_prompt_for_logging)} chars).")
-        
+
         try:
-            # Directly get the ExecutionPlan Pydantic model
             execution_plan: Optional[ExecutionPlan] = await self.llm_provider.async_instructor_completion(
                 messages=messages,
-                response_model=ExecutionPlan, # Tell instructor to parse into this model
-                max_retries=2, # Instructor specific: retries for Pydantic validation
-                # temperature and max_tokens will be picked from self.llm_provider.config
+                response_model=ExecutionPlan,
+                max_retries=2,
             )
-            
+
             if execution_plan:
                 logger.info(f"PlanningAgent: Successfully received and parsed ExecutionPlan from LLM.")
             else:
@@ -163,12 +157,12 @@ class PlanningAgent:
             logger.error(f"PlanningAgent: Error during LLM call for plan generation with instructor: {e}", exc_info=True)
             return None
 
-    async def generate_plan(self, user_query: str) -> ExecutionPlan | None:
+    async def generate_plan(self, user_query: str) -> Optional[ExecutionPlan]: # Use Optional
         """
         Generates an ExecutionPlan based on the user_query using an LLM.
         """
         tool_docs = self._get_tool_documentation_for_prompt()
-        
+
         system_prompt = """You are an expert planning agent. Your task is to create a valid JSON execution plan
 to answer the user's query by selecting and orchestrating a sequence of available tools.
 
@@ -197,7 +191,7 @@ to answer the user's query by selecting and orchestrating a sequence of availabl
     {
       "step_id": "string (e.g., step_1_name)",
       "description": "string",
-      "action": { 
+      "action": {
         "tools": [
           {
             "tool_id": "string (e.g., Entity.VDBSearch)",
@@ -277,47 +271,117 @@ to answer the user's query by selecting and orchestrating a sequence of availabl
     }}
   ]
 }}
-       
+
 Now, based on the user query: "{user_query}" and the available tools, generate the JSON ExecutionPlan.
 Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do not include any other text before or after the JSON.
 """
-        
+
         execution_plan = await self._generate_plan_with_llm(system_prompt=system_prompt, user_prompt_content=user_prompt_content)
-        
+
         if execution_plan:
-            # No need to parse JSON here, it's already an ExecutionPlan object
             logger.info(f"PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.")
             logger.info(f"Generated Plan (Pydantic model):\n{execution_plan.model_dump_json(indent=2)}")
         else:
             logger.error("PlanningAgent: Failed to generate ExecutionPlan object with LLM and instructor.")
-        
+
         return execution_plan
 
     async def process_query(self, user_query: str) -> Any | None:
         """
-        Takes a natural language query, generates a plan, executes it, and returns the final result.
+        Takes a natural language query, generates a plan, executes it,
+        generates a natural language answer based on the retrieved context,
+        and returns the answer and context.
         """
         if not self.orchestrator:
             logger.error("Orchestrator not initialized in PlanningAgent. Cannot process query.")
-            return {"error": "Orchestrator not initialized."}
-         
-        if not self.llm_provider:
-            logger.error("LLM Provider not initialized in PlanningAgent. Cannot generate plan.")
-            return {"error": "LLM Provider not initialized."}
+            return {"error": "Orchestrator not initialized.", "generated_answer": "Error: Orchestrator not initialized."}
 
+        if not self.llm_provider:
+            logger.error("LLM Provider not initialized in PlanningAgent. Cannot generate plan or answer.")
+            return {"error": "LLM Provider not initialized.", "generated_answer": "Error: LLM Provider not initialized."}
 
         logger.info(f"PlanningAgent: Processing query: {user_query}")
         execution_plan = await self.generate_plan(user_query)
-        
+
+        retrieved_context = None
+        generated_answer = "No answer generated." # Default message
+        final_result = {}
+
         if execution_plan:
             logger.info(f"PlanningAgent: Executing generated plan ID: {execution_plan.plan_id}")
-            final_output = await self.orchestrator.execute_plan(plan=execution_plan)
-            logger.info(f"PlanningAgent: Plan execution finished. Final output from orchestrator: {final_output}")
-            # The final_output from orchestrator is a dict where keys are named_outputs.
-            # We might want to return this whole dict, or a more specific part of it.
-            return final_output
+            try:
+                retrieved_context = await self.orchestrator.execute_plan(plan=execution_plan)
+                logger.info(f"PlanningAgent: Plan execution finished. Retrieved context: {retrieved_context}")
+                final_result["retrieved_context"] = retrieved_context
+
+                is_retrieval_error = isinstance(retrieved_context, dict) and retrieved_context.get("error")
+
+                if retrieved_context and not is_retrieval_error:
+                    # Prepare context for JSON serialization, handling Pydantic models
+                    serializable_context_for_prompt = {}
+                    if isinstance(retrieved_context, dict):
+                        for key, value in retrieved_context.items():
+                            if isinstance(value, BaseModel):  # BaseModel from Pydantic
+                                serializable_context_for_prompt[key] = value.model_dump()
+                            else:
+                                serializable_context_for_prompt[key] = value
+                    elif isinstance(retrieved_context, BaseModel):
+                        serializable_context_for_prompt = retrieved_context.model_dump()
+                    elif isinstance(retrieved_context, list):
+                        serializable_context_for_prompt = [
+                            item.model_dump() if isinstance(item, BaseModel) else item
+                            for item in retrieved_context
+                        ]
+                    else:
+                        serializable_context_for_prompt = retrieved_context # Fallback
+
+                    context_str_for_prompt = json.dumps(serializable_context_for_prompt, indent=2)
+
+                    generation_prompt_messages = [
+                        {
+                            "role": "system",
+                            "content": "You are a helpful AI assistant. Based on the provided user query and the retrieved context, generate a concise and informative answer to the user's query. If the context is empty or does not seem relevant to the query, state that you could not find specific information to answer the query based on the context."
+                        },
+                        {
+                            "role": "user",
+                            "content": f"Original User Query:\n\"\"\"\n{user_query}\n\"\"\"\n\nRetrieved Context:\n\"\"\"\n{context_str_for_prompt}\n\"\"\"\n\nPlease provide a natural language answer to the original user query based on the retrieved context."
+                        }
+                    ]
+
+                    logger.info("PlanningAgent: Generating natural language answer based on retrieved context...")
+                    try:
+                        llm_response = await self.llm_provider.acompletion(messages=generation_prompt_messages)
+                        generated_answer = self.llm_provider.get_choice_text(llm_response)
+                        logger.info(f"PlanningAgent: Generated answer: {generated_answer}")
+                    except Exception as e:
+                        logger.error(f"PlanningAgent: Error during answer generation LLM call: {e}", exc_info=True)
+                        final_result["generation_error"] = str(e)
+                        generated_answer = "Error: Could not generate an answer due to an internal issue during LLM call."
+                
+                elif is_retrieval_error:
+                    logger.warning(f"PlanningAgent: Context retrieval resulted in an error: {retrieved_context.get('error')}. Skipping answer generation.")
+                    generated_answer = f"Could not generate an answer because context retrieval failed: {retrieved_context.get('error')}"
+                else: # Context is None or empty but not an error dict
+                    logger.info("PlanningAgent: Retrieved context is empty or not suitable for answer generation. Skipping.")
+                    generated_answer = "Could not find specific information to answer the query based on the retrieved context."
+
+            except Exception as e: # This catches errors from orchestrator.execute_plan OR the context serialization
+                logger.error(f"PlanningAgent: Exception during plan execution or context processing: {e}", exc_info=True)
+                final_result["execution_error"] = str(e)
+                if retrieved_context is None:
+                    retrieved_context = {"error": f"Exception during plan execution or context processing: {str(e)}"}
+                # If retrieved_context was successfully fetched but serialization failed, it's already in final_result
+                # Ensure final_result["retrieved_context"] reflects the state
+                if "retrieved_context" not in final_result:
+                     final_result["retrieved_context"] = retrieved_context if retrieved_context is not None else {"error": str(e)}
+
+                generated_answer = "Error: Could not process context for answer generation due to an exception."
         else:
-            logger.error("PlanningAgent: Failed to generate a valid execution plan. Cannot execute.")
-            return {"error": "Failed to generate a valid execution plan."}
+            logger.error("PlanningAgent: Failed to generate a valid execution plan. Cannot execute or generate answer.")
+            final_result["error"] = "Failed to generate a valid execution plan."
+            generated_answer = "Error: Could not generate an execution plan."
+
+        final_result["generated_answer"] = generated_answer
+        return final_result
 
 # END: /home/brian/digimon/Core/AgentBrain/agent_brain.py

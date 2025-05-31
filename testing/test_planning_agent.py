@@ -23,6 +23,10 @@ from Core.Storage.NetworkXStorage import NetworkXStorage #
 from Core.Graph.GraphFactory import GraphFactory #
 from Core.Storage.NameSpace import NameSpace, Workspace #
 
+import litellm # Add this import
+litellm.set_verbose = True # Add this line to enable detailed LiteLLM logs
+
+
 async def setup_graphrag_context_for_agent(config: Config, dataset_name="MySampleTexts", graph_name="kg_graph") -> GraphRAGContext | None:
     logger.info("Planning Agent Test: Setting up GraphRAGContext...")
     
@@ -156,26 +160,21 @@ async def run_planning_agent_test():
     
     if isinstance(final_result, dict):
         import json
-        # Create a new dictionary that is safe for JSON serialization
-        serializable_final_result = {}
-        if final_result: # Check if final_result is not None or empty
-            for key, value in final_result.items():
-                if hasattr(value, 'model_dump'):  # Check if it's a Pydantic model
-                    serializable_final_result[key] = value.model_dump()
-                else:
-                    serializable_final_result[key] = value # Keep as is if not a Pydantic model (e.g., error string)
-        
-        if serializable_final_result: # Ensure it's not empty after processing
-            logger.info(json.dumps(serializable_final_result, indent=2))
-        elif final_result: # If original final_result was not empty but serializable became empty (e.g. only error key)
-            logger.info(json.dumps(final_result, indent=2)) # Try dumping original if it was just an error dict
-        else:
-            logger.info(str(final_result)) # Fallback for None or other non-dict cases
-
-    elif final_result is not None: # Handle cases where final_result might not be a dict but also not None
+        # Print/inspect the new structure clearly
+        logger.info("--- Planning Agent Test Finished ---")
+        logger.info(f"Final Result from Planning Agent for query '{user_query}':")
+        logger.info(f"Retrieved Context:\n{json.dumps(final_result.get('retrieved_context'), indent=2, default=str)}")
+        logger.info(f"Generated Answer:\n{final_result.get('generated_answer')}")
+        if final_result.get('error'):
+            logger.error(f"Overall Planning Agent Error: {final_result.get('error')}")
+        if final_result.get('execution_error'):
+            logger.error(f"Execution Error: {final_result.get('execution_error')}")
+        if final_result.get('generation_error'):
+            logger.error(f"Generation Error: {final_result.get('generation_error')}")
+    elif final_result is not None:
         logger.info(str(final_result))
-    else: # Handle None case specifically
-        logger.info("Final result is None.")
+    else:
+        logger.error("Planning Agent returned None or an empty result.")
 
 if __name__ == "__main__":
     asyncio.run(run_planning_agent_test())

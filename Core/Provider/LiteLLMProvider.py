@@ -84,8 +84,32 @@ class LiteLLMProvider(BaseLLM):
         )
         logger.debug(f"LiteLLMProvider: Calling litellm.acompletion with kwargs: { {k:v for k,v in litellm_kwargs.items() if k != 'messages'} }")
         
-        response: litellm.ModelResponse = await litellm.acompletion(**litellm_kwargs)
-        
+        original_gemini_key_env = None
+        original_google_key_env = None
+        is_gemini_model = "gemini/" in self.model
+
+        if is_gemini_model:
+            original_gemini_key_env = os.environ.get('GEMINI_API_KEY')
+            original_google_key_env = os.environ.get('GOOGLE_API_KEY')
+            if self.api_key:
+                os.environ['GEMINI_API_KEY'] = self.api_key
+                os.environ['GOOGLE_API_KEY'] = self.api_key
+                logger.info(f"Temporarily set os.environ['GEMINI_API_KEY'] and os.environ['GOOGLE_API_KEY'] for Gemini model: {self.model}")
+
+        try:
+            response: litellm.ModelResponse = await litellm.acompletion(**litellm_kwargs)
+        finally:
+            if is_gemini_model and self.api_key:
+                if original_gemini_key_env:
+                    os.environ['GEMINI_API_KEY'] = original_gemini_key_env
+                elif 'GEMINI_API_KEY' in os.environ:
+                    del os.environ['GEMINI_API_KEY']
+                if original_google_key_env:
+                    os.environ['GOOGLE_API_KEY'] = original_google_key_env
+                elif 'GOOGLE_API_KEY' in os.environ:
+                    del os.environ['GOOGLE_API_KEY']
+                logger.info("Restored original GEMINI_API_KEY/GOOGLE_API_KEY environment variables if they existed.")
+
         if response.usage:
             self._update_costs(response.usage) #
         elif self.config.calc_usage: # if usage not in response, try to calculate it
@@ -116,21 +140,45 @@ class LiteLLMProvider(BaseLLM):
         )
         logger.debug(f"LiteLLMProvider: Calling litellm.acompletion (stream=True) with kwargs: { {k:v for k,v in litellm_kwargs.items() if k != 'messages'} }")
         
-        response_stream = await litellm.acompletion(**litellm_kwargs)
-        
+        original_gemini_key_env = None
+        original_google_key_env = None
+        is_gemini_model = "gemini/" in self.model
+
+        if is_gemini_model:
+            original_gemini_key_env = os.environ.get('GEMINI_API_KEY')
+            original_google_key_env = os.environ.get('GOOGLE_API_KEY')
+            if self.api_key:
+                os.environ['GEMINI_API_KEY'] = self.api_key
+                os.environ['GOOGLE_API_KEY'] = self.api_key
+                logger.info(f"Temporarily set os.environ['GEMINI_API_KEY'] and os.environ['GOOGLE_API_KEY'] for Gemini streaming: {self.model}")
+
         collected_content = []
-        async for chunk in response_stream:
-            text_chunk = chunk.choices[0].delta.content or ""
-            log_llm_stream(text_chunk) #
-            collected_content.append(text_chunk)
-            yield text_chunk
-        log_llm_stream("\n")
+        try:
+            response_stream = await litellm.acompletion(**litellm_kwargs)
+            async for chunk in response_stream:
+                text_chunk = chunk.choices[0].delta.content or ""
+                log_llm_stream(text_chunk) #
+                collected_content.append(text_chunk)
+                yield text_chunk
+            log_llm_stream("\n")
+        finally:
+            if is_gemini_model and self.api_key:
+                if original_gemini_key_env:
+                    os.environ['GEMINI_API_KEY'] = original_gemini_key_env
+                elif 'GEMINI_API_KEY' in os.environ:
+                    del os.environ['GEMINI_API_KEY']
+                if original_google_key_env:
+                    os.environ['GOOGLE_API_KEY'] = original_google_key_env
+                elif 'GOOGLE_API_KEY' in os.environ:
+                    del os.environ['GOOGLE_API_KEY']
+                logger.info("Restored original GEMINI_API_KEY/GOOGLE_API_KEY environment variables after streaming for Gemini.")
 
         if self.config.calc_usage:
             full_response_text = "".join(collected_content)
             # LiteLLM might provide usage data in the last chunk or after stream for some models.
             # For now, we'll calculate manually after collecting the stream.
             # Proper usage tracking with streams might require a custom callback handler in LiteLLM.
+            # If the underlying response is available (e.g., response._raw_response), we could get usage.
             calculated_usage = CompletionUsage( #
                 prompt_tokens=count_input_tokens(messages, self.pricing_plan), #
                 completion_tokens=count_output_tokens(full_response_text, self.pricing_plan), #
@@ -172,19 +220,41 @@ class LiteLLMProvider(BaseLLM):
             "temperature": temperature if temperature is not None else self.temperature,
             "max_tokens": max_tokens if max_tokens is not None else self.max_tokens,
         }
+        # Add any additional kwargs passed to the method
+        call_params.update(kwargs)
         call_params = {k: v for k, v in call_params.items() if v is not None} # Filter Nones
         
         logger.debug(f"LiteLLMProvider: Calling instructor_client_async.chat.completions.create with response_model: {response_model.__name__}, model: {self.model}")
 
+        original_gemini_key_env = None
+        original_google_key_env = None
+        is_gemini_model = "gemini/" in self.model
+
+        if is_gemini_model:
+            original_gemini_key_env = os.environ.get('GEMINI_API_KEY')
+            original_google_key_env = os.environ.get('GOOGLE_API_KEY')
+            if self.api_key:
+                os.environ['GEMINI_API_KEY'] = self.api_key
+                os.environ['GOOGLE_API_KEY'] = self.api_key
+                logger.info(f"Temporarily set os.environ['GEMINI_API_KEY'] and os.environ['GOOGLE_API_KEY'] for Gemini instructor: {self.model}")
+
+        structured_response = None
         try:
             # Use the async client for instructor
             structured_response = await self._instructor_client_async.chat.completions.create(**call_params)
-            
-            # Instructor might return the Pydantic model directly.
-            # Cost/usage update: LiteLLM's instructor integration might not expose usage directly from this call.
-            # This might need custom handling or relying on LiteLLM's global callbacks if set.
-            # For now, we acknowledge this potential gap for instructor calls.
-            # If the underlying response is available (e.g., response._raw_response), we could get usage.
+        finally:
+            if is_gemini_model and self.api_key:
+                if original_gemini_key_env:
+                    os.environ['GEMINI_API_KEY'] = original_gemini_key_env
+                elif 'GEMINI_API_KEY' in os.environ:
+                    del os.environ['GEMINI_API_KEY']
+                if original_google_key_env:
+                    os.environ['GOOGLE_API_KEY'] = original_google_key_env
+                elif 'GOOGLE_API_KEY' in os.environ:
+                    del os.environ['GOOGLE_API_KEY']
+                logger.info("Restored original GEMINI_API_KEY/GOOGLE_API_KEY environment variables after instructor call for Gemini.")
+
+        if structured_response:
             raw_litellm_response = getattr(structured_response, '_raw_response', None)
             if raw_litellm_response and raw_litellm_response.usage:
                 self._update_costs(raw_litellm_response.usage) #
@@ -192,8 +262,5 @@ class LiteLLMProvider(BaseLLM):
                 logger.warning("Usage data not directly available from instructor response. Manual calculation for instructor calls is not yet implemented in LiteLLMProvider.")
                 # To implement, you'd need the prompt and the serialized response text.
 
-            return structured_response
-        except Exception as e:
-            logger.error(f"LiteLLMProvider: Error during instructor_client async call: {e}", exc_info=True)
-            return None
+        return structured_response
 # END: /home/brian/digimon/Core/Provider/LiteLLMProvider.py
