@@ -1,3 +1,21 @@
+2025-06-01: Fixed ERGraph JSON parsing and error handling
+- Added robust JSON parsing in ERGraph._named_entity_recognition and _openie_post_ner_extract methods
+- Added proper error handling for malformed JSON outputs from LLM
+- Fixed 'logger not defined' errors by adding local logger imports to BaseGraph methods (__graph__, _merge_nodes_then_upsert, _merge_edges_then_upsert)
+- Updated build_graph in BaseGraph.py to properly handle and return boolean success/failure status
+- Fixed build_er_graph tool in graph_construction_tools.py to check build success and return appropriate status
+- Successfully ran test_graph_tools_real_llm.py with real LLM extraction
+
+2025-06-01: Implemented fully integrated test_build_er_graph_real_llm in testing/test_graph_tools_real_llm.py
+- Created a test-local ChunkFactory implementation with hardcoded american_revolution_doc chunks
+- Fixed NameSpace handling by using get_save_path() method for path resolution
+- Added proper initialization of TextChunk objects with required 'tokens' parameter
+- Implemented robust artifact path validation even when artifact_path is not returned
+- Ensured proper config loading with Config.default() for complete configuration
+- Initialized real LiteLLMProvider and RAGEmbeddingFactory with proper configurations
+- Test now performs end-to-end validation with actual LLM API calls
+- The test successfully builds an ERGraph and verifies the presence of output artifacts
+
 2025-05-30: Verified diagnostic logging cleanup status:
 - Core/Retriever/BaseRetriever.py: 
   - logger.critical line at start of _run_personalized_pagerank is not present
