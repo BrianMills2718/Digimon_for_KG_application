@@ -1,0 +1,3 @@
+{"title": "document1", "content": "This is the content of document 1. It contains some sample text for testing.", "doc_id": 0}
+{"title": "document2", "content": "Document 2 has different content. This is used to verify corpus creation.", "doc_id": 1}
+{"title": "document3", "content": "The third document completes our test set. Three documents should be enough for testing.", "doc_id": 2}

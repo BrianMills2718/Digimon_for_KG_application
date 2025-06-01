@@ -1,3 +1,19 @@
+2025-06-01: Enhanced direct two-step workflow with real embedding model - COMPLETED
+- Modified test_direct_two_step_workflow.py to use real embedding model via get_rag_embedding instead of MockEncoder
+- Verified successful test execution with OpenAIEmbedding handling the real embedding functionality
+- The test now has a more realistic embedding implementation while still using the custom MockChunkFactory
+- Successfully built ERGraph with 170 nodes and 88 edges using the real embedding model
+- Demonstrated the ability to mix custom test components with real core functionality
+
+2025-06-01: Successfully implemented and tested direct two-step workflow - COMPLETED
+- Created and debugged comprehensive test_direct_two_step_workflow.py that directly chains corpus preparation and ERGraph construction
+- Fixed JSON parsing in MockChunkFactory to handle potential malformed Corpus.json files
+- Added get_save_path method to Namespace class in MockChunkFactory to correctly handle graph storage paths
+- Updated implementation to use real LiteLLMProvider for graph construction instead of mocks
+- Verified end-to-end workflow with successful corpus preparation and ERGraph construction using real LLM
+- Demonstrated successful graph creation with 223 nodes and 152 edges from sample text documents
+- Test produces verifiable artifacts including Corpus.json and graph file in proper locations
+
 2025-06-01: Integrated PrepareCorpusFromDirectoryTool with Agent Workflow System - COMPLETED
 - Created comprehensive PrepareCorpusFromDirectoryTool to process raw text files into Corpus.json format
 - Implemented Core/AgentSchema/corpus_tool_contracts.py with PrepareCorpusInputs and PrepareCorpusOutputs Pydantic models

@@ -3,6 +3,8 @@
 from typing import Dict, Any, List, Optional, Tuple, Type, Union
 from Core.AgentSchema.plan import ExecutionPlan, ExecutionStep, ToolCall, ToolInputSource, DynamicToolChainConfig
 from Core.AgentSchema.tool_contracts import EntityVDBSearchOutputs, EntityVDBSearchInputs, EntityPPRInputs, RelationshipOneHopNeighborsInputs, VDBSearchResultItem
+from Core.AgentSchema.corpus_tool_contracts import PrepareCorpusInputs
+from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInputs, BuildRKGraphInputs, BuildTreeGraphInputs, BuildTreeGraphBalancedInputs, BuildPassageGraphInputs
 from Core.AgentSchema.context import GraphRAGContext
 from Core.Common.Logger import logger
 from pydantic import BaseModel
@@ -34,12 +36,12 @@ class AgentOrchestrator:
             "Relationship.OneHopNeighbors": (relationship_one_hop_neighbors_tool, RelationshipOneHopNeighborsInputs),
             # Add other tools here as they are implemented
             # "Chunk.FromRelationships": (chunk_from_relationships_tool, ChunkFromRelationshipsInputs),
-            "graph.BuildERGraph": (build_er_graph, None),
-            "graph.BuildRKGraph": (build_rk_graph, None),
-            "graph.BuildTreeGraph": (build_tree_graph, None),
-            "graph.BuildTreeGraphBalanced": (build_tree_graph_balanced, None),
-            "graph.BuildPassageGraph": (build_passage_graph, None),
-            "corpus.PrepareFromDirectory": (prepare_corpus_from_directory, None),
+            "graph.BuildERGraph": (build_er_graph, BuildERGraphInputs),
+            "graph.BuildRKGraph": (build_rk_graph, BuildRKGraphInputs),
+            "graph.BuildTreeGraph": (build_tree_graph, BuildTreeGraphInputs),
+            "graph.BuildTreeGraphBalanced": (build_tree_graph_balanced, BuildTreeGraphBalancedInputs),
+            "graph.BuildPassageGraph": (build_passage_graph, BuildPassageGraphInputs),
+            "corpus.PrepareFromDirectory": (prepare_corpus_from_directory, PrepareCorpusInputs),
         }
         logger.info(f"AgentOrchestrator: Registered {len(registry)} tools with Pydantic models: {list(registry.keys())}")
         return registry

@@ -26,10 +26,20 @@ def apply_overrides(config_copy, overrides: Any):
 # Helper: Get artifact path from graph instance
 
 def get_artifact_path(graph_instance):
+    from pathlib import Path
+    
+    # Try to get the namespace path directly
+    if hasattr(graph_instance._graph, 'namespace') and hasattr(graph_instance._graph.namespace, 'path'):
+        return str(graph_instance._graph.namespace.path)
+    
+    # For NetworkXStorage - return the directory containing the file
     if hasattr(graph_instance._graph, 'file_path'):
-        return str(graph_instance._graph.file_path)
+        return str(Path(graph_instance._graph.file_path).parent)
+    
+    # For TreeGraphStorage - return the directory containing the tree pkl file
     if hasattr(graph_instance._graph, 'tree_pkl_file'):
-        return str(graph_instance._graph.tree_pkl_file)
+        return str(Path(graph_instance._graph.tree_pkl_file).parent)
+    
     return None
 
 # Helper: Get node, edge, and layer counts
@@ -112,6 +122,10 @@ async def build_er_graph(
         logger.info(f"build_er_graph tool: er_graph_instance.build_graph succeeded for {tool_input.target_dataset_name}")
         counts = await get_graph_counts(er_graph_instance)
         artifact_p = get_artifact_path(er_graph_instance)
+        
+        # Log the artifact path for debugging
+        logger.info(f"build_er_graph artifact path: {artifact_p}")
+        
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
             status="success",

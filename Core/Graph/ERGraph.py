@@ -42,7 +42,24 @@ class ERGraph(BaseGraph):
         parsed_output = None
         if isinstance(llm_output_str, str):
             try:
-                parsed_output = json.loads(llm_output_str)
+                # Clean markdown code fences before parsing
+                processed_output_str = llm_output_str.strip()
+                if processed_output_str.startswith("```json"):
+                    processed_output_str = processed_output_str[7:]  # Remove ```json
+                elif processed_output_str.startswith("```"):  # Handle if just ``` was used
+                    processed_output_str = processed_output_str[3:]
+                if processed_output_str.endswith("```"):
+                    processed_output_str = processed_output_str[:-3]
+                processed_output_str = processed_output_str.strip()
+                
+                # First try using the utility function if available
+                try:
+                    from Core.Common.Utils import prase_json_from_response
+                    parsed_output = prase_json_from_response(processed_output_str)
+                except (ImportError, Exception) as utility_error:
+                    # Fall back to direct json.loads if utility fails
+                    logger.debug(f"Falling back to direct json.loads: {utility_error}")
+                    parsed_output = json.loads(processed_output_str)
             except json.JSONDecodeError as e:
                 logger.error(f"NER JSONDecodeError: {e} - Output: {llm_output_str[:500]}")
                 return [] # Return empty list on parsing failure
@@ -68,7 +85,24 @@ class ERGraph(BaseGraph):
         parsed_output = None
         if isinstance(llm_output_str, str):
             try:
-                parsed_output = json.loads(llm_output_str)
+                # Clean markdown code fences before parsing
+                processed_output_str = llm_output_str.strip()
+                if processed_output_str.startswith("```json"):
+                    processed_output_str = processed_output_str[7:]  # Remove ```json
+                elif processed_output_str.startswith("```"):  # Handle if just ``` was used
+                    processed_output_str = processed_output_str[3:]
+                if processed_output_str.endswith("```"):
+                    processed_output_str = processed_output_str[:-3]
+                processed_output_str = processed_output_str.strip()
+                
+                # First try using the utility function if available
+                try:
+                    from Core.Common.Utils import prase_json_from_response
+                    parsed_output = prase_json_from_response(processed_output_str)
+                except (ImportError, Exception) as utility_error:
+                    # Fall back to direct json.loads if utility fails
+                    logger.debug(f"Falling back to direct json.loads: {utility_error}")
+                    parsed_output = json.loads(processed_output_str)
             except json.JSONDecodeError as e:
                 logger.error(f"OpenIE JSONDecodeError: {e} - Output: {llm_output_str[:500]}")
                 return [] # Return empty list on parsing failure
