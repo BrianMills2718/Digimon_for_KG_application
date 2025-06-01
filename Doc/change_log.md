@@ -18,6 +18,7 @@
 - Attempted integration with graph building tools for a complete two-step workflow
   - Identified tool dependency challenges - graph building tools require LLM, encoder and chunk factory instances
   - Documented requirements for direct tool usage vs. agent-orchestrated execution
+- Created git commit (c54d835) with all changes for future reference/rollback point
 
 2025-06-01: Fixed ERGraph JSON parsing and error handling
 - Added robust JSON parsing in ERGraph._named_entity_recognition and _openie_post_ner_extract methods
