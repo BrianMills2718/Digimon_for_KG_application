@@ -176,6 +176,62 @@ async def run_planning_agent_test():
     else:
         logger.error("Planning Agent returned None or an empty result.")
 
+async def test_build_er_graph_direct():
+    """
+    Directly test the build_er_graph tool without relying on pre-existing graph artifacts.
+    This is a simpler test that focuses on just the graph construction tool functionality.
+    """
+    from Option.Config2 import default_config
+    from Core.Common.Logger import logger
+    from Core.AgentTools.graph_construction_tools import build_er_graph
+    from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInputs
+    from Core.Provider.LiteLLMProvider import LiteLLMProvider
+    from Core.Index.EmbeddingFactory import get_rag_embedding
+    from Core.Chunk.ChunkFactory import ChunkFactory
+    
+    try:
+        # Load necessary components
+        main_config = default_config
+        logger.info(f"Successfully loaded main_config from default_config")
+        
+        # Initialize LLM
+        llm = LiteLLMProvider(main_config)
+        logger.info(f"Initialized LLM: {type(llm).__name__}")
+        
+        # Initialize Encoder
+        encoder = get_rag_embedding(config=main_config)
+        logger.info(f"Initialized Encoder: {type(encoder).__name__}")
+        
+        # Initialize ChunkFactory
+        chunk_factory = ChunkFactory(main_config)
+        logger.info(f"Initialized ChunkFactory")
+        
+        # Prepare inputs
+        inputs = BuildERGraphInputs(
+            target_dataset_name="american_revolution_doc",
+            force_rebuild=True
+        )
+        logger.info(f"Prepared BuildERGraphInputs: {inputs}")
+        
+        # Call the graph construction tool directly
+        logger.info(f"Calling build_er_graph tool...")
+        result = await build_er_graph(
+            inputs=inputs,
+            config=main_config,
+            llm=llm,
+            encoder=encoder,
+            chunk_factory=chunk_factory
+        )
+        
+        logger.info(f"Graph build result: {result}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in test_build_er_graph_direct: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return None
+
 if __name__ == "__main__":
-    asyncio.run(run_planning_agent_test())
+    asyncio.run(test_build_er_graph_direct())
 # END: /home/brian/digimon/testing/test_planning_agent.py

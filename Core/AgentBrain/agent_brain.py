@@ -105,6 +105,36 @@ class PlanningAgent:
                 "inputs_model": tool_contracts.RelationshipOneHopNeighborsInputs,
                 "outputs_model": tool_contracts.RelationshipOneHopNeighborsOutputs,
             },
+            {
+                "tool_id": "graph.BuildERGraph",
+                "description": "Builds an Entity-Relation Graph (ERGraph) for a specified dataset. Processes text chunks to extract entities and relationships, then constructs and persists the graph.",
+                "inputs_model": graph_construction_tool_contracts.BuildERGraphInputs,
+                "outputs_model": graph_construction_tool_contracts.BuildERGraphOutputs,
+            },
+            {
+                "tool_id": "graph.BuildRKGraph",
+                "description": "Builds a Relation-Knowledge Graph (RKGraph) for a specified dataset. Extracts relations using keyword/entity extraction, then constructs and persists the graph.",
+                "inputs_model": graph_construction_tool_contracts.BuildRKGraphInputs,
+                "outputs_model": graph_construction_tool_contracts.BuildRKGraphOutputs,
+            },
+            {
+                "tool_id": "graph.BuildTreeGraph",
+                "description": "Builds a hierarchical TreeGraph for a specified dataset using clustering and dimensionality reduction.",
+                "inputs_model": graph_construction_tool_contracts.BuildTreeGraphInputs,
+                "outputs_model": graph_construction_tool_contracts.BuildTreeGraphOutputs,
+            },
+            {
+                "tool_id": "graph.BuildTreeGraphBalanced",
+                "description": "Builds a balanced hierarchical TreeGraph for a specified dataset, optimizing for balanced cluster sizes.",
+                "inputs_model": graph_construction_tool_contracts.BuildTreeGraphBalancedInputs,
+                "outputs_model": graph_construction_tool_contracts.BuildTreeGraphBalancedOutputs,
+            },
+            {
+                "tool_id": "graph.BuildPassageGraph",
+                "description": "Builds a PassageGraph for a specified dataset, linking passages based on entity annotation and prior probability threshold.",
+                "inputs_model": graph_construction_tool_contracts.BuildPassageGraphInputs,
+                "outputs_model": graph_construction_tool_contracts.BuildPassageGraphOutputs,
+            },
         ]
 
         for tool_info in tools_to_document:

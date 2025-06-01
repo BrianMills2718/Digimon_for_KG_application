@@ -19,7 +19,25 @@ All requested diagnostic logging cleanup appears to have already been completed 
 - Now matches factory expectations and avoids attribute errors
 
 2025-05-30: Fixed Core/Graph/GraphFactory.py get_graph to use config.graph.type
+
+2025-06-01: Created mock-based testing for graph construction tools
+- Created new test script `/home/brian/digimon/testing/test_graph_tools.py` for isolated testing of graph construction tools
+- Implemented `MockERGraph` that simulates the graph building process without requiring LLM calls
+- Created `MockChunkFactory` that returns chunks in the correct format expected by ERGraph (tuples of chunk_key and TextChunk)
+- Built a simplified `build_er_graph_mock` function for testing the graph construction pipeline
+- Successfully verified the end-to-end graph construction flow by building and persisting a NetworkX graph with sample entities and relationships
+- Discovered and fixed LLM semaphore missing issue in LiteLLMProvider when used with BaseLLM.aask
 - Now compatible with orchestrator and Config/GraphConfig.py changes
+
+2025-06-01: Added integrated asynchronous test for build_er_graph tool
+- Created `test_build_er_graph_integrated` async test that mimics the real build_er_graph tool function workflow
+- Used mock components (LLM, encoder, graph) to ensure deterministic, fast, and dependency-free testing
+- Implemented robust `MockERGraph` with persistence capabilities to save graph files
+- Enhanced `MockChunkFactory` to properly create namespaces with correct file paths
+- Added detailed logging for traceability and debugging
+- Fixed namespace path construction to avoid duplicating dataset names in file paths
+- Added mock_llm_aask_for_ergraph to simulate LLM responses for entity and relation extraction
+- Successfully validated the end-to-end graph construction pipeline with proper artifact creation
 
 2025-05-30: Added 'type' field to GraphConfig in Config/GraphConfig.py
 - Now supports main_config.graph.type for orchestrator and test compatibility
@@ -113,6 +131,12 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
   - Support for named outputs between steps
   - Pydantic model validation for tool inputs
 
+2025-05-31: Integrated and tested graph construction tools
+- Registered all graph construction tools (build_er_graph, build_rk_graph, etc.) in the orchestrator (`Core/AgentOrchestrator/orchestrator.py`).
+- Added tool descriptions and schemas to the PlanningAgent for agent planning (documented in `_get_tool_documentation_for_prompt`).
+- Added an async test in `testing/test_planning_agent.py` to build an ERGraph for 'american_revolution_doc' using the agent system.
+- The test can now be run via the conda digimon environment for end-to-end validation.
+- Confirmed agent can plan and execute ERGraph construction, with output artifact and status returned.
 
 [2025-05-30 05:06] Updated Core/GraphRAG.py:
 - In build_and_persist_artifacts, replaced hardcoded force=True with force=self.config.graph.force for entities_vdb.build_index.
@@ -271,6 +295,16 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
   - Verified that the `entity_vdb_search_tool` in `Core/AgentTools/entity_tools.py` correctly implements the new VDB search logic, extracts `entity_name` from node metadata, and returns `VDBSearchResultItem` objects as intended.
   - Successfully updated the `_resolve_tool_inputs` method in `Core/AgentOrchestrator/orchestrator.py` (including adding `VDBSearchResultItem` to imports) to transform `EntityVDBSearchOutputs.similar_entities` into a list of `entity_name` strings for downstream tools.
   - **Next Step:** Run orchestrator test plan `test_plan_003_vdb_then_one_hop.json` to confirm end-to-end fix of entity ID mismatch.
+
+2025-06-01: Implemented and fixed mock-based testing for TreeGraph construction tool
+- Added `MockTreeGraph` class in `testing/test_graph_tools.py` to simulate TreeGraph behavior without actual LLM calls
+- Created `build_tree_graph_mock` function to test TreeGraph construction pipeline
+- Implemented test function `test_build_tree_graph_mock` to verify correct operation
+- Fixed Pydantic model access in `TreeGraphConfigOverrides` by using direct attribute access
+- Enhanced `MockChunkFactory.get_namespace` to support different graph types with distinct directories
+- Added `path` attribute to namespace for TreeGraph compatibility
+- Both `test_build_er_graph_mock` and `test_build_tree_graph_mock` now run successfully
+- Added main block to run both tests sequentially
 
 - **Test Execution: `test_plan_003_vdb_then_one_hop.json`**
   - Successfully executed the command `python testing/test_agent_orchestrator.py --config Option/Config2.yaml --plan test_plans/test_plan_003_vdb_then_one_hop.json`.

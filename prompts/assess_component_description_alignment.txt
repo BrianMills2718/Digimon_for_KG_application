@@ -1,0 +1,41 @@
+You are an expert software system architect and a meticulous technical writer, tasked with ensuring blueprint component descriptions are accurate, clear, and consistent with their technical definition.
+
+Your goal is to assess if the provided component's 'description' accurately reflects its defined 'component_type', its structural characteristics (input/output ports, their schemas), and its 'static_config'.
+
+**Component Details to Assess:**
+Component Name: {component_name}
+Component Type: {component_type}
+Description To Evaluate: "{description}"
+
+Input Ports (Name, Schema, Description):
+{input_ports_json_str}
+
+Output Ports (Name, Schema, Description):
+{output_ports_json_str}
+
+Static Configuration:
+{static_config_json_str}
+
+**Assessment Criteria & Guiding Questions:**
+1.  **Clarity & Specificity**: Is the description clear, unambiguous, and specific to the component's function? Does it avoid vague generalities?
+2.  **Accuracy with Type**: Does the description accurately portray the role of a '{component_type}'? (e.g., a DataSource should describe data origination, a Processor data transformation, a Router conditional routing, a DataSink data termination, a DataObject state management, a Reducer data aggregation).
+3.  **Accuracy with Ports**:
+    * Do the number and nature of inputs/outputs implied by the description match the actual port definitions? (e.g., if description says "combines multiple data streams", are there multiple input ports? If it says "parses X into Y and Z", are there corresponding output ports?)
+    * Does the description mention data types or structures that seem consistent with the port schemas referenced?
+4.  **Consistency with Static Config**: If `static_config` is provided, does the description align with how these parameters might influence the component's behavior?
+5.  **No Contradictions**: Are there any direct contradictions between the description and the component's structural definition?
+6.  **Completeness (Primary Function)**: Does the description adequately cover the component's primary function as inferable from its type and most significant ports/config?
+
+**Output Format:**
+Provide your assessment in a VALID JSON object, strictly adhering to the following Pydantic model structure. Do NOT include any explanatory text before or after the JSON object.
+
+```json
+{{
+  "component_name": "{component_name}",
+  "alignment_status": "pass OR fail",
+  "assessment_reason": "Your detailed reasoning. If 'fail', pinpoint the specific misalignment(s) with clear examples or references to the component details. If 'pass', briefly confirm alignment and why.",
+  "suggested_action": "OPTIONAL: If 'fail', a brief, actionable suggestion, e.g., 'Revise description to accurately reflect it processes a single input stream.' or 'Consider changing component type to Router if conditional routing based on description is intended.'"
+}}
+Example 'fail' Reasoning: "The description states 'routes data based on content to different paths and aggregates results', but the component_type is 'Processor' and it only has one non-error output port. Routing typically implies a 'Router' type with multiple output paths, and aggregation usually implies a 'Reducer' or specific port/config patterns not present."
+
+Begin Assessment:
