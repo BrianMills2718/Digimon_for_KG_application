@@ -18,6 +18,8 @@ from Core.Provider.LLMProviderRegister import create_llm_instance
 
 # Import all tool contract models
 from Core.AgentSchema import tool_contracts
+from Core.AgentSchema import graph_construction_tool_contracts
+from Core.AgentSchema import corpus_tool_contracts
 import inspect
 
 # Note: The old import for OpenAILLM from Core.Provider.OpenaiApi is no longer used directly by PlanningAgent
@@ -104,6 +106,12 @@ class PlanningAgent:
                 "description": "Retrieves all directly connected (one-hop) relationships and neighboring entities for a given list of source entity IDs from the graph. Allows specifying relationship direction and types.",
                 "inputs_model": tool_contracts.RelationshipOneHopNeighborsInputs,
                 "outputs_model": tool_contracts.RelationshipOneHopNeighborsOutputs,
+            },
+            {
+                "tool_id": "corpus.PrepareFromDirectory",
+                "description": "Processes all .txt files in a specified input directory, creates a Corpus.json (JSON Lines format) in an output directory, and returns information about the created corpus.",
+                "inputs_model": corpus_tool_contracts.PrepareCorpusInputs,
+                "outputs_model": corpus_tool_contracts.PrepareCorpusOutputs,
             },
             {
                 "tool_id": "graph.BuildERGraph",

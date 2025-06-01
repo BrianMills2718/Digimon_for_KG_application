@@ -13,6 +13,7 @@ from Core.AgentTools.relationship_tools import relationship_one_hop_neighbors_to
 from Core.AgentTools.graph_construction_tools import (
     build_er_graph, build_rk_graph, build_tree_graph, build_tree_graph_balanced, build_passage_graph
 )
+from Core.AgentTools.corpus_tools import prepare_corpus_from_directory
 # from Core.AgentTools.chunk_tools import ...
 # from Core.AgentTools.subgraph_tools import ...
 # from Core.AgentTools.community_tools import ...
@@ -38,6 +39,7 @@ class AgentOrchestrator:
             "graph.BuildTreeGraph": (build_tree_graph, None),
             "graph.BuildTreeGraphBalanced": (build_tree_graph_balanced, None),
             "graph.BuildPassageGraph": (build_passage_graph, None),
+            "corpus.PrepareFromDirectory": (prepare_corpus_from_directory, None),
         }
         logger.info(f"AgentOrchestrator: Registered {len(registry)} tools with Pydantic models: {list(registry.keys())}")
         return registry

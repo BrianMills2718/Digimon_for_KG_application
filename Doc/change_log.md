@@ -1,3 +1,24 @@
+2025-06-01: Integrated PrepareCorpusFromDirectoryTool with Agent Workflow System - COMPLETED
+- Created comprehensive PrepareCorpusFromDirectoryTool to process raw text files into Corpus.json format
+- Implemented Core/AgentSchema/corpus_tool_contracts.py with PrepareCorpusInputs and PrepareCorpusOutputs Pydantic models
+  - Added target_corpus_name support for logical corpus naming
+  - Improved field descriptions for better agent understanding
+- Created Core/AgentTools/corpus_tools.py with prepare_corpus_from_directory function
+  - Added corpus name derivation from output directory when not specified
+  - Improved error handling and validation of input/output paths
+  - Added comprehensive logging of processing steps
+  - Implemented early validation of text file existence
+- Enhanced ERGraph JSON parsing with markdown code fence stripping in _named_entity_recognition and _openie_post_ner_extract methods
+- Improved get_artifact_path in graph_construction_tools.py to correctly return directory paths instead of file paths
+- Added debug logging of artifact paths in build_er_graph tool
+- Added fallback to prase_json_from_response utility when available
+- Registered PrepareCorpusFromDirectoryTool in Core/AgentOrchestrator/orchestrator.py as 'corpus.PrepareFromDirectory'
+- Added tool description for PrepareCorpusFromDirectoryTool in Core/AgentBrain/agent_brain.py
+- Created and successfully tested corpus preparation functionality with test_corpus_prepare_tool.py
+- Attempted integration with graph building tools for a complete two-step workflow
+  - Identified tool dependency challenges - graph building tools require LLM, encoder and chunk factory instances
+  - Documented requirements for direct tool usage vs. agent-orchestrated execution
+
 2025-06-01: Fixed ERGraph JSON parsing and error handling
 - Added robust JSON parsing in ERGraph._named_entity_recognition and _openie_post_ner_extract methods
 - Added proper error handling for malformed JSON outputs from LLM
