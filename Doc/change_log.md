@@ -1,3 +1,11 @@
+2025-06-01: Implemented real ChunkFactory with JSONL support and updated test_direct_two_step_workflow.py - COMPLETED
+- Implemented ChunkFactory class in Core/Chunk/ChunkFactory.py with proper JSONL format handling for Corpus.json files
+- Added line-by-line JSON parsing to handle JSONL format where each line is a separate JSON object
+- Updated testing/test_direct_two_step_workflow.py to use the real ChunkFactory instead of MockChunkFactory
+- Verified the implementation works correctly by running the test successfully
+- Fixed the JSON decode error that previously occurred with JSON Lines format
+- The test now uses real components for all major parts: LiteLLMProvider, OpenAIEmbedding, and ChunkFactory
+
 2025-06-01: Enhanced direct two-step workflow with real embedding model - COMPLETED
 - Modified test_direct_two_step_workflow.py to use real embedding model via get_rag_embedding instead of MockEncoder
 - Verified successful test execution with OpenAIEmbedding handling the real embedding functionality

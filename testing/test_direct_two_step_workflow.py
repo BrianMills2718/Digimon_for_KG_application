@@ -32,112 +32,12 @@ from Core.AgentSchema.corpus_tool_contracts import PrepareCorpusInputs
 from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInputs, ERGraphConfigOverrides
 from Core.AgentSchema.context import GraphRAGContext
 from Core.Provider.LiteLLMProvider import LiteLLMProvider
-from Core.Chunk.ChunkFactory import ChunkingFactory
+from Core.Chunk.ChunkFactory import ChunkingFactory, ChunkFactory
 import json
 from pathlib import Path
 from Core.Schema.ChunkSchema import TextChunk
 
-# Mock ChunkFactory implementation for testing
-class MockChunkFactory:
-    def __init__(self, main_config):
-        self.main_config = main_config
-        logger.info(f"Initialized MockChunkFactory with working_dir: {main_config.working_dir}")
-    
-    def get_namespace(self, dataset_name):
-        # Return a namespace object with path attribute
-        class Namespace:
-            def __init__(self, path):
-                self.path = path
-                
-            def get_save_path(self, suffix="nx_data.graphml"):
-                # Return a path for saving the graph file - avoid double nesting
-                # The issue was that it was creating path/suffix/suffix
-                return str(Path(self.path))
-        
-        path = Path(self.main_config.working_dir) / dataset_name / "er_graph"
-        path.mkdir(parents=True, exist_ok=True)
-        return Namespace(str(path))
-    
-    async def get_chunks_for_dataset(self, dataset_name):
-        # Load corpus.json and convert to TextChunk objects
-        corpus_path = Path(self.main_config.working_dir) / dataset_name / "Corpus.json"
-        
-        if not corpus_path.exists():
-            logger.error(f"Corpus file not found at {corpus_path}")
-            return []
-        
-        try:
-            # First, try to read the file line by line to handle possible JSON format issues
-            chunks = []
-            with open(corpus_path, 'r') as f:
-                # Read the entire file content
-                corpus_content = f.read()
-                
-            # Process the content to make it valid JSON if necessary
-            # Some corpus files might have separate JSON objects for each document
-            if corpus_content.strip().startswith('{') and corpus_content.strip().endswith('}'): 
-                try:
-                    # If it's a standard JSON object, parse it directly
-                    corpus_data = json.loads(corpus_content)
-                    
-                    # Process each document in the corpus
-                    for doc_id, doc_data in corpus_data.items():
-                        if isinstance(doc_data, dict) and 'content' in doc_data:
-                            # Use the correct TextChunk initialization parameters
-                            chunk = TextChunk(
-                                tokens=len(doc_data['content'].split()),
-                                chunk_id=f"chunk_{doc_id}",
-                                content=doc_data['content'],
-                                doc_id=doc_id,
-                                index=0,
-                                title=doc_data.get('metadata', {}).get('title', f"Document {doc_id}")                                
-                            )
-                            # Create a tuple of (chunk_key, TextChunk) as expected by ERGraph
-                            chunks.append((f"chunk_{doc_id}", chunk))
-                except json.JSONDecodeError as e:
-                    logger.error(f"JSON decode error: {e}")
-                    # Fall back to reading just the document content directly from files
-                    input_dir = Path(self.main_config.data_root) / "MySampleTexts"
-                    for txt_file in input_dir.glob("*.txt"):
-                        with open(txt_file, 'r') as f:
-                            content = f.read()
-                            doc_id = txt_file.stem
-                            chunk = TextChunk(
-                                tokens=len(content.split()),
-                                chunk_id=f"chunk_{doc_id}",
-                                content=content,
-                                doc_id=doc_id,
-                                index=0,
-                                title=f"Document {doc_id}"
-                            )
-                            chunks.append((f"chunk_{doc_id}", chunk))
-            
-            logger.info(f"Loaded {len(chunks)} chunks from dataset {dataset_name}")
-            return chunks
-        except Exception as e:
-            logger.error(f"Error loading chunks from corpus: {e}")
-            # Fall back to reading files directly as a last resort
-            chunks = []
-            try:
-                input_dir = Path(self.main_config.data_root) / "MySampleTexts"
-                for txt_file in input_dir.glob("*.txt"):
-                    with open(txt_file, 'r') as f:
-                        content = f.read()
-                        doc_id = txt_file.stem
-                        chunk = TextChunk(
-                            tokens=len(content.split()),
-                            chunk_id=f"chunk_{doc_id}",
-                            content=content,
-                            doc_id=doc_id,
-                            index=0,
-                            title=f"Document {doc_id}"
-                        )
-                        chunks.append((f"chunk_{doc_id}", chunk))
-                logger.info(f"Fallback: Loaded {len(chunks)} chunks directly from files")
-                return chunks
-            except Exception as e2:
-                logger.error(f"Failed to load chunks from files too: {e2}")
-                return []
+# Previously had a MockChunkFactory here, now using the real ChunkFactory from Core.Chunk.ChunkFactory
 
 # We're now using the real embedding model from Core.Index.EmbeddingFactory
 
@@ -249,8 +149,9 @@ async def test_direct_two_step_workflow():
         real_encoder = get_rag_embedding(config=main_config)
         logger.info(f"Initialized REAL Encoder from EmbeddingFactory: {type(real_encoder)}")
         
-        # Keep using our custom MockChunkFactory since there's no equivalent real implementation
-        chunk_factory = MockChunkFactory(main_config)
+        # Use the real ChunkFactory implementation that handles JSONL format
+        chunk_factory = ChunkFactory(config=main_config)
+        logger.info(f"Using real ChunkFactory implementation for handling JSONL Corpus.json files")
         
         # Create ERGraph build inputs
         er_graph_inputs = BuildERGraphInputs(
