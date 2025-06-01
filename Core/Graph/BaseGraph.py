@@ -40,7 +40,7 @@ class BaseGraph(ABC):
         self.ENCODER = encoder  # Encoder
         self._graph = None
 
-    async def build_graph(self, chunks, force: bool = False):
+    async def build_graph(self, chunks, force: bool = False) -> bool:
         """
         Builds or loads a graph based on the input chunks.
 
@@ -48,19 +48,33 @@ class BaseGraph(ABC):
             chunks: The input data chunks used to build the graph.
             force: Whether to re-build the graph
         Returns:
-            The graph if it already exists, otherwise builds and returns the graph.
+            Boolean indicating success (True) or failure (False) of the graph building process.
         """
         # Try to load the graph
         logger.info("Starting build graph for the given documents")
+        build_successful = False
 
         is_exist = await self._load_graph(force)
         if force or not is_exist:
             await self._clear()
             # Build the graph based on the input chunks
-            await self._build_graph(chunks)
-            # Persist the graph into file
-            await self._persist_graph(force)
-        logger.info("✅ Finished the graph building stage")
+            build_successful = await self._build_graph(chunks)
+            if build_successful:
+                # Persist the graph into file only if build was successful
+                await self._persist_graph(force)
+                logger.info("Graph built successfully and persisted.")
+            else:
+                logger.error("Graph building failed in _build_graph, skipping persistence.")
+        else:
+            logger.info("Graph loaded from existing artifacts, build not forced.")
+            build_successful = True  # Loading existing graph is a form of success
+
+        if build_successful:
+            logger.info("✅ Finished the graph building stage successfully.")
+        else:
+            logger.error("❌ Finished the graph building stage with errors.")
+        
+        return build_successful
 
     async def _load_graph(self, force: bool = False):
         """
@@ -83,6 +97,8 @@ class BaseGraph(ABC):
         return "entity_name"
 
     async def _merge_nodes_then_upsert(self, entity_name: str, nodes_data: List[Entity]):
+        import asyncio
+        from Core.Common.Logger import logger
         existing_node = await self._graph.get_node(entity_name)
 
         existing_data = build_data_for_merge(existing_node) if existing_node else defaultdict(list)
@@ -114,6 +130,8 @@ class BaseGraph(ABC):
         await self._graph.upsert_node(entity_name, node_data=node_data)
 
     async def _merge_edges_then_upsert(self, src_id: str, tgt_id: str, edges_data: List[Relationship]) -> None:
+        import asyncio
+        from Core.Common.Logger import logger
         # Check if the edge exists and fetch existing data
         existing_edge = await self._graph.get_edge(src_id, tgt_id) if await self._graph.has_edge(src_id,
                                                                                                  tgt_id) else None
@@ -244,6 +262,9 @@ class BaseGraph(ABC):
         """
         Build the graph based on the input elements.
         """
+        import asyncio
+        from Core.Common.Logger import logger
+        
         # Initialize dictionaries to hold aggregated node and edge information
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 

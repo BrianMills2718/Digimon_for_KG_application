@@ -2,7 +2,7 @@ import asyncio
 import json
 import re
 from collections import defaultdict
-from typing import Any, List
+from typing import Any, List, Dict, Optional, Tuple, Union
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Common.Logger import logger
 from Core.Common.Utils import (
@@ -35,31 +35,54 @@ class ERGraph(BaseGraph):
         self._graph = storage_instance if storage_instance is not None else NetworkXStorage()
 
     async def _named_entity_recognition(self, passage: str):
+        from Core.Common.Logger import logger
         ner_messages = GraphPrompt.NER.format(user_input=passage)
-
-        entities = await self.llm.aask(ner_messages, format = "json")
-    
-        # entities = prase_json_from_response(response_content)
-
-        if 'named_entities' not in entities:
-            entities = []
+        llm_output_str = await self.llm.aask(ner_messages, format="json")
+        
+        parsed_output = None
+        if isinstance(llm_output_str, str):
+            try:
+                parsed_output = json.loads(llm_output_str)
+            except json.JSONDecodeError as e:
+                logger.error(f"NER JSONDecodeError: {e} - Output: {llm_output_str[:500]}")
+                return [] # Return empty list on parsing failure
+        elif isinstance(llm_output_str, dict):
+            parsed_output = llm_output_str
         else:
-            entities = entities['named_entities']
-        return entities
-
-    async def _openie_post_ner_extract(self, chunk, entities):
-        named_entity_json = {"named_entities": entities}
-        openie_messages = GraphPrompt.OPENIE_POST_NET.format(passage=chunk,
-                                                             named_entity_json=json.dumps(named_entity_json))
-        triples = await self.llm.aask(openie_messages, format = "json")
-      
-        # triples = prase_json_from_response(response_content)
-        try:
-            triples = triples["triples"] 
-        except:
+            logger.error(f"NER - Unexpected LLM output type: {type(llm_output_str)}")
             return []
 
-        return triples
+        if not isinstance(parsed_output, dict) or 'named_entities' not in parsed_output or not isinstance(parsed_output.get('named_entities'), list):
+            logger.warning(f"NER - 'named_entities' key missing or not a list in parsed output: {parsed_output}")
+            return []
+        
+        return parsed_output['named_entities']
+
+    async def _openie_post_ner_extract(self, chunk, entities):
+        from Core.Common.Logger import logger
+        named_entity_json = {"named_entities": entities}
+        openie_messages = GraphPrompt.OPENIE_POST_NET.format(passage=chunk,
+                                                         named_entity_json=json.dumps(named_entity_json))
+        llm_output_str = await self.llm.aask(openie_messages, format="json")
+        
+        parsed_output = None
+        if isinstance(llm_output_str, str):
+            try:
+                parsed_output = json.loads(llm_output_str)
+            except json.JSONDecodeError as e:
+                logger.error(f"OpenIE JSONDecodeError: {e} - Output: {llm_output_str[:500]}")
+                return [] # Return empty list on parsing failure
+        elif isinstance(llm_output_str, dict):
+            parsed_output = llm_output_str
+        else:
+            logger.error(f"OpenIE - Unexpected LLM output type: {type(llm_output_str)}")
+            return []
+
+        if not isinstance(parsed_output, dict) or 'triples' not in parsed_output or not isinstance(parsed_output.get('triples'), list):
+            logger.warning(f"OpenIE - 'triples' key missing or not a list in parsed output: {parsed_output}")
+            return []
+        
+        return parsed_output['triples']
 
     async def _extract_entity_relationship(self, chunk_key_pair: tuple[str, TextChunk]) -> Any:
         chunk_key, chunk_info = chunk_key_pair  # Unpack the chunk key and information
@@ -77,6 +100,7 @@ class ERGraph(BaseGraph):
             return await self._build_graph_by_regular_matching(graph_element, chunk_key)
 
     async def _kg_agent(self, chunk_info):
+        from Core.Common.Logger import logger
         knowledge_graph_prompt = TextPrompt(GraphPrompt.KG_AGNET)
         knowledge_graph_generation = knowledge_graph_prompt.format(
             task=chunk_info
@@ -87,19 +111,22 @@ class ERGraph(BaseGraph):
 
         return content
 
-    async def _build_graph(self, chunk_list: List[Any]):
+    async def _build_graph(self, chunk_list: List[Any]) -> bool:
+        from Core.Common.Logger import logger
         try:
             results = await asyncio.gather(
                 *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
-            # Build graph based on the extracted entities and triples
             await self.__graph__(results)
+            logger.info("Successfully built graph")
+            return True
         except Exception as e:
             logger.exception(f"Error building graph: {e}")
+            return False
         finally:
             logger.info("Constructing graph finished")
 
-    @staticmethod
-    async def _build_graph_by_regular_matching(content: str, chunk_key):
+    async def _build_graph_by_regular_matching(self, content: str, chunk_key):
+        from Core.Common.Logger import logger
         maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
 
         # Extract nodes
@@ -153,8 +180,9 @@ class ERGraph(BaseGraph):
 
         return maybe_nodes, maybe_edges
 
-    @staticmethod
-    async def _build_graph_from_tuples(entities, triples, chunk_key):
+    async def _build_graph_from_tuples(self, entities, triples, chunk_key):
+        # Import logger locally to ensure it's available
+        from Core.Common.Logger import logger
         """
            Build a graph structure from entities and triples.
 
@@ -166,22 +194,34 @@ class ERGraph(BaseGraph):
                entities (List[str]): A list of entity strings.
                triples (List[Tuple[str, str, str]]): A list of triples, where each triple contains three strings (source entity, relation, target entity).
                chunk_key (str): A key used to identify the data chunk.
-           """
-        maybe_nodes, maybe_edges = defaultdict(list), defaultdict(list)
+        """
+        # Initialize dictionaries to hold node and edge information
+        maybe_nodes = defaultdict(list)
+        maybe_edges = defaultdict(list)
 
+        # Process entities
         for _entity in entities:
+            # Clean the entity name
             entity_name = clean_str(_entity)
             if entity_name == '':
-                logger.warning(f"entity name is not valid, entity is: {_entity}, so skip it")
+                logger.warning(f"Entity name is not valid, entity is: {_entity}, skipping.")
                 continue
-            custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+                
+            # Initialize attributes and type
             entity_attributes = {}
             final_entity_type = ''
+            
+            # Check for custom ontology
+            custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
             if custom_ontology and custom_ontology.get('entities'):
-                # Try to match type if possible
+                # Try to match entity type if possible
                 for entity_def in custom_ontology['entities']:
-                    if entity_def.get('name') == entity_name or (isinstance(_entity, dict) and entity_def.get('name') == _entity.get('type', '')):
+                    name_match = entity_def.get('name') == entity_name
+                    type_match = isinstance(_entity, dict) and entity_def.get('name') == _entity.get('type', '')
+                    
+                    if name_match or type_match:
                         final_entity_type = entity_def['name']
+                        
                         # Populate defined custom attributes if present
                         if 'properties' in entity_def and isinstance(_entity, dict):
                             for prop_def in entity_def['properties']:
@@ -189,31 +229,54 @@ class ERGraph(BaseGraph):
                                 if prop_name in _entity:
                                     entity_attributes[prop_name] = _entity[prop_name]
                         break
+            
+            # If no type found in ontology, try to get it from the entity itself
             if not final_entity_type:
                 final_entity_type = _entity.get('type', '') if isinstance(_entity, dict) and 'type' in _entity else ''
-            entity = Entity(entity_name=entity_name, entity_type=final_entity_type, source_id=chunk_key, attributes=entity_attributes)
+            
+            # Create entity object and add to nodes
+            entity = Entity(
+                entity_name=entity_name, 
+                entity_type=final_entity_type, 
+                source_id=chunk_key, 
+                attributes=entity_attributes
+            )
             maybe_nodes[entity_name].append(entity)
 
+        # Process triples (relationships)
         for triple in triples:
-            if isinstance(triple[0], list): triple = triple[0]
+            # Handle case where triple might be nested in a list
+            if isinstance(triple[0], list): 
+                triple = triple[0]
+                
+            # Validate triple length
             if len(triple) != 3:
-                logger.warning(f"triples length is not 3, triple is: {triple}, len is {len(triple)}, so skip it")
+                logger.warning(f"Triple length is not 3, triple is: {triple}, len is {len(triple)}, skipping.")
                 continue
+                
+            # Clean entities and relation names
             src_entity = clean_str(triple[0])
             tgt_entity = clean_str(triple[2])
             relation_name = clean_str(triple[1])
+            
+            # Validate entities and relation are not empty
             if src_entity == '' or tgt_entity == '' or relation_name == '':
-                logger.warning(
-                    f"triple is not valid, since we have empty entity or relation, triple is: {triple}, so skip it")
+                logger.warning(f"Triple is not valid, contains empty entity or relation: {triple}, skipping.")
                 continue
+                
+            # Make sure all elements are strings
             if isinstance(src_entity, str) and isinstance(tgt_entity, str) and isinstance(relation_name, str):
-                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+                # Initialize relation attributes
                 relation_attributes = {}
                 final_relation_name = relation_name
+                
+                # Check for custom ontology for relations
+                custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 if custom_ontology and custom_ontology.get('relations'):
                     for relation_def in custom_ontology['relations']:
                         if relation_def.get('name') == relation_name:
                             final_relation_name = relation_def['name']
+                            
                             # Populate defined custom attributes if present
                             if 'properties' in relation_def and isinstance(triple, dict):
                                 for prop_def in relation_def['properties']:
@@ -221,11 +284,17 @@ class ERGraph(BaseGraph):
                                     if prop_name in triple:
                                         relation_attributes[prop_name] = triple[prop_name]
                             break
-                relationship = Relationship(src_id=src_entity,
-                                            tgt_id=tgt_entity,
-                                            weight=1.0, source_id=chunk_key,
-                                            relation_name=final_relation_name,
-                                            attributes=relation_attributes)
+                
+                # Create relationship object and add to edges
+                relationship = Relationship(
+                    src_id=src_entity,
+                    tgt_id=tgt_entity,
+                    weight=1.0, 
+                    source_id=chunk_key,
+                    relation_name=final_relation_name,
+                    attributes=relation_attributes
+                )
                 maybe_edges[(relationship.src_id, relationship.tgt_id)].append(relationship)
 
+        # Convert defaultdicts to regular dicts before returning
         return dict(maybe_nodes), dict(maybe_edges)

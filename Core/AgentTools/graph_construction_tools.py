@@ -13,7 +13,7 @@ from Core.AgentSchema.graph_construction_tool_contracts import (
 )
 from Core.Graph.GraphFactory import get_graph
 from Option.Config2 import Config
-
+from Core.Common.Logger import logger
 # Helper: Apply config overrides to a config object
 # This mutates the config_copy in-place
 
@@ -94,7 +94,22 @@ async def build_er_graph(
                 message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
                 artifact_path=None
             )
-        await er_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
+        
+        logger.info(f"Calling er_graph_instance.build_graph for dataset: {tool_input.target_dataset_name}")
+        success = await er_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
+        
+        if not success:
+            logger.error(f"build_er_graph tool: er_graph_instance.build_graph failed for {tool_input.target_dataset_name}")
+            return BuildERGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_ERGraph",
+                status="failure",
+                message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
+                node_count=None,
+                edge_count=None,
+                artifact_path=None
+            )
+        
+        logger.info(f"build_er_graph tool: er_graph_instance.build_graph succeeded for {tool_input.target_dataset_name}")
         counts = await get_graph_counts(er_graph_instance)
         artifact_p = get_artifact_path(er_graph_instance)
         return BuildERGraphOutputs(
