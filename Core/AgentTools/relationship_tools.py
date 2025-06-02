@@ -1,7 +1,6 @@
-import logging
 from typing import List, Tuple, Dict, Any, Optional
 import networkx as nx
-
+import logging
 from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentSchema.tool_contracts import (
     RelationshipOneHopNeighborsInputs,
@@ -9,34 +8,46 @@ from Core.AgentSchema.tool_contracts import (
     RelationshipData,
     RelationshipScoreAggregatorInputs,
     RelationshipScoreAggregatorOutputs,
+    RelationshipVDBBuildInputs,
+    RelationshipVDBBuildOutputs,
     RelationshipVDBSearchInputs,
     RelationshipVDBSearchOutputs,
     RelationshipAgentInputs,
     RelationshipAgentOutputs
 )
+from Core.Index.FaissIndex import FaissIndex
+from Core.Storage.PickleBlobStorage import PickleBlobStorage
+from pydantic import BaseModel
+
+# A simple placeholder for the config that FaissIndex expects.
+class MockIndexConfig(BaseModel):
+    persist_path: str
+    embed_model: Any
+    retrieve_top_k: Optional[int] = 10
+    name: Optional[str] = None
+    class Config:
+        arbitrary_types_allowed = True
 
 logger = logging.getLogger(__name__)
 
 
-
 async def relationship_one_hop_neighbors_tool(
-    params: RelationshipOneHopNeighborsInputs, # Ensure imported
-    graphrag_context: GraphRAGContext # Ensure imported
-) -> RelationshipOneHopNeighborsOutputs: # Ensure imported
+    params: RelationshipOneHopNeighborsInputs, 
+    graphrag_context: GraphRAGContext 
+) -> RelationshipOneHopNeighborsOutputs: 
     logger.info(
         f"Executing tool 'Relationship.OneHopNeighbors' with parameters: "
         f"entity_ids={params.entity_ids}, "
-        f"graph_reference_id='{params.graph_reference_id}', " # Log the ID it's looking for
+        f"graph_reference_id='{params.graph_reference_id}', " 
         f"direction='{params.direction}', " 
         f"types_to_include='{params.relationship_types_to_include}'"
     )
-    output_details: List[RelationshipData] = [] # Ensure RelationshipData is imported
+    output_details: List[RelationshipData] = [] 
 
-    if graphrag_context is None: # Should not happen if orchestrator passes it
+    if graphrag_context is None: 
         logger.error("Relationship.OneHopNeighbors: graphrag_context IS NONE!")
         return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
 
-    # Use the get_graph_instance method from GraphRAGContext
     graph_instance_from_context = graphrag_context.get_graph_instance(params.graph_reference_id)
     
     logger.info(f"Relationship.OneHopNeighbors: Attempting to use graph_id '{params.graph_reference_id}'. Found in context: {graph_instance_from_context is not None}. Type: {type(graph_instance_from_context)}")
@@ -46,25 +57,17 @@ async def relationship_one_hop_neighbors_tool(
         return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
     
     actual_nx_graph = None
-    # Assuming graph_instance_from_context is an ERGraph (or similar BaseGraph wrapper)
-    # and its _graph attribute is the NetworkXStorage instance, which holds the nx.Graph in its .graph attribute.
     if hasattr(graph_instance_from_context, '_graph') and \
        hasattr(graph_instance_from_context._graph, 'graph') and \
-       isinstance(graph_instance_from_context._graph.graph, nx.Graph): # nx should be imported
+       isinstance(graph_instance_from_context._graph.graph, nx.Graph): 
         actual_nx_graph = graph_instance_from_context._graph.graph
         logger.info(f"Relationship.OneHopNeighbors: Successfully accessed NetworkX graph via _graph.graph. Type: {type(actual_nx_graph)}")
     else:
         logger.error(f"Relationship.OneHopNeighbors: Could not access a valid NetworkX graph from graph_instance_from_context._graph.graph. Graph object is: {graph_instance_from_context._graph if hasattr(graph_instance_from_context, '_graph') else 'No _graph attr'}")
         return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
 
-    nx_graph = actual_nx_graph # Use this for NetworkX operations
+    nx_graph = actual_nx_graph 
     
-    # ... (the rest of the existing logic for iterating entities, finding neighbors, processing edges) ...
-    # This part of your function (from the uploaded file) that processes based on direction,
-    # gets edge_data, and appends to output_details, seems mostly correct, assuming nx_graph is valid.
-    # Key is to ensure `edge_attr_for_relation_name` ('type') and `edge_attr_for_description` ('description')
-    # match what ERGraph actually stores on edges.
-
     is_directed_graph = hasattr(nx_graph, 'successors') and hasattr(nx_graph, 'predecessors')
     graph_type_description = 'directed' if is_directed_graph else 'undirected (using neighbors())'
     logger.info(f"Relationship.OneHopNeighbors: Graph is considered {graph_type_description}.")
@@ -74,7 +77,7 @@ async def relationship_one_hop_neighbors_tool(
             logger.warning(f"Relationship.OneHopNeighbors: Entity ID '{entity_id}' not found in the graph. Skipping.")
             continue
         try:
-            edge_attr_for_relation_name = 'relation_name'  # Changed from 'type' to 'relation_name'
+            edge_attr_for_relation_name = 'relation_name'  
             edge_attr_for_description = 'description'
             edge_attr_for_weight = 'weight'
             processed_neighbor_pairs = set()
@@ -97,7 +100,7 @@ async def relationship_one_hop_neighbors_tool(
                             tgt_id=neighbor_id,    
                             relation_name=str(rel_name_from_edge) if rel_name_from_edge is not None else "unknown_relationship",
                             description=str(attributes.get(edge_attr_for_description)) if attributes.get(edge_attr_for_description) is not None else None,
-                            weight=float(attributes.get(edge_attr_for_weight, 1.0)), # Default weight to 1.0
+                            weight=float(attributes.get(edge_attr_for_weight, 1.0)), 
                             attributes={k: v for k, v in attributes.items() if k not in [edge_attr_for_relation_name, edge_attr_for_description, edge_attr_for_weight]} or None
                         ))
                     if not is_directed_graph: processed_neighbor_pairs.add(tuple(sorted((entity_id, neighbor_id))))
@@ -112,7 +115,7 @@ async def relationship_one_hop_neighbors_tool(
                         if params.relationship_types_to_include and rel_name_val_from_edge not in params.relationship_types_to_include:
                             continue
                         is_already_processed_as_outgoing = False
-                        if params.direction == "both": # Avoid duplicates if already processed as outgoing
+                        if params.direction == "both": 
                             for detail in output_details:
                                 if detail.src_id == predecessor_id and detail.tgt_id == entity_id and detail.relation_name == rel_name_val_from_edge:
                                     is_already_processed_as_outgoing = True; break
@@ -133,9 +136,166 @@ async def relationship_one_hop_neighbors_tool(
     return RelationshipOneHopNeighborsOutputs(one_hop_relationships=output_details)
 
 
+async def relationship_vdb_build_tool(
+    params: RelationshipVDBBuildInputs,
+    graphrag_context: GraphRAGContext
+) -> RelationshipVDBBuildOutputs:
+    """
+    Build a vector database (VDB) for graph relationships.
+    
+    This tool creates a searchable index of relationships from a graph,
+    allowing for similarity-based retrieval of edges based on their
+    properties and descriptions.
+    """
+    logger.info(
+        f"Building relationship VDB: graph_id='{params.graph_reference_id}', "
+        f"collection='{params.vdb_collection_name}', fields={params.embedding_fields}"
+    )
+    
+    try:
+        # Get the graph instance
+        graph_instance = graphrag_context.get_graph_instance(params.graph_reference_id)
+        if not graph_instance:
+            error_msg = f"Graph '{params.graph_reference_id}' not found in context"
+            logger.error(error_msg)
+            return RelationshipVDBBuildOutputs(
+                vdb_reference_id="",
+                num_relationships_indexed=0,
+                status=f"Error: {error_msg}"
+            )
+        
+        # Extract the actual NetworkX graph
+        if hasattr(graph_instance, '_graph') and hasattr(graph_instance._graph, 'graph'):
+            nx_graph = graph_instance._graph.graph
+        elif hasattr(graph_instance, 'graph'):
+            nx_graph = graph_instance.graph
+        else:
+            nx_graph = graph_instance
+            
+        logger.info(f"Retrieved graph with {nx_graph.number_of_nodes()} nodes and {nx_graph.number_of_edges()} edges")
+        
+        # Check if VDB already exists
+        vdb_id = f"{params.vdb_collection_name}_relationships"
+        existing_vdb = graphrag_context.get_vdb_instance(vdb_id)
+        
+        if existing_vdb and not params.force_rebuild:
+            logger.info(f"VDB '{vdb_id}' already exists and force_rebuild=False, skipping build")
+            return RelationshipVDBBuildOutputs(
+                vdb_reference_id=vdb_id,
+                num_relationships_indexed=nx_graph.number_of_edges(),
+                status="VDB already exists"
+            )
+        
+        # Get embedding provider
+        embedding_provider = graphrag_context.embedding_provider
+        if not embedding_provider:
+            error_msg = "No embedding provider available in context"
+            logger.error(error_msg)
+            return RelationshipVDBBuildOutputs(
+                vdb_reference_id="",
+                num_relationships_indexed=0,
+                status=f"Error: {error_msg}"
+            )
+        
+        # Prepare relationship data
+        relationships_data = []
+        edge_metadata = ["source", "target", "id"]
+        
+        if params.include_metadata:
+            # Collect all possible metadata keys from edges
+            metadata_keys = set()
+            for u, v, data in nx_graph.edges(data=True):
+                metadata_keys.update(data.keys())
+            edge_metadata.extend(list(metadata_keys - set(params.embedding_fields)))
+        
+        # Extract edges and their properties
+        for u, v, edge_data in nx_graph.edges(data=True):
+            # Create text content from embedding fields
+            content_parts = []
+            for field in params.embedding_fields:
+                if field in edge_data:
+                    content_parts.append(f"{field}: {edge_data[field]}")
+            
+            if not content_parts:
+                # If no embedding fields found, use a default description
+                content_parts.append(f"Relationship from {u} to {v}")
+            
+            content = " | ".join(content_parts)
+            
+            # Create relationship document
+            rel_doc = {
+                "id": edge_data.get("id", f"{u}->{v}"),
+                "content": content,
+                "source": u,
+                "target": v
+            }
+            
+            # Add metadata if requested
+            if params.include_metadata:
+                for key, value in edge_data.items():
+                    if key not in ["id"] and key not in params.embedding_fields:
+                        rel_doc[key] = value
+            
+            relationships_data.append(rel_doc)
+        
+        if not relationships_data:
+            logger.warning(f"No relationships found in graph '{params.graph_reference_id}'")
+            return RelationshipVDBBuildOutputs(
+                vdb_reference_id="",
+                num_relationships_indexed=0,
+                status="No relationships found in graph"
+            )
+        
+        logger.info(f"Prepared {len(relationships_data)} relationships for indexing")
+        
+        # Create VDB storage path
+        vdb_storage_path = f"storage/vdb/{vdb_id}"
+        
+        # Create index configuration
+        config = MockIndexConfig(
+            persist_path=vdb_storage_path,
+            embed_model=embedding_provider,
+            retrieve_top_k=10,
+            name=vdb_id
+        )
+        
+        # Create and build the index
+        relationship_vdb = FaissIndex(config)
+        
+        # Build the index
+        await relationship_vdb.build_index(
+            elements=relationships_data,
+            meta_data=edge_metadata,
+            force=params.force_rebuild
+        )
+        
+        # Register the VDB in context
+        graphrag_context.add_vdb_instance(vdb_id, relationship_vdb)
+        
+        logger.info(
+            f"Successfully built relationship VDB '{vdb_id}' with "
+            f"{len(relationships_data)} relationships indexed"
+        )
+        
+        return RelationshipVDBBuildOutputs(
+            vdb_reference_id=vdb_id,
+            num_relationships_indexed=len(relationships_data),
+            status=f"Successfully built VDB with {len(relationships_data)} relationships"
+        )
+        
+    except Exception as e:
+        error_msg = f"Error building relationship VDB: {str(e)}"
+        logger.error(error_msg, exc_info=True)
+        return RelationshipVDBBuildOutputs(
+            vdb_reference_id="",
+            num_relationships_indexed=0,
+            status=f"Error: {str(e)}"
+        )
+
+
 async def relationship_score_aggregator_tool(
     params: RelationshipScoreAggregatorInputs,
-    graphrag_context: GraphRAGContext
+    graphrag_context: Optional[Any] = None
 ) -> RelationshipScoreAggregatorOutputs:
     logger.info(f"Executing tool 'Relationship.ScoreAggregator' with params: {params}")
     return RelationshipScoreAggregatorOutputs(aggregated_relationship_scores={"example_rel": 0.9})
@@ -144,19 +304,94 @@ async def relationship_vdb_search_tool(
     params: RelationshipVDBSearchInputs,
     graphrag_context: GraphRAGContext
 ) -> RelationshipVDBSearchOutputs:
-    logger.info(f"Executing tool 'Relationship.VDBSearch' with params: {params}")
-    return RelationshipVDBSearchOutputs(similar_relationships=[("rel1_id", "rel1_name", 0.8)])
+    """
+    Search for similar relationships in a vector database.
+    
+    Args:
+        params: Search parameters including VDB ID, query, and result limits
+        graphrag_context: Context containing VDB instances
+    
+    Returns:
+        Output with similar relationships and scores
+    """
+    logger.info(
+        f"Executing tool 'Relationship.VDB.Search' with parameters: "
+        f"vdb_reference_id='{params.vdb_reference_id}', "
+        f"query_text='{params.query_text}', "
+        f"has_embedding={params.query_embedding is not None}, "
+        f"top_k={params.top_k}"
+    )
+    
+    # Validate input
+    if not params.query_text and not params.query_embedding:
+        logger.error("Either query_text or query_embedding must be provided")
+        return RelationshipVDBSearchOutputs(
+            similar_relationships=[],
+            metadata={"error": "Either query_text or query_embedding must be provided"}
+        )
+    
+    # Get VDB instance
+    vdb_instance = graphrag_context.get_vdb_instance(params.vdb_reference_id)
+    if vdb_instance is None:
+        logger.error(f"VDB '{params.vdb_reference_id}' not found in context")
+        return RelationshipVDBSearchOutputs(
+            similar_relationships=[],
+            metadata={"error": f"VDB '{params.vdb_reference_id}' not found"}
+        )
+    
+    try:
+        # Perform search
+        if params.query_text:
+            logger.info(f"Searching with text query: '{params.query_text}'")
+            results = await vdb_instance.search(
+                query=params.query_text,
+                k=params.top_k
+            )
+        else:
+            logger.info("Searching with pre-computed embedding")
+            results = await vdb_instance.search_by_embedding(
+                embedding=params.query_embedding,
+                k=params.top_k
+            )
+        
+        # Process results
+        similar_relationships = []
+        for result in results:
+            # Extract relationship info from result
+            rel_id = result.get('id', 'unknown')
+            rel_desc = result.get('content', '')
+            similarity_score = result.get('score', 0.0)
+            
+            # Apply score threshold if specified
+            if params.score_threshold and similarity_score < params.score_threshold:
+                continue
+            
+            similar_relationships.append((rel_id, rel_desc, float(similarity_score)))
+        
+        # Sort by score (highest first)
+        similar_relationships.sort(key=lambda x: x[2], reverse=True)
+        
+        logger.info(f"Found {len(similar_relationships)} similar relationships")
+        
+        return RelationshipVDBSearchOutputs(
+            similar_relationships=similar_relationships,
+            metadata={
+                "vdb_id": params.vdb_reference_id,
+                "num_results": len(similar_relationships),
+                "query_type": "text" if params.query_text else "embedding"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error searching relationship VDB: {e}", exc_info=True)
+        return RelationshipVDBSearchOutputs(
+            similar_relationships=[],
+            metadata={"error": str(e)}
+        )
 
 async def relationship_agent_tool(
     params: RelationshipAgentInputs,
-    graphrag_context: GraphRAGContext
-) -> RelationshipAgentOutputs:
-    logger.info(f"Executing tool 'Relationship.Agent' with params: {params}")
-    return RelationshipAgentOutputs(determined_relationships=["agent_rel_id_1"])
-
-async def relationship_agent_tool(
-    params: RelationshipAgentInputs,
-    graphrag_context: Optional[Any] = None # Placeholder for GraphRAG system context
+    graphrag_context: Optional[Any] = None 
 ) -> RelationshipAgentOutputs:
     """
     Utilizes an LLM to find or extract useful relationships from the given context.
@@ -196,62 +431,18 @@ async def relationship_agent_tool(
     for i in range(num_to_extract):
         rel_type = params.target_relationship_types[0] if params.target_relationship_types else "related_to_by_llm"
         dummy_extracted_relationships.append(
-            RelationshipData( # This should be the harmonized model
+            RelationshipData( 
                 src_id=entity_ids_for_dummy_rels[i % len(entity_ids_for_dummy_rels)],
-                tgt_id=entity_ids_for_dummy_rels[(i+1) % len(entity_ids_for_dummy_rels)], # ensure different src/tgt for dummy
+                tgt_id=entity_ids_for_dummy_rels[(i+1) % len(entity_ids_for_dummy_rels)], 
                 source_id="llm_agent_relationship_tool",
                 relation_name=rel_type,
                 description=f"LLM identified relationship {i+1} of type {rel_type}",
-                relevance_score=0.90 - (i*0.02) # Example additional field
+                relevance_score=0.90 - (i*0.02) 
                 # Ensure all required fields from CoreRelationship are present
             )
         )
 
     return RelationshipAgentOutputs(extracted_relationships=dummy_extracted_relationships)
-
-
-# --- Tool Implementation for: Relationship Vector Database Search ---
-# tool_id: "Relationship.VDBSearch"
-
-async def relationship_vdb_search_tool(
-    params: RelationshipVDBSearchInputs,
-    graphrag_context: Optional[Any] = None
-) -> RelationshipVDBSearchOutputs:
-    """
-    Searches a vector database of relationships to find top-k most similar to a query.
-    Wraps core GraphRAG logic.
-    """
-    print(f"Executing tool 'Relationship.VDBSearch' with parameters: {params}")
-
-    # 1. Extract parameters from 'params: RelationshipVDBSearchInputs'
-    #    - vdb_reference_id: str
-    #    - query_text: Optional[str]
-    #    - query_embedding: Optional[List[float]]
-    #    - embedding_model_id: Optional[str]
-    #    - top_k_results: int
-
-    if not (params.query_text or params.query_embedding):
-        raise ValueError("Either query_text or query_embedding must be provided for Relationship.VDBSearch.")
-
-    print(f"Placeholder: Would search relationship VDB '{params.vdb_reference_id}' for query related to '{params.query_text}'.")
-
-    # Dummy results
-    dummy_similar_relationships = []
-    for i in range(params.top_k_results):
-        dummy_rel_data = RelationshipData(
-            relationship_id=f"vdb_rel_{i+1}",
-            src_id=f"src_node_vdb_rel_{i+1}",
-            tgt_id=f"tgt_node_vdb_rel_{i+1}",
-            source_id="relationship_vdb_tool",
-            type="similar_to_query_by_vdb",
-            description=f"Dummy relationship {i+1} found via VDB search.",
-            relevance_score=0.9 - (i*0.05) # Already part of RelationshipData if harmonized
-        )
-        dummy_similar_relationships.append(
-            (dummy_rel_data, 0.9 - (i*0.05)) # Tuple of (RelationshipData, score)
-        )
-
-    return RelationshipVDBSearchOutputs(similar_relationships=dummy_similar_relationships)
 
 
 # --- Tool Implementation for: Relationship Score Aggregator ---
@@ -285,7 +476,6 @@ async def relationship_score_aggregator_tool(
     num_to_return = params.top_k_relationships if params.top_k_relationships is not None else 2
 
     # Create some dummy RelationshipData if needed for the output structure
-    # This assumes RelationshipData is the harmonized model
     example_rels = [
         RelationshipData(relationship_id=f"agg_rel_{i}", src_id=f"src_{i}", tgt_id=f"tgt_{i}", source_id="agg_tool", type="aggregated_score_type")
         for i in range(num_to_return)
@@ -293,7 +483,7 @@ async def relationship_score_aggregator_tool(
 
     for i in range(num_to_return):
         dummy_scored_relationships.append(
-            (example_rels[i], 0.8 - (i * 0.1)) # (RelationshipData, aggregated_score)
+            (example_rels[i], 0.8 - (i * 0.1)) 
         )
 
     return RelationshipScoreAggregatorOutputs(scored_relationships=dummy_scored_relationships)

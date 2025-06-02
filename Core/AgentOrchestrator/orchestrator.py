@@ -2,7 +2,21 @@
 
 from typing import Dict, Any, List, Optional, Tuple, Type, Union
 from Core.AgentSchema.plan import ExecutionPlan, ExecutionStep, ToolCall, ToolInputSource, DynamicToolChainConfig
-from Core.AgentSchema.tool_contracts import EntityVDBSearchOutputs, EntityVDBSearchInputs, EntityPPRInputs, RelationshipOneHopNeighborsInputs, VDBSearchResultItem
+from Core.AgentSchema.tool_contracts import (
+    EntityVDBSearchInputs,
+    EntityVDBBuildInputs,
+    EntityPPRInputs,
+    EntityOneHopInput,
+    EntityRelNodeInput,
+    RelationshipOneHopNeighborsInputs,
+    RelationshipVDBBuildInputs,
+    RelationshipVDBSearchInputs,
+    ChunkFromRelationshipsInputs,
+    EntityVDBSearchOutputs, 
+    VDBSearchResultItem, 
+    GraphVisualizerInput, 
+    GraphAnalyzerInput
+)
 from Core.AgentSchema.corpus_tool_contracts import PrepareCorpusInputs
 from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInputs, BuildRKGraphInputs, BuildTreeGraphInputs, BuildTreeGraphBalancedInputs, BuildPassageGraphInputs
 from Core.AgentSchema.context import GraphRAGContext
@@ -10,17 +24,22 @@ from Core.Common.Logger import logger
 from pydantic import BaseModel
 from Option.Config2 import Config
 from Core.Provider.BaseLLM import BaseLLM
-from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
+from Core.Provider.BaseEmb import BaseEmb as LlamaIndexBaseEmbedding
 from Core.Chunk.ChunkFactory import ChunkFactory
 
 # Import tool functions (we'll add more as they become relevant)
 from Core.AgentTools.entity_tools import entity_vdb_search_tool, entity_ppr_tool
-from Core.AgentTools.relationship_tools import relationship_one_hop_neighbors_tool
+from Core.AgentTools.entity_onehop_tools import entity_onehop_neighbors_tool
+from Core.AgentTools.entity_relnode_tools import entity_relnode_extract_tool
+from Core.AgentTools.relationship_tools import relationship_one_hop_neighbors_tool, relationship_vdb_build_tool, relationship_vdb_search_tool
 from Core.AgentTools.graph_construction_tools import (
     build_er_graph, build_rk_graph, build_tree_graph, build_tree_graph_balanced, build_passage_graph
 )
 from Core.AgentTools.corpus_tools import prepare_corpus_from_directory
-# from Core.AgentTools.chunk_tools import ...
+from Core.AgentTools.graph_visualization_tools import visualize_graph
+from Core.AgentTools.graph_analysis_tools import analyze_graph
+from Core.AgentTools.chunk_tools import chunk_from_relationships_tool
+from Core.AgentTools.entity_vdb_tools import entity_vdb_build_tool
 # from Core.AgentTools.subgraph_tools import ...
 # from Core.AgentTools.community_tools import ...
 
@@ -45,16 +64,23 @@ class AgentOrchestrator:
         """
         registry = {
             "Entity.VDBSearch": (entity_vdb_search_tool, EntityVDBSearchInputs),
+            "Entity.VDB.Build": (entity_vdb_build_tool, EntityVDBBuildInputs),
             "Entity.PPR": (entity_ppr_tool, EntityPPRInputs),
+            "Entity.Onehop": (entity_onehop_neighbors_tool, EntityOneHopInput),
+            "Entity.RelNode": (entity_relnode_extract_tool, EntityRelNodeInput),
             "Relationship.OneHopNeighbors": (relationship_one_hop_neighbors_tool, RelationshipOneHopNeighborsInputs),
+            "Relationship.VDB.Build": (relationship_vdb_build_tool, RelationshipVDBBuildInputs),
+            "Relationship.VDB.Search": (relationship_vdb_search_tool, RelationshipVDBSearchInputs),
+            "Chunk.FromRelationships": (chunk_from_relationships_tool, ChunkFromRelationshipsInputs),
             # Add other tools here as they are implemented
-            # "Chunk.FromRelationships": (chunk_from_relationships_tool, ChunkFromRelationshipsInputs),
             "graph.BuildERGraph": (build_er_graph, BuildERGraphInputs),
             "graph.BuildRKGraph": (build_rk_graph, BuildRKGraphInputs),
             "graph.BuildTreeGraph": (build_tree_graph, BuildTreeGraphInputs),
             "graph.BuildTreeGraphBalanced": (build_tree_graph_balanced, BuildTreeGraphBalancedInputs),
             "graph.BuildPassageGraph": (build_passage_graph, BuildPassageGraphInputs),
             "corpus.PrepareFromDirectory": (prepare_corpus_from_directory, PrepareCorpusInputs),
+            "graph.Visualize": (visualize_graph, GraphVisualizerInput),
+            "graph.Analyze": (analyze_graph, GraphAnalyzerInput),
         }
         logger.info(f"AgentOrchestrator: Registered {len(registry)} tools with Pydantic models: {list(registry.keys())}")
         return registry
@@ -212,6 +238,59 @@ class AgentOrchestrator:
 
                     logger.info(f"Orchestrator: Tool {tool_call.tool_id} executed. Output type: {type(tool_output)}")
                     logger.debug(f"Orchestrator: Raw output: {str(tool_output)[:500]}...")
+
+                    # Register graph instances after building
+                    logger.debug(f"Orchestrator: Checking if tool {tool_call.tool_id} is a graph build tool...")
+                    if tool_call.tool_id.startswith("graph.Build") and tool_output is not None:
+                        logger.debug(f"Orchestrator: Tool is graph build, checking attributes...")
+                        logger.debug(f"Orchestrator: Has graph_id: {hasattr(tool_output, 'graph_id')}, Has status: {hasattr(tool_output, 'status')}")
+                        if hasattr(tool_output, 'graph_id') and hasattr(tool_output, 'status'):
+                            logger.debug(f"Orchestrator: Status={tool_output.status}, Graph ID={tool_output.graph_id}")
+                            if tool_output.status == "success" and tool_output.graph_id:
+                                # Get the graph instance from graph factory
+                                from Core.Graph.GraphFactory import get_graph
+                                try:
+                                    logger.info(f"Orchestrator: Attempting to register graph '{tool_output.graph_id}'...")
+                                    # Recreate the graph instance to register it
+                                    temp_config = self.main_config.model_copy(deep=True)
+                                    graph_type = None
+                                    if "ERGraph" in tool_output.graph_id:
+                                        graph_type = "er_graph"
+                                    elif "RKGraph" in tool_output.graph_id:
+                                        graph_type = "rk_graph"
+                                    elif "TreeGraphBalanced" in tool_output.graph_id:
+                                        graph_type = "tree_graph_balanced"
+                                    elif "TreeGraph" in tool_output.graph_id:
+                                        graph_type = "tree_graph"
+                                    elif "PassageGraph" in tool_output.graph_id:
+                                        graph_type = "passage_graph"
+                                    
+                                    if graph_type:
+                                        temp_config.graph.type = graph_type
+                                        graph_instance = get_graph(
+                                            config=temp_config,
+                                            llm=self.llm,
+                                            encoder=self.encoder
+                                        )
+                                        # Set the namespace for the graph
+                                        if hasattr(graph_instance._graph, 'namespace'):
+                                            dataset_name = tool_output.graph_id.replace(f"_{graph_type.replace('_', '').title()}", "").replace("Graph", "").replace("_ERGraph", "")
+                                            graph_instance._graph.namespace = self.chunk_factory.get_namespace(dataset_name)
+                                            logger.debug(f"Orchestrator: Set graph namespace to {dataset_name}")
+                                        
+                                        # Register in context
+                                        self.graphrag_context.add_graph_instance(tool_output.graph_id, graph_instance)
+                                        logger.info(f"Orchestrator: Successfully registered graph '{tool_output.graph_id}' in GraphRAGContext")
+                                    else:
+                                        logger.warning(f"Orchestrator: Could not determine graph type for '{tool_output.graph_id}'")
+                                except Exception as e:
+                                    logger.error(f"Orchestrator: Failed to register graph '{tool_output.graph_id}': {e}", exc_info=True)
+                            else:
+                                logger.debug(f"Orchestrator: Graph build not successful or no graph_id")
+                        else:
+                            logger.debug(f"Orchestrator: Tool output missing required attributes")
+                    else:
+                        logger.debug(f"Orchestrator: Not a graph build tool or no output")
 
                     if tool_call.named_outputs and tool_output is not None:
                         output_data_to_store = {}

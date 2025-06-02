@@ -10,15 +10,11 @@ from Core.AgentSchema.tool_contracts import (
     EntityPPROutputs,
     EntityVDBSearchInputs,
     EntityVDBSearchOutputs,
-    VDBSearchResultItem,  # <--- ADD THIS IMPORT
-    EntityTFIDFInputs,
-    EntityTFIDFOutputs,
-    EntityAgentInputs,
-    EntityAgentOutputs,
-    ExtractedEntityData, # Ensure this is imported if used by EntityAgent
-    EntityLinkInputs,
-    EntityLinkOutputs,
-    LinkedEntityPair # Ensure this is imported if used by EntityLink
+    VDBSearchResultItem,  
+    EntityOneHopInput,
+    EntityOneHopOutput,
+    EntityRelNodeInput,
+    EntityRelNodeOutputs
 )
 from Core.Retriever.EntitiyRetriever import EntityRetriever # Typo "EntitiyRetriever" is as per user's files
 from Core.Retriever.BaseRetriever import BaseRetriever # If direct instantiation or type hinting needed
@@ -393,159 +389,148 @@ async def entity_ppr_tool(
 # --- Tool Implementation for: Entity Operator - Agent ---
 # tool_id: "Entity.Agent"
 
-from Core.AgentSchema.tool_contracts import (
-    EntityAgentInputs, EntityAgentOutputs, ExtractedEntityData,
-    EntityRelNodeInputs, EntityRelNodeOutputs,
-    EntityLinkInputs, EntityLinkOutputs, LinkedEntityPair,
-    RelationshipData
-)
-from typing import Literal
-from Core.AgentSchema.context import GraphRAGContext
+# async def entity_agent_tool(
+#     params: EntityAgentInputs,
+#     graphrag_context: Optional[Any] = None # Placeholder for GraphRAG system context
+# ) -> EntityAgentOutputs:
+#     """
+#     Utilizes an LLM to find or extract useful entities from the given context.
+#     Wraps core GraphRAG logic for LLM-based entity extraction.
+#     """
+#     print(f"Executing tool 'Entity.Agent' with parameters: {params}")
 
-async def entity_agent_tool(
-    params: EntityAgentInputs,
-    graphrag_context: Optional[Any] = None # Placeholder for GraphRAG system context
-) -> EntityAgentOutputs:
-    """
-    Utilizes an LLM to find or extract useful entities from the given context.
-    Wraps core GraphRAG logic for LLM-based entity extraction.
-    """
-    print(f"Executing tool 'Entity.Agent' with parameters: {params}")
+#     # 1. Extract parameters from 'params: EntityAgentInputs'
+#     #    - query_text: str
+#     #    - text_context: Union[str, List[str]]
+#     #    - existing_entity_ids: Optional[List[str]]
+#     #    - target_entity_types: Optional[List[str]]
+#     #    - llm_config_override_patch: Optional[Dict[str, Any]]
+#     #    - max_entities_to_extract: Optional[int]
 
-    # 1. Extract parameters from 'params: EntityAgentInputs'
-    #    - query_text: str
-    #    - text_context: Union[str, List[str]]
-    #    - existing_entity_ids: Optional[List[str]]
-    #    - target_entity_types: Optional[List[str]]
-    #    - llm_config_override_patch: Optional[Dict[str, Any]]
-    #    - max_entities_to_extract: Optional[int]
+#     # Placeholder: Prepare prompt for LLM using query_text, text_context, and target_entity_types.
+#     # Placeholder: Get LLM instance (potentially from graphrag_context, applying llm_config_override_patch).
+#     # Placeholder: Make LLM call.
+#     # Placeholder: Parse LLM response into List[ExtractedEntityData].
 
-    # Placeholder: Prepare prompt for LLM using query_text, text_context, and target_entity_types.
-    # Placeholder: Get LLM instance (potentially from graphrag_context, applying llm_config_override_patch).
-    # Placeholder: Make LLM call.
-    # Placeholder: Parse LLM response into List[ExtractedEntityData].
+#     print(f"Placeholder: Would use LLM to extract entities from context related to '{params.query_text}'.")
+#     print(f"Target entity types: {params.target_entity_types}")
 
-    print(f"Placeholder: Would use LLM to extract entities from context related to '{params.query_text}'.")
-    print(f"Target entity types: {params.target_entity_types}")
+#     # Dummy results
+#     dummy_extracted_entities = []
+#     num_to_extract = params.max_entities_to_extract if params.max_entities_to_extract is not None else 2
+#     for i in range(num_to_extract):
+#         entity_type = params.target_entity_types[0] if params.target_entity_types else "Unknown"
+#         dummy_extracted_entities.append(
+#             ExtractedEntityData( # This should be the harmonized model from tool_contracts.py
+#                 entity_name=f"llm_extracted_entity_{i+1}", # CoreEntity uses entity_name
+#                 source_id="llm_agent_tool", # Or a more specific source
+#                 entity_type=entity_type,
+#                 description=f"Description for LLM-extracted entity {i+1} of type {entity_type}.",
+#                 attributes={"llm_confidence": 0.85 + (i*0.01)},
+#                 extraction_confidence=0.85 + (i*0.01) # Example additional field
+#             )
+#         )
 
-    # Dummy results
-    dummy_extracted_entities = []
-    num_to_extract = params.max_entities_to_extract if params.max_entities_to_extract is not None else 2
-    for i in range(num_to_extract):
-        entity_type = params.target_entity_types[0] if params.target_entity_types else "Unknown"
-        dummy_extracted_entities.append(
-            ExtractedEntityData( # This should be the harmonized model from tool_contracts.py
-                entity_name=f"llm_extracted_entity_{i+1}", # CoreEntity uses entity_name
-                source_id="llm_agent_tool", # Or a more specific source
-                entity_type=entity_type,
-                description=f"Description for LLM-extracted entity {i+1} of type {entity_type}.",
-                attributes={"llm_confidence": 0.85 + (i*0.01)},
-                extraction_confidence=0.85 + (i*0.01) # Example additional field
-            )
-        )
-
-    return EntityAgentOutputs(extracted_entities=dummy_extracted_entities)
+#     return EntityAgentOutputs(extracted_entities=dummy_extracted_entities)
 
 
 # --- Tool Implementation for: Entity Operator - RelNode ---
 # tool_id: "Entity.RelNode"
 
-async def entity_rel_node_tool(
-    params: EntityRelNodeInputs,
-    graphrag_context: Optional[Any] = None
-) -> EntityRelNodeOutputs:
-    """
-    Extracts unique entity IDs from a given list of relationships, based on node roles.
-    Wraps core GraphRAG logic.
-    """
-    print(f"Executing tool 'Entity.RelNode' with parameters: {params}")
+# async def entity_rel_node_tool(
+#     params: EntityRelNodeInputs,
+#     graphrag_context: Optional[Any] = None
+# ) -> EntityRelNodeOutputs:
+#     """
+#     Extracts unique entity IDs from a given list of relationships, based on node roles.
+#     Wraps core GraphRAG logic.
+#     """
+#     print(f"Executing tool 'Entity.RelNode' with parameters: {params}")
 
-    # 1. Extract parameters from 'params: EntityRelNodeInputs'
-    #    - relationships: List[RelationshipData]
-    #    - node_role: Optional[Literal["source", "target", "both"]]
+#     # 1. Extract parameters from 'params: EntityRelNodeInputs'
+#     #    - relationships: List[RelationshipData]
+#     #    - node_role: Optional[Literal["source", "target", "both"]]
 
-    # Placeholder: Process params.relationships to extract entity IDs based on params.node_role
-    print(f"Placeholder: Would extract entities from {len(params.relationships)} relationships playing role '{params.node_role}'.")
+#     # Placeholder: Process params.relationships to extract entity IDs based on params.node_role
+#     print(f"Placeholder: Would extract entities from {len(params.relationships)} relationships playing role '{params.node_role}'.")
 
-    extracted_ids = set()
-    for rel in params.relationships:
-        if params.node_role == "source" or params.node_role == "both":
-            extracted_ids.add(rel.src_id) # Assuming RelationshipData has src_id
-        if params.node_role == "target" or params.node_role == "both":
-            extracted_ids.add(rel.tgt_id) # Assuming RelationshipData has tgt_id
+#     extracted_ids = set()
+#     for rel in params.relationships:
+#         if params.node_role == "source" or params.node_role == "both":
+#             extracted_ids.add(rel.src_id) # Assuming RelationshipData has src_id
+#         if params.node_role == "target" or params.node_role == "both":
+#             extracted_ids.add(rel.tgt_id) # Assuming RelationshipData has tgt_id
 
-    # Dummy results
-    return EntityRelNodeOutputs(extracted_entity_ids=list(extracted_ids))
+#     # Dummy results
+#     return EntityRelNodeOutputs(extracted_entity_ids=list(extracted_ids))
 
 
 # --- Tool Implementation for: Entity Operator - Link ---
 # tool_id: "Entity.Link"
 
-async def entity_link_tool(
-    params: EntityLinkInputs,
-    graphrag_context: Optional[Any] = None
-) -> EntityLinkOutputs:
-    """
-    Links source entity mentions/objects to canonical entities in a knowledge base or VDB.
-    Wraps core GraphRAG logic for entity linking.
-    """
-    print(f"Executing tool 'Entity.Link' with parameters: {params}")
+# async def entity_link_tool(
+#     params: EntityLinkInputs,
+#     graphrag_context: Optional[Any] = None
+# ) -> EntityLinkOutputs:
+#     """
+#     Links source entity mentions/objects to canonical entities in a knowledge base or VDB.
+#     Wraps core GraphRAG logic for entity linking.
+#     """
+#     print(f"Executing tool 'Entity.Link' with parameters: {params}")
 
-    # 1. Extract parameters from 'params: EntityLinkInputs'
-    #    - source_entities: List[Union[str, ExtractedEntityData]]
-    #    - knowledge_base_reference_id: Optional[str]
-    #    - similarity_threshold: Optional[float]
-    #    - embedding_model_id: Optional[str]
+#     # 1. Extract parameters from 'params: EntityLinkInputs'
+#     #    - source_entities: List[Union[str, ExtractedEntityData]]
+#     #    - knowledge_base_reference_id: Optional[str]
+#     #    - similarity_threshold: Optional[float]
+#     #    - embedding_model_id: Optional[str]
 
-    # Placeholder: For each source_entity, attempt to link it.
-    # This would involve embedding, searching the KB/VDB, and applying threshold.
-    print(f"Placeholder: Would attempt to link {len(params.source_entities)} entities against KB '{params.knowledge_base_reference_id}'.")
+#     # Placeholder: For each source_entity, attempt to link it.
+#     # This would involve embedding, searching the KB/VDB, and applying threshold.
+#     print(f"Placeholder: Would attempt to link {len(params.source_entities)} entities against KB '{params.knowledge_base_reference_id}'.")
 
-    dummy_linked_results = []
-    for i, src_entity in enumerate(params.source_entities):
-        mention = src_entity if isinstance(src_entity, str) else getattr(src_entity, 'entity_name', f"unknown_entity_{i}")
-        dummy_linked_results.append(
-            LinkedEntityPair(
-                source_entity_mention=mention,
-                linked_entity_id=f"canonical_id_for_{mention}" if (i % 2 == 0) else None,
-                linked_entity_description=f"Description of canonical entity for {mention}" if (i % 2 == 0) else None,
-                similarity_score=0.85 - (i * 0.05) if (i % 2 == 0) else None,
-                link_status="linked" if (i % 2 == 0) else "not_found"
-            )
-        )
+#     dummy_linked_results = []
+#     for i, src_entity in enumerate(params.source_entities):
+#         mention = src_entity if isinstance(src_entity, str) else getattr(src_entity, 'entity_name', f"unknown_entity_{i}")
+#         dummy_linked_results.append(
+#             LinkedEntityPair(
+#                 source_entity_mention=mention,
+#                 linked_entity_id=f"canonical_id_for_{mention}" if (i % 2 == 0) else None,
+#                 linked_entity_description=f"Description of canonical entity for {mention}" if (i % 2 == 0) else None,
+#                 similarity_score=0.85 - (i * 0.05) if (i % 2 == 0) else None,
+#                 link_status="linked" if (i % 2 == 0) else "not_found"
+#             )
+#         )
 
-    return EntityLinkOutputs(linked_entities_results=dummy_linked_results)
+#     return EntityLinkOutputs(linked_entities_results=dummy_linked_results)
 
 
 # --- Tool Implementation for: Entity TF-IDF Ranking ---
 # tool_id: "Entity.TFIDF"
 
-from Core.AgentSchema.tool_contracts import EntityTFIDFInputs, EntityTFIDFOutputs
+# async def entity_tfidf_tool(
+#     params: EntityTFIDFInputs,
+#     graphrag_context: Optional[Any] = None
+# ) -> EntityTFIDFOutputs:
+#     """
+#     Ranks candidate entities based on TF-IDF scores against a query or context documents.
+#     Wraps core GraphRAG logic.
+#     """
+#     print(f"Executing tool 'Entity.TFIDF' with parameters: {params}")
 
-async def entity_tfidf_tool(
-    params: EntityTFIDFInputs,
-    graphrag_context: Optional[Any] = None
-) -> EntityTFIDFOutputs:
-    """
-    Ranks candidate entities based on TF-IDF scores against a query or context documents.
-    Wraps core GraphRAG logic.
-    """
-    print(f"Executing tool 'Entity.TFIDF' with parameters: {params}")
+#     # 1. Extract parameters from 'params: EntityTFIDFInputs'
+#     #    - candidate_entity_ids: List[str]
+#     #    - query_text: Optional[str]
+#     #    - context_document_ids: Optional[List[str]]
+#     #    - corpus_reference_id: str
+#     #    - top_k_results: Optional[int]
 
-    # 1. Extract parameters from 'params: EntityTFIDFInputs'
-    #    - candidate_entity_ids: List[str]
-    #    - query_text: Optional[str]
-    #    - context_document_ids: Optional[List[str]]
-    #    - corpus_reference_id: str
-    #    - top_k_results: Optional[int]
+#     # Placeholder: Access corpus, build/load TF-IDF matrix, rank entities.
+#     print(f"Placeholder: Would rank entities {params.candidate_entity_ids} from corpus '{params.corpus_reference_id}' using TF-IDF against query '{params.query_text}'.")
 
-    # Placeholder: Access corpus, build/load TF-IDF matrix, rank entities.
-    print(f"Placeholder: Would rank entities {params.candidate_entity_ids} from corpus '{params.corpus_reference_id}' using TF-IDF against query '{params.query_text}'.")
+#     # Dummy results
+#     dummy_ranked_entities = []
+#     num_to_return = params.top_k_results if params.top_k_results is not None else len(params.candidate_entity_ids)
+#     for i, entity_id in enumerate(params.candidate_entity_ids[:num_to_return]):
+#         dummy_ranked_entities.append((entity_id, 0.75 - (i * 0.1))) # (entity_id, tfidf_score)
 
-    # Dummy results
-    dummy_ranked_entities = []
-    num_to_return = params.top_k_results if params.top_k_results is not None else len(params.candidate_entity_ids)
-    for i, entity_id in enumerate(params.candidate_entity_ids[:num_to_return]):
-        dummy_ranked_entities.append((entity_id, 0.75 - (i * 0.1))) # (entity_id, tfidf_score)
-
-    return EntityTFIDFOutputs(ranked_entities=dummy_ranked_entities)
+#     return EntityTFIDFOutputs(ranked_entities=dummy_ranked_entities)

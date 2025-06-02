@@ -217,46 +217,6 @@
 - Demonstrated successful graph creation with 223 nodes and 152 edges from sample text documents
 - Test produces verifiable artifacts including Corpus.json and graph file in proper locations
 
-2025-06-01: Integrated PrepareCorpusFromDirectoryTool with Agent Workflow System - COMPLETED
-- Created comprehensive PrepareCorpusFromDirectoryTool to process raw text files into Corpus.json format
-- Implemented Core/AgentSchema/corpus_tool_contracts.py with PrepareCorpusInputs and PrepareCorpusOutputs Pydantic models
-  - Added target_corpus_name support for logical corpus naming
-  - Improved field descriptions for better agent understanding
-- Created Core/AgentTools/corpus_tools.py with prepare_corpus_from_directory function
-  - Added corpus name derivation from output directory when not specified
-  - Improved error handling and validation of input/output paths
-  - Added comprehensive logging of processing steps
-  - Implemented early validation of text file existence
-- Enhanced ERGraph JSON parsing with markdown code fence stripping in _named_entity_recognition and _openie_post_ner_extract methods
-- Improved get_artifact_path in graph_construction_tools.py to correctly return directory paths instead of file paths
-- Added debug logging of artifact paths in build_er_graph tool
-- Added fallback to prase_json_from_response utility when available
-- Registered PrepareCorpusFromDirectoryTool in Core/AgentOrchestrator/orchestrator.py as 'corpus.PrepareFromDirectory'
-- Added tool description for PrepareCorpusFromDirectoryTool in Core/AgentBrain/agent_brain.py
-- Created and successfully tested corpus preparation functionality with test_corpus_prepare_tool.py
-- Attempted integration with graph building tools for a complete two-step workflow
-  - Identified tool dependency challenges - graph building tools require LLM, encoder and chunk factory instances
-  - Documented requirements for direct tool usage vs. agent-orchestrated execution
-- Created git commit (c54d835) with all changes for future reference/rollback point
-
-2025-06-01: Fixed ERGraph JSON parsing and error handling
-- Added robust JSON parsing in ERGraph._named_entity_recognition and _openie_post_ner_extract methods
-- Added proper error handling for malformed JSON outputs from LLM
-- Fixed 'logger not defined' errors by adding local logger imports to BaseGraph methods (__graph__, _merge_nodes_then_upsert, _merge_edges_then_upsert)
-- Updated build_graph in BaseGraph.py to properly handle and return boolean success/failure status
-- Fixed build_er_graph tool in graph_construction_tools.py to check build success and return appropriate status
-- Successfully ran test_graph_tools_real_llm.py with real LLM extraction
-
-2025-06-01: Implemented fully integrated test for build_er_graph tool
-- Created a test-local ChunkFactory implementation with hardcoded american_revolution_doc chunks
-- Fixed NameSpace handling by using get_save_path() method for path resolution
-- Added proper initialization of TextChunk objects with required 'tokens' parameter
-- Implemented robust artifact path validation even when artifact_path is not returned
-- Ensured proper config loading with Config.default() for complete configuration
-- Initialized real LiteLLMProvider and RAGEmbeddingFactory with proper configurations
-- Test now performs end-to-end validation with actual LLM API calls
-- The test successfully builds an ERGraph and verifies the presence of output artifacts
-
 2025-05-30: Verified diagnostic logging cleanup status:
 - Core/Retriever/BaseRetriever.py: 
   - logger.critical line at start of _run_personalized_pagerank is not present
@@ -607,3 +567,223 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
 - Found that relationship_tools.py was looking for 'type' attribute on edges
 - Changed edge_attr_for_relation_name from 'type' to 'relation_name' to match ERGraph storage
 - One-hop neighbors tool now returns actual relationship names instead of "unknown_relationship"
+
+2025-06-02: GraphVisualizer Tool Implementation
+- **Added**: New `GraphVisualizer` agent tool that visualizes graphs in multiple formats
+  - Supports `JSON_NODES_EDGES` format (default) with nodes, edges, and metadata
+  - Supports `GML` (Graph Modeling Language) format for standard graph exchange
+  - Takes `graph_id` as input to retrieve graphs from context
+  - Returns structured output with graph representation, format used, and status message
+  
+- **Modified**: Updated tool infrastructure
+  - Added `GraphVisualizerInput` and `GraphVisualizerOutput` Pydantic models in `Core/AgentSchema/tool_contracts.py`
+  - Created `Core/AgentTools/graph_visualization_tools.py` with `visualize_graph` function
+  - Registered new tool as `"graph.Visualize"` in `Core/AgentOrchestrator/orchestrator.py`
+  
+- **Testing**: Created comprehensive test suite
+  - Added `testing/test_graph_visualization_tool.py` with 6 test cases
+  - Tests cover JSON/GML formats, error handling, default behavior, and edge cases
+  - All tests passing successfully
+  
+- **Design Decisions**:
+  - Tool retrieves graphs from GraphRAGContext using `get_graph_instance()` method
+  - Supports flexible graph instance structures by checking multiple attributes
+  - Provides detailed error messages for debugging
+  - Uses standard NetworkX methods for format conversion
+
+2025-06-02: GraphAnalyzer Tool Implementation
+- **Implemented GraphAnalyzer Tool for Graph Metrics Calculation**
+  - Added Pydantic input/output models to `Core/AgentSchema/tool_contracts.py`:
+    - `GraphAnalyzerInput`: Accepts graph_id, optional metrics list, top_k_nodes for centrality, and expensive metrics flag
+    - `GraphAnalyzerOutput`: Returns comprehensive graph metrics including basic stats, centrality, clustering, connectivity, components, and paths
+  - Created `Core/AgentTools/graph_analysis_tools.py` with `analyze_graph` function
+  - Features:
+    - **Basic Statistics**: Node/edge count, density, average degree
+    - **Centrality Metrics**: Degree, closeness, betweenness, eigenvector, PageRank centrality
+    - **Clustering Metrics**: Average clustering coefficient, transitivity, triangle count
+    - **Connectivity Metrics**: Strong/weak connectivity for directed graphs
+    - **Component Analysis**: Detailed metrics for each connected component
+    - **Path Metrics**: Average shortest path length, diameter
+  - Performance optimizations:
+    - Selective metric calculation to reduce computation
+    - Configurable expensive metric calculation (e.g., betweenness centrality)
+    - Top-K filtering for centrality results
+    - Warnings for skipped computations on large graphs
+  - Registered tool in orchestrator as "graph.Analyze"
+  - Created comprehensive unit tests in `testing/test_graph_analysis_tool.py`:
+    - 9 test functions covering all metric types
+    - Tests for performance with large graphs
+    - Error handling tests for invalid inputs
+    - All tests passing successfully
+  - Integration:
+    - Uses same GraphRAGContext pattern as other tools
+    - Retrieves graphs via `context.get_graph_instance(graph_id)`
+    - Consistent error handling and messaging
+
+- **Design Decisions**:
+  - Tool designed to be extensible for additional metrics
+  - Leverages NetworkX for all graph computations
+  - Provides detailed status messages and warnings
+  - Handles both directed and undirected graphs appropriately
+
+2025-06-02: GraphRAG Operator Analysis and Implementation Planning
+- **Created Comprehensive GraphRAG Operator Status Document**
+  - Analyzed all 16 operators from the GraphRAG paper categorized into 5 types:
+    - Entity Operators (7 total): VDB , PPR , RelNode , Agent , Onehop , Link , TF-IDF 
+    - Relationship Operators (4 total): Onehop , VDB , Aggregator , Agent 
+    - Chunk Operators (3 total): FromRel , Aggregator , Occurrence 
+    - Subgraph Operators (3 total): KhopPath , Steiner , AgentPath 
+    - Community Operators (2 total): Entity , Layer 
+  
+- **Current Implementation Status**:
+  - Implemented: 3/16 core operators (Entity.VDB, Entity.PPR, Relationship.Onehop)
+  - Partially implemented: 1/16 (Chunk.FromRel - commented out)
+  - Not implemented: 12/16 operators
+  - Additional tools: 7 graph construction/analysis tools
+
+- **Prioritized Implementation Plan**:
+  - **High Priority** (enable basic GraphRAG):
+    1. Entity.Onehop - Essential for context expansion
+    2. Entity.RelNode - Extract entities from relationships
+    3. Chunk.FromRel - Complete partial implementation
+    4. Relationship.VDB - Vector search for relationships
+  - **Medium Priority** (enhanced retrieval):
+    5. Chunk.Aggregator - Score-based selection
+    6. Relationship.Aggregator - PPR-based scoring
+    7. Subgraph.KhopPath - Multi-hop paths
+    8. Entity.Link - Similarity matching
+  - **Low Priority** (advanced/specialized):
+    9-16. Agent-based, Community, and specialized operators
+
+- **Created**: `Doc/graphrag_operator_status.md` for tracking implementation progress
+
+2025-06-02: Added Entity.Onehop Operator
+- **File**: `Core/AgentTools/entity_onehop_tools.py`
+- **Function**: `entity_onehop_neighbors()`
+- **Purpose**: Extract one-hop neighbor entities from a graph
+- **Features**:
+  - Retrieves all entities directly connected to specified entities
+  - Supports both directed and undirected graphs
+  - Optional inclusion of edge attributes
+  - Configurable neighbor limit per entity
+  - Handles missing entities gracefully
+- **Input**: `EntityOneHopInput` (entity_ids, graph_id, include_edge_attributes, neighbor_limit_per_entity)
+- **Output**: `EntityOneHopOutput` (neighbors dict, total_neighbors_found, message)
+- **Test**: `testing/test_entity_onehop_tool.py` (9 comprehensive tests)
+- **Registered**: Added to orchestrator as "Entity.Onehop"
+
+### Added Entity.RelNode Operator
+- **File**: `Core/AgentTools/entity_relnode_tools.py`
+- **Function**: `entity_relnode_extract()`
+- **Purpose**: Extract entities connected by specific relationships
+- **Features**:
+  - Finds entities involved in given relationship IDs
+  - Supports role filtering (source, target, both)
+  - Supports entity type filtering
+  - Maps relationships to their connected entities
+  - Handles multiple relationship ID formats
+- **Input**: `EntityRelNodeInput` (relationship_ids, graph_id, entity_role_filter, entity_type_filter)
+- **Output**: `EntityRelNodeOutput` (entities list, entity_count, relationship_entity_map, message)
+- **Registered**: Added to orchestrator as "Entity.RelNode"
+- **Next Steps**: Create comprehensive tests for Entity.RelNode
+
+### GraphRAG Operator Implementation Progress
+- **Completed**: Entity.Onehop, Entity.RelNode (2 of 16 operators)
+- **In Progress**: Following priority plan from `Doc/graphrag_operator_status.md`
+- **Next Priority**: Chunk.FromRel, Relationship.VDB
+
+2025-06-02: Completed Chunk.FromRelationships implementation
+- Completed implementation of `chunk_from_relationships` function in `Core/AgentTools/chunk_tools.py`
+- Fixed graph extraction logic to properly handle wrapped graph instances
+- Added support for extracting chunks from:
+  - Edge data (direct text content and chunk lists)
+  - Connected nodes' chunk data
+  - Multiple chunk data formats (string IDs and full chunk dicts)
+- Implemented proper chunk data mapping from internal 'text' field to ChunkData 'content' field
+- Added metadata tracking for relationship IDs, source/target nodes
+- Implemented chunk limits (per relationship and total)
+- Created comprehensive unit tests in `testing/test_chunk_from_relationships_tool.py`:
+  - Basic chunk extraction
+  - Multiple relationships
+  - Dictionary relationship formats
+  - Chunk limits
+  - Invalid inputs
+  - Mixed chunk formats
+  - Composite edge keys
+- All 10 tests passing successfully
+- Operator already registered in orchestrator as "Chunk.FromRelationships"
+
+2025-05-31: Fixed LiteLLMProvider config compatibility and added diagnostic logging
+- Added `self.temperature` and `self.max_token` to `LiteLLMProvider.__init__`, loading from config.
+- Added `self.max_tokens` as an alias to `self.max_token` for compatibility with agent_brain usage.
+- Set `litellm.drop_params = True` after importing litellm in LiteLLMProvider.py to automatically drop unsupported parameters (like temperature) for O-series models (e.g., o4-mini) and similar, improving compatibility with OpenAI endpoints.
+- Fixes attribute error during plan generation in PlanningAgent when using LiteLLMProvider.
+- Added diagnostic logging to track config loading and initialization
+
+### Documentation
+- Created comprehensive handoff document at `Doc/handoff_2025_06_02.md`
+- Includes project overview, implementation status, key fixes, technical patterns
+- Documents next steps, priorities, and common issues/solutions
+- Provides complete context for continuing development in next session
+
+2025-05-31: Fixed LiteLLMProvider config compatibility and added diagnostic logging
+{{ ... }}
+- Fixed orchestrator to register graph instances in context after successful graph build tool execution
+  - Graph build tools now properly add their output to the shared GraphRAGContext
+  - This enables downstream tools like VDB builders to find the graph instance
+
+## 2025-06-02 - Entity VDB Build Tool Implementation
+
+**Issue**: The comprehensive demo was using `Relationship.VDB.Build` to build entity VDBs, which is incorrect since that tool is designed for relationships, not entities.
+
+**Solution**: 
+- Created a new `entity_vdb_build_tool` in `/home/brian/digimon/Core/AgentTools/entity_vdb_tools.py`
+- Added `EntityVDBBuildInputs` and `EntityVDBBuildOutputs` to tool contracts
+- Registered the new `Entity.VDB.Build` tool in the orchestrator
+- Fixed GraphRAGContext initialization to include embedding_provider, llm_provider, and chunk_storage_manager
+- Updated demo to use `Entity.VDB.Build` instead of `Relationship.VDB.Build`
+
+**Key Changes**:
+1. New file: `Core/AgentTools/entity_vdb_tools.py` - Implements entity VDB building from graph nodes
+2. Updated: `Core/AgentSchema/tool_contracts.py` - Added entity VDB input/output contracts
+3. Updated: `Core/AgentOrchestrator/orchestrator.py` - Added Entity.VDB.Build to tool registry
+4. Fixed: `testing/test_comprehensive_graphrag_demo.py` - Fixed GraphRAGContext initialization and VDB build tool usage
+
+This enables proper entity vector database building from graph nodes with their descriptions and metadata.
+
+{{ ... }}
+## 2025-06-02 - Entity VDB Build Tool Implementation
+
+**Issue**: The comprehensive demo was using `Relationship.VDB.Build` to build entity VDBs, which is incorrect since that tool is designed for relationships, not entities.
+
+**Solution**: 
+- Created a new `entity_vdb_build_tool` in `/home/brian/digimon/Core/AgentTools/entity_vdb_tools.py`
+- Added `EntityVDBBuildInputs` and `EntityVDBBuildOutputs` to tool contracts
+- Registered the new `Entity.VDB.Build` tool in the orchestrator
+- Fixed GraphRAGContext initialization to include embedding_provider, llm_provider, and chunk_storage_manager
+- Updated demo to use `Entity.VDB.Build` instead of `Relationship.VDB.Build`
+
+**Key Changes**:
+1. New file: `Core/AgentTools/entity_vdb_tools.py` - Implements entity VDB building from graph nodes
+2. Updated: `Core/AgentSchema/tool_contracts.py` - Added entity VDB input/output contracts
+3. Updated: `Core/AgentOrchestrator/orchestrator.py` - Added Entity.VDB.Build to tool registry
+4. Fixed: `testing/test_comprehensive_graphrag_demo.py` - Fixed GraphRAGContext initialization and VDB build tool usage
+
+**Results**:
+- Demo runs successfully end-to-end without errors
+- Entity VDB build step completes successfully
+- Pipeline demonstrates all major GraphRAG features: corpus prep, graph building, VDB operations, PPR, multi-hop traversal
+
+This enables proper entity vector database building from graph nodes with their descriptions and metadata.
+
+## 2025-06-02 - Fixed Import Issues in Entity VDB Tools
+
+**Issue**: The entity_vdb_build_tool had incorrect imports causing module not found errors.
+
+**Solution**: 
+- Fixed import: Changed `from Core.Index.index_config import FAISSIndexConfig` to `from Core.Index.Schema import FAISSIndexConfig`
+- Fixed import: Changed `from Core.Common.StorageManager import Workspace, NameSpace` to `from Core.Storage.NameSpace import Workspace, NameSpace`
+- Fixed demo: Replaced custom SimpleEmbedding with `get_rag_embedding(config=main_config)`
+- Removed unused import: `from Core.Storage.JsonStorage import JsonStorage`
+
+**Result**: The comprehensive demo now runs successfully end-to-end, demonstrating all GraphRAG features without import errors.

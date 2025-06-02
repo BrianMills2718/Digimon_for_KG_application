@@ -135,59 +135,38 @@ class ChunkRelationshipScoreAggregatorInputs(BaseToolParams):
 class ChunkRelationshipScoreAggregatorOutputs(BaseToolOutput):
     ranked_aggregated_chunks: List[ChunkData] # Chunks with an added aggregated_score field, or List[Tuple[str, float]]
 
-# TODO:
-# - Define Pydantic models for other operators from README.md.
-# - Consider if 'parameters' in ToolCall should be a Union of these specific input models
-#   for stronger type checking, e.g., parameters: Union[EntityPPRInputs, EntityVDBSearchInputs, ...].
-#   This makes the ToolCall model more complex but safer.
-# - These input/output models will need to be aligned with the actual Python function
-#   signatures of the underlying operator implementations in your Core modules.
-# Instructions for LLM IDE: End
-# Explanation and Purpose of this Step:
-#
-# Concrete Data Structures: This file, Core/AgentSchema/tool_contracts.py, starts to give us concrete Pydantic data structures for the inputs and outputs of individual tools (your KG operators).
-# Type Safety & Clarity: Using specific Pydantic models (like EntityPPRInputs, EntityPPROutputs) for each tool's parameters and results, instead of just generic dictionaries, provides better type safety, auto-validation, and makes it clearer what each tool expects and returns.
-# Informing the ToolCall Model:
-# In our main Core/AgentSchema/plan.py file, the ToolCall.parameters field (which is currently Optional[Dict[str, Any]]) could eventually be changed to something like parameters: Union[EntityPPRInputs, EntityVDBSearchInputs, ChunkFromRelationshipsInputs, ...] if we want the LLM agent to produce a plan with these strongly-typed parameter objects for each tool.
-# Alternatively, the ToolCall.parameters: Dict[str, Any] can still be used, and the "Agent Orchestrator" would be responsible for validating that dictionary against the corresponding Pydantic input model (e.g., EntityPPRInputs) when it's about to execute the "Entity.PPR" tool.
-# Foundation for Orchestrator & LLM Agent:
-# Orchestrator: When the orchestrator sees a ToolCall with tool_id: "Entity.PPR", it will know to expect parameters that fit the EntityPPRInputs model and that the tool will produce something fitting EntityPPROutputs.
-# LLM Agent: The description fields and parameter names/types in these Pydantic models will form part of the "knowledge base" or prompt context for the LLM agent, helping it understand how to correctly use each tool.
+# --- Tool Contract for: Entity One-Hop Neighbors (OneHopNeighbors) ---
+# Based on conceptual contract: tool_id = "Entity.OneHopNeighbors"
 
-# --- Tool Contract for: Entity TF-IDF Ranking ---
-# Based on README.md operator: Entity Operators - TF-IDF "Rank entities based on the TF-IFG matrix"
-# Assuming TF-IDF is used to rank a given set of candidate entities against a query or document set.
+class EntityOneHopInput(BaseModel):
+    """Input for finding one-hop neighbor entities."""
+    entity_ids: List[str] = Field(
+        description="List of entity IDs to find neighbors for"
+    )
+    graph_id: str = Field(
+        description="The ID of the graph to search in"
+    )
+    include_edge_attributes: Optional[bool] = Field(
+        default=False,
+        description="Whether to include edge attributes in the results"
+    )
+    neighbor_limit_per_entity: Optional[int] = Field(
+        default=None,
+        description="Maximum number of neighbors to return per entity. If None, returns all neighbors."
+    )
 
-class EntityTFIDFInputs(BaseToolParams):
-    candidate_entity_ids: List[str] = Field(description="List of entity IDs to be ranked.")
-    query_text: Optional[str] = Field(default=None, description="Query text to rank entities against.")
-    # Alternatively, context could be defined by a set of document/chunk IDs
-    context_document_ids: Optional[List[str]] = Field(default=None, description="List of document IDs providing context for TF-IDF calculation.")
-    corpus_reference_id: str = Field(description="Identifier for the corpus or document collection where TF-IDF matrix is built or can be derived.")
-    top_k_results: Optional[int] = Field(default=10, description="Number of top-ranked entities to return.")
-
-class EntityTFIDFOutputs(BaseToolOutput):
-    ranked_entities: List[Tuple[str, float]] = Field(description="List of (entity_id, tfidf_score) tuples.")
-
-# --- Tool Contract for: Relationship Vector Database Search (VDB) ---
-# Based on README.md operator: Relationship Operators - VDB "Retrieve relationships by vector-database"
-
-class RelationshipVDBSearchInputs(BaseToolParams):
-    vdb_reference_id: str = Field(description="Identifier for the relationship vector database.")
-    query_text: Optional[str] = Field(default=None, description="Natural language query for relationships.")
-    query_embedding: Optional[List[float]] = Field(default=None, description="Pre-computed query embedding.")
-    embedding_model_id: Optional[str] = Field(default=None, description="Identifier for embedding model if query_text is used.")
-    top_k_results: int = Field(default=5, description="Number of top similar relationships to return.")
-    # Add other parameters like filtering conditions for relationship types, etc.
-
-class RelationshipVDBSearchOutputs(BaseToolOutput):
-    # Assuming RelationshipData is already defined in this file (from previous batch)
-    #
-    similar_relationships: List[Tuple[RelationshipData, float]] = Field(description="List of (RelationshipData, similarity_score) tuples.")
+class EntityOneHopOutput(BaseModel):
+    """Output containing one-hop neighbor entities."""
+    neighbors: Dict[str, List[Dict[str, Any]]] = Field(
+        description="Dictionary mapping each input entity ID to its list of neighbor entities with their attributes"
+    )
+    total_neighbors_found: int = Field(
+        description="Total number of unique neighbor entities found"
+    )
+    message: str = Field(description="Status message or error description")
 
 # --- Tool Contract for: Community Detection from Entities ---
-# Based on README.md operator: Community Operators - Entity "Detects communities containing specified entities"
-# This might involve running a community detection algorithm (like Leiden) and then filtering/identifying communities relevant to seed entities.
+# Based on conceptual contract: tool_id = "Community.Entity"
 
 class CommunityDetectFromEntitiesInputs(BaseToolParams):
     graph_reference_id: str = Field(description="Identifier for the graph artifact.")
@@ -408,6 +387,141 @@ class RelationshipScoreAggregatorOutputs(BaseToolOutput):
     #
     # We'll add a score to it.
     scored_relationships: List[Tuple[RelationshipData, float]] = Field(description="List of (RelationshipData, aggregated_score) tuples.")
+
+# --- Tool Contract for: Relationship VDB Build ---
+# Build a vector database index for relationships
+
+class RelationshipVDBBuildInputs(BaseToolParams):
+    graph_reference_id: str = Field(description="ID of the graph containing relationships to index.")
+    vdb_collection_name: str = Field(description="Name for the VDB collection to create.")
+    embedding_fields: List[str] = Field(default=["type", "description"], description="Fields from relationships to embed and index.")
+    include_metadata: bool = Field(default=True, description="Whether to include relationship metadata in the index.")
+    force_rebuild: bool = Field(default=False, description="Force rebuild even if index exists.")
+
+class RelationshipVDBBuildOutputs(BaseToolOutput):
+    vdb_reference_id: str = Field(description="ID of the created VDB for future reference.")
+    num_relationships_indexed: int = Field(description="Number of relationships indexed.")
+    status: str = Field(description="Status message about the build process.")
+
+# --- Tool Contract for: Relationship VDB Search ---
+# Search for similar relationships using vector similarity
+
+class RelationshipVDBSearchInputs(BaseToolParams):
+    vdb_reference_id: str = Field(description="ID of the VDB to search.")
+    query_text: Optional[str] = Field(default=None, description="Text query to search for similar relationships.")
+    query_embedding: Optional[List[float]] = Field(default=None, description="Pre-computed embedding vector for search.")
+    top_k: int = Field(default=10, description="Number of most similar relationships to return.")
+    score_threshold: Optional[float] = Field(default=None, description="Minimum similarity score threshold.")
+
+class RelationshipVDBSearchOutputs(BaseToolOutput):
+    similar_relationships: List[Tuple[str, str, float]] = Field(
+        description="List of (relationship_id, relationship_description, similarity_score) tuples."
+    )
+    metadata: Optional[Dict[str, Any]] = Field(default=None, description="Additional search metadata.")
+
+# --- Tool Contract for: Entity VDB Build ---
+# Build a vector database index for entities
+
+class EntityVDBBuildInputs(BaseToolParams):
+    graph_reference_id: str = Field(description="ID of the graph containing entities to index.")
+    vdb_collection_name: str = Field(description="Name for the VDB collection to create.")
+    entity_types: Optional[List[str]] = Field(default=None, description="Specific entity types to include. If None, includes all entities.")
+    include_metadata: bool = Field(default=True, description="Whether to include entity metadata in the index.")
+    force_rebuild: bool = Field(default=False, description="Force rebuild even if index exists.")
+
+class EntityVDBBuildOutputs(BaseToolOutput):
+    vdb_reference_id: str = Field(description="ID of the created VDB for future reference.")
+    num_entities_indexed: int = Field(description="Number of entities indexed.")
+    status: str = Field(description="Status message about the build process.")
+
+# --- Tool Contract for: Graph Visualizer ---
+# Purpose: Take a graph_id as input and provide a representation of the graph suitable for visualization
+
+class GraphVisualizerInput(BaseToolParams):
+    graph_id: str = Field(description="ID of the graph to visualize (the artifact name)")
+    output_format: Optional[str] = Field(default="JSON_NODES_EDGES", description="Output format: 'GML', 'JSON_NODES_EDGES'")
+
+class GraphVisualizerOutput(BaseToolOutput):
+    graph_representation: str = Field(description="The graph data in the specified format")
+    format_used: str = Field(description="The actual format returned")
+    message: Optional[str] = Field(default=None, description="Error message or additional info")
+
+# --- Tool Contract for: Graph Analyzer ---
+# Purpose: Take a graph_id as input and provide various metrics and statistics about the graph
+
+class GraphAnalyzerInput(BaseModel):
+    graph_id: str = Field(description="The ID of the graph to analyze")
+    metrics_to_calculate: Optional[List[str]] = Field(
+        default=None,
+        description="Specific metrics to calculate. If None, calculates all available metrics. Options: 'basic_stats', 'centrality', 'clustering', 'connectivity', 'components', 'paths'"
+    )
+    top_k_nodes: Optional[int] = Field(
+        default=10,
+        description="For centrality metrics, return only the top K nodes by each centrality measure"
+    )
+    calculate_expensive_metrics: bool = Field(
+        default=False,
+        description="Whether to calculate computationally expensive metrics like betweenness centrality and diameter for large graphs"
+    )
+
+class GraphAnalyzerOutput(BaseToolOutput):
+    graph_id: str = Field(description="The ID of the analyzed graph")
+    basic_stats: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Basic graph statistics: node_count, edge_count, density, is_directed, is_connected"
+    )
+    centrality_metrics: Optional[Dict[str, Dict[str, float]]] = Field(
+        default=None,
+        description="Centrality measures for nodes: degree, closeness, betweenness, eigenvector, pagerank"
+    )
+    clustering_metrics: Optional[Dict[str, float]] = Field(
+        default=None,
+        description="Clustering metrics: average_clustering, transitivity, triangles"
+    )
+    connectivity_metrics: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Connectivity metrics: is_connected, number_connected_components, largest_component_size"
+    )
+    component_details: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="Details about connected components"
+    )
+    path_metrics: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Path-related metrics: diameter, average_shortest_path_length, radius"
+    )
+    message: str = Field(default="", description="Status message or warnings about the analysis")
+
+# Entity RelNode Tool Contracts
+class EntityRelNodeInput(BaseModel):
+    """Input for extracting entities connected by specific relationships."""
+    relationship_ids: List[str] = Field(
+        description="List of relationship IDs to extract entities from"
+    )
+    graph_id: str = Field(
+        description="The ID of the graph to search in"
+    )
+    entity_role_filter: Optional[str] = Field(
+        default=None,
+        description="Filter for entity role in relationship. Options: 'source', 'target', 'both'"
+    )
+    entity_type_filter: Optional[List[str]] = Field(
+        default=None,
+        description="Filter entities by type (e.g., ['Person', 'Organization'])"
+    )
+
+class EntityRelNodeOutput(BaseModel):
+    """Output containing entities extracted from relationships."""
+    entities: List[Dict[str, Any]] = Field(
+        description="List of entities with their attributes and relationship connections"
+    )
+    entity_count: int = Field(
+        description="Total number of unique entities found"
+    )
+    relationship_entity_map: Dict[str, List[str]] = Field(
+        description="Map of relationship_id to list of entity_ids involved"
+    )
+    message: str = Field(description="Status message or error description")
 
 # --- Tool Contract for: Community Operator - Get Layer ---
 # Based on README.md operator: Community Operators - Layer "Returns all communities below a required layer"

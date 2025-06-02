@@ -1,0 +1,353 @@
+2025-06-02 02:30:36,612 | INFO    | datasets:<module>:54 - PyTorch version 2.6.0 available.
+2025-06-02 02:30:36,763 | INFO    | faiss.loader:<module>:125 - Loading faiss with AVX2 support.
+2025-06-02 02:30:36,774 | INFO    | faiss.loader:<module>:127 - Successfully loaded faiss with AVX2 support.
+2025-06-02 02:30:36,776 | INFO    | faiss:<module>:174 - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-02 02:30:43,262 | INFO    | httpx:_send_single_request:1025 - HTTP Request: GET https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json "HTTP/1.1 200 OK"
+2025-06-02 02:30:44,271 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:168 - Starting test_agent_corpus_to_graph_pipeline...
+2025-06-02 02:30:44.273 | INFO     | Core.Provider.LiteLLMProvider:__init__:45 - LiteLLMProvider initialized for model: openai/o4-mini-2025-04-16
+2025-06-02 02:30:44.273 | INFO     | Core.Chunk.ChunkFactory:__init__:76 - ChunkFactory initialized with working_dir: ./results
+2025-06-02 02:30:44,274 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:211 - Main test: Initialized shared_graphrag_context_instance with ID: 139651520174000
+2025-06-02 02:30:44.274 | INFO     | Core.Provider.LiteLLMProvider:__init__:45 - LiteLLMProvider initialized for model: openai/o4-mini-2025-04-16
+2025-06-02 02:30:44.274 | INFO     | Core.AgentBrain.agent_brain:__init__:70 - PlanningAgent initialized with LLM provider for api_type: LLMType.LITELLM, model: openai/o4-mini-2025-04-16
+2025-06-02 02:30:44.274 | INFO     | Core.AgentOrchestrator.orchestrator:_register_tools:59 - AgentOrchestrator: Registered 9 tools with Pydantic models: ['Entity.VDBSearch', 'Entity.PPR', 'Relationship.OneHopNeighbors', 'graph.BuildERGraph', 'graph.BuildRKGraph', 'graph.BuildTreeGraph', 'graph.BuildTreeGraphBalanced', 'graph.BuildPassageGraph', 'corpus.PrepareFromDirectory']
+2025-06-02 02:30:44,274 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:221 - Patched tool registry with wrappers.
+2025-06-02 02:30:44,274 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:253 - Test: Submitting task to agent:
+SYSTEM_TASK: Your overall goal is to provide a summary about the causes of the American Revolution based on documents in '/home/brian/digimon/Data/MySampleTexts'. To achieve this: 1. Process the text files from the input directory '/home/brian/digimon/Data/MySampleTexts' to create a corpus. The 'output_directory_path' for this step must be '/home/brian/digimon/results/MyPipelineTestRun'. The 'target_corpus_name' for this step must be 'MyPipelineTestRun'. The named outputs for this step MUST be {'corpus_status': 'status', 'corpus_path': 'corpus_json_path', 'doc_count': 'document_count'}. 2. After the corpus is prepared, build an Entity-Relation Graph (ERGraph). The 'target_dataset_name' for this BuildERGraph step must be 'MyPipelineTestRun'. Set 'force_rebuild' to true. For 'config_overrides', use: 'extract_two_step'=true, 'enable_entity_description'=true, and 'enable_entity_type'=true. The named outputs for this step MUST be {'graph_id_from_build': 'graph_id', 'status_from_build': 'status'}. This maps the tool's output field 'graph_id' to 'graph_id_from_build' in the plan context, and 'status' to 'status_from_build'. 3. Once the graph is built for dataset 'MyPipelineTestRun', perform a VDB search on its entities. The 'vdb_reference_id' for this search must be 'entities_vdb'. Use the query 'causes of the American Revolution'. Retrieve the top 5 most relevant entities. The named outputs for this step MUST be {'vdb_search_results_list': 'similar_entities'}. This maps the tool's output field 'similar_entities' to 'vdb_search_results_list' in the plan context. 4. For the top 3 entities found, find their one-hop neighbors and relationships. The 'graph_reference_id' input for this step must be {'from_step_id': 'step_2_build_er_graph', 'named_output_key': 'graph_id_from_build'}. The 'entity_ids' input for this step must be {'from_step_id': 'step_3_vdb_search', 'named_output_key': 'vdb_search_results_list'}. The named outputs for this step MUST be {'final_neighbor_info': 'one_hop_relationships'}. Finally, use ALL the information retrieved from steps 3 and 4 to generate a concise natural language summary answering the question about the causes of the American Revolution.
+2025-06-02 02:30:44.274 | INFO     | Core.AgentBrain.agent_brain:process_query:360 - PlanningAgent: Processing query: SYSTEM_TASK: Your overall goal is to provide a summary about the causes of the American Revolution based on documents in '/home/brian/digimon/Data/MySampleTexts'. To achieve this: 1. Process the text files from the input directory '/home/brian/digimon/Data/MySampleTexts' to create a corpus. The 'output_directory_path' for this step must be '/home/brian/digimon/results/MyPipelineTestRun'. The 'target_corpus_name' for this step must be 'MyPipelineTestRun'. The named outputs for this step MUST be {'corpus_status': 'status', 'corpus_path': 'corpus_json_path', 'doc_count': 'document_count'}. 2. After the corpus is prepared, build an Entity-Relation Graph (ERGraph). The 'target_dataset_name' for this BuildERGraph step must be 'MyPipelineTestRun'. Set 'force_rebuild' to true. For 'config_overrides', use: 'extract_two_step'=true, 'enable_entity_description'=true, and 'enable_entity_type'=true. The named outputs for this step MUST be {'graph_id_from_build': 'graph_id', 'status_from_build': 'status'}. This maps the tool's output field 'graph_id' to 'graph_id_from_build' in the plan context, and 'status' to 'status_from_build'. 3. Once the graph is built for dataset 'MyPipelineTestRun', perform a VDB search on its entities. The 'vdb_reference_id' for this search must be 'entities_vdb'. Use the query 'causes of the American Revolution'. Retrieve the top 5 most relevant entities. The named outputs for this step MUST be {'vdb_search_results_list': 'similar_entities'}. This maps the tool's output field 'similar_entities' to 'vdb_search_results_list' in the plan context. 4. For the top 3 entities found, find their one-hop neighbors and relationships. The 'graph_reference_id' input for this step must be {'from_step_id': 'step_2_build_er_graph', 'named_output_key': 'graph_id_from_build'}. The 'entity_ids' input for this step must be {'from_step_id': 'step_3_vdb_search', 'named_output_key': 'vdb_search_results_list'}. The named outputs for this step MUST be {'final_neighbor_info': 'one_hop_relationships'}. Finally, use ALL the information retrieved from steps 3 and 4 to generate a concise natural language summary answering the question about the causes of the American Revolution.
+2025-06-02 02:30:44.275 | INFO     | Core.AgentBrain.agent_brain:_generate_plan_with_llm:199 - PlanningAgent: Sending messages to LLM for ExecutionPlan (approx 19495 chars).
+2025-06-02 02:30:44.275 | DEBUG    | Core.Provider.LiteLLMProvider:async_instructor_completion:230 - LiteLLMProvider: Calling instructor_client_async.chat.completions.create with response_model: ExecutionPlan, model: openai/o4-mini-2025-04-16
+[92m02:30:44 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:30:44,290 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:01,941 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:31:01 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:01,947 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:01.951 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:31:01.951 | INFO     | Core.AgentBrain.agent_brain:_generate_plan_with_llm:209 - PlanningAgent: Successfully received and parsed ExecutionPlan from LLM.
+2025-06-02 02:31:01.951 | INFO     | Core.AgentBrain.agent_brain:generate_plan:339 - PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.
+2025-06-02 02:31:01.951 | INFO     | Core.AgentBrain.agent_brain:generate_plan:340 - Generated Plan (Pydantic model):
+{
+  "plan_id": "llm_plan_american_revolution_causes",
+  "plan_description": "Prepare corpus, build ERGraph, perform VDB search for 'causes of the American Revolution', fetch one-hop neighbors, and summarize causes.",
+  "target_dataset_name": "MySampleTexts",
+  "ontology_setup": null,
+  "global_llm_config_patch": null,
+  "global_embedding_config_patch": null,
+  "plan_inputs": {
+    "main_query": "causes of the American Revolution"
+  },
+  "steps": [
+    {
+      "step_id": "step_1_prepare_corpus",
+      "description": "Process text files to create a corpus named MyPipelineTestRun.",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "corpus.PrepareFromDirectory",
+            "description": "Create corpus from directory of texts.",
+            "parameters": {
+              "input_directory_path": "/home/brian/digimon/Data/MySampleTexts",
+              "output_directory_path": "/home/brian/digimon/results/MyPipelineTestRun",
+              "target_corpus_name": "MyPipelineTestRun"
+            },
+            "inputs": null,
+            "named_outputs": {
+              "corpus_status": "status",
+              "corpus_path": "corpus_json_path",
+              "doc_count": "document_count"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_2_build_er_graph",
+      "description": "Build an Entity-Relation Graph (ERGraph) for the prepared corpus.",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "graph.BuildERGraph",
+            "description": "Build ERGraph with two-step extraction, entity descriptions, and types enabled.",
+            "parameters": {
+              "target_dataset_name": "MyPipelineTestRun",
+              "force_rebuild": true,
+              "config_overrides": {
+                "extract_two_step": true,
+                "enable_entity_description": true,
+                "enable_entity_type": true
+              }
+            },
+            "inputs": null,
+            "named_outputs": {
+              "graph_id_from_build": "graph_id",
+              "status_from_build": "status"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_3_vdb_search",
+      "description": "Search the VDB for entities related to the causes of the American Revolution.",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Entity.VDBSearch",
+            "description": "Find top 5 entities for the user query.",
+            "parameters": {
+              "vdb_reference_id": "entities_vdb",
+              "top_k_results": 5
+            },
+            "inputs": {
+              "query_text": "plan_inputs.main_query"
+            },
+            "named_outputs": {
+              "vdb_search_results_list": "similar_entities"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_4_one_hop_neighbors",
+      "description": "Retrieve one-hop neighbors and relationships for the top entities.",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Relationship.OneHopNeighbors",
+            "description": "Get one-hop relationships for the entities returned by VDB search.",
+            "parameters": null,
+            "inputs": {
+              "graph_reference_id": {
+                "from_step_id": "step_2_build_er_graph",
+                "named_output_key": "graph_id_from_build"
+              },
+              "entity_ids": {
+                "from_step_id": "step_3_vdb_search",
+                "named_output_key": "vdb_search_results_list"
+              }
+            },
+            "named_outputs": {
+              "final_neighbor_info": "one_hop_relationships"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+2025-06-02 02:31:01.951 | INFO     | Core.AgentBrain.agent_brain:process_query:368 - PlanningAgent: Executing generated plan ID: llm_plan_american_revolution_causes
+2025-06-02 02:31:01.951 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:159 - Orchestrator: Starting execution of plan ID: llm_plan_american_revolution_causes - Prepare corpus, build ERGraph, perform VDB search for 'causes of the American Revolution', fetch one-hop neighbors, and summarize causes.
+2025-06-02 02:31:01.952 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 1/4: step_1_prepare_corpus - Process text files to create a corpus named MyPipelineTestRun.
+2025-06-02 02:31:01.952 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_1_prepare_corpus: corpus.PrepareFromDirectory
+2025-06-02 02:31:01.952 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'input_directory_path': Resolved as literal value.
+2025-06-02 02:31:01.952 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'output_directory_path': Resolved as literal value.
+2025-06-02 02:31:01.952 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'target_corpus_name': Resolved as literal value.
+2025-06-02 02:31:01.952 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating PrepareCorpusInputs with: {'input_directory_path': '/home/brian/digimon/Data/MySampleTexts', 'output_directory_path': '/home/brian/digimon/results/MyPipelineTestRun', 'target_corpus_name': 'MyPipelineTestRun'}
+2025-06-02 02:31:01.952 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated PrepareCorpusInputs for corpus.PrepareFromDirectory
+2025-06-02 02:31:01.952 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling prepare_corpus_wrapper for ID: corpus.PrepareFromDirectory
+2025-06-02 02:31:01,952 | INFO    | __main__:prepare_corpus_wrapper:56 - WRAPPER (Corpus): Called with input: {
+ "input_directory_path": "/home/brian/digimon/Data/MySampleTexts",
+ "output_directory_path": "/home/brian/digimon/results/MyPipelineTestRun",
+ "target_corpus_name": "MyPipelineTestRun"
+}
+2025-06-02 02:31:01,952 | INFO    | __main__:prepare_corpus_wrapper:57 - WRAPPER (Corpus): Using shared context ID: 139651520174000 if available, or None.
+2025-06-02 02:31:01.952 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:64 - Reading text files from: /home/brian/digimon/Data/MySampleTexts for corpus: MyPipelineTestRun
+2025-06-02 02:31:01.953 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:93 - Processed: american_revolution.txt (doc_id: 0)
+2025-06-02 02:31:01.953 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:93 - Processed: french_revolution.txt (doc_id: 1)
+2025-06-02 02:31:01.953 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:115 - Successfully created Corpus.json with 2 documents for corpus 'MyPipelineTestRun' at: /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:213 - Orchestrator: Tool corpus.PrepareFromDirectory executed. Output type: <class 'Core.AgentSchema.corpus_tool_contracts.PrepareCorpusOutputs'>
+2025-06-02 02:31:01.953 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:214 - Orchestrator: Raw output: corpus_json_path='/home/brian/digimon/results/MyPipelineTestRun/Corpus.json' document_count=2 status='success' message="Successfully created Corpus.json with 2 documents for corpus 'MyPipelineTestRun'"...
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'corpus_status' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'corpus_path' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'doc_count' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 2/4: step_2_build_er_graph - Build an Entity-Relation Graph (ERGraph) for the prepared corpus.
+2025-06-02 02:31:01.953 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_2_build_er_graph: graph.BuildERGraph
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'target_dataset_name': Resolved as literal value.
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'force_rebuild': Resolved as literal value.
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'config_overrides': Resolved as literal value.
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating BuildERGraphInputs with: {'target_dataset_name': 'MyPipelineTestRun', 'force_rebuild': True, 'config_overrides': {'extract_two_step': True, 'enable_entity_description': True, 'enable_entity_type': True}}
+2025-06-02 02:31:01.954 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated BuildERGraphInputs for graph.BuildERGraph
+2025-06-02 02:31:01.954 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling build_er_graph_wrapper for ID: graph.BuildERGraph
+2025-06-02 02:31:01,954 | INFO    | __main__:build_er_graph_wrapper:73 - WRAPPER (BuildERGraph): Called. Shared context ID: 139651520174000. Input: {
+ "target_dataset_name": "MyPipelineTestRun",
+ "force_rebuild": true,
+ "config_overrides": {
+  "extract_two_step": true,
+  "enable_entity_description": true,
+  "enable_entity_type": true,
+  "enable_edge_description": null,
+  "enable_edge_name": null,
+  "custom_ontology_path_override": null
+ }
+}
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:32 - apply_overrides: Applying overrides {'extract_two_step': True, 'enable_entity_description': True, 'enable_entity_type': True}
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set extract_two_step=True on config
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set enable_entity_description=True on config
+2025-06-02 02:31:01.954 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set enable_entity_type=True on config
+2025-06-02 02:31:01.955 | INFO     | Core.Graph.GraphFactory:get_graph:43 - GraphFactory: Creating graph of type 'er_graph' with kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f032741c370>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f032741c250>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-02 02:31:01.955 | DEBUG    | Core.Graph.GraphFactory:_create_er_graph:50 - GraphFactory._create_er_graph: full_config type: <class 'Option.Config2.Config'>, constructor_kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f032741c370>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f032741c250>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-02 02:31:01.955 | INFO     | Core.Chunk.ChunkFactory:get_namespace:121 - ChunkFactory: Created/ensured namespace for dataset 'MyPipelineTestRun', type 'er_graph' at /home/brian/digimon/results/MyPipelineTestRun/er_graph
+2025-06-02 02:31:01.955 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:136 - ChunkFactory: Getting chunks for dataset 'MyPipelineTestRun'
+2025-06-02 02:31:01.955 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:150 - Found corpus file at /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:31:01.955 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:172 - Successfully loaded 2 documents from JSONL file: /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:31:01.955 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:198 - Created 2 TextChunk objects for dataset 'MyPipelineTestRun'
+2025-06-02 02:31:01.955 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:126 - Calling er_graph_instance.build_graph for dataset: MyPipelineTestRun
+2025-06-02 02:31:01.956 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-06-02 02:31:01.956 | INFO     | Core.Storage.NetworkXStorage:load_graph:104 - Force rebuilding the graph
+2025-06-02 02:31:01.956 | INFO     | Core.Graph.ERGraph:_build_graph:205 - Generating custom ontology based on corpus content...
+2025-06-02 02:31:01.956 | INFO     | Core.Graph.ontology_generator:generate_custom_ontology:56 - Generating custom ontology for context: Content samples:
+- ('chunk_0', TextChunk())...
+- ('chunk_1', TextChunk())...
+...
+2025-06-02 02:31:01.956 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:31:01 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:01,957 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:31:01 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:01,957 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:16,549 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:31:16 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:16,550 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:16.550 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:31:16.550 | ERROR    | Core.Graph.ontology_generator:generate_custom_ontology:75 - Failed to generate custom ontology: Expecting value: line 1 column 1 (char 0)
+2025-06-02 02:31:16.550 | WARNING  | Core.Graph.ERGraph:_build_graph:212 - Failed to generate custom ontology, proceeding with generic extraction
+2025-06-02 02:31:16.551 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+2025-06-02 02:31:16.551 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:31:16 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:16,551 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+[92m02:31:16 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:16,552 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+[92m02:31:16 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:16,553 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:43,149 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:31:43 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:43,150 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:43.150 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:31:43.151 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:31:43 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:43,151 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:31:43 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:43,152 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:44,172 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:31:44 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:44,178 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:44.178 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:31:44.178 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:31:44 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:31:44,179 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:31:44 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:31:44,179 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:32:26,868 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:32:26 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:32:26,880 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:32:26.881 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:32:26.881 | DEBUG    | Core.Graph.ERGraph:_openie_post_ner_extract:154 - OpenIE extracted response: {
+  "named_entities": [
+    "American Revolution",
+    "1765\u20131783",
+    "Thirteen Colonies",
+    "British America",
+    "American Revolutionary War",
+    "April 19, 1775",
+    "Battles of Lexington and Concord",
+    "Second Continental Congress",
+    "Independence Hall",
+    "Philadelphia",
+    "Continental Army",
+    "George Washington",
+    "June 1775",
+    "Declaration of Independence",
+    "July 4, 1776",
+    "Thomas Jefferson",
+    "liberalism",
+    "republicanism",
+    "Siege of Yorkt...
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, spanned, 1765 1783)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, occurred in, thirteen colonies)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (thirteen colonies, were part of, british america)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, culminated in, american revolutionary war)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolutionary war, launched on, april 19  1775)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolutionary war, started at, battles of lexington and concord)
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.882 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, convened in, independence hall)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (independence hall, is located in, philadelphia)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, formed, continental army)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, appointed, george washington)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (george washington, became commander in chief in, june 1775)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, adopted, declaration of independence)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, was adopted on, july 4  1776)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, was authored by, thomas jefferson)
+2025-06-02 02:32:26.883 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, embodied, liberalism)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, embodied, republicanism)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (george washington, led victory at, siege of yorktown)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (siege of yorktown, occurred on, september 28  1781)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (siege of yorktown, led to, treaty of paris)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, was signed on, september 3  1783)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, granted territory east of, mississippi river)
+2025-06-02 02:32:26.884 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, granted territory south of, great lakes)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, led to establishment of, united states of america)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (french and indian war  1754 1763, ended in, 1763)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (french and indian war  1754 1763, preceded, american revolution)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (british parliament, imposed, townshend acts)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (townshend acts, were passed in, 1767)
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.885 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (king george iii, deployed troops to, boston)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (boston massacre, occurred on, march 5  1770)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (gaspee, was destroyed off, warwick)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (gaspee, was destroyed off, rhode island)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (boston tea party, occurred on, december 16  1773)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (boston tea party, dumped tea of, british east india company)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (boston harbor, was closed by, london)
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.886 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (first continental congress, met in, carpenters  hall)
+2025-06-02 02:32:26.887 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.887 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (province of georgia, joined, first continental congress)
+2025-06-02 02:32:26.887 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping
+2025-06-02 02:32:26.887 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (first continental congress, coordinated, patriot resistance)
+2025-06-02 02:32:26.887 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:394 - No custom ontology available for relation mapping

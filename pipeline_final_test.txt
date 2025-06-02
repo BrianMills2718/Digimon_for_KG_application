@@ -1,0 +1,1133 @@
+2025-06-02 02:35:42,608 | INFO    | datasets:<module>:54 - PyTorch version 2.6.0 available.
+2025-06-02 02:35:42,758 | INFO    | faiss.loader:<module>:125 - Loading faiss with AVX2 support.
+2025-06-02 02:35:42,769 | INFO    | faiss.loader:<module>:127 - Successfully loaded faiss with AVX2 support.
+2025-06-02 02:35:42,771 | INFO    | faiss:<module>:174 - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-02 02:35:46,707 | INFO    | httpx:_send_single_request:1025 - HTTP Request: GET https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json "HTTP/1.1 200 OK"
+2025-06-02 02:35:47,644 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:168 - Starting test_agent_corpus_to_graph_pipeline...
+2025-06-02 02:35:47.646 | INFO     | Core.Provider.LiteLLMProvider:__init__:45 - LiteLLMProvider initialized for model: openai/o4-mini-2025-04-16
+2025-06-02 02:35:47.646 | INFO     | Core.Chunk.ChunkFactory:__init__:76 - ChunkFactory initialized with working_dir: ./results
+2025-06-02 02:35:47,646 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:211 - Main test: Initialized shared_graphrag_context_instance with ID: 139934166693856
+2025-06-02 02:35:47.647 | INFO     | Core.Provider.LiteLLMProvider:__init__:45 - LiteLLMProvider initialized for model: openai/o4-mini-2025-04-16
+2025-06-02 02:35:47.647 | INFO     | Core.AgentBrain.agent_brain:__init__:70 - PlanningAgent initialized with LLM provider for api_type: LLMType.LITELLM, model: openai/o4-mini-2025-04-16
+2025-06-02 02:35:47.647 | INFO     | Core.AgentOrchestrator.orchestrator:_register_tools:59 - AgentOrchestrator: Registered 9 tools with Pydantic models: ['Entity.VDBSearch', 'Entity.PPR', 'Relationship.OneHopNeighbors', 'graph.BuildERGraph', 'graph.BuildRKGraph', 'graph.BuildTreeGraph', 'graph.BuildTreeGraphBalanced', 'graph.BuildPassageGraph', 'corpus.PrepareFromDirectory']
+2025-06-02 02:35:47,647 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:221 - Patched tool registry with wrappers.
+2025-06-02 02:35:47,647 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:253 - Test: Submitting task to agent:
+SYSTEM_TASK: Your overall goal is to provide a summary about the causes of the American Revolution based on documents in '/home/brian/digimon/Data/MySampleTexts'. To achieve this: 1. Process the text files from the input directory '/home/brian/digimon/Data/MySampleTexts' to create a corpus. The 'output_directory_path' for this step must be '/home/brian/digimon/results/MyPipelineTestRun'. The 'target_corpus_name' for this step must be 'MyPipelineTestRun'. The named outputs for this step MUST be {'corpus_status': 'status', 'corpus_path': 'corpus_json_path', 'doc_count': 'document_count'}. 2. After the corpus is prepared, build an Entity-Relation Graph (ERGraph). The 'target_dataset_name' for this BuildERGraph step must be 'MyPipelineTestRun'. Set 'force_rebuild' to true. For 'config_overrides', use: 'extract_two_step'=true, 'enable_entity_description'=true, 'enable_entity_type'=true, and 'enable_edge_name'=true. The named outputs for this step MUST be {'graph_id_from_build': 'graph_id', 'status_from_build': 'status'}. This maps the tool's output field 'graph_id' to 'graph_id_from_build' in the plan context, and 'status' to 'status_from_build'. 3. Once the graph is built for dataset 'MyPipelineTestRun', perform a VDB search on its entities. The 'vdb_reference_id' for this search must be 'entities_vdb'. Use the query 'causes of the American Revolution'. Retrieve the top 5 most relevant entities. The named outputs for this step MUST be {'vdb_search_results_list': 'similar_entities'}. This maps the tool's output field 'similar_entities' to 'vdb_search_results_list' in the plan context. 4. For the top 3 entities found, find their one-hop neighbors and relationships. The 'graph_reference_id' input for this step must be {'from_step_id': 'step_2_build_er_graph', 'named_output_key': 'graph_id_from_build'}. The 'entity_ids' input for this step must be {'from_step_id': 'step_3_vdb_search', 'named_output_key': 'vdb_search_results_list'}. The named outputs for this step MUST be {'final_neighbor_info': 'one_hop_relationships'}. Finally, use ALL the information retrieved from steps 3 and 4 to generate a concise natural language summary answering the question about the causes of the American Revolution.
+2025-06-02 02:35:47.647 | INFO     | Core.AgentBrain.agent_brain:process_query:360 - PlanningAgent: Processing query: SYSTEM_TASK: Your overall goal is to provide a summary about the causes of the American Revolution based on documents in '/home/brian/digimon/Data/MySampleTexts'. To achieve this: 1. Process the text files from the input directory '/home/brian/digimon/Data/MySampleTexts' to create a corpus. The 'output_directory_path' for this step must be '/home/brian/digimon/results/MyPipelineTestRun'. The 'target_corpus_name' for this step must be 'MyPipelineTestRun'. The named outputs for this step MUST be {'corpus_status': 'status', 'corpus_path': 'corpus_json_path', 'doc_count': 'document_count'}. 2. After the corpus is prepared, build an Entity-Relation Graph (ERGraph). The 'target_dataset_name' for this BuildERGraph step must be 'MyPipelineTestRun'. Set 'force_rebuild' to true. For 'config_overrides', use: 'extract_two_step'=true, 'enable_entity_description'=true, 'enable_entity_type'=true, and 'enable_edge_name'=true. The named outputs for this step MUST be {'graph_id_from_build': 'graph_id', 'status_from_build': 'status'}. This maps the tool's output field 'graph_id' to 'graph_id_from_build' in the plan context, and 'status' to 'status_from_build'. 3. Once the graph is built for dataset 'MyPipelineTestRun', perform a VDB search on its entities. The 'vdb_reference_id' for this search must be 'entities_vdb'. Use the query 'causes of the American Revolution'. Retrieve the top 5 most relevant entities. The named outputs for this step MUST be {'vdb_search_results_list': 'similar_entities'}. This maps the tool's output field 'similar_entities' to 'vdb_search_results_list' in the plan context. 4. For the top 3 entities found, find their one-hop neighbors and relationships. The 'graph_reference_id' input for this step must be {'from_step_id': 'step_2_build_er_graph', 'named_output_key': 'graph_id_from_build'}. The 'entity_ids' input for this step must be {'from_step_id': 'step_3_vdb_search', 'named_output_key': 'vdb_search_results_list'}. The named outputs for this step MUST be {'final_neighbor_info': 'one_hop_relationships'}. Finally, use ALL the information retrieved from steps 3 and 4 to generate a concise natural language summary answering the question about the causes of the American Revolution.
+2025-06-02 02:35:47.647 | INFO     | Core.AgentBrain.agent_brain:_generate_plan_with_llm:199 - PlanningAgent: Sending messages to LLM for ExecutionPlan (approx 19545 chars).
+2025-06-02 02:35:47.647 | DEBUG    | Core.Provider.LiteLLMProvider:async_instructor_completion:230 - LiteLLMProvider: Calling instructor_client_async.chat.completions.create with response_model: ExecutionPlan, model: openai/o4-mini-2025-04-16
+[92m02:35:47 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:35:47,662 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:29,966 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:36:29 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:29,973 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:29.976 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:36:29.976 | INFO     | Core.AgentBrain.agent_brain:_generate_plan_with_llm:209 - PlanningAgent: Successfully received and parsed ExecutionPlan from LLM.
+2025-06-02 02:36:29.976 | INFO     | Core.AgentBrain.agent_brain:generate_plan:339 - PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.
+2025-06-02 02:36:29.977 | INFO     | Core.AgentBrain.agent_brain:generate_plan:340 - Generated Plan (Pydantic model):
+{
+  "plan_id": "llm_plan_causes_american_revolution",
+  "plan_description": "Prepare corpus, build an ERGraph, perform VDB search for causes of the American Revolution, and retrieve one-hop neighbors for top entities",
+  "target_dataset_name": "MySampleTexts",
+  "ontology_setup": null,
+  "global_llm_config_patch": null,
+  "global_embedding_config_patch": null,
+  "plan_inputs": {
+    "main_query": "causes of the American Revolution"
+  },
+  "steps": [
+    {
+      "step_id": "step_1_prepare_corpus",
+      "description": "Process text files to create a corpus for analysis",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "corpus.PrepareFromDirectory",
+            "description": "Create a JSON Lines corpus from .txt files",
+            "parameters": {
+              "input_directory_path": "/home/brian/digimon/Data/MySampleTexts",
+              "output_directory_path": "/home/brian/digimon/results/MyPipelineTestRun",
+              "target_corpus_name": "MyPipelineTestRun"
+            },
+            "inputs": null,
+            "named_outputs": {
+              "corpus_status": "status",
+              "corpus_path": "corpus_json_path",
+              "doc_count": "document_count"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_2_build_er_graph",
+      "description": "Build an Entity-Relation Graph (ERGraph) from the prepared corpus",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "graph.BuildERGraph",
+            "description": "Construct ERGraph with detailed extraction settings",
+            "parameters": {
+              "target_dataset_name": "MyPipelineTestRun",
+              "force_rebuild": true,
+              "config_overrides": {
+                "extract_two_step": true,
+                "enable_entity_description": true,
+                "enable_entity_type": true,
+                "enable_edge_name": true
+              }
+            },
+            "inputs": null,
+            "named_outputs": {
+              "graph_id_from_build": "graph_id",
+              "status_from_build": "status"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_3_vdb_search",
+      "description": "Search the entity VDB for causes of the American Revolution",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Entity.VDBSearch",
+            "description": "Retrieve top entities related to the query",
+            "parameters": {
+              "vdb_reference_id": "entities_vdb",
+              "top_k_results": 5
+            },
+            "inputs": {
+              "query_text": "plan_inputs.main_query"
+            },
+            "named_outputs": {
+              "vdb_search_results_list": "similar_entities"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_4_one_hop_neighbors",
+      "description": "Get one-hop neighbors and relationships for the top entities",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Relationship.OneHopNeighbors",
+            "description": "Fetch directly connected relationships for selected entities",
+            "parameters": null,
+            "inputs": {
+              "entity_ids": {
+                "from_step_id": "step_3_vdb_search",
+                "named_output_key": "vdb_search_results_list"
+              },
+              "graph_reference_id": {
+                "from_step_id": "step_2_build_er_graph",
+                "named_output_key": "graph_id_from_build"
+              }
+            },
+            "named_outputs": {
+              "final_neighbor_info": "one_hop_relationships"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+2025-06-02 02:36:29.977 | INFO     | Core.AgentBrain.agent_brain:process_query:368 - PlanningAgent: Executing generated plan ID: llm_plan_causes_american_revolution
+2025-06-02 02:36:29.977 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:159 - Orchestrator: Starting execution of plan ID: llm_plan_causes_american_revolution - Prepare corpus, build an ERGraph, perform VDB search for causes of the American Revolution, and retrieve one-hop neighbors for top entities
+2025-06-02 02:36:29.977 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 1/4: step_1_prepare_corpus - Process text files to create a corpus for analysis
+2025-06-02 02:36:29.977 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_1_prepare_corpus: corpus.PrepareFromDirectory
+2025-06-02 02:36:29.977 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'input_directory_path': Resolved as literal value.
+2025-06-02 02:36:29.977 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'output_directory_path': Resolved as literal value.
+2025-06-02 02:36:29.977 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'target_corpus_name': Resolved as literal value.
+2025-06-02 02:36:29.977 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating PrepareCorpusInputs with: {'input_directory_path': '/home/brian/digimon/Data/MySampleTexts', 'output_directory_path': '/home/brian/digimon/results/MyPipelineTestRun', 'target_corpus_name': 'MyPipelineTestRun'}
+2025-06-02 02:36:29.977 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated PrepareCorpusInputs for corpus.PrepareFromDirectory
+2025-06-02 02:36:29.977 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling prepare_corpus_wrapper for ID: corpus.PrepareFromDirectory
+2025-06-02 02:36:29,978 | INFO    | __main__:prepare_corpus_wrapper:56 - WRAPPER (Corpus): Called with input: {
+ "input_directory_path": "/home/brian/digimon/Data/MySampleTexts",
+ "output_directory_path": "/home/brian/digimon/results/MyPipelineTestRun",
+ "target_corpus_name": "MyPipelineTestRun"
+}
+2025-06-02 02:36:29,978 | INFO    | __main__:prepare_corpus_wrapper:57 - WRAPPER (Corpus): Using shared context ID: 139934166693856 if available, or None.
+2025-06-02 02:36:29.978 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:64 - Reading text files from: /home/brian/digimon/Data/MySampleTexts for corpus: MyPipelineTestRun
+2025-06-02 02:36:29.978 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:93 - Processed: american_revolution.txt (doc_id: 0)
+2025-06-02 02:36:29.978 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:93 - Processed: french_revolution.txt (doc_id: 1)
+2025-06-02 02:36:29.978 | INFO     | Core.AgentTools.corpus_tools:prepare_corpus_from_directory:115 - Successfully created Corpus.json with 2 documents for corpus 'MyPipelineTestRun' at: /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:36:29.978 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:213 - Orchestrator: Tool corpus.PrepareFromDirectory executed. Output type: <class 'Core.AgentSchema.corpus_tool_contracts.PrepareCorpusOutputs'>
+2025-06-02 02:36:29.979 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:214 - Orchestrator: Raw output: corpus_json_path='/home/brian/digimon/results/MyPipelineTestRun/Corpus.json' document_count=2 status='success' message="Successfully created Corpus.json with 2 documents for corpus 'MyPipelineTestRun'"...
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'corpus_status' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'corpus_path' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'doc_count' for step step_1_prepare_corpus (tool corpus.PrepareFromDirectory).
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 2/4: step_2_build_er_graph - Build an Entity-Relation Graph (ERGraph) from the prepared corpus
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_2_build_er_graph: graph.BuildERGraph
+2025-06-02 02:36:29.979 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'target_dataset_name': Resolved as literal value.
+2025-06-02 02:36:29.979 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'force_rebuild': Resolved as literal value.
+2025-06-02 02:36:29.979 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'config_overrides': Resolved as literal value.
+2025-06-02 02:36:29.979 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating BuildERGraphInputs with: {'target_dataset_name': 'MyPipelineTestRun', 'force_rebuild': True, 'config_overrides': {'extract_two_step': True, 'enable_entity_description': True, 'enable_entity_type': True, 'enable_edge_name': True}}
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated BuildERGraphInputs for graph.BuildERGraph
+2025-06-02 02:36:29.979 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling build_er_graph_wrapper for ID: graph.BuildERGraph
+2025-06-02 02:36:29,980 | INFO    | __main__:build_er_graph_wrapper:73 - WRAPPER (BuildERGraph): Called. Shared context ID: 139934166693856. Input: {
+ "target_dataset_name": "MyPipelineTestRun",
+ "force_rebuild": true,
+ "config_overrides": {
+  "extract_two_step": true,
+  "enable_entity_description": true,
+  "enable_entity_type": true,
+  "enable_edge_description": null,
+  "enable_edge_name": true,
+  "custom_ontology_path_override": null
+ }
+}
+2025-06-02 02:36:29.980 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:32 - apply_overrides: Applying overrides {'extract_two_step': True, 'enable_entity_description': True, 'enable_entity_type': True, 'enable_edge_name': True}
+2025-06-02 02:36:29.980 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set extract_two_step=True on config
+2025-06-02 02:36:29.980 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set enable_entity_description=True on config
+2025-06-02 02:36:29.980 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set enable_entity_type=True on config
+2025-06-02 02:36:29.980 | DEBUG    | Core.AgentTools.graph_construction_tools:apply_overrides:37 - apply_overrides: Set enable_edge_name=True on config
+2025-06-02 02:36:29.980 | INFO     | Core.Graph.GraphFactory:get_graph:43 - GraphFactory: Creating graph of type 'er_graph' with kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f44f639c190>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f44f639c400>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-02 02:36:29.980 | DEBUG    | Core.Graph.GraphFactory:_create_er_graph:50 - GraphFactory._create_er_graph: full_config type: <class 'Option.Config2.Config'>, constructor_kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f44f639c190>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f44f639c400>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-02 02:36:29.981 | INFO     | Core.Chunk.ChunkFactory:get_namespace:121 - ChunkFactory: Created/ensured namespace for dataset 'MyPipelineTestRun', type 'er_graph' at /home/brian/digimon/results/MyPipelineTestRun/er_graph
+2025-06-02 02:36:29.981 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:136 - ChunkFactory: Getting chunks for dataset 'MyPipelineTestRun'
+2025-06-02 02:36:29.981 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:150 - Found corpus file at /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:36:29.981 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:172 - Successfully loaded 2 documents from JSONL file: /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:36:29.981 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:198 - Created 2 TextChunk objects for dataset 'MyPipelineTestRun'
+2025-06-02 02:36:29.981 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:126 - Calling er_graph_instance.build_graph for dataset: MyPipelineTestRun
+2025-06-02 02:36:29.981 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-06-02 02:36:29.981 | INFO     | Core.Storage.NetworkXStorage:load_graph:104 - Force rebuilding the graph
+2025-06-02 02:36:29.982 | INFO     | Core.Graph.ERGraph:_build_graph:205 - Generating custom ontology based on corpus content...
+2025-06-02 02:36:29.982 | INFO     | Core.Graph.ontology_generator:generate_custom_ontology:56 - Generating custom ontology for context: Content samples:
+- ('chunk_0', TextChunk())...
+- ('chunk_1', TextChunk())...
+...
+2025-06-02 02:36:29.982 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:36:29 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:29,983 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:36:29 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:29,984 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:44,472 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:36:44 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:44,473 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:44.473 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:36:44.473 | DEBUG    | Core.Graph.ontology_generator:generate_custom_ontology:59 - Raw ontology generation response: ```json
+{
+  "entities": [
+    {
+      "name": "Document",
+      "description": "A complete text object or file, such as an article, report, or book."
+    },
+    {
+      "name": "TextChunk",
+      "description": "A contiguous segment of a document (e.g. a paragraph, page, or section)."
+    },
+    {
+      "name": "Author",
+      "description": "A person or group responsible for creating or contributing to the document or chunk."
+    },
+    {
+      "name": "Topic",
+      "description": "A thematic subject or concept discussed in the text."
+    },
+    {
+      "name": "Keyword",
+      "description": "A significant word or phrase extracted from the text as representative of key ideas."
+    },
+    {
+      "name": "Date",
+      "description": "A temporal expression or timestamp mentioned in the text."
+    },
+    {
+      "name": "Location",
+      "description": "A geographical place or venue referenced in the text."
+    }
+  ],
+  "relations": [
+    {
+      "name": "CONTAINS_CHUNK",
+      "description": "Points from a Document to the TextChunks it is composed of.",
+      "source_entity": "Document",
+      "target_entity": "TextChunk"
+    },
+    {
+      "name": "WRITTEN_BY",
+      "description": "Links a Document to the Author(s) who created it.",
+      "source_entity": "Document",
+      "target_entity": "Author"
+    },
+    {
+      "name": "MENTIONS_TOPIC",
+      "description": "Indicates that a TextChunk discusses or covers a particular Topic.",
+      "source_entity": "TextChunk",
+      "target_entity": "Topic"
+    },
+    {
+      "name": "RELATED_TO_KEYWORD",
+      "description": "Associates a Topic with a representative Keyword.",
+      "source_entity": "Topic",
+      "target_entity": "Keyword"
+    },
+    {
+      "name": "REFERS_TO_DATE",
+      "description": "Connects a TextChunk to a Date mentioned within it.",
+      "source_entity": "TextChunk",
+      "target_entity": "Date"
+    },
+    {
+      "name": "REFERS_TO_LOCATION",
+      "description": "Connects a TextChunk to a Location mentioned within it.",
+      "source_entity": "TextChunk",
+      "target_entity": "Location"
+    },
+    {
+      "name": "AUTHOR_BASED_IN",
+      "description": "Denotes the primary Location associated with an Author (e.g., residence or institution).",
+      "source_entity": "Author",
+      "target_entity": "Location"
+    }
+  ]
+}
+```
+2025-06-02 02:36:44.474 | INFO     | Core.Graph.ontology_generator:generate_custom_ontology:89 - Generated ontology with 7 entity types and 7 relationship types
+2025-06-02 02:36:44.474 | INFO     | Core.Graph.ERGraph:_build_graph:210 - Successfully generated custom ontology with 7 entities and 7 relations
+2025-06-02 02:36:44.474 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+2025-06-02 02:36:44.474 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:36:44 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:44,475 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+[92m02:36:44 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:44,476 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+[92m02:36:44 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:44,476 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:58,160 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:36:58 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:58,161 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:58.161 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:36:58.162 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:36:58 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:36:58,162 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:36:58 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:36:58,163 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:37:05,744 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:37:05 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:05,745 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:05.746 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:37:05.746 | WARNING  | Core.Graph.ERGraph:_named_entity_recognition:91 - NER - 'named_entities' key missing or not a list in parsed output: {'Document': ['The American Revolution'], 'TextChunk': ['Origins', '1651–1763: Early seeds'], 'Author': ['Thomas Jefferson'], 'Topic': ['American Revolution', 'Revolutionary War', 'taxation without representation', 'mercantilism', 'salutary neglect'], 'Keyword': ['Thirteen Colonies', 'British America', 'Battles of Lexington and Concord', 'Second Continental Congress', 'Continental Army', 'Declaration of Independence', 'Siege of Yorktown', 'Treaty of Paris', 'French and Indian War', 'Stamp Act Congress', 'Declaration of Rights and Grievances', 'Townshend Acts', 'Boston Massacre', 'Gaspee', 'Boston Tea Party', 'First Continental Congress', 'Articles of Confederation', 'Lee Resolution', 'Navigation Acts', 'Molasses Act', 'Wool Act', 'Hat Act', 'Iron Act', 'Dominion of New England', 'Glorious Revolution', 'Boston revolt'], 'Date': ['1765–1783', 'April 19, 1775', 'June 1775', 'July 2, 1776', 'July 4, 1776', 'March 1776', 'August 1775', 'September 28, 1781', 'September 3, 1783', '1763', '1765', '1767', 'March 5, 1770', '1772', 'December 16, 1773', 'late 1774', '1754–1763', '1688', '1686', '1642–1651', '1675–1678', '1698', '1731', '1750', '1733', '1651', '1740s'], 'Location': ['Thirteen Colonies', 'British America', 'Lexington', 'Concord', 'Independence Hall', 'Philadelphia', 'Yorktown', 'Paris', 'Eastern North America', 'Province of Quebec', 'Atlantic Coast', 'Indian Reserve', 'Montreal', 'Boston', 'Warwick, Rhode Island', 'Boston Harbor', 'Massachusetts', "Carpenters' Hall", 'Province of Georgia', 'Great Lakes', 'Mississippi River', 'North America', 'Florida', 'Canada', 'England', 'New England', 'New York', 'New Jersey']}
+2025-06-02 02:37:05.746 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:37:05 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:05,747 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+[92m02:37:05 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:37:05,747 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:37:22,100 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:37:22 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:22,101 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:22.102 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:37:22.102 | DEBUG    | Core.Graph.ERGraph:_openie_post_ner_extract:154 - OpenIE extracted response: {
+  "named_entities": [
+    "The French Revolution",
+    "Causes of the French Revolution",
+    "Delisle Guillaume",
+    "Maximilien Robespierre",
+    "Abb\u00e9 Siey\u00e8s",
+    "Jean Joseph Mounier",
+    "Antoine Barnave",
+    "Calonne",
+    "Brienne",
+    "Jacques Necker",
+    "liberal democracy",
+    "ancien r\u00e9gime",
+    "Reign of Terror",
+    "Thermidorian Reaction",
+    "Consulate",
+    "American Revolution",
+    "Enlightenment",
+    "Storming of the Bastille",
+    "Estates General",...
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (the french revolution, occurred in, france)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (the french revolution, began with, estates general of 1789)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'began with' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (the french revolution, ended with, 18 brumaire)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'ended with' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (18 brumaire, occurred on, 9 november 1799)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred on' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (the french revolution, contributed to, liberal democracy)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'contributed to' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (estates general of 1789, first met since, 1614)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'first met since' not found in custom ontology, using as-is
+2025-06-02 02:37:22.103 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (estates general of 1789, first met in, may 1789)
+2025-06-02 02:37:22.103 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'first met in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (third estate, formed, national assembly)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'formed' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (national assembly, formed in, june 1789)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'formed in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (storming of the bastille, took place in, paris)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'took place in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (storming of the bastille, occurred on, 14 july 1789)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred on' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (national assembly, abolished, feudalism)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'abolished' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (national assembly, imposed state control over, catholic church)
+2025-06-02 02:37:22.104 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'imposed state control over' not found in custom ontology, using as-is
+2025-06-02 02:37:22.104 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (king louis xvi, attempted flight to, varennes)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'attempted flight to' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (king louis xvi, attempted flight in, june 1791)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'attempted flight in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (french revolutionary wars, began in, april 1792)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'began in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (armed insurrection, occurred on, 10 august 1792)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred on' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (monarchy, replaced by, french first republic)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'replaced by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (french first republic, established in, september 1792)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'established in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.105 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (louis xvi, executed in, january 1793)
+2025-06-02 02:37:22.105 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'executed in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (revolt in june 1793, led to power shift to, committee of public safety)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'led to power shift to' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (committee of public safety, dominated by, maximilien robespierre)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'dominated by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (reign of terror, executed people, 16 000)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'executed people' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (reign of terror, ended in, july 1794)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'ended in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (thermidorian reaction, occurred in, july 1794)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (committee of public safety, replaced by, directory)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'replaced by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.106 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (directory, established in, november 1795)
+2025-06-02 02:37:22.106 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'established in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (directory, ended with, 18 brumaire)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'ended with' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (consulate, established by coup of, 18 brumaire)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'established by coup of' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (consulate, had first consul, napoleon bonaparte)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'had first consul' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (economic recession, began in, 1785)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'began in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (bad harvests, occurred in, 1787)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (bad harvests, occurred in, 1788)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.107 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (france population, grew to, 28 million)
+2025-06-02 02:37:22.107 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'grew to' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (france population growth period, between, 1715 1789)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'between' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (middle class, tripled by, 1789)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'tripled by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (middle class, comprised, 10)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'comprised' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (tax rates, varied by, region)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'varied by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (regional parlements, blocked, tax reforms)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'blocked' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (calonne, proposed, universal land tax)
+2025-06-02 02:37:22.108 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'proposed' not found in custom ontology, using as-is
+2025-06-02 02:37:22.108 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (calonne, proposed, abolition of grain controls)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'proposed' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (calonne, proposed, new provincial assemblies)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'proposed' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (proposed taxes, rejected by, assembly of notables)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'rejected by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (proposed taxes, rejected by, brienne)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'rejected by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (brienne, replaced by, jacques necker)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'replaced by' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (louis xvi, announced estates general, 8 august 1788)
+2025-06-02 02:37:22.109 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'announced estates general' not found in custom ontology, using as-is
+2025-06-02 02:37:22.109 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (estates general, to convene in, may 1789)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'to convene in' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (parlement of paris, ruled estates general format, september 1788)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'ruled estates general format' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (society of thirty, launched campaign for, doubling third estate representation)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'launched campaign for' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (society of thirty, launched campaign for, individual voting)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'launched campaign for' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (abb  siey s, issued pamphlet, what is the third estate)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'issued pamphlet' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (jean joseph mounier, organized, regional meetings)
+2025-06-02 02:37:22.110 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'organized' not found in custom ontology, using as-is
+2025-06-02 02:37:22.110 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (antoine barnave, organized, regional meetings)
+2025-06-02 02:37:22.111 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'organized' not found in custom ontology, using as-is
+2025-06-02 02:37:22.111 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (maximilien robespierre, organized, regional meetings)
+2025-06-02 02:37:22.111 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'organized' not found in custom ontology, using as-is
+2025-06-02 02:37:22.111 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (louis xvi, agreed to double representation of third estate, december 1788)
+2025-06-02 02:37:22.111 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'agreed to double representation of third estate' not found in custom ontology, using as-is
+[92m02:37:22 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:22,111 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:34,933 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:37:34 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:34,934 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:34.934 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:37:34.935 | DEBUG    | Core.Graph.ERGraph:_openie_post_ner_extract:154 - OpenIE extracted response: {
+  "named_entities": [
+    "American Revolution",
+    "Thirteen Colonies",
+    "British America",
+    "American Revolutionary War",
+    "April 19, 1775",
+    "Battles of Lexington and Concord",
+    "Second Continental Congress",
+    "Independence Hall",
+    "Philadelphia",
+    "Continental Army",
+    "George Washington",
+    "Declaration of Independence",
+    "King George III",
+    "Siege of Yorktown",
+    "Treaty of Paris",
+    "1783",
+    "United States of America",
+    "French and Indian War...
+2025-06-02 02:37:34.935 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, occurred in, thirteen colonies)
+2025-06-02 02:37:34.935 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:34.935 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, occurred in, british america)
+2025-06-02 02:37:34.935 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'occurred in' not found in custom ontology, using as-is
+2025-06-02 02:37:34.935 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolution, refers to date, 1765 1783)
+2025-06-02 02:37:34.935 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.935 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolutionary war, refers to date, april 19  1775)
+2025-06-02 02:37:34.935 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (american revolutionary war, began with, battles of lexington and concord)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'began with' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, formed, continental army)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'formed' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, appointed, george washington)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'appointed' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, adopted, declaration of independence)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'adopted' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (second continental congress, refers to location, independence hall)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to location' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, refers to date, july 4  1776)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.936 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (declaration of independence, authored by, thomas jefferson)
+2025-06-02 02:37:34.936 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'authored by' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (siege of yorktown, led by, george washington)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'led by' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (siege of yorktown, forced negotiation by, king george iii)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'forced negotiation by' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (king george iii, negotiated, treaty of paris)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'negotiated' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, refers to date, 1783)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (treaty of paris, resulted in, united states of america)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'resulted in' not found in custom ontology, using as-is
+2025-06-02 02:37:34.937 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (french and indian war, refers to date, 1763)
+2025-06-02 02:37:34.937 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (stamp act congress, refers to date, 1765)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (boston massacre, refers to date, march 5  1770)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (first continental congress, met at, carpenters  hall)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'met at' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (carpenters  hall, refers to location, philadelphia)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to location' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (independence hall, refers to location, philadelphia)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to location' not found in custom ontology, using as-is
+2025-06-02 02:37:34.938 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (lee resolution, passed by, second continental congress)
+2025-06-02 02:37:34.938 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'passed by' not found in custom ontology, using as-is
+2025-06-02 02:37:34.939 | DEBUG    | Core.Graph.ERGraph:_build_graph_from_tuples:359 - Processing triple: (lee resolution, refers to date, july 2  1776)
+2025-06-02 02:37:34.939 | WARNING  | Core.Graph.ERGraph:_build_graph_from_tuples:392 - Relation 'refers to date' not found in custom ontology, using as-is
+[92m02:37:34 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:34,939 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:34.943 | INFO     | Core.Graph.ERGraph:_build_graph:217 - Successfully built graph
+2025-06-02 02:37:34.943 | INFO     | Core.Graph.ERGraph:_build_graph:223 - Constructing graph finished
+2025-06-02 02:37:34.943 | INFO     | Core.Storage.NetworkXStorage:_persist:116 - Writing graph into /home/brian/digimon/results/MyPipelineTestRun/er_graph/nx_data.graphml
+2025-06-02 02:37:34.943 | INFO     | Core.Storage.NetworkXStorage:write_nx_graph:51 - Writing graph with 113 nodes, 79 edges
+2025-06-02 02:37:34.948 | INFO     | Core.Graph.BaseGraph:build_graph:65 - Graph built successfully and persisted.
+2025-06-02 02:37:34.948 | INFO     | Core.Graph.BaseGraph:build_graph:73 - ✅ Finished the graph building stage successfully.
+2025-06-02 02:37:34.948 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:140 - build_er_graph tool: er_graph_instance.build_graph succeeded for MyPipelineTestRun
+2025-06-02 02:37:34.949 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:145 - build_er_graph artifact path: /home/brian/digimon/results/MyPipelineTestRun/er_graph
+2025-06-02 02:37:34,949 | INFO    | __main__:build_er_graph_wrapper:80 - WRAPPER (BuildERGraph): Tool success. Graph ID: MyPipelineTestRun_ERGraph, Path: /home/brian/digimon/results/MyPipelineTestRun/er_graph
+2025-06-02 02:37:34,949 | INFO    | __main__:build_er_graph_wrapper:82 - WRAPPER (BuildERGraph): Loading ERGraph 'MyPipelineTestRun_ERGraph' into context.
+2025-06-02 02:37:34.949 | INFO     | Core.Graph.GraphFactory:get_graph:43 - GraphFactory: Creating graph of type 'er_graph' with kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f44f639c190>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f44f639c400>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024), 'storage_instance': NetworkXStorage(config=None, namespace=None, name='nx_data.graphml')}
+2025-06-02 02:37:34.949 | DEBUG    | Core.Graph.GraphFactory:_create_er_graph:50 - GraphFactory._create_er_graph: full_config type: <class 'Option.Config2.Config'>, constructor_kwargs: {'llm': <Core.Provider.LiteLLMProvider.LiteLLMProvider object at 0x7f44f639c190>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f44f639c400>, num_workers=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024), 'storage_instance': NetworkXStorage(config=None, namespace=None, name='nx_data.graphml')}
+2025-06-02 02:37:34,949 | INFO    | __main__:build_er_graph_wrapper:104 - WRAPPER (BuildERGraph): Configured NetworkXStorage for loading from: /home/brian/digimon/results/MyPipelineTestRun/er_graph/nx_data.graphml
+2025-06-02 02:37:34.949 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:33 - Attempting to load the graph from: /home/brian/digimon/results/MyPipelineTestRun/er_graph/nx_data.graphml
+2025-06-02 02:37:34.952 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:37 - Successfully loaded graph from: /home/brian/digimon/results/MyPipelineTestRun/er_graph/nx_data.graphml with 113 nodes and 79 edges
+2025-06-02 02:37:34,953 | INFO    | __main__:build_er_graph_wrapper:107 - WRAPPER (BuildERGraph): Loaded graph. Nodes: 113, Edges: 79
+2025-06-02 02:37:34.953 | INFO     | Core.AgentSchema.context:add_graph_instance:39 - GraphRAGContext: Added graph 'MyPipelineTestRun_ERGraph' (type: <class 'Core.Graph.ERGraph.ERGraph'>).
+2025-06-02 02:37:34,953 | INFO    | __main__:build_er_graph_wrapper:110 - WRAPPER (BuildERGraph): Building VDB 'entities_vdb' for graph 'MyPipelineTestRun_ERGraph'.
+2025-06-02 02:37:34,954 | INFO    | __main__:build_er_graph_wrapper:137 - WRAPPER (BuildERGraph): Indexing 113 docs in VDB 'entities_vdb'.
+2025-06-02 02:37:34.954 | INFO     | Core.Index.BaseIndex:build_index:33 - Starting build_index for VDB at /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline. Force flag is: True
+2025-06-02 02:37:34.954 | INFO     | Core.Index.BaseIndex:build_index:48 - Deleting existing index at /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline before rebuilding (force=True, load_failed=False).
+2025-06-02 02:37:34.954 | INFO     | Core.Index.BaseIndex:build_index:51 - Initializing new index structure for VDB at /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline.
+2025-06-02 02:37:34.955 | INFO     | Core.Index.BaseIndex:build_index:54 - Building and persisting new index with 113 elements using metadata keys: ['id', 'content', 'name'].
+2025-06-02 02:37:34.955 | INFO     | Core.Index.FaissIndex:_update_index:153 - Starting FaissIndex._update_index with 113 data elements.
+2025-06-02 02:37:34.956 | INFO     | Core.Index.FaissIndex:_update_index:157 - Using embedding model: <class 'llama_index.embeddings.openai.base.OpenAIEmbedding'>
+2025-06-02 02:37:34.956 | INFO     | Core.Index.FaissIndex:_update_index:161 - Embedding model dimensions: 1024
+2025-06-02 02:37:34.956 | INFO     | Core.Index.FaissIndex:_update_index:172 - Attempting to embed 113 texts for FaissIndex.
+INFO [Config.default]: Loaded default config from Option/Config2.yaml
+WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.
+WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.
+WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.
+WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.
+INFO [Config.default]: Successfully created default Config instance.
+INFO [Config.default]: Loaded default config from Option/Config2.yaml
+WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.
+WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.
+WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.
+WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.
+INFO [Config.default]: Successfully created default Config instance.
+Directory /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline and its contents have been deleted.
+Generating embeddings:   0%|          | 0/1 [00:00<?, ?it/s]2025-06-02 02:37:36,223 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+Generating embeddings: 100%|██████████| 1/1 [00:01<00:00,  1.39s/it]Generating embeddings: 100%|██████████| 1/1 [00:01<00:00,  1.39s/it]
+2025-06-02 02:37:36.351 | INFO     | Core.Index.FaissIndex:_update_index:192 - Successfully generated 113 embeddings.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'the french revolution', 'content': 'the french revolution'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'causes of the french revolution', 'content': 'causes of the french revolution'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'delisle guillaume', 'content': 'delisle guillaume'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'maximilien robespierre', 'content': 'maximilien robespierre'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'abb  siey s', 'content': 'abb  siey s'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'jean joseph mounier', 'content': 'jean joseph mounier'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'antoine barnave', 'content': 'antoine barnave'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'calonne', 'content': 'calonne'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.352 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'brienne', 'content': 'brienne'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'jacques necker', 'content': 'jacques necker'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'liberal democracy', 'content': 'liberal democracy'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'ancien r gime', 'content': 'ancien r gime'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'reign of terror', 'content': 'reign of terror'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'thermidorian reaction', 'content': 'thermidorian reaction'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'consulate', 'content': 'consulate'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'american revolution', 'content': 'american revolution'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'enlightenment', 'content': 'enlightenment'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'storming of the bastille', 'content': 'storming of the bastille'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.353 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'estates general', 'content': 'estates general'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'national assembly', 'content': 'national assembly'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'committee of public safety', 'content': 'committee of public safety'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'directory', 'content': 'directory'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'affair of the diamond necklace', 'content': 'affair of the diamond necklace'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'society of thirty', 'content': 'society of thirty'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'estates general of 1789', 'content': 'estates general of 1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '9 november 1799', 'content': '9 november 1799'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'may 1789', 'content': 'may 1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1614', 'content': '1614'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.354 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '14 july 1789', 'content': '14 july 1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'june 1791', 'content': 'june 1791'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'april 1792', 'content': 'april 1792'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '10 august 1792', 'content': '10 august 1792'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'september 1792', 'content': 'september 1792'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'january 1793', 'content': 'january 1793'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'june 1793', 'content': 'june 1793'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'july 1794', 'content': 'july 1794'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'november 1795', 'content': 'november 1795'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '18 brumaire', 'content': '18 brumaire'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.355 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1785', 'content': '1785'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1787', 'content': '1787'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1788', 'content': '1788'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1715 1789', 'content': '1715 1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '8 august 1788', 'content': '8 august 1788'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '25 september 1788', 'content': '25 september 1788'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'december 1788', 'content': 'december 1788'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'france', 'content': 'france'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'paris', 'content': 'paris'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.356 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'varennes', 'content': 'varennes'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'thirteen colonies', 'content': 'thirteen colonies'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'british america', 'content': 'british america'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1765 1783', 'content': '1765 1783'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'american revolutionary war', 'content': 'american revolutionary war'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'april 19  1775', 'content': 'april 19  1775'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'battles of lexington and concord', 'content': 'battles of lexington and concord'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'continental army', 'content': 'continental army'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'second continental congress', 'content': 'second continental congress'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'george washington', 'content': 'george washington'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.357 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'declaration of independence', 'content': 'declaration of independence'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'independence hall', 'content': 'independence hall'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'july 4  1776', 'content': 'july 4  1776'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'thomas jefferson', 'content': 'thomas jefferson'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'siege of yorktown', 'content': 'siege of yorktown'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'king george iii', 'content': 'king george iii'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'treaty of paris', 'content': 'treaty of paris'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1783', 'content': '1783'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'united states of america', 'content': 'united states of america'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1763', 'content': '1763'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.358 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'french and indian war', 'content': 'french and indian war'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1765', 'content': '1765'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'stamp act congress', 'content': 'stamp act congress'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'boston massacre', 'content': 'boston massacre'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'march 5  1770', 'content': 'march 5  1770'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'carpenters  hall', 'content': 'carpenters  hall'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'first continental congress', 'content': 'first continental congress'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'philadelphia', 'content': 'philadelphia'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'lee resolution', 'content': 'lee resolution'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'july 2  1776', 'content': 'july 2  1776'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'third estate', 'content': 'third estate'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.359 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'june 1789', 'content': 'june 1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.360 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'feudalism', 'content': 'feudalism'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.360 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'catholic church', 'content': 'catholic church'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.360 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'king louis xvi', 'content': 'king louis xvi'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.360 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'french revolutionary wars', 'content': 'french revolutionary wars'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'armed insurrection', 'content': 'armed insurrection'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'french first republic', 'content': 'french first republic'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'monarchy', 'content': 'monarchy'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'louis xvi', 'content': 'louis xvi'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'revolt in june 1793', 'content': 'revolt in june 1793'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '16 000', 'content': '16 000'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'napoleon bonaparte', 'content': 'napoleon bonaparte'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.361 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'economic recession', 'content': 'economic recession'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'bad harvests', 'content': 'bad harvests'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '28 million', 'content': '28 million'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'france population', 'content': 'france population'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'france population growth period', 'content': 'france population growth period'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '1789', 'content': '1789'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'middle class', 'content': 'middle class'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': '10', 'content': '10'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'region', 'content': 'region'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'tax rates', 'content': 'tax rates'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'regional parlements', 'content': 'regional parlements'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.362 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'tax reforms', 'content': 'tax reforms'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'universal land tax', 'content': 'universal land tax'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'abolition of grain controls', 'content': 'abolition of grain controls'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'new provincial assemblies', 'content': 'new provincial assemblies'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'assembly of notables', 'content': 'assembly of notables'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'proposed taxes', 'content': 'proposed taxes'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'parlement of paris', 'content': 'parlement of paris'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'september 1788', 'content': 'september 1788'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'doubling third estate representation', 'content': 'doubling third estate representation'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'individual voting', 'content': 'individual voting'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.363 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'what is the third estate', 'content': 'what is the third estate'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.364 | WARNING  | Core.Index.FaissIndex:_update_index:199 - Metadata key 'name' not found in data_item: {'id': 'regional meetings', 'content': 'regional meetings'}. It will be missing from VDB metadata.
+2025-06-02 02:37:36.364 | INFO     | Core.Index.FaissIndex:_update_index:227 - FaissIndex: Inserting 113 nodes into index.
+2025-06-02 02:37:36.377 | INFO     | Core.Index.FaissIndex:_update_index:229 - FaissIndex: Node insertion complete.
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:301 - FaissIndex._storage_index: Attempting to persist LlamaIndex StorageContext to directory: /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:304 - FaissIndex._storage_index: Ensured persist directory exists: /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:312 - FaissIndex._storage_index: Type of vector_store from storage_context: <class 'llama_index.vector_stores.faiss.base.FaissVectorStore'>
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:315 - FaissIndex._storage_index: vector_store IS a FaissVectorStore instance.
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:316 - FaissIndex._storage_index: vector_store._faiss_index object: <faiss.swigfaiss_avx2.IndexHNSWFlat; proxy of <Swig Object of type 'faiss::IndexHNSWFlat *' at 0x7f44f629d440> >
+2025-06-02 02:37:36.378 | INFO     | Core.Index.FaissIndex:_storage_index:318 - FaissIndex._storage_index: vector_store._faiss_index.ntotal (num vectors): 113
+2025-06-02 02:37:36.380 | INFO     | Core.Index.FaissIndex:_storage_index:328 - FaissIndex._storage_index: LlamaIndex storage_context.persist() called successfully for directory: /home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline
+2025-06-02 02:37:36.380 | INFO     | Core.Index.FaissIndex:_storage_index:334 - FaissIndex._storage_index: Files found in persist directory '/home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline' after persist call: ['index_store.json', 'docstore.json', 'default__vector_store.json', 'image__vector_store.json', 'graph_store.json']
+2025-06-02 02:37:36.380 | INFO     | Core.Index.FaissIndex:_storage_index:344 - FaissIndex._storage_index: Found file 'default__vector_store.json' in '/home/brian/digimon/results/MyPipelineTestRun/er_graph/faiss_entities_vdb_test_pipeline', which is expected to be the binary Faiss index.
+2025-06-02 02:37:36.380 | INFO     | Core.Index.BaseIndex:build_index:57 - New index successfully built and stored.
+2025-06-02 02:37:36.380 | INFO     | Core.Index.BaseIndex:build_index:59 - ✅ Finished VDB index setup process.
+2025-06-02 02:37:36.380 | INFO     | Core.AgentSchema.context:add_vdb_instance:49 - GraphRAGContext: Added VDB 'entities_vdb' (type: <class 'Core.Index.FaissIndex.FaissIndex'>).
+2025-06-02 02:37:36,381 | INFO    | __main__:build_er_graph_wrapper:145 - WRAPPER (BuildERGraph): VDB 'entities_vdb' added to context ID 139934166693856.
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:213 - Orchestrator: Tool graph.BuildERGraph executed. Output type: <class 'Core.AgentSchema.graph_construction_tool_contracts.BuildERGraphOutputs'>
+2025-06-02 02:37:36.381 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:214 - Orchestrator: Raw output: graph_id='MyPipelineTestRun_ERGraph' status='success' message='ERGraph built successfully for MyPipelineTestRun.' node_count=113 edge_count=79 layer_count=None artifact_path='/home/brian/digimon/results/MyPipelineTestRun/er_graph'...
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'graph_id_from_build' for step step_2_build_er_graph (tool graph.BuildERGraph).
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'status_from_build' for step step_2_build_er_graph (tool graph.BuildERGraph).
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 3/4: step_3_vdb_search - Search the entity VDB for causes of the American Revolution
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_3_vdb_search: Entity.VDBSearch
+2025-06-02 02:37:36.381 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'vdb_reference_id': Resolved as literal value.
+2025-06-02 02:37:36.381 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:133 - Orchestrator (parameter) 'top_k_results': Resolved as literal value.
+2025-06-02 02:37:36.381 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:127 - Orchestrator (input field) 'query_text': Resolved from plan_inputs, key 'main_query'.
+2025-06-02 02:37:36.381 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating EntityVDBSearchInputs with: {'vdb_reference_id': 'entities_vdb', 'top_k_results': 5, 'query_text': 'causes of the American Revolution'}
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated EntityVDBSearchInputs for Entity.VDBSearch
+2025-06-02 02:37:36.381 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling entity_vdb_search_wrapper for ID: Entity.VDBSearch
+2025-06-02 02:37:36,382 | INFO    | __main__:entity_vdb_search_wrapper:154 - WRAPPER (VDB Search): Called. Input: {
+ "vdb_reference_id": "entities_vdb",
+ "query_text": "causes of the American Revolution",
+ "query_embedding": null,
+ "embedding_model_id": null,
+ "top_k_results": 5
+}. Using context ID: 139934166693856
+2025-06-02 02:37:36.382 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:74 - Executing tool 'Entity.VDBSearch' with parameters: vdb_reference_id='entities_vdb', query_text='causes of the American Revolution', top_k_results=5
+2025-06-02 02:37:36.382 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:101 - Entity.VDBSearch: Accessing LlamaIndex VectorStoreIndex via vdb_instance._index. Type: <class 'llama_index.core.indices.vector_store.base.VectorStoreIndex'>
+2025-06-02 02:37:36,568 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-02 02:37:36.569 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:138 - Entity.VDBSearch: Found 5 similar entities.
+2025-06-02 02:37:36.569 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:213 - Orchestrator: Tool Entity.VDBSearch executed. Output type: <class 'Core.AgentSchema.tool_contracts.EntityVDBSearchOutputs'>
+2025-06-02 02:37:36.569 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:214 - Orchestrator: Raw output: similar_entities=[VDBSearchResultItem(node_id='ebe9157deb59a51f8b1a1ed82fdca171', entity_name='causes of the french revolution', score=0.6411926746368408), VDBSearchResultItem(node_id='f716968123abceb69248910ac7ffb1f9', entity_name='american revolution', score=0.7377710938453674), VDBSearchResultItem(node_id='23e227699ee48c16d4c983665ff8224d', entity_name='american revolutionary war', score=0.7813870906829834), VDBSearchResultItem(node_id='df9028fcb6b065e000ffe8a4f03eeb38', entity_name='1763', s...
+2025-06-02 02:37:36.569 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'vdb_search_results_list' for step step_3_vdb_search (tool Entity.VDBSearch).
+2025-06-02 02:37:36.569 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:163 - Orchestrator: Executing Step 4/4: step_4_one_hop_neighbors - Get one-hop neighbors and relationships for the top entities
+2025-06-02 02:37:36.569 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:176 - Orchestrator: Tool 1/1 in step_4_one_hop_neighbors: Relationship.OneHopNeighbors
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:78 - Orchestrator (input field) 'entity_ids': Parsed dict into ToolInputSource.
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:91 - Orchestrator (input field) 'entity_ids': Retrieved from step 'step_3_vdb_search', key 'vdb_search_results_list'. Raw type: <class 'list'>
+2025-06-02 02:37:36.570 | INFO     | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:116 - Orchestrator (input field) 'entity_ids': Transformed VDB output for. Extracted 5 IDs.
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:78 - Orchestrator (input field) 'graph_reference_id': Parsed dict into ToolInputSource.
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:91 - Orchestrator (input field) 'graph_reference_id': Retrieved from step 'step_2_build_er_graph', key 'graph_id_from_build'. Raw type: <class 'str'>
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:119 - Orchestrator (input field) 'graph_reference_id': Using raw output from previous step.
+2025-06-02 02:37:36.570 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:191 - Orchestrator: Instantiating RelationshipOneHopNeighborsInputs with: {'entity_ids': ['causes of the french revolution', 'american revolution', 'american revolutionary war', '1763', 'british america'], 'graph_reference_id': 'MyPipelineTestRun_ERGraph'}
+2025-06-02 02:37:36.570 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:193 - Orchestrator: Instantiated RelationshipOneHopNeighborsInputs for Relationship.OneHopNeighbors
+2025-06-02 02:37:36.570 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:195 - Orchestrator: Calling relationship_one_hop_wrapper for ID: Relationship.OneHopNeighbors
+2025-06-02 02:37:36,570 | INFO    | __main__:relationship_one_hop_wrapper:162 - WRAPPER (OneHop): Called. Input: {
+ "entity_ids": [
+  "causes of the french revolution",
+  "american revolution",
+  "american revolutionary war",
+  "1763",
+  "british america"
+ ],
+ "graph_reference_id": "MyPipelineTestRun_ERGraph",
+ "relationship_types_to_include": null,
+ "direction": "both"
+}. Using context ID: 139934166693856
+2025-06-02 02:37:36,570 | INFO    | Core.AgentTools.relationship_tools:relationship_one_hop_neighbors_tool:26 - Executing tool 'Relationship.OneHopNeighbors' with parameters: entity_ids=['causes of the french revolution', 'american revolution', 'american revolutionary war', '1763', 'british america'], graph_reference_id='MyPipelineTestRun_ERGraph', direction='both', types_to_include='None'
+2025-06-02 02:37:36,570 | INFO    | Core.AgentTools.relationship_tools:relationship_one_hop_neighbors_tool:42 - Relationship.OneHopNeighbors: Attempting to use graph_id 'MyPipelineTestRun_ERGraph'. Found in context: True. Type: <class 'Core.Graph.ERGraph.ERGraph'>
+2025-06-02 02:37:36,570 | INFO    | Core.AgentTools.relationship_tools:relationship_one_hop_neighbors_tool:55 - Relationship.OneHopNeighbors: Successfully accessed NetworkX graph via _graph.graph. Type: <class 'networkx.classes.graph.Graph'>
+2025-06-02 02:37:36,570 | INFO    | Core.AgentTools.relationship_tools:relationship_one_hop_neighbors_tool:70 - Relationship.OneHopNeighbors: Graph is considered undirected (using neighbors()).
+2025-06-02 02:37:36,570 | INFO    | Core.AgentTools.relationship_tools:relationship_one_hop_neighbors_tool:132 - Relationship.OneHopNeighbors: Found 7 one-hop relationships.
+2025-06-02 02:37:36.571 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:213 - Orchestrator: Tool Relationship.OneHopNeighbors executed. Output type: <class 'Core.AgentSchema.tool_contracts.RelationshipOneHopNeighborsOutputs'>
+2025-06-02 02:37:36.571 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:214 - Orchestrator: Raw output: one_hop_relationships=[RelationshipData(src_id='american revolution', tgt_id='thirteen colonies', source_id='graph_traversal_tool', relation_name='unknown_relationship', weight=1.0, description='', keywords='', rank=0, attributes={'source_id': 'chunk_0', 'relation_name': 'occurred in', 'keywords': '', 'src_id': 'american revolution', 'tgt_id': 'thirteen colonies'}), RelationshipData(src_id='american revolution', tgt_id='british america', source_id='graph_traversal_tool', relation_name='unknown_r...
+2025-06-02 02:37:36.571 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:238 - Orchestrator: Stored output 'final_neighbor_info' for step step_4_one_hop_neighbors (tool Relationship.OneHopNeighbors).
+2025-06-02 02:37:36.571 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:249 - Orchestrator: Plan execution of all steps finished.
+2025-06-02 02:37:36.571 | INFO     | Core.AgentBrain.agent_brain:process_query:371 - PlanningAgent: Plan execution finished. Retrieved context: {'step_1_prepare_corpus': {'corpus_status': 'success', 'corpus_path': '/home/brian/digimon/results/MyPipelineTestRun/Corpus.json', 'doc_count': 2}, 'step_2_build_er_graph': {'graph_id_from_build': 'MyPipelineTestRun_ERGraph', 'status_from_build': 'success'}, 'step_3_vdb_search': {'vdb_search_results_list': [{'node_id': 'ebe9157deb59a51f8b1a1ed82fdca171', 'entity_name': 'causes of the french revolution', 'score': 0.6411926746368408}, {'node_id': 'f716968123abceb69248910ac7ffb1f9', 'entity_name': 'american revolution', 'score': 0.7377710938453674}, {'node_id': '23e227699ee48c16d4c983665ff8224d', 'entity_name': 'american revolutionary war', 'score': 0.7813870906829834}, {'node_id': 'df9028fcb6b065e000ffe8a4f03eeb38', 'entity_name': '1763', 'score': 1.127659559249878}, {'node_id': '4bf2bca1ef411e29191f01558f0dc0fe', 'entity_name': 'british america', 'score': 1.1454670429229736}]}, 'step_4_one_hop_neighbors': {'final_neighbor_info': [{'src_id': 'american revolution', 'tgt_id': 'thirteen colonies', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'occurred in', 'keywords': '', 'src_id': 'american revolution', 'tgt_id': 'thirteen colonies'}}, {'src_id': 'american revolution', 'tgt_id': 'british america', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'occurred in', 'keywords': '', 'src_id': 'american revolution', 'tgt_id': 'british america'}}, {'src_id': 'american revolution', 'tgt_id': '1765 1783', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'refers to date', 'keywords': '', 'src_id': '1765 1783', 'tgt_id': 'american revolution'}}, {'src_id': 'american revolutionary war', 'tgt_id': 'april 19  1775', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'refers to date', 'keywords': '', 'src_id': 'american revolutionary war', 'tgt_id': 'april 19  1775'}}, {'src_id': 'american revolutionary war', 'tgt_id': 'battles of lexington and concord', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'began with', 'keywords': '', 'src_id': 'american revolutionary war', 'tgt_id': 'battles of lexington and concord'}}, {'src_id': '1763', 'tgt_id': 'french and indian war', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'refers to date', 'keywords': '', 'src_id': '1763', 'tgt_id': 'french and indian war'}}, {'src_id': 'british america', 'tgt_id': 'american revolution', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank': 0, 'attributes': {'source_id': 'chunk_0', 'relation_name': 'occurred in', 'keywords': '', 'src_id': 'american revolution', 'tgt_id': 'british america'}}]}}
+2025-06-02 02:37:36.571 | INFO     | Core.AgentBrain.agent_brain:process_query:408 - PlanningAgent: Generating natural language answer based on retrieved context...
+2025-06-02 02:37:36.571 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:88 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'openai/o4-mini-2025-04-16', 'stream': False, 'temperature': 0.2, 'api_key': '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', 'timeout': 600}
+[92m02:37:36 - LiteLLM:INFO[0m: utils.py:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:37:36,572 | INFO    | LiteLLM:_check_valid_arg:2968 - 
+LiteLLM completion() model= o4-mini-2025-04-16; provider = openai
+2025-06-02 02:37:48,488 | INFO    | httpx:_send_single_request:1740 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[92m02:37:48 - LiteLLM:INFO[0m: cost_calculator.py:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:48,489 | INFO    | LiteLLM:completion_cost:655 - selected model name for cost calculation: openai/o4-mini-2025-04-16
+2025-06-02 02:37:48.489 | WARNING  | Core.Common.CostManager:update_cost:49 - Model openai/o4-mini-2025-04-16 not found in TOKEN_COSTS.
+2025-06-02 02:37:48.489 | INFO     | Core.AgentBrain.agent_brain:process_query:412 - PlanningAgent: Generated answer: Based on the graph data available:  
+• The “American Revolution” is placed in British America and the Thirteen Colonies and spans roughly 1765–1783.  
+• It is directly linked to the 1763 French and Indian War—an earlier conflict that left Britain heavily indebted and set the stage for new colonial policies.  
+• The war itself opened on April 19, 1775, at the Battles of Lexington and Concord.  
+
+The specific political and economic triggers (for example, parliamentary taxes and colonial protests) are not detailed in the retrieved context.
+2025-06-02 02:37:48,489 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:255 - Test: Agent final response: {
+  "retrieved_context": {
+    "step_1_prepare_corpus": {
+      "corpus_status": "success",
+      "corpus_path": "/home/brian/digimon/results/MyPipelineTestRun/Corpus.json",
+      "doc_count": 2
+    },
+    "step_2_build_er_graph": {
+      "graph_id_from_build": "MyPipelineTestRun_ERGraph",
+      "status_from_build": "success"
+    },
+    "step_3_vdb_search": {
+      "vdb_search_results_list": [
+        {
+          "node_id": "ebe9157deb59a51f8b1a1ed82fdca171",
+          "entity_name": "causes of the french revolution",
+          "score": 0.6411926746368408
+        },
+        {
+          "node_id": "f716968123abceb69248910ac7ffb1f9",
+          "entity_name": "american revolution",
+          "score": 0.7377710938453674
+        },
+        {
+          "node_id": "23e227699ee48c16d4c983665ff8224d",
+          "entity_name": "american revolutionary war",
+          "score": 0.7813870906829834
+        },
+        {
+          "node_id": "df9028fcb6b065e000ffe8a4f03eeb38",
+          "entity_name": "1763",
+          "score": 1.127659559249878
+        },
+        {
+          "node_id": "4bf2bca1ef411e29191f01558f0dc0fe",
+          "entity_name": "british america",
+          "score": 1.1454670429229736
+        }
+      ]
+    },
+    "step_4_one_hop_neighbors": {
+      "final_neighbor_info": [
+        {
+          "src_id": "american revolution",
+          "tgt_id": "thirteen colonies",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "occurred in",
+            "keywords": "",
+            "src_id": "american revolution",
+            "tgt_id": "thirteen colonies"
+          }
+        },
+        {
+          "src_id": "american revolution",
+          "tgt_id": "british america",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "occurred in",
+            "keywords": "",
+            "src_id": "american revolution",
+            "tgt_id": "british america"
+          }
+        },
+        {
+          "src_id": "american revolution",
+          "tgt_id": "1765 1783",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "refers to date",
+            "keywords": "",
+            "src_id": "1765 1783",
+            "tgt_id": "american revolution"
+          }
+        },
+        {
+          "src_id": "american revolutionary war",
+          "tgt_id": "april 19  1775",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "refers to date",
+            "keywords": "",
+            "src_id": "american revolutionary war",
+            "tgt_id": "april 19  1775"
+          }
+        },
+        {
+          "src_id": "american revolutionary war",
+          "tgt_id": "battles of lexington and concord",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "began with",
+            "keywords": "",
+            "src_id": "american revolutionary war",
+            "tgt_id": "battles of lexington and concord"
+          }
+        },
+        {
+          "src_id": "1763",
+          "tgt_id": "french and indian war",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "refers to date",
+            "keywords": "",
+            "src_id": "1763",
+            "tgt_id": "french and indian war"
+          }
+        },
+        {
+          "src_id": "british america",
+          "tgt_id": "american revolution",
+          "source_id": "graph_traversal_tool",
+          "relation_name": "unknown_relationship",
+          "weight": 1.0,
+          "description": "",
+          "keywords": "",
+          "rank": 0,
+          "attributes": {
+            "source_id": "chunk_0",
+            "relation_name": "occurred in",
+            "keywords": "",
+            "src_id": "american revolution",
+            "tgt_id": "british america"
+          }
+        }
+      ]
+    }
+  },
+  "generated_answer": "Based on the graph data available:  \n\u2022 The \u201cAmerican Revolution\u201d is placed in British America and the Thirteen Colonies and spans roughly 1765\u20131783.  \n\u2022 It is directly linked to the 1763 French and Indian War\u2014an earlier conflict that left Britain heavily indebted and set the stage for new colonial policies.  \n\u2022 The war itself opened on April 19, 1775, at the Battles of Lexington and Concord.  \n\nThe specific political and economic triggers (for example, parliamentary taxes and colonial protests) are not detailed in the retrieved context."
+}
+2025-06-02 02:37:48,489 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:260 - ✅ VERIFY: All step outputs from orchestrator: {
+  "step_1_prepare_corpus": {
+    "corpus_status": "success",
+    "corpus_path": "/home/brian/digimon/results/MyPipelineTestRun/Corpus.json",
+    "doc_count": 2
+  },
+  "step_2_build_er_graph": {
+    "graph_id_from_build": "MyPipelineTestRun_ERGraph",
+    "status_from_build": "success"
+  },
+  "step_3_vdb_search": {
+    "vdb_search_results_list": [
+      {
+        "node_id": "ebe9157deb59a51f8b1a1ed82fdca171",
+        "entity_name": "causes of the french revolution",
+        "score": 0.6411926746368408
+      },
+      {
+        "node_id": "f716968123abceb69248910ac7ffb1f9",
+        "entity_name": "american revolution",
+        "score": 0.7377710938453674
+      },
+      {
+        "node_id": "23e227699ee48c16d4c983665ff8224d",
+        "entity_name": "american revolutionary war",
+        "score": 0.7813870906829834
+      },
+      {
+        "node_id": "df9028fcb6b065e000ffe8a4f03eeb38",
+        "entity_name": "1763",
+        "score": 1.127659559249878
+      },
+      {
+        "node_id": "4bf2bca1ef411e29191f01558f0dc0fe",
+        "entity_name": "british america",
+        "score": 1.1454670429229736
+      }
+    ]
+  },
+  "step_4_one_hop_neighbors": {
+    "final_neighbor_info": [
+      {
+        "src_id": "american revolution",
+        "tgt_id": "thirteen colonies",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "occurred in",
+          "keywords": "",
+          "src_id": "american revolution",
+          "tgt_id": "thirteen colonies"
+        }
+      },
+      {
+        "src_id": "american revolution",
+        "tgt_id": "british america",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "occurred in",
+          "keywords": "",
+          "src_id": "american revolution",
+          "tgt_id": "british america"
+        }
+      },
+      {
+        "src_id": "american revolution",
+        "tgt_id": "1765 1783",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "refers to date",
+          "keywords": "",
+          "src_id": "1765 1783",
+          "tgt_id": "american revolution"
+        }
+      },
+      {
+        "src_id": "american revolutionary war",
+        "tgt_id": "april 19  1775",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "refers to date",
+          "keywords": "",
+          "src_id": "american revolutionary war",
+          "tgt_id": "april 19  1775"
+        }
+      },
+      {
+        "src_id": "american revolutionary war",
+        "tgt_id": "battles of lexington and concord",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "began with",
+          "keywords": "",
+          "src_id": "american revolutionary war",
+          "tgt_id": "battles of lexington and concord"
+        }
+      },
+      {
+        "src_id": "1763",
+        "tgt_id": "french and indian war",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "refers to date",
+          "keywords": "",
+          "src_id": "1763",
+          "tgt_id": "french and indian war"
+        }
+      },
+      {
+        "src_id": "british america",
+        "tgt_id": "american revolution",
+        "source_id": "graph_traversal_tool",
+        "relation_name": "unknown_relationship",
+        "weight": 1.0,
+        "description": "",
+        "keywords": "",
+        "rank": 0,
+        "attributes": {
+          "source_id": "chunk_0",
+          "relation_name": "occurred in",
+          "keywords": "",
+          "src_id": "american revolution",
+          "tgt_id": "british america"
+        }
+      }
+    ]
+  }
+}
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:265 - ✅ VERIFY: 'vdb_search_results_list' (type: <class 'list'>) found: [{'node_id': 'ebe9157deb59a51f8b1a1ed82fdca171', 'entity_name': 'causes of the french revolution', 'score': 0.6411926746368408}, {'node_id': 'f716968123abceb69248910ac7ffb1f9', 'entity_name': 'america...
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:274 - ✅ VERIFY: 'final_neighbor_info' (type: <class 'list'>) found: [{'src_id': 'american revolution', 'tgt_id': 'thirteen colonies', 'source_id': 'graph_traversal_tool', 'relation_name': 'unknown_relationship', 'weight': 1.0, 'description': '', 'keywords': '', 'rank'...
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:281 - Agent's Final Generated Answer:
+Based on the graph data available:  
+• The “American Revolution” is placed in British America and the Thirteen Colonies and spans roughly 1765–1783.  
+• It is directly linked to the 1763 French and Indian War—an earlier conflict that left Britain heavily indebted and set the stage for new colonial policies.  
+• The war itself opened on April 19, 1775, at the Battles of Lexington and Concord.  
+
+The specific political and economic triggers (for example, parliamentary taxes and colonial protests) are not detailed in the retrieved context.
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:299 - ✅ VERIFY: Corpus.json found at /home/brian/digimon/results/MyPipelineTestRun/Corpus.json
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:304 - Corpus.json physically contains 2 lines. Tool reported processing: 0 docs.
+2025-06-02 02:37:48,490 | INFO    | __main__:test_agent_corpus_to_graph_pipeline:313 - ✅ SUCCESS: ERGraph file found at /home/brian/digimon/results/MyPipelineTestRun/er_graph/nx_data.graphml
