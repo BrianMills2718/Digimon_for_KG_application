@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Any, Optional
+from pydantic import BaseModel, ConfigDict
 # Assuming NameSpace is defined in Core.Storage.NameSpace and is not a Pydantic model itself,
 # or if it is, it's compatible. For arbitrary_types_allowed=True, it should be fine.
 from Core.Storage.NameSpace import NameSpace

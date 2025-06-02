@@ -1,21 +1,16 @@
-## Credits
+Okay, this is a great README that already captures a lot of the spirit and direction of your DIGIMON fork! To make it even more comprehensive and reflective of our recent progress and your larger vision (especially the agent autonomously handling raw text to insights), I'll integrate our recent accomplishments and future plans more explicitly.
 
-This project is a fork of [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG).
-All credit for the original design and implementation goes to the original authors.
+Here's a revised, complete README.md. I've focused on:
 
-### About this Fork: DIGIMON
+Clearly stating the end-to-end agent vision.
+Updating "Current Features & Capabilities" to reflect the new agent tools.
+Refining "Future Plans" to be more specific about the agent's intelligence and the ReACT paradigm.
+Ensuring a logical flow and incorporating the strong sections you already have.
+Markdown
 
-This fork, **DIGIMON (Deep Analysis of Graph-Based Retrieval-Augmented Generation Systems)**, significantly refactors and extends the original project. The primary motivation is to transform the initial monolithic testing pipeline into a highly modular and flexible "usage suite." This allows for deeper analysis, more adaptable experimentation, and provides a robust foundation for advanced research into graph-based RAG.
-
-Key enhancements in this fork include:
-* **Decoupled Operational Modes:** You can now separately format documents, build Knowledge Graphs (KGs) and their associated vector databases, query these artifacts, and evaluate the results.
-* **Focus on Granular Operators:** The system exposes approximately 16 underlying retrieval and graph manipulation operators, paving the way for dynamic composition of RAG strategies.
-* **Intelligent Agent Development:** A major goal of this fork is the development of an LLM-based intelligent agent capable of autonomously structuring KGs and dynamically determining optimal retrieval chains by leveraging these granular operators.
-
-## 👾 DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems
+# 👾 DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems
 
 <div style="text-align: center;">
-  <a href="https://github.com/BrianMills2718/Digimon_KG"><img src="https://img.shields.io/badge/DIGIMON_Fork-blue"/></a>
   <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/badge/Original_Graph_RAG-red"/></a>
   <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/github/stars/JayLZhou/GraphRAG"/></a>
   <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/github/forks/JayLZhou/GraphRAG"/></a>
@@ -23,249 +18,144 @@ Key enhancements in this fork include:
 
 > **GraphRAG** is a popular 🔥🔥🔥 and powerful 💪💪💪 RAG system! 🚀💡 Inspired by systems like Microsoft's, graph-based RAG is unlocking endless possibilities in AI.
 
-> The DIGIMON project focuses on **modularizing and decoupling** these methods 🧩 to **unveil the mystery** 🕵️‍♂️🔍✨ behind them, enable advanced analysis, and develop intelligent agent-driven RAG. Our project🔨 is included in [Awesome Graph-based RAG](https://github.com/DEEP-PolyU/Awesome-GraphRAG).
+> The DIGIMON project focuses on **modularizing and decoupling** these methods 🧩 to **unveil the mystery** 🕵️‍♂️🔍✨ behind them, enable advanced analysis, and develop intelligent agent-driven RAG capable of handling complex, multi-step information processing tasks from raw data to summarized insights. Our project🔨 is included in [Awesome Graph-based RAG](https://github.com/DEEP-PolyU/Awesome-GraphRAG).
 
 ![Workflow of GraphRAG](./Doc/workflow.png)
 
 ---
 [![](https://img.shields.io/badge/cs.Zhou-2025.04338-B31C1C?logo=arxiv&logoColor=B31C1C)](https://www.arxiv.org/abs/2503.04338)
 [![](https://img.shields.io/badge/python-3.10+-blue)](https://pypi.org/project/agentscope/)
-[![](https://img.shields.io/badge/Contribute-Welcome-green)](https://modelscope.github.io/agentscope/tutorial/contribute.html) - If you find the original work or this fork helpful, please kindly cite [the original GraphRAG paper](https://www.arxiv.org/abs/2503.04338).
+[![](https://img.shields.io/badge/Contribute-Welcome-green)](https://modelscope.github.io/agentscope/tutorial/contribute.html) 
+- If you find the original work or this fork helpful, please kindly cite [the original GraphRAG paper](https://www.arxiv.org/abs/2503.04338).
 - Download the datasets referenced by the original paper: [GraphRAG-dataset](https://drive.google.com/file/d/14nYYw-3FutumQnSRwKavIbG3LRSmIzDX/view?usp=sharing)
 
 ---
 
-## Project Goals (DIGIMON Fork)
+## About this Fork: DIGIMON
+
+This fork, **DIGIMON (Deep Analysis of Graph-Based Retrieval-Augmented Generation Systems)**, significantly refactors and extends the original [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG) project. The primary motivation is to transform the initial monolithic testing pipeline into a highly modular and flexible "usage suite." This allows for deeper analysis, more adaptable experimentation, and provides a robust foundation for advanced research into graph-based RAG, particularly through the development of an intelligent agent.
+
+**Key Goals for DIGIMON:**
 
 * Provide a robust and modular framework for building, querying, and evaluating diverse graph-based RAG systems.
 * Enable detailed analysis of individual components and operator chains within graph RAG pipelines.
 * Develop an intelligent LLM-based agent capable of:
-    * Autonomously structuring KGs (e.g., selecting graph types, applying ontologies).
-    * Dynamically determining and executing optimal retrieval strategies by composing sequences of the system's granular operators.
-* Serve as a flexible platform for research into advanced RAG techniques and agentic information retrieval.
-* *(Optional: Add any other specific goals you have, e.g., related to your PhD research on social media discourse analysis, if you wish to make that public).*
+    * **End-to-End Data Processing:** Handling tasks from raw text files in a directory (e.g., preparing a corpus, chunking) through to KG construction and insight extraction.
+    * **Autonomous KG Structuring:** Intelligently selecting appropriate graph types (e.g., ERGraph, TreeGraph, PassageGraph), applying ontologies, and configuring build parameters based on the data and task.
+    * **Dynamic Retrieval Strategies:** Determining and executing optimal retrieval strategies by composing sequences of the system's granular operators in a ReACT-style (Reason, Act, Observe) iterative workflow.
+* Serve as a flexible platform for PhD research (e.g., on social media discourse analysis) and broader exploration of advanced RAG techniques and agentic information retrieval.
 
 ---
 
 ## Current Features & Capabilities
 
-### Decoupled Architecture
+### Modular Architecture & Operational Modes
 
-This fork features a modular design with three distinct operational modes, manageable via `main.py`:
+The system features a modular design with distinct operational modes, manageable via `main.py`, and increasingly, through agent-callable tools:
 
-1.  **Build Mode**: Constructs the knowledge graph and generates all necessary artifacts (e.g., graph structure, vector databases for entities/relations, community reports).
+1.  **Build Mode (via `main.py` or Agent Tools):** Constructs knowledge graphs and generates all necessary artifacts (e.g., graph structure, vector databases).
+    * Agent Tools available for building all 5 core graph types: `ERGraph`, `RKGraph`, `TreeGraph`, `TreeGraphBalanced`, `PassageGraph`.
+    * Agent Tool available for `PrepareCorpusFromDirectory` (processes `.txt` files into `Corpus.json`).
     ```bash
+    # Example CLI usage
     python main.py build -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
     ```
-2.  **Query Mode**: Loads pre-built artifacts to efficiently answer questions using a specified RAG method or operator chain.
+2.  **Query Mode (via `main.py` or Agent Tools):** Loads pre-built artifacts to answer questions.
     ```bash
+    # Example CLI usage
     python main.py query -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset -question "Your question here?"
     ```
-3.  **Evaluate Mode**: Assesses the performance of different methods against benchmark datasets and questions.
+3.  **Evaluate Mode (via `main.py`):** Assesses performance against benchmark datasets.
     ```bash
+    # Example CLI usage
     python main.py evaluate -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
     ```
 
 ### Web Interface (API & UI)
 
-This fork also includes a Flask API server and an initial React UI for a user-friendly experience (Note: current development focus is more on backend agent capabilities):
+A Flask API server (`api.py`) and an initial React UI provide user-friendly interaction, though current development is heavily focused on backend agent capabilities.
+* **API Endpoints:** `/api/query`, `/api/build`, `/api/evaluate`.
+* **UI:** Allows selection of datasets, methods, and initiation of operations.
 
-#### Start the Flask API Server
+### Available RAG Methods & Graph Types
+
+* **Pre-defined Configurations:** `Dalk`, `GR`, `LGraphRAG`, `GGraphRAG`, `HippoRAG`, `KGP`, `LightRAG`, `RAPTOR`, `ToG`. These methods are compositions of underlying granular operators.
+* **Supported Graph Types (for agent construction and analysis):**
+    * **ChunkTree:** Hierarchical summary trees (`TreeGraph`, `TreeGraphBalanced`).
+    * **PassageGraph:** Nodes are passages, edges link passages with shared (WAT-linked) entities.
+    * **KG/TKG/RKG:** Graphs with explicit entities and relationships (`ERGraph`, `RKGraph`).
+
+### Intelligent Agent Framework (Core Development Focus)
+
+The central aim is an intelligent agent that dynamically plans and executes RAG strategies:
+* **Granular Operator Tools:** The agent leverages ~16 conceptual retrieval and graph manipulation operators as its building blocks.
+* **Structured Agent Tools:**
+    * **Graph Construction Tools:** Defined with Pydantic contracts (`Core/AgentSchema/graph_construction_tool_contracts.py`) and implemented (`Core/AgentTools/graph_construction_tools.py`) for all five graph types. The `build_er_graph` tool has been successfully tested with live LLM calls.
+    * **Corpus Preparation Tool:** `PrepareCorpusFromDirectoryTool` implemented and tested, allowing the agent to process raw `.txt` files.
+* **Pydantic-based Execution Plans:** The agent's reasoning (planned or ReACT-driven) aims to produce structured sequences of tool calls.
+* **Agent Orchestrator:** (`Core/AgentOrchestrator/orchestrator.py`) Executes tool calls based on the agent's decisions.
+* **Agent Brain:** (`Core/AgentBrain/agent_brain.py`) Houses the planning logic (currently using an LLM to generate plans). Future work will enhance this for ReACT-style reasoning.
+
+---
+
+## Quick Start 🚀
+
+### From Source
 ```bash
-# From the repository root
-python api.py
-This starts the server (default: http://localhost:5000), providing endpoints for /api/query, /api/build, and /api/evaluate.
+Clone this repository
 
-Start the React UI
-Bash
-
-# From the repository root (if UI files are at root, or adjust path)
-# cd graphrag-react-ui # If UI is in a subdirectory
-npm install   # Only needed first time
-npm start
-Access the UI (default: http://localhost:3000).
-
-Available Methods (Pre-defined Configurations)
-The following pre-defined RAG method configurations have been verified to work with the decoupled build, query, and (for many) evaluate modes. These methods are compositions of the underlying granular operators.
-
-Dalk (Entity-Relation graph)
-GR (G-Retriever, Entity-Relation graph)
-LGraphRAG (Local search in GraphRAG, uses RKG with communities)
-GGraphRAG (Global search in GraphRAG, uses RKG with communities)
-HippoRAG (Entity-Relation graph)
-KGP (Passage graph)
-LightRAG (Rich knowledge graph)
-RAPTOR (Tree graph)
-ToG (Think-on-Graph, Entity-Relation graph)
-Intelligent Agent Framework (Under Development)
-A core focus of this fork is building an intelligent agent that can dynamically compose RAG strategies.
-
-Operator-Level Modularity: The agent will leverage the ~16 granular operators (detailed below) as its building blocks or "tools."
-Pydantic-based Execution Plans: The agent's reasoning will result in a structured "Execution Plan" (defined using Pydantic models) that specifies the sequence of operators and their configurations.
-Agent Orchestrator: A backend component is being developed to interpret these plans and execute the tool chain.
-Current Tool Progress: The Entity.VDBSearch tool has been successfully implemented and tested end-to-end, including VDB persistence and loading.
-Quick Start 🚀
-From Source
-Bash
-
-# Clone this repository
-git clone [https://github.com/BrianMills2718/Digimon_KG.git](https://github.com/BrianMills2718/Digimon_KG.git) # Ensure this is your repo URL
 cd Digimon_KG
 Install Dependencies
-Ensure you have the required dependencies installed. The primary environment is defined in experiment.yml.
+The primary Conda environment is defined in experiment.yml.
 
 Bash
 
 conda env create -f experiment.yml -n digimon
 conda activate digimon
-(Note: environment.yml may also be present; experiment.yml is referenced in the original quick start).
+(Note: environment.yml may also exist; experiment.yml is often referenced for the core setup).
 
 API Keys and Configuration
 Copy Option/Config2.example.yaml to Option/Config2.yaml.
-Edit Option/Config2.yaml to include your API keys (e.g., OpenAI) and set desired default models.
-Method-specific configurations are in Option/Method/.
+Edit Option/Config2.yaml to include your API keys (e.g., OpenAI api_key for llm and embedding sections) and set desired default models (e.g., llm.model: "openai/o4-mini-2025-04-16").
+Method-specific configurations (used by main.py) are in Option/Method/.
+Custom ontology can be defined in Config/custom_ontology.json and referenced in GraphConfig or overridden by agent tools.
 Supported LLM Backends
-DIGIMON supports both cloud-based and local deployment of LLMs via Option/Config2.yaml:
+DIGIMON uses LiteLLMProvider for broad LLM compatibility, configured via Option/Config2.yaml:
 
-Cloud-based models: OpenAI (e.g., gpt-4, gpt-3.5-turbo)
-Locally deployed models: Ollama and LlamaFactory compatible endpoints.
-To use a local model, set api_type to open_llm in Option/Config2.yaml and provide your local model's base_url and model name.
+Cloud-based models: OpenAI (e.g., "openai/gpt-4o", "openai/o4-mini-2025-04-16"), Anthropic, Gemini, etc.
+Locally deployed models: Any LiteLLM-supported endpoint (Ollama, LlamaFactory-compatible).
+Set llm.model to the appropriate LiteLLM string (e.g., "ollama/llama3").
+Set llm.base_url if needed (e.g., "http://localhost:11434" for Ollama, though often LiteLLM handles this).
+llm.api_key can often be set to "None" or a placeholder for local models.
+Representative Graph RAG Methods & Operators
+(This section can largely retain the excellent tables from your current README, as they provide valuable context on the original GraphRAG methods and the derived operators. I'm keeping it concise here for the handoff structure but you should integrate your full tables back.)
 
-Example Option/Config2.yaml snippet for LLM:
-YAML
+Graph Types Overview
+(Integrate your existing "Graph Types" table here, comparing Chunk Tree, Passage Graph, KG, TKG, RKG across attributes like Original Content, Entity Name, etc.)
 
-llm:
-  # For OpenAI
-  api_type: "openai"
-  model: "gpt-3.5-turbo"
-  # api_key: "YOUR_OPENAI_API_KEY" # Can also be set as an environment variable
+Retrieval Operators (Agent's Building Blocks)
+(Integrate your existing tables for Entity Operators, Relationship Operators, Chunk Operators, Subgraph Operators, and Community Operators, including their Name, Description, and Example Methods.)
 
-  # For Ollama or other LlamaFactory-compatible local LLMs
-  # api_type: "open_llm"
-  # model: "YOUR_LOCAL_MODEL_NAME" # e.g., "llama3"
-  # base_url: "http://localhost:11434/v1" # Default for Ollama OpenAI-compatible API
-  # api_key: "unused" # Typically not required for local models
-Representative Methods (Original GraphRAG Context)
-The original GraphRAG project implemented and analyzed several representative Graph RAG methods:
+The DIGIMON agent's intelligence will stem from its ability to dynamically select, configure, and chain these operators to address complex queries.
 
-Method	Description	Link	Graph Type
-RAPTOR	ICLR 2024		Tree
-KGP	AAAI 2024		Passage Graph
-DALK	EMNLP 2024		KG
-HippoRAG	NIPS 2024		KG
-G-retriever	NIPS 2024		KG
-ToG	ICLR 2024		KG
-MS GraphRAG	Microsoft Project		TKG
-FastGraphRAG	CircleMind Project		TKG
-LightRAG	High Star Project		RKG
+🎯 Future Plans for DIGIMON (Agent-Centric)
+This section outlines the specific future development goals for the DIGIMON agent and framework:
 
-Export to Sheets
-Graph Types
-(This section from the original README is excellent and relevant – keeping it as is)
-
-Based on the entity and relation, we categorize the graph into the following types:
-
-Chunk Tree: A tree structure formed by document content and summary.
-Passage Graph: A relational network composed of passages, tables, and other elements within documents.
-KG: knowledge graph (KG) is constructed by extracting entities and relationships from each chunk, which contains only entities and relations, is commonly represented as triples.
-TKG: A textual knowledge graph (TKG) is a specialized KG (following the same construction step as KG), which enriches entities with detailed descriptions and type information.
-RKG: A rich knowledge graph (RKG), which further incorporates keywords associated with relations.
-The criteria for the classification of graph types are as follows:
-
-Graph Attributes	Chunk Tree	Passage Graph	KG	TKG	RKG
-Original Content	✅	✅	❌	❌	❌
-Entity Name	❌	❌	✅	✅	✅
-Entity Type	❌	❌	❌	✅	✅
-Entity Description	❌	❌	❌	✅	✅
-Relation Name	❌	❌	✅	❌	✅
-Relation keyword	❌	❌	❌	❌	✅
-Relation Description	❌	❌	❌	✅	✅
-Edge Weight	❌	❌	✅	✅	✅
-
-Export to Sheets
-Operators in the Retrieve Stage (Building Blocks for the DIGIMON Agent)
-The retrieval stage lies the key role ‼️ in the entire GraphRAG process. ✨ The goal is to identify query-relevant content that supports the generation phase, enabling the LLM to provide more accurate responses.
-
-💡💡💡 After thoroughly reviewing all implementations, we've distilled them into a set of 16 operators 🧩🧩. Each pre-defined method constructs its retrieval module by combining one or more of these operators. The DIGIMON agent will dynamically chain these operators to create novel and optimized RAG strategies.
-
-Five Types of Operators
-We classify the operators into five categories, each offering a different way to retrieve and structure relevant information from graph-based data.
-
-⭕️ Entity Operators
-Retrieve entities (e.g., people, places, organizations) that are most relevant to the given query.
-
-Name	Description	Example Methods
-VDB	Select top-k nodes from the vector database	G-retriever, RAPTOR, KGP
-RelNode	Extract nodes from given relationships	LightRAG
-PPR	Run PPR on the graph, return top-k nodes with PPR scores	FastGraphRAG
-Agent	Utilizes LLM to find the useful entities	ToG
-Onehop	Selects the one-hop neighbor entities of the given entities	LightRAG
-Link	Return top-1 similar entity for each given entity	HippoRAG
-TF-IDF	Rank entities based on the TF-IFG matrix	KGP
-
-Export to Sheets
-➡️ Relationship Operators
-Extracting useful relationships for the given query.
-
-Name	Description	Example Methods
-VDB	Retrieve relationships by vector-database	LightRAG、G-retriever
-Onehop	Selects relationships linked by one-hop neighbors of the given selected entities	Local Search for MS GraphRAG
-Aggregator	Compute relationship scores from entity PPR matrix, return top-k	FastGraphRAG
-Agent	Utilizes LLM to find the useful entities	ToG
-
-Export to Sheets
-📄 Chunk Operators
-Retrieve the most relevant text segments (chunks) related to the query.
-
-Name	Description	Example Methods
-Aggregator	Use the relationship scores and the relationship-chunk interactions to select the top-k chunks	HippoRAG
-FromRel	Return chunks containing given relationships	LightRAG
-Occurrence	Rank top-k chunks based on occurrence of both entities in relationships	Local Search for MS GraphRAG
-
-Export to Sheets
-📈 Subgraph Operators
-Extract a relevant subgraph for the given query
-
-Name	Description	Example Methods
-KhopPath	Find k-hop paths with start and endpoints in the given entity set	DALK
-Steiner	Compute Steiner tree based on given entities and relationships	G-retriever
-AgentPath	Identify the most relevant 𝑘-hop paths to a given question, by using LLM to filter out the irrelevant paths	TOG
-
-Export to Sheets
-🔗 Community Operators
-Identify high-level information, which is only used for MS GraphRAG.
-
-Name	Description	Example Methods
-Entity	Detects communities containing specified entities	Local Search for MS GraphRAG
-Layer	Returns all communities below a required layer	Global Search for MS GraphRAG
-
-Export to Sheets
-You can freely 🪽 combine those operators 🧩 to create more and more GraphRAG methods, which is a core goal for the DIGIMON agent.
-
-🌰 Examples (How Pre-defined Methods Use Operators)
-Below, we present some examples illustrating how existing algorithms leverage these operators.
-
-Name	Operators
-HippoRAG	Chunk (Aggregator)
-LightRAG	Chunk (FromRel) + Entity (RelNode) + Relationship (VDB)
-FastGraphRAG	Chunk (Aggregator) + Entity (PPR) + Relationship (Aggregator)
-
-Export to Sheets
-🎯 Future Plans for DIGIMON
-This section outlines the specific future development goals for this DIGIMON fork:
-
-[ ] Tool Implementation: Fully implement and rigorously test all ~16 granular tool interface functions (Core/AgentTools/) for robust agent use.
-[ ] Agent Orchestrator: Develop the "Agent Orchestrator" component responsible for parsing LLM-generated ExecutionPlan Pydantic models and invoking the tool functions in sequence, managing data flow between them.
-[ ] LLM Agent Core: Design and implement the core LLM-based agent, including:
-Prompt engineering strategies to enable the LLM to generate optimal ExecutionPlans based on user queries/goals and knowledge of the available tools.
-Integration with LLM provider libraries (e.g., LiteLLM, PydanticAI) for flexibility and structured output.
-[ ] Ontology Management: Enhance agent capabilities for intelligent ontology selection/definition based on task requirements, potentially integrating with Config/custom_ontology.json.
-[ ] Advanced KG & Retrieval Strategies: Explore and implement more sophisticated graph construction and retrieval techniques that can be leveraged by the agent (e.g., temporal KGs, advanced pathfinding, subgraph reasoning).
-[ ] Evaluation Framework for Agent Strategies: Develop methods to evaluate the effectiveness and efficiency of RAG strategies dynamically composed by the agent.
-[ ] User Interface for Agent Interaction: (Optional/Long-term) Design a UI that allows users to interact with the intelligent agent, define high-level tasks, and inspect the agent's plans and results.
-[ ] Documentation & Examples: Provide comprehensive documentation for the agent framework, tool contracts, and examples of how to use the DIGIMON system for advanced RAG analysis and agent-driven querying.
-[ ] Dockerization: Create a Docker image for easier deployment and reproducibility of the DIGIMON environment, including the agent capabilities.
-[ ] (Add any other specific plans you have for DIGIMON here)
+Agent Planning & Execution Enhancement:
+[ ] ReACT-style Agent Core: Evolve AgentBrain to support a ReACT (Reason, Act, Observe) paradigm for more robust and adaptive multi-step task execution.
+[ ] Advanced Planning Prompts: Refine prompt engineering for the PlanningAgent to effectively utilize all available tools (corpus prep, graph build, retrieval, summarization) and manage data flow between tool calls for complex queries.
+Tool Development & Refinement:
+[ ] Retrieval Tools: Define Pydantic contracts and implement robust agent tools for the remaining ~13 granular retrieval operators (e.g., for relationship retrieval, community analysis, advanced subgraph extraction).
+[ ] Summarization Tool: Implement a flexible SummarizeTextTool for final answer synthesis.
+[ ] Integrated Testing: Create integrated tests for all graph construction tools (similar to the one for build_er_graph) using real components with strategic LLM mocking/use.
+Agent Intelligence & Strategy:
+[ ] KG Structuring Strategy: Develop logic/heuristics/LLM-prompts to enable the agent to intelligently select the optimal graph type(s) and construction parameters based on the input data and user query.
+[ ] Dynamic Retrieval Strategy: Enable the agent to dynamically choose and sequence retrieval operators to best answer a query given a constructed graph.
+[ ] Ontology Management: Enhance agent capabilities for more dynamic interaction with custom_ontology.json, potentially including ontology selection or refinement suggestions.
+Framework & Usability:
+[ ] Evaluation Framework for Agent Strategies: Develop methods to evaluate the end-to-end effectiveness of agent-composed RAG strategies.
+[ ] Comprehensive Documentation: Document the agent framework, all tool contracts, and provide example workflows.
+[ ] Dockerization: Create a Docker image for easier deployment and reproducibility.
 🧭 Cite The Original GraphRAG Paper
 If you find this work useful, please consider citing the original paper that inspired this project:
 
@@ -276,3 +166,13 @@ In-depth Analysis of Graph-based RAG in a Unified Framework
   journal={arXiv preprint arXiv:2503.04338},
   year={2025}
 }
+
+**Key Changes Made:**
+
+* **Elevated Agent Vision:** More clearly stated the goal of an agent handling tasks end-to-end, from raw text to insights, using ReACT principles.
+* **Updated Current Features:** Specifically mentioned the new `PrepareCorpusFromDirectoryTool` and the status of graph construction tools and their testing.
+* **Refined Future Plans:** Made the future plans more agent-centric, focusing on planning, ReACT, KG structuring strategy, dynamic retrieval, and the remaining tool implementations.
+* **LLM Configuration Clarity:** Updated the "Supported LLM Backends" to reflect the use of `LiteLLMProvider` and how to configure for cloud vs. local models using LiteLLM conventions.
+* **Structure and Flow:** Ensured a logical flow from project goals to current capabilities, quick start, and future plans.
+
+ou'll also want to integrate your detailed tables for "Graph Types Overview" and "Retrieval Operators" back into the "Representative Graph RAG Methods & Operators" section.

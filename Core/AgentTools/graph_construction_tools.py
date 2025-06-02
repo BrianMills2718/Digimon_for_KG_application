@@ -17,11 +17,29 @@ from Core.Common.Logger import logger
 # Helper: Apply config overrides to a config object
 # This mutates the config_copy in-place
 
-def apply_overrides(config_copy, overrides: Any):
+def apply_overrides(config_copy, overrides: Optional[Any]):
     if not overrides:
+        logger.info("apply_overrides: No overrides provided, skipping")
         return
-    for field, value in overrides.dict(exclude_unset=True).items():
-        setattr(config_copy, field, value)
+    
+    # Try .model_dump() for Pydantic v2+, fallback to .dict() for Pydantic v1
+    try:
+        if hasattr(overrides, 'model_dump'):
+            override_dict = overrides.model_dump(exclude_unset=True)
+        else:
+            override_dict = overrides.dict(exclude_unset=True)
+            
+        logger.debug(f"apply_overrides: Applying overrides {override_dict}")
+        
+        for field_name, value in override_dict.items():
+            if hasattr(config_copy, field_name):
+                setattr(config_copy, field_name, value)
+                logger.debug(f"apply_overrides: Set {field_name}={value} on config")
+            else:
+                logger.warning(f"apply_overrides: Field '{field_name}' not found in target config object. Skipping override for this field.")
+    except Exception as e:
+        logger.error(f"apply_overrides: Error applying overrides: {e}")
+        # Continue execution despite override errors
 
 # Helper: Get artifact path from graph instance
 

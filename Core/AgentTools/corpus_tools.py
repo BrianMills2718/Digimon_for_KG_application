@@ -12,7 +12,8 @@ from Core.AgentSchema.corpus_tool_contracts import PrepareCorpusInputs, PrepareC
 from Core.Common.Logger import logger
 
 async def prepare_corpus_from_directory(
-    tool_input: PrepareCorpusInputs
+    tool_input: PrepareCorpusInputs,
+    main_config=None
 ) -> PrepareCorpusOutputs:
     """
     Process a directory of .txt files and create a Corpus.json file in JSON Lines format.

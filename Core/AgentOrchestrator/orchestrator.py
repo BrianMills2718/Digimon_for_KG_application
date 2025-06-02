@@ -8,6 +8,10 @@ from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInput
 from Core.AgentSchema.context import GraphRAGContext
 from Core.Common.Logger import logger
 from pydantic import BaseModel
+from Option.Config2 import Config
+from Core.Provider.BaseLLM import BaseLLM
+from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
+from Core.Chunk.ChunkFactory import ChunkFactory
 
 # Import tool functions (we'll add more as they become relevant)
 from Core.AgentTools.entity_tools import entity_vdb_search_tool, entity_ppr_tool
@@ -21,7 +25,16 @@ from Core.AgentTools.corpus_tools import prepare_corpus_from_directory
 # from Core.AgentTools.community_tools import ...
 
 class AgentOrchestrator:
-    def __init__(self, graphrag_context: GraphRAGContext):
+    def __init__(self, 
+                 main_config: Config, 
+                 llm_instance: BaseLLM, 
+                 encoder_instance: LlamaIndexBaseEmbedding, 
+                 chunk_factory: ChunkFactory, 
+                 graphrag_context: Optional[GraphRAGContext] = None):
+        self.main_config = main_config
+        self.llm = llm_instance
+        self.encoder = encoder_instance
+        self.chunk_factory = chunk_factory
         self.graphrag_context = graphrag_context
         self._tool_registry = self._register_tools()
         self.step_outputs: Dict[str, Dict[str, Any]] = {} # To store outputs of each step
@@ -46,195 +59,185 @@ class AgentOrchestrator:
         logger.info(f"AgentOrchestrator: Registered {len(registry)} tools with Pydantic models: {list(registry.keys())}")
         return registry
 
-    async def execute_plan(self, plan: ExecutionPlan) -> Optional[Dict[str, Any]]:
+    def _resolve_single_input_source(
+        self,
+        target_input_name: str, 
+        source_identifier: Any, 
+        plan_inputs: Dict[str, Any], 
+        source_location_type: str 
+    ) -> Any:
+        source_value = None
+        current_tis = None
+        plan_inputs = plan_inputs or {}
+
+        if isinstance(source_identifier, dict) and \
+           "from_step_id" in source_identifier and \
+           "named_output_key" in source_identifier:
+            try:
+                current_tis = ToolInputSource(**source_identifier)
+                logger.debug(f"Orchestrator ({source_location_type}) '{target_input_name}': Parsed dict into ToolInputSource.")
+            except Exception as e_tis:
+                logger.error(f"Orchestrator ({source_location_type}) '{target_input_name}': Failed to parse ToolInputSource dict {source_identifier}. Error: {e_tis}. Treating as literal.")
+                source_value = source_identifier
+        elif isinstance(source_identifier, ToolInputSource):
+            current_tis = source_identifier
+
+        if current_tis:
+            from_step_id = current_tis.from_step_id
+            named_output_key = current_tis.named_output_key
+            if from_step_id in self.step_outputs and \
+               named_output_key in self.step_outputs[from_step_id]:
+                raw_source_value = self.step_outputs[from_step_id][named_output_key]
+                logger.debug(f"Orchestrator ({source_location_type}) '{target_input_name}': Retrieved from step '{from_step_id}', key '{named_output_key}'. Raw type: {type(raw_source_value)}")
+
+                if (target_input_name == "seed_entity_ids" or target_input_name == "entity_ids") and \
+                    isinstance(raw_source_value, (EntityVDBSearchOutputs, list)): 
+
+                    entities_list_for_ids = []
+                    if isinstance(raw_source_value, EntityVDBSearchOutputs):
+                        entities_list_for_ids = raw_source_value.similar_entities
+                    elif isinstance(raw_source_value, list): 
+                        entities_list_for_ids = raw_source_value
+
+                    extracted_ids = []
+                    for item in entities_list_for_ids:
+                        if isinstance(item, VDBSearchResultItem) and hasattr(item, 'entity_name'): 
+                            extracted_ids.append(item.entity_name)
+                        elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str): 
+                            extracted_ids.append(item[0])
+                    source_value = extracted_ids
+                    logger.info(f"Orchestrator ({source_location_type}) '{target_input_name}': Transformed VDB output for. Extracted {len(source_value)} IDs.")
+                else: 
+                    source_value = raw_source_value
+                    logger.debug(f"Orchestrator ({source_location_type}) '{target_input_name}': Using raw output from previous step.")
+            else:
+                logger.error(f"Orchestrator ({source_location_type}) '{target_input_name}': Output key '{named_output_key}' not in step '{from_step_id}'. Available: {list(self.step_outputs.get(from_step_id, {}).keys())}")
+                source_value = None 
+        elif isinstance(source_identifier, str) and source_identifier.startswith("plan_inputs."):
+            input_key = source_identifier.split("plan_inputs.")[1]
+            if input_key in plan_inputs:
+                source_value = plan_inputs[input_key]
+                logger.debug(f"Orchestrator ({source_location_type}) '{target_input_name}': Resolved from plan_inputs, key '{input_key}'.")
+            else:
+                logger.error(f"Orchestrator ({source_location_type}) '{target_input_name}': Key '{input_key}' not in plan_inputs. Keys: {list(plan_inputs.keys())}")
+                source_value = None
+        else: 
+            source_value = source_identifier
+            logger.debug(f"Orchestrator ({source_location_type}) '{target_input_name}': Resolved as literal value.")
+        return source_value
+
+    def _resolve_tool_inputs(
+        self,
+        tool_call_inputs: Optional[Dict[str, Any]],
+        tool_call_parameters: Optional[Dict[str, Any]],
+        plan_inputs: Optional[Dict[str, Any]] 
+    ) -> Dict[str, Any]:
+        final_resolved_params: Dict[str, Any] = {}
+
+        if tool_call_parameters:
+            for param_name, source_identifier in tool_call_parameters.items():
+                final_resolved_params[param_name] = self._resolve_single_input_source(
+                    param_name, source_identifier, plan_inputs or {}, "parameter"
+                )
+
+        if tool_call_inputs:
+            for input_name, source_identifier in tool_call_inputs.items():
+                final_resolved_params[input_name] = self._resolve_single_input_source(
+                    input_name, source_identifier, plan_inputs or {}, "input field"
+                )
+
+        return final_resolved_params
+
+    async def execute_plan(self, plan: ExecutionPlan) -> Dict[str, Any]: 
         logger.info(f"Orchestrator: Starting execution of plan ID: {plan.plan_id} - {plan.plan_description}")
-        self.step_outputs: Dict[str, Dict[str, Any]] = {} # Reset for each plan execution
+        self.step_outputs: Dict[str, Dict[str, Any]] = {}
 
         for step_index, step in enumerate(plan.steps):
             logger.info(f"Orchestrator: Executing Step {step_index + 1}/{len(plan.steps)}: {step.step_id} - {step.description}")
+            tool_calls_in_step: List[ToolCall] = []
 
-            tool_calls_in_step: List[Any] = []
-
-            if hasattr(step.action, "tools"):
-                logger.info(f"Orchestrator: Step {step.step_id} is a DynamicToolChainConfig with {len(step.action.tools)} tool(s).")
+            if isinstance(step.action, DynamicToolChainConfig) and step.action.tools:
                 tool_calls_in_step = step.action.tools
-            elif hasattr(step.action, "method_yaml_name"):
-                logger.warning(f"Orchestrator: Step {step.step_id} action is PredefinedMethodConfig. Logic not yet implemented. Skipping.")
-                continue
             else:
-                logger.warning(f"Orchestrator: Step {step.step_id} has an unsupported action type: {type(step.action)}. Skipping.")
+                logger.warning(f"Orchestrator: Step {step.step_id} has unsupported/empty action. Skipping.")
+                self.step_outputs[step.step_id] = {"error": "Unsupported or empty action"}
                 continue
 
-            if not tool_calls_in_step:
-                logger.warning(f"Orchestrator: No tools to execute for step {step.step_id}. Skipping.")
-                continue
-
-            # Initialize step output storage for this step
-            self.step_outputs[step.step_id] = {}
+            current_step_outputs = {} 
 
             for tool_call_index, tool_call in enumerate(tool_calls_in_step):
-                logger.info(f"Orchestrator: Executing tool {tool_call_index + 1}/{len(tool_calls_in_step)} in step {step.step_id}: {tool_call.tool_id}")
+                logger.info(f"Orchestrator: Tool {tool_call_index + 1}/{len(tool_calls_in_step)} in {step.step_id}: {tool_call.tool_id}")
+                if not tool_call.tool_id: logger.error("Tool call missing tool_id. Skipping."); continue
 
                 tool_info = self._tool_registry.get(tool_call.tool_id)
-                if not tool_info:
-                    logger.error(f"Orchestrator: Tool ID '{tool_call.tool_id}' not found in registry. Skipping tool.")
-                    continue
+                if not tool_info: logger.error(f"Tool ID '{tool_call.tool_id}' not found. Skipping."); continue
 
                 tool_function, pydantic_input_model_class = tool_info
 
                 try:
-                    # 1. Resolve inputs for the current tool_call
-                    resolved_inputs_dict = self._resolve_tool_inputs(
-                        tool_call.inputs,
-                        plan.plan_inputs
+                    final_tool_params = self._resolve_tool_inputs(
+                        tool_call_inputs=tool_call.inputs,
+                        tool_call_parameters=tool_call.parameters,
+                        plan_inputs=plan.plan_inputs
                     )
-                    if hasattr(resolved_inputs_dict, "__await__"):
-                        resolved_inputs_dict = await resolved_inputs_dict
 
-                    # 2. Merge with direct parameters
-                    final_tool_params = {**(tool_call.parameters or {}), **resolved_inputs_dict}
+                    logger.debug(f"Orchestrator: Instantiating {pydantic_input_model_class.__name__} with: {final_tool_params}")
+                    current_tool_input_instance = pydantic_input_model_class(**final_tool_params) 
+                    logger.info(f"Orchestrator: Instantiated {pydantic_input_model_class.__name__} for {tool_call.tool_id}")
 
-                    # 3. Instantiate the tool's specific Pydantic input model
-                    logger.debug(f"Orchestrator: Attempting to instantiate {pydantic_input_model_class.__name__} with params: {final_tool_params}")
-                    tool_input_instance = pydantic_input_model_class(**final_tool_params)
-                    logger.info(f"Orchestrator: Successfully instantiated {pydantic_input_model_class.__name__} for tool {tool_call.tool_id}")
+                    logger.info(f"Orchestrator: Calling {tool_function.__name__} for ID: {tool_call.tool_id}")
 
-                    # 4. Execute the tool function
-                    logger.info(f"Orchestrator: Calling tool function: {tool_function.__name__} for tool ID: {tool_call.tool_id}")
-                    tool_output = await tool_function(tool_input_instance, self.graphrag_context)
-                    logger.info(f"Orchestrator: Tool {tool_call.tool_id} executed. Output type: {type(tool_output)}")
-                    logger.debug(f"Orchestrator: Raw output from tool {tool_call.tool_id}: {tool_output}")
-
-                    # 5. Store named outputs for this tool_call within the current step's outputs
-                    if tool_call.named_outputs and tool_output:
-                        if hasattr(tool_output, "model_dump") and callable(tool_output.model_dump): # If tool returns a Pydantic model
-                            output_dict = tool_output.model_dump()
-                            for output_name_in_plan, _ in tool_call.named_outputs.items():
-                                if output_name_in_plan in output_dict:
-                                    self.step_outputs[step.step_id][output_name_in_plan] = output_dict[output_name_in_plan]
-                                    logger.info(f"Orchestrator: Stored output '{output_name_in_plan}' for step {step.step_id} from tool {tool_call.tool_id}.")
-                                elif len(tool_call.named_outputs) == 1:
-                                    first_output_name = list(tool_call.named_outputs.keys())[0]
-                                    if hasattr(tool_output, first_output_name):
-                                        self.step_outputs[step.step_id][first_output_name] = getattr(tool_output, first_output_name)
-                                    else:
-                                        self.step_outputs[step.step_id][first_output_name] = tool_output
-                                    logger.info(f"Orchestrator: Stored output '{first_output_name}' for step {step.step_id} (tool {tool_call.tool_id}) as Pydantic model or its primary attribute.")
-                        elif isinstance(tool_output, dict):
-                            for output_name_in_plan, _ in tool_call.named_outputs.items():
-                                if output_name_in_plan in tool_output:
-                                    self.step_outputs[step.step_id][output_name_in_plan] = tool_output[output_name_in_plan]
-                                    logger.info(f"Orchestrator: Stored output '{output_name_in_plan}' for step {step.step_id} from tool {tool_call.tool_id}.")
-                        else:
-                            if len(tool_call.named_outputs) == 1:
-                                output_name_in_plan = list(tool_call.named_outputs.keys())[0]
-                                self.step_outputs[step.step_id][output_name_in_plan] = tool_output
-                                logger.info(f"Orchestrator: Stored single output '{output_name_in_plan}' for step {step.step_id} from tool {tool_call.tool_id}.")
-                            else:
-                                logger.warning(f"Orchestrator: Tool {tool_call.tool_id} returned a single value but multiple named_outputs were specified. Cannot map. Output: {tool_output}")
-                    elif tool_output:
-                        logger.info(f"Orchestrator: Tool {tool_call.tool_id} produced output, but no 'named_outputs' were specified in the plan for this tool call. Output not stored in step_outputs by name.")
-                except Exception as e:
-                    logger.error(f"Orchestrator: Error executing tool {tool_call.tool_id} in step {step.step_id}: {e}", exc_info=True)
-
-        final_step_id_for_result = plan.steps[-1].step_id if plan.steps else ""
-        final_result = self.step_outputs.get(final_step_id_for_result, None)
-        logger.info(f"Orchestrator: Plan execution finished. Final result from step '{final_step_id_for_result}': {final_result}")
-        return final_result
-
-    # START (REPLACE _resolve_tool_inputs method in AgentOrchestrator)
-    def _resolve_tool_inputs(
-        self,
-        step_inputs_config: Dict[str, Union[Any, "ToolInputSource", Dict[str, Any]]],  # Allow dict for TIS
-        plan_inputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        Resolves tool inputs from plan_inputs or previous step_outputs.
-        Handles direct values, references to plan_inputs, and ToolInputSource objects/dicts.
-        Also performs specific transformations (e.g., VDB output to list of entity IDs).
-        """
-        resolved_params = {}
-        for input_name, source_identifier in step_inputs_config.items():
-            source_value = None
-
-            # Check if source_identifier is a dictionary representing a ToolInputSource
-            current_tis = None
-            if isinstance(source_identifier, dict) and \
-            "from_step_id" in source_identifier and \
-            "named_output_key" in source_identifier:
-                try:
-                    current_tis = ToolInputSource(**source_identifier)
-                    logger.debug(f"Orchestrator: Parsed dict into ToolInputSource for input '{input_name}'.")
-                except Exception as e_tis:
-                    logger.error(f"Orchestrator: Failed to parse dict as ToolInputSource for input '{input_name}': {source_identifier}. Error: {e_tis}")
-                    # Treat as literal if parsing fails, though this is unlikely to be correct.
-                    source_value = source_identifier
-            elif isinstance(source_identifier, ToolInputSource):
-                current_tis = source_identifier
-
-            if current_tis:  # Process if it's a ToolInputSource object
-                from_step_id = current_tis.from_step_id
-                named_output_key = current_tis.named_output_key
-
-                if from_step_id in self.step_outputs and \
-                named_output_key in self.step_outputs[from_step_id]:
-
-                    raw_source_value = self.step_outputs[from_step_id][named_output_key]
-                    logger.debug(f"Orchestrator: Retrieving input '{input_name}' from step '{from_step_id}', output_key '{named_output_key}'. Raw value type: {type(raw_source_value)}")
-
-                    # --- Specific Data Transformations ---
-                    # 1. For 'seed_entity_ids' from 'EntityVDBSearchOutputs'
-                    if input_name == "seed_entity_ids" and \
-                    hasattr(raw_source_value, 'similar_entities') and \
-                    isinstance(raw_source_value.similar_entities, list):
-
-                        # raw_source_value is likely EntityVDBSearchOutputs
-                        # similar_entities is List[VDBSearchResultItem] or List[Tuple[str, float]]
-                        extracted_ids = []
-                        for item in raw_source_value.similar_entities:
-                            if hasattr(item, 'entity_name'):  # VDBSearchResultItem case
-                                extracted_ids.append(item.entity_name)
-                            elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str):  # Tuple case
-                                extracted_ids.append(item[0])
-                        source_value = extracted_ids
-                        logger.info(f"Orchestrator: Transformed 'similar_entities' from step '{from_step_id}' into List[str] of entity names for input '{input_name}'. Extracted {len(source_value)} IDs.")
-
-                    # 2. For 'entity_ids' (e.g., for Relationship.OneHopNeighbors) from 'EntityVDBSearchOutputs'
-                    elif input_name == "entity_ids" and \
-                        hasattr(raw_source_value, 'similar_entities') and \
-                        isinstance(raw_source_value.similar_entities, list):
-                        extracted_ids = []
-                        for item in raw_source_value.similar_entities:
-                            if hasattr(item, 'entity_name'):
-                                extracted_ids.append(item.entity_name)
-                            elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str):
-                                extracted_ids.append(item[0])
-                        source_value = extracted_ids
-                        logger.info(f"Orchestrator: Transformed 'similar_entities' from step '{from_step_id}' into List[str] of entity names for input '{input_name}'. Extracted {len(source_value)} IDs.")
-
-                    # Add other transformations here if needed
-
+                    tool_output: Any = None
+                    if tool_call.tool_id.startswith("graph.Build"):
+                        tool_output = await tool_function(
+                            tool_input=current_tool_input_instance, main_config=self.main_config, 
+                            llm_instance=self.llm, encoder_instance=self.encoder,
+                            chunk_factory=self.chunk_factory
+                        )
+                    elif tool_call.tool_id == "corpus.PrepareFromDirectory":
+                        tool_output = await tool_function(
+                            tool_input=current_tool_input_instance, main_config=self.main_config 
+                        )
                     else:
-                        # Default: use the raw output value if no specific transformation applies
-                        source_value = raw_source_value
-                        logger.debug(f"Orchestrator: Using raw output from previous step for '{input_name}'.")
-                else:
-                    logger.error(f"Orchestrator: Could not find output for key '{named_output_key}' in step '{from_step_id}' for input '{input_name}'. Available outputs for step: {self.step_outputs.get(from_step_id, {}).keys()}")
-                    source_value = None  # Or raise an error
+                        if not self.graphrag_context:
+                            raise ValueError(f"GraphRAGContext is None, required by tool {tool_call.tool_id}")
+                        tool_output = await tool_function(current_tool_input_instance, self.graphrag_context) 
 
-            elif isinstance(source_identifier, str) and source_identifier.startswith("plan_inputs."):
-                input_key = source_identifier.split("plan_inputs.")[1]
-                if input_key in plan_inputs:
-                    source_value = plan_inputs[input_key]
-                    logger.debug(f"Orchestrator: Resolved input '{input_name}' from plan_inputs, key '{input_key}'")
-                else:
-                    logger.error(f"Orchestrator: Input key '{input_key}' not found in plan_inputs for '{input_name}'. Plan inputs: {plan_inputs.keys()}")
-                    source_value = None  # Or raise
+                    logger.info(f"Orchestrator: Tool {tool_call.tool_id} executed. Output type: {type(tool_output)}")
+                    logger.debug(f"Orchestrator: Raw output: {str(tool_output)[:500]}...")
 
-            else:  # Literal value (or unparsed dict that wasn't a TIS)
-                source_value = source_identifier
-                logger.debug(f"Orchestrator: Resolved input '{input_name}' as literal value.")
+                    if tool_call.named_outputs and tool_output is not None:
+                        output_data_to_store = {}
+                        actual_output_dict = {}
+                        if hasattr(tool_output, "model_dump") and callable(tool_output.model_dump):
+                            actual_output_dict = tool_output.model_dump()
+                        elif isinstance(tool_output, dict):
+                            actual_output_dict = tool_output
 
-            resolved_params[input_name] = source_value
-        return resolved_params
-    # END (REPLACE _resolve_tool_inputs method in AgentOrchestrator)
+                        if actual_output_dict: 
+                            for plan_key, source_key_in_model in tool_call.named_outputs.items():
+                                if source_key_in_model in actual_output_dict:
+                                    output_data_to_store[plan_key] = actual_output_dict[source_key_in_model]
+                                else:
+                                    logger.warning(f"Orchestrator: Named output source key '{source_key_in_model}' (planned as '{plan_key}') not in tool output fields {list(actual_output_dict.keys())} for {tool_call.tool_id}.")
+                        elif not actual_output_dict and len(tool_call.named_outputs) == 1: 
+                            plan_key = list(tool_call.named_outputs.keys())[0]
+                            output_data_to_store[plan_key] = tool_output
+                        else:
+                            logger.warning(f"Orchestrator: Tool {tool_call.tool_id} output was not a Pydantic model or dict, and named_outputs was not singular. Output: {str(tool_output)[:100]}")
+
+                        for key, value in output_data_to_store.items():
+                            current_step_outputs[key] = value 
+                            logger.info(f"Orchestrator: Stored output '{key}' for step {step.step_id} (tool {tool_call.tool_id}).")
+
+                    elif tool_output is not None:
+                         logger.info(f"Orchestrator: Tool {tool_call.tool_id} produced output, but no 'named_outputs' defined in plan. Output not stored by specific name.")
+
+                except Exception as e:
+                    logger.error(f"Orchestrator: Error during execution of tool {tool_call.tool_id} in step {step.step_id}. Exception: {str(e)}", exc_info=True)
+                    current_step_outputs[tool_call.tool_id + "_error"] = str(e) 
+
+            self.step_outputs[step.step_id] = current_step_outputs 
+
+        logger.info(f"Orchestrator: Plan execution of all steps finished.")
+        return self.step_outputs

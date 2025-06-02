@@ -66,14 +66,11 @@ from Core.Provider.BaseEmb import BaseEmb
 import logging
 logger = logging.getLogger(__name__)
 
+
 async def entity_vdb_search_tool(
-    params: EntityVDBSearchInputs,
-    graphrag_context: GraphRAGContext
-) -> EntityVDBSearchOutputs:
-    """
-    Searches an entity vector database for entities similar to a query.
-    Wraps core GraphRAG logic for VDB search.
-    """
+    params: EntityVDBSearchInputs, # Make sure EntityVDBSearchInputs is imported
+    graphrag_context: GraphRAGContext # Make sure GraphRAGContext is imported
+) -> EntityVDBSearchOutputs: # Make sure EntityVDBSearchOutputs is imported
     logger.info(
         f"Executing tool 'Entity.VDBSearch' with parameters: "
         f"vdb_reference_id='{params.vdb_reference_id}', query_text='{params.query_text}', "
@@ -82,61 +79,58 @@ async def entity_vdb_search_tool(
 
     if not (params.query_text or params.query_embedding):
         logger.error("Entity.VDBSearch: Either query_text or query_embedding must be provided.")
-        raise ValueError("Either query_text or query_embedding must be provided for Entity.VDBSearch.")
-
-    vdb_instance = None
-    if params.vdb_reference_id == "entities_vdb" and graphrag_context.entities_vdb_instance:
-        vdb_instance = graphrag_context.entities_vdb_instance
-    # Add elif for other VDBs like relations_vdb if needed
-    else:
-        logger.error(f"Entity.VDBSearch: VDB reference '{params.vdb_reference_id}' not recognized or not loaded in context.")
-        # Consider how to handle: raise error or return empty
+        # Consider returning an error status in EntityVDBSearchOutputs
         return EntityVDBSearchOutputs(similar_entities=[])
 
-    # This check was for retrieval_nodes_with_score_matrix, which we are bypassing for direct LlamaIndex usage.
-    # if not hasattr(vdb_instance, 'retrieval_nodes_with_score_matrix') or not callable(vdb_instance.retrieval_nodes_with_score_matrix):
-    #     logger.error(f"Entity.VDBSearch: VDB instance for '{params.vdb_reference_id}' does not have a callable 'retrieval_nodes_with_score_matrix' method.")
-    #     return EntityVDBSearchOutputs(similar_entities=[])
+
+    # Use the get_vdb_instance method from GraphRAGContext
+    vdb_instance = graphrag_context.get_vdb_instance(params.vdb_reference_id) 
+
+    if not vdb_instance:
+        logger.error(f"Entity.VDBSearch: VDB reference '{params.vdb_reference_id}' not found in context. Available VDBs: {list(graphrag_context.vdbs.keys())}")
+        return EntityVDBSearchOutputs(similar_entities=[])
+
+    # ... (rest of the VDB search logic using vdb_instance, which should be a FaissIndex) ...
+    # This part should already be mostly correct, assuming vdb_instance is a FaissIndex object
+    # that has the _index attribute pointing to a LlamaIndex VectorStoreIndex.
 
     try:
-        # Attempting to use the LlamaIndex retrieve method directly if FaissIndex._index is the LlamaIndex VectorStoreIndex
         llamaindex_actual_index = None
-        if hasattr(vdb_instance, '_index') and vdb_instance._index is not None: # _index is where FaissIndex stores the LlamaIndex VectorStoreIndex
+        if hasattr(vdb_instance, '_index') and vdb_instance._index is not None:
             llamaindex_actual_index = vdb_instance._index
             logger.info(f"Entity.VDBSearch: Accessing LlamaIndex VectorStoreIndex via vdb_instance._index. Type: {type(llamaindex_actual_index)}")
         else:
             logger.error("Entity.VDBSearch: Could not access underlying LlamaIndex VectorStoreIndex from vdb_instance._index.")
             return EntityVDBSearchOutputs(similar_entities=[])
 
-        if params.query_embedding:
-            # This part is more complex as LlamaIndex retrieve often takes query_str.
-            # If you have raw embeddings, you'd typically query the vector_store component.
-            # For now, let's focus on query_text path.
-            logger.warning("Entity.VDBSearch: Querying by direct embedding is not fully implemented in this tool version. Please use query_text.")
-            results_with_scores = [] # Placeholder
-        else:
+        results_with_scores = [] # Initialize
+        if params.query_text:
             # Assuming llamaindex_actual_index is a LlamaIndex BaseIndex (e.g., VectorStoreIndex)
             retriever = llamaindex_actual_index.as_retriever(similarity_top_k=params.top_k_results)
+            # Ensure query_text is a string for aretrieve
             results_with_scores = await retriever.aretrieve(str(params.query_text)) # list of NodeWithScore
+        elif params.query_embedding:
+            logger.warning("Entity.VDBSearch: Querying by direct embedding is not fully implemented for FaissIndex wrapper yet.")
+            # Potentially use:
+            # from llama_index.core.vector_stores import VectorStoreQuery
+            # query = VectorStoreQuery(query_embedding=params.query_embedding, similarity_top_k=params.top_k_results)
+            # query_result = await vdb_instance._vector_store.aquery(query) # If _vector_store is accessible and supports this
+            # Then map query_result.nodes and query_result.similarities
+            pass # Placeholder for query_embedding logic
 
-        output_entities: List[VDBSearchResultItem] = []
+        output_entities: List[VDBSearchResultItem] = [] # VDBSearchResultItem needs to be imported
         if results_with_scores:
             for node_with_score in results_with_scores:
                 node = node_with_score.node
-                # Prefer entity_name from metadata, fallback to node.text (which might be a chunk)
-                entity_name = node.metadata.get("entity_name", None) 
+                entity_name = node.metadata.get("entity_name", node.metadata.get("id", node.node_id)) # Prefer entity_name, fallback
                 if not entity_name:
-                    # If entity_name is not in metadata, this node might represent a chunk of text rather than a distinct entity.
-                    # For robust graph linking, nodes in VDB ideally should have 'entity_name' in metadata if they correspond to graph nodes.
-                    # Using node.text as a fallback might be noisy if node.text is a long chunk.
-                    # For now, we'll log a warning and use node.text if 'entity_name' is absent.
-                    entity_name = node.text # Fallback, could be a long chunk of text
-                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node.node_id}. Using node.text (length {len(entity_name)}) as fallback entity_name: '{entity_name[:100]}...' ")
+                    entity_name = node.text 
+                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node.node_id}. Using node.text as fallback.")
                 
                 output_entities.append(
-                    VDBSearchResultItem(
-                        node_id=node.node_id, # This is the LlamaIndex internal hash ID
-                        entity_name=str(entity_name), # This should be the graph node ID
+                    VDBSearchResultItem( # VDBSearchResultItem needs to be imported
+                        node_id=str(node.node_id), 
+                        entity_name=str(entity_name), 
                         score=float(node_with_score.score) if node_with_score.score is not None else 0.0
                     )
                 )

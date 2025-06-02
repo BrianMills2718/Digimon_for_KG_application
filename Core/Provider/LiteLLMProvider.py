@@ -1,6 +1,7 @@
 # START: /home/brian/digimon/Core/Provider/LiteLLMProvider.py
 import os
 import json
+import asyncio
 from typing import List, Dict, Any, Optional, Type, AsyncGenerator
 
 from pydantic import BaseModel
@@ -34,6 +35,8 @@ class LiteLLMProvider(BaseLLM):
         self.max_tokens = self.max_token  # Alias for compatibility with agent_brain
         self.cost_manager: Optional[CostManager] = CostManager() if self.config.calc_usage else None #
         self.pricing_plan = self.config.pricing_plan or self.model # For cost calculation
+        # Add semaphore for async request throttling (missing from BaseLLM implementation)
+        self.semaphore = asyncio.Semaphore(config.concurrent_requests if hasattr(config, 'concurrent_requests') else 5)
 
         # For instructor, create clients once
         self._instructor_client_sync = instructor.from_litellm(litellm.completion)

@@ -62,12 +62,7 @@ class PlanningAgent:
         self.config: Config = config
         self.graphrag_context: Optional[GraphRAGContext] = graphrag_context # Use Optional
 
-        if graphrag_context:
-            self.orchestrator: Optional[AgentOrchestrator] = AgentOrchestrator(graphrag_context=graphrag_context) # Use Optional
-        else:
-            self.orchestrator = None
-            logger.warning("PlanningAgent initialized without GraphRAGContext. Orchestrator will be None and execution will fail.")
-
+        # LLM Provider setup first since it's needed for Orchestrator
         self.llm_provider: Optional[BaseLLM] = None # Type hint to Optional[BaseLLM]
         if self.config.llm:
             try:
@@ -80,6 +75,30 @@ class PlanningAgent:
 
         if not self.llm_provider:
             logger.error("LLM provider is NOT initialized in PlanningAgent. Plan generation will fail.")
+            
+        # Get encoder instance from GraphRAGContext if available
+        encoder_instance = None
+        chunk_factory = None
+        if graphrag_context:
+            # Extract encoder and chunk_factory from graphrag_context if available
+            if hasattr(graphrag_context, 'embedding_provider'):
+                encoder_instance = graphrag_context.embedding_provider
+            if hasattr(graphrag_context, 'chunk_storage_manager'):
+                chunk_factory = graphrag_context.chunk_storage_manager
+            
+            # Initialize the orchestrator with all required dependencies
+            self.orchestrator: Optional[AgentOrchestrator] = AgentOrchestrator(
+                main_config=self.config,
+                llm_instance=self.llm_provider,
+                encoder_instance=encoder_instance,
+                chunk_factory=chunk_factory,
+                graphrag_context=graphrag_context
+            )
+        else:
+            self.orchestrator = None
+            logger.warning("PlanningAgent initialized without GraphRAGContext. Orchestrator will be None and execution will fail.")
+
+        # LLM Provider is already initialized at the beginning of __init__
 
     def _get_tool_documentation_for_prompt(self) -> str:
         """

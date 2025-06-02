@@ -1,27 +1,15 @@
 # Core/AgentSchema/context.py
 
+import uuid
 from pydantic import BaseModel, Field
 from typing import Any, Optional, Dict
-
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Index.BaseIndex import BaseIndex
-from Core.Community.BaseCommunity import BaseCommunity
-
-# Import specific configuration models if they will be directly part of the context
-# from Option.Config2 import Config as FullConfig # Example: If the whole config is passed
-# from Core.Config.LLMConfig import LLMConfig #
-# from Core.Config.EmbConfig import EmbeddingConfig #
-
-# Placeholder types for complex components that will be properly typed later
-# For example, when we decide on LLM/Embedding provider abstractions (e.g., via LiteLLM)
-# or for storage/index manager classes.
-LLMProviderType = Any 
-EmbeddingProviderType = Any
-VectorDBManagerType = Any # Could provide methods like .get_vdb(vdb_reference_id)
-GraphStorageManagerType = Any # Could provide methods like .get_graph(graph_reference_id)
-ChunkStorageManagerType = Any # Could provide methods like .get_chunk_store(document_collection_id)
-CommunityStorageManagerType = Any # Could provide methods like .get_community_hierarchy(ref_id)
-
+from Option.Config2 import Config as FullConfig # Use FullConfig alias
+from Core.Provider.BaseLLM import BaseLLM
+from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
+from Core.Chunk.ChunkFactory import ChunkFactory # If passed as chunk_storage_manager
+from Core.Common.Logger import logger
 
 class GraphRAGContext(BaseModel):
     """
@@ -30,37 +18,38 @@ class GraphRAGContext(BaseModel):
     This object will be instantiated and passed by the Agent Orchestrator.
     """
 
-    target_dataset_name: str = Field(description="The name of the target dataset for the current plan, used for resolving artifact paths.")
+    request_id: str = Field(default_factory=lambda: str(uuid.uuid4())[:8], description="Unique identifier for this context instance")
+    target_dataset_name: str = Field(description="The name of the target dataset for the current plan.")
+    main_config: FullConfig = Field(description="The main configuration object.")
+    llm_provider: Optional[BaseLLM] = Field(default=None, description="LLM provider instance.")
+    embedding_provider: Optional[LlamaIndexBaseEmbedding] = Field(default=None, description="Embedding provider instance.")
+    chunk_storage_manager: Optional[ChunkFactory] = Field(default=None, description="ChunkFactory instance for chunk access.") # Changed type
 
-    # Access to overall system configurations
-    # Option 1: Pass the fully parsed main config object (e.g., from Option/Config2.py)
-    # main_config: FullConfig 
-    # Option 2: Pass specific config sections or derived configurations
-    # llm_config: LLMConfig
-    # embedding_config: EmbeddingConfig
-    # For now, let's use a more generic config dictionary that the orchestrator can populate.
-    # The orchestrator can load the main_config and method-specific YAMLs, apply patches from
-    # the ExecutionPlan, and then provide the relevant resolved configs here.
-    resolved_configs: Dict[str, Any] = Field(default_factory=dict, description="Dictionary holding resolved configurations (e.g., LLM, embedding, specific tool configs) for the current step/plan after patches.")
+    graphs: Dict[str, BaseGraph] = Field(default_factory=dict, description="Stores graph_id: graph_instance pairs.")
+    vdbs: Dict[str, BaseIndex] = Field(default_factory=dict, description="Stores vdb_id: vdb_instance pairs.")
 
-    # Access to service providers and managers
-    llm_provider: Optional[LLMProviderType] = Field(default=None, description="Provider for making LLM calls.")
-    embedding_provider: Optional[EmbeddingProviderType] = Field(default=None, description="Provider for generating embeddings.")
-
-    vector_db_manager: Optional[VectorDBManagerType] = Field(default=None, description="Manager to access various vector database instances.")
-    graph_storage_manager: Optional[GraphStorageManagerType] = Field(default=None, description="Manager to access various graph storage instances.")
-    chunk_storage_manager: Optional[ChunkStorageManagerType] = Field(default=None, description="Manager to access chunk stores.")
-    community_storage_manager: Optional[CommunityStorageManagerType] = Field(default=None, description="Manager to access community data artifacts.")
-
-    # New: Directly loaded resource instances for agent tools
-    graph_instance: Optional[BaseGraph] = Field(default=None, description="The loaded graph instance (e.g., NetworkX graph via a BaseGraph compatible wrapper) for the current context.")
-    entities_vdb_instance: Optional[BaseIndex] = Field(default=None, description="The loaded VDB instance for entities (e.g., FaissIndex) for the current context.")
-    relations_vdb_instance: Optional[BaseIndex] = Field(default=None, description="The loaded VDB instance for relationships (if used) for the current context.")
-    community_instance: Optional[BaseCommunity] = Field(default=None, description="The loaded community detection algorithm instance and its results for the current context.")
-
-    # Potentially a workspace for the current plan execution to store/retrieve
-    # intermediate results if not handled solely by ToolCall.inputs/outputs passing.
-    # plan_workspace: Dict[str, Any] = Field(default_factory=dict)
+    resolved_configs: Dict[str, Any] = Field(default_factory=dict)
 
     class Config:
-        arbitrary_types_allowed = True # Allow types like Any and future complex types for managers/providers
+        arbitrary_types_allowed = True
+        validate_assignment = True 
+
+    def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
+        self.graphs[graph_id] = graph_instance
+        logger.info(f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}).")
+
+    def get_graph_instance(self, graph_id: str) -> Optional[BaseGraph]:
+        instance = self.graphs.get(graph_id)
+        if not instance:
+            logger.warning(f"GraphRAGContext: Graph ID '{graph_id}' not found. Available: {list(self.graphs.keys())}")
+        return instance
+
+    def add_vdb_instance(self, vdb_id: str, vdb_instance: BaseIndex):
+        self.vdbs[vdb_id] = vdb_instance
+        logger.info(f"GraphRAGContext: Added VDB '{vdb_id}' (type: {type(vdb_instance)}).")
+
+    def get_vdb_instance(self, vdb_id: str) -> Optional[BaseIndex]:
+        instance = self.vdbs.get(vdb_id)
+        if not instance:
+            logger.warning(f"GraphRAGContext: VDB ID '{vdb_id}' not found. Available: {list(self.vdbs.keys())}")
+        return instance
