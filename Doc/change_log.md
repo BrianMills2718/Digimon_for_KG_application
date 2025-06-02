@@ -495,35 +495,6 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
   - Test logs (`test_orchestrator_log_3step.txt`) show the tool executing without Python errors and correctly returning an empty list of relationships when the input entity IDs were not found in the graph. This verifies the updated graph access mechanism and conditional checks are working as expected.
   - This resolves the primary objective of ensuring the tool's correct integration and behavior regarding graph data access.
 
-- **Refactor: Entity ID Handling in VDB Search and Orchestrator**
-  - **Issue:** `Entity.VDBSearch` was outputting internal LlamaIndex node IDs (hashes), while graph-based tools like `Relationship.OneHopNeighbors` expect human-readable entity names as node identifiers.
-  - **Solution Components:**
-    1. **Pydantic Models (`Core/AgentSchema/tool_contracts.py`):**
-       - Introduced `VDBSearchResultItem(BaseModel)` with `node_id: str`, `entity_name: str`, and `score: float`.
-       - Modified `EntityVDBSearchOutputs.similar_entities` to be `List[VDBSearchResultItem]`.
-    2. **`entity_vdb_search_tool` (`Core/AgentTools/entity_tools.py`):**
-       - Replaced the entire function. The new version now uses the LlamaIndex `VectorStoreIndex.as_retriever().aretrieve()` method.
-       - Populates `VDBSearchResultItem`, extracting `entity_name` from `node.metadata.get("entity_name")` (with a fallback to `node.text` and a warning if `entity_name` is missing from metadata).
-    3. **Orchestrator Transformation (`Core/AgentOrchestrator/orchestrator.py`):**
-       - Updated `_resolve_tool_inputs` method to correctly transform `EntityVDBSearchOutputs.similar_entities`.
-       - When the target input is `seed_entity_ids` or `entity_ids`, it now extracts `item.entity_name` from each `VDBSearchResultItem` to form the list of strings passed to downstream tools.
-  - **Goal:** This aims to resolve the entity ID mismatch, allowing tools that consume VDB search results to correctly identify nodes in the NetworkX graph using their names.
-
-- **Verification & Orchestrator Update: Entity ID Transformation**
-  - Verified that the `entity_vdb_search_tool` in `Core/AgentTools/entity_tools.py` correctly implements the new VDB search logic, extracts `entity_name` from node metadata, and returns `VDBSearchResultItem` objects as intended.
-  - Successfully updated the `_resolve_tool_inputs` method in `Core/AgentOrchestrator/orchestrator.py` (including adding `VDBSearchResultItem` to imports) to transform `EntityVDBSearchOutputs.similar_entities` into a list of `entity_name` strings for downstream tools.
-  - **Next Step:** Run orchestrator test plan `test_plan_003_vdb_then_one_hop.json` to confirm end-to-end fix of entity ID mismatch.
-
-2025-06-01: Implemented and fixed mock-based testing for TreeGraph construction tool
-- Added `MockTreeGraph` class in `testing/test_graph_tools.py` to simulate TreeGraph behavior without actual LLM calls
-- Created `build_tree_graph_mock` function to test TreeGraph construction pipeline
-- Implemented test function `test_build_tree_graph_mock` to verify correct operation
-- Fixed Pydantic model access in `TreeGraphConfigOverrides` by using direct attribute access
-- Enhanced `MockChunkFactory.get_namespace` to support different graph types with distinct directories
-- Added `path` attribute to namespace for TreeGraph compatibility
-- Both `test_build_er_graph_mock` and `test_build_tree_graph_mock` now run successfully
-- Added main block to run both tests sequentially
-
 - **Test Execution: `test_plan_003_vdb_then_one_hop.json`**
   - Successfully executed the command `python testing/test_agent_orchestrator.py --config Option/Config2.yaml --plan test_plans/test_plan_003_vdb_then_one_hop.json`.
   - Breakthrough: `/tmp/config_attrs_diag.txt` WAS created, confirming the diagnostic block in `test_agent_orchestrator.py` (after `main_config` import) executes and can access config attributes & perform file I/O. 
@@ -597,4 +568,21 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
 - VDB search step now returns 5 entities with similarity scores for "causes of the American Revolution" query
 - Pipeline VDB functionality fully restored: corpus preparation → graph building → VDB building → VDB search all working
 
-{{ ... }}
+2025-06-02: Fixed Orchestrator Entity ID Extraction for Dictionary Results - COMPLETED
+- Added handling for plain dictionary results from VDB search in AgentOrchestrator._resolve_single_input_source
+- Now correctly extracts node_id from dict results, falling back to entity_name if node_id not present
+- Fixed entity_ids parameter passing from VDB search step to one-hop neighbors step
+- Entity IDs are now properly extracted (5 IDs) and passed to relationship tools
+
+2025-06-02: Identified Graph Node ID Mismatch Issue - DISCOVERY
+- Found root cause: ERGraph uses entity names as node IDs (e.g., "the american revolution")
+- VDB returns UUID-style node_ids (e.g., "93de506c05bf0bc71fa29a19afdc190e") that don't exist in graph
+- This mismatch explains why one-hop neighbors returns empty despite correct orchestrator fixes
+- Need to either: (1) make VDB return entity names, or (2) update graph to use same UUIDs as VDB
+
+2025-06-02: Fixed One-Hop Neighbors by Prioritizing Entity Names - COMPLETED
+- Modified orchestrator to prioritize entity_name extraction over node_id for graph operations
+- Since ERGraph uses entity names as node IDs, this ensures proper ID matching
+- One-hop neighbors now successfully finds 6 relationships from 5 VDB search results
+- Full pipeline now works end-to-end: corpus → graph → VDB → search → neighbors → answer generation
+- Agent successfully generates meaningful answers using retrieved graph relationships

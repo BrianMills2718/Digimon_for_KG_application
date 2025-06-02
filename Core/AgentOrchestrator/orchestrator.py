@@ -103,6 +103,13 @@ class AgentOrchestrator:
                     for item in entities_list_for_ids:
                         if isinstance(item, VDBSearchResultItem) and hasattr(item, 'entity_name'): 
                             extracted_ids.append(item.entity_name)
+                        elif isinstance(item, dict):
+                            # Handle plain dictionary results from VDB search
+                            # For graph operations, prioritize entity_name since graphs use entity names as node IDs
+                            if 'entity_name' in item:
+                                extracted_ids.append(item['entity_name'])
+                            elif 'node_id' in item:
+                                extracted_ids.append(item['node_id'])
                         elif isinstance(item, tuple) and len(item) > 0 and isinstance(item[0], str): 
                             extracted_ids.append(item[0])
                     source_value = extracted_ids
