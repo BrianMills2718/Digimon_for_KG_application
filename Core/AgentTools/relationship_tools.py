@@ -74,7 +74,7 @@ async def relationship_one_hop_neighbors_tool(
             logger.warning(f"Relationship.OneHopNeighbors: Entity ID '{entity_id}' not found in the graph. Skipping.")
             continue
         try:
-            edge_attr_for_relation_name = 'type' 
+            edge_attr_for_relation_name = 'relation_name'  # Changed from 'type' to 'relation_name'
             edge_attr_for_description = 'description'
             edge_attr_for_weight = 'weight'
             processed_neighbor_pairs = set()

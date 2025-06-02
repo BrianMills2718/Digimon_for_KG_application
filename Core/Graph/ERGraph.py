@@ -36,7 +36,25 @@ class ERGraph(BaseGraph):
 
     async def _named_entity_recognition(self, passage: str):
         from Core.Common.Logger import logger
-        ner_messages = GraphPrompt.NER.format(user_input=passage)
+        
+        # Get custom ontology if available
+        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+        entity_type_guidance = ""
+        
+        if custom_ontology and custom_ontology.get('entities'):
+            # Build guidance for entity types based on custom ontology
+            entity_types = []
+            for entity_def in custom_ontology['entities']:
+                ent_name = entity_def.get('name', '')
+                ent_desc = entity_def.get('description', '')
+                if ent_name:
+                    entity_types.append(f"- {ent_name}: {ent_desc}" if ent_desc else f"- {ent_name}")
+            
+            if entity_types:
+                entity_type_guidance = "\n\nFocus on extracting these specific entity types:\n" + "\n".join(entity_types)
+        
+        # Append entity type guidance to the prompt
+        ner_messages = GraphPrompt.NER.format(user_input=passage) + entity_type_guidance
         llm_output_str = await self.llm.aask(ner_messages, format="json")
         
         parsed_output = None
@@ -78,9 +96,30 @@ class ERGraph(BaseGraph):
     async def _openie_post_ner_extract(self, chunk, entities):
         from Core.Common.Logger import logger
         named_entity_json = {"named_entities": entities}
-        openie_messages = GraphPrompt.OPENIE_POST_NET.format(passage=chunk,
-                                                         named_entity_json=json.dumps(named_entity_json))
-        llm_output_str = await self.llm.aask(openie_messages, format="json")
+        
+        # Get custom ontology if available
+        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+        ontology_guidance = ""
+        
+        if custom_ontology and custom_ontology.get('relations'):
+            # Build guidance for relationship types based on custom ontology
+            relation_types = []
+            for relation_def in custom_ontology['relations']:
+                rel_name = relation_def.get('name', '')
+                rel_desc = relation_def.get('description', '')
+                if rel_name:
+                    relation_types.append(f"- {rel_name}: {rel_desc}" if rel_desc else f"- {rel_name}")
+            
+            if relation_types:
+                ontology_guidance = "\n\nIMPORTANT: When extracting relationships, use these specific relationship types when applicable:\n" + "\n".join(relation_types) + "\n\nOnly use generic relationship types if none of the above are suitable."
+        
+        # Append ontology guidance to the prompt
+        prompt_with_ontology = GraphPrompt.OPENIE_POST_NET.format(
+            passage=chunk,
+            named_entity_json=json.dumps(named_entity_json)
+        ) + ontology_guidance
+        
+        llm_output_str = await self.llm.aask(prompt_with_ontology, format="json")
         
         parsed_output = None
         if isinstance(llm_output_str, str):
@@ -111,6 +150,8 @@ class ERGraph(BaseGraph):
         else:
             logger.error(f"OpenIE - Unexpected LLM output type: {type(llm_output_str)}")
             return []
+
+        logger.debug(f"OpenIE extracted response: {json.dumps(parsed_output, indent=2)[:500]}...")
 
         if not isinstance(parsed_output, dict) or 'triples' not in parsed_output or not isinstance(parsed_output.get('triples'), list):
             logger.warning(f"OpenIE - 'triples' key missing or not a list in parsed output: {parsed_output}")
@@ -148,6 +189,28 @@ class ERGraph(BaseGraph):
     async def _build_graph(self, chunk_list: List[Any]) -> bool:
         from Core.Common.Logger import logger
         try:
+            # Generate custom ontology if not already loaded
+            if not hasattr(self.config, 'loaded_custom_ontology') or self.config.loaded_custom_ontology is None:
+                # Create context from first few chunks for ontology generation
+                context_chunks = chunk_list[:min(3, len(chunk_list))]
+                context = "Content samples:\n"
+                for chunk in context_chunks:
+                    if hasattr(chunk, 'content'):
+                        context += f"- {chunk.content[:200]}...\n"
+                    else:
+                        context += f"- {str(chunk)[:200]}...\n"
+                
+                # Import and use ontology generator
+                from Core.Graph.ontology_generator import generate_custom_ontology
+                logger.info("Generating custom ontology based on corpus content...")
+                custom_ontology = await generate_custom_ontology(context, self.llm)
+                
+                if custom_ontology:
+                    self.config.loaded_custom_ontology = custom_ontology
+                    logger.info(f"Successfully generated custom ontology with {len(custom_ontology.get('entities', []))} entities and {len(custom_ontology.get('relations', []))} relations")
+                else:
+                    logger.warning("Failed to generate custom ontology, proceeding with generic extraction")
+            
             results = await asyncio.gather(
                 *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             await self.__graph__(results)
@@ -293,6 +356,8 @@ class ERGraph(BaseGraph):
             tgt_entity = clean_str(triple[2])
             relation_name = clean_str(triple[1])
             
+            logger.debug(f"Processing triple: ({src_entity}, {relation_name}, {tgt_entity})")
+            
             # Validate entities and relation are not empty
             if src_entity == '' or tgt_entity == '' or relation_name == '':
                 logger.warning(f"Triple is not valid, contains empty entity or relation: {triple}, skipping.")
@@ -307,9 +372,13 @@ class ERGraph(BaseGraph):
                 # Check for custom ontology for relations
                 custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
                 if custom_ontology and custom_ontology.get('relations'):
+                    # Try to find exact match first
+                    matched = False
                     for relation_def in custom_ontology['relations']:
-                        if relation_def.get('name') == relation_name:
+                        if relation_def.get('name', '').lower() == relation_name.lower():
                             final_relation_name = relation_def['name']
+                            matched = True
+                            logger.debug(f"Matched relation '{relation_name}' to ontology type '{final_relation_name}'")
                             
                             # Populate defined custom attributes if present
                             if 'properties' in relation_def and isinstance(triple, dict):
@@ -318,6 +387,11 @@ class ERGraph(BaseGraph):
                                     if prop_name in triple:
                                         relation_attributes[prop_name] = triple[prop_name]
                             break
+                    
+                    if not matched:
+                        logger.warning(f"Relation '{relation_name}' not found in custom ontology, using as-is")
+                else:
+                    logger.debug("No custom ontology available for relation mapping")
                 
                 # Create relationship object and add to edges
                 relationship = Relationship(

@@ -586,3 +586,24 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
 - One-hop neighbors now successfully finds 6 relationships from 5 VDB search results
 - Full pipeline now works end-to-end: corpus → graph → VDB → search → neighbors → answer generation
 - Agent successfully generates meaningful answers using retrieved graph relationships
+
+2025-06-02: Added Dynamic Custom Ontology Generation for ER Graph
+- Created ontology_generator.py with generate_custom_ontology() function
+- Modified ERGraph._build_graph() to automatically generate domain-specific ontologies from corpus content
+- Enhanced _named_entity_recognition() to include entity type guidance from custom ontology
+- Enhanced _openie_post_ner_extract() to include relationship type guidance from custom ontology
+- Ontology is generated using LLM based on first few chunks of corpus for context
+- Should fix "unknown_relationship" issue by providing domain-specific relationship types
+
+2025-06-02: Fixed Dynamic Custom Ontology Generation and Edge Name Storage
+- Found that relationships were being extracted correctly (e.g., "spanned", "occurred in") but not saved
+- Issue was enable_edge_name=false in graph config, causing relation_name to be ignored
+- Updated test to include enable_edge_name=true in config_overrides
+- Improved ontology_generator.py JSON parsing to handle various response formats
+- Added debug logging to track ontology generation and relationship extraction
+- Should now save meaningful relationship names instead of empty strings
+
+2025-06-02: Fixed One-Hop Neighbors Tool to Return Actual Relationship Names
+- Found that relationship_tools.py was looking for 'type' attribute on edges
+- Changed edge_attr_for_relation_name from 'type' to 'relation_name' to match ERGraph storage
+- One-hop neighbors tool now returns actual relationship names instead of "unknown_relationship"

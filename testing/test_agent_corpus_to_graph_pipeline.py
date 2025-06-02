@@ -233,7 +233,7 @@ async def test_agent_corpus_to_graph_pipeline():
         f"2. After the corpus is prepared, build an Entity-Relation Graph (ERGraph). "
         f"The 'target_dataset_name' for this BuildERGraph step must be '{dataset_name_for_plan}'. "
         f"Set 'force_rebuild' to true. For 'config_overrides', use: "
-        f"'extract_two_step'=true, 'enable_entity_description'=true, and 'enable_entity_type'=true. "
+        f"'extract_two_step'=true, 'enable_entity_description'=true, 'enable_entity_type'=true, and 'enable_edge_name'=true. "
         f"The named outputs for this step MUST be {{'graph_id_from_build': 'graph_id', 'status_from_build': 'status'}}. This maps the tool's output field 'graph_id' to 'graph_id_from_build' in the plan context, and 'status' to 'status_from_build'. "
 
         f"3. Once the graph is built for dataset '{dataset_name_for_plan}', perform a VDB search on its entities. "
