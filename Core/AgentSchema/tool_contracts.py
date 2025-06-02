@@ -143,7 +143,7 @@ class EntityOneHopInput(BaseModel):
     entity_ids: List[str] = Field(
         description="List of entity IDs to find neighbors for"
     )
-    graph_id: str = Field(
+    graph_reference_id: str = Field(
         description="The ID of the graph to search in"
     )
     include_edge_attributes: Optional[bool] = Field(
@@ -268,8 +268,10 @@ class SubgraphSteinerTreeOutputs(BaseToolOutput):
 #     - Relationship.Aggregator (Compute relationship scores from entity PPR matrix)
 #     - Subgraph.AgentPath (Identify relevant k-hop paths using LLM)
 #     - Community.Layer (Returns all communities below a required layer)
-# - As we define these, we'll get a clearer picture of common parameter patterns and output structures,
-#   which will help in finalizing the ToolCall model in plan.py and designing the Agent Orchestrator.
+# - This batch focused on "Agent" tools; their implementation in the Orchestrator will involve an LLM call.
+# - The `ExtractedEntityData` and `RelationshipData` used here should be harmonized with your main schema
+#   definitions in Core/Schema/EntityRelation.py and Core/Schema/CommunitySchema.py
+#   (e.g., by importing and using them, or ensuring field compatibility).
 
 # --- Tool Contract for: Entity Operator - Agent ---
 # Based on README.md operator: Entity Operators - Agent "Utilizes LLM to find the useful entities"
@@ -523,6 +525,52 @@ class EntityRelNodeOutput(BaseModel):
     )
     message: str = Field(description="Status message or error description")
 
+# --- Tool Contract for: Chunk Operator - GetTextForEntities ---
+# Purpose: Retrieve text chunks associated with specific entities
+
+class ChunkGetTextForEntitiesInput(BaseModel):
+    """Input for retrieving text chunks associated with entities."""
+    graph_reference_id: str = Field(
+        description="ID of the graph containing the entities"
+    )
+    entity_ids: List[str] = Field(
+        description="List of entity IDs (entity names) to get chunks for"
+    )
+    chunk_ids: Optional[List[str]] = Field(
+        default=None,
+        description="Optional list of specific chunk IDs to retrieve"
+    )
+    max_chunks_per_entity: Optional[int] = Field(
+        default=5,
+        description="Maximum number of chunks to return per entity"
+    )
+
+class ChunkTextResultItem(BaseModel):
+    """Individual chunk result item."""
+    entity_id: Optional[str] = Field(
+        default=None,
+        description="The entity ID this chunk is associated with"
+    )
+    chunk_id: str = Field(
+        description="The ID of the chunk"
+    )
+    text_content: str = Field(
+        description="The actual text content of the chunk"
+    )
+    metadata: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Additional metadata about the chunk"
+    )
+
+class ChunkGetTextForEntitiesOutput(BaseModel):
+    """Output containing retrieved text chunks."""
+    retrieved_chunks: List[ChunkTextResultItem] = Field(
+        description="List of retrieved text chunks with their content"
+    )
+    status_message: str = Field(
+        description="Status message about the retrieval process"
+    )
+
 # --- Tool Contract for: Community Operator - Get Layer ---
 # Based on README.md operator: Community Operators - Layer "Returns all communities below a required layer"
 # This assumes a hierarchical community structure has been previously computed and stored.
@@ -543,10 +591,7 @@ class CommunityGetLayerOutputs(BaseToolOutput):
 #    and in Core/AgentSchema/plan.py. Ensure that where placeholder types like Dict[str, Any] or
 #    simple type hints like List[str] for IDs are used, they are updated to reference or align with
 #    the more detailed Pydantic models from your Core/Schema/ directory
-#    (e.g., Core.Schema.EntityRelation.Entity, 
-#     Core.Schema.ChunkSchema.TextChunk, 
-#     Core.Schema.CommunitySchema.CommunityReport, etc.).
-#    This is a key refactoring step for type consistency and data integrity.
+#    (e.g., by importing and using them, or ensuring field compatibility).
 # 2. Mapping to Existing Code: Begin the process of mapping each `tool_id` and its
 #    Pydantic input/output contract to actual, callable Python functions/methods in your Core modules.
 #    This will likely involve some refactoring or writing new wrapper functions.

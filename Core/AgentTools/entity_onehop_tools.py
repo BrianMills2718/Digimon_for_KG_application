@@ -38,7 +38,7 @@ def entity_onehop_neighbors(input_data: Dict[str, Any], context: GraphRAGContext
         }
     
     entity_ids = validated_input.entity_ids
-    graph_id = validated_input.graph_id
+    graph_id = validated_input.graph_reference_id
     include_edge_attrs = validated_input.include_edge_attributes
     neighbor_limit = validated_input.neighbor_limit_per_entity
     

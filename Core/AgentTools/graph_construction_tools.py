@@ -151,7 +151,8 @@ async def build_er_graph(
             node_count=counts['node_count'],
             edge_count=counts['edge_count'],
             layer_count=counts['layer_count'],
-            artifact_path=artifact_p
+            artifact_path=artifact_p,
+            graph_instance=er_graph_instance
         )
     except Exception as e:
         return BuildERGraphOutputs(

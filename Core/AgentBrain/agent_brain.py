@@ -100,6 +100,135 @@ class PlanningAgent:
 
         # LLM Provider is already initialized at the beginning of __init__
 
+    def _get_system_task_prompt_for_planning(self, tool_documentation: str, actual_corpus_name: str) -> str:
+        """
+        Returns the system task prompt for planning with tool documentation embedded.
+        """
+        base_prompt = f"""You are an expert at creating structured execution plans for a GraphRAG system.
+Based on the user's query, generate an ExecutionPlan JSON that orchestrates the appropriate tools.
+
+## Guidelines:
+1. **Corpus and Graph**: Most queries need corpus preparation and ER graph building as initial steps
+2. **Entity Search**: For informational queries, use Entity.VDBSearch to find relevant entities
+3. **Data References**: 
+   - Plan inputs: Use `"plan_inputs.main_query"` string format for user query reference
+   - Step outputs: Use `{{"from_step_id": "step_id", "named_output_key": "alias"}}` for step references
+   - Named outputs: `{{"alias": "actual_tool_field"}}` (alias as key, actual field name as value)
+
+4. **Required Format**: Output must be valid JSON ExecutionPlan with `plan_id`, `plan_description`, `target_dataset_name`, `plan_inputs`, and `steps`.
+
+## Example ExecutionPlan:
+{{
+  "plan_id": "informational_query_plan",
+  "plan_description": "Comprehensive information retrieval using VDB search and graph exploration",
+  "target_dataset_name": "{actual_corpus_name}",
+  "plan_inputs": {{"main_query": "tell me about the american revolution?"}},
+  "steps": [
+    {{
+      "step_id": "step_1_prepare_corpus",
+      "description": "Prepare the corpus from the specified directory",
+      "action": {{
+        "tools": [{{
+          "tool_id": "corpus.PrepareFromDirectory",
+          "inputs": {{
+            "input_directory_path": "Data/{actual_corpus_name}",
+            "output_directory_path": "results/{actual_corpus_name}/corpus", 
+            "target_corpus_name": "{actual_corpus_name}"
+          }},
+          "named_outputs": {{
+            "prepared_corpus_name": "corpus_json_path"
+          }}
+        }}]
+      }}
+    }},
+    {{
+      "step_id": "step_2_build_er_graph",
+      "description": "Build ER graph from corpus",
+      "action": {{
+        "tools": [{{
+          "tool_id": "graph.BuildERGraph",
+          "inputs": {{
+            "target_dataset_name": "{actual_corpus_name}"
+          }},
+          "named_outputs": {{
+            "er_graph_id": "graph_id"
+          }}
+        }}]
+      }}
+    }},
+    {{
+      "step_id": "step_3_build_vdb",
+      "description": "Build VDB for entity search",
+      "action": {{
+        "tools": [{{
+          "tool_id": "Entity.VDB.Build",
+          "inputs": {{
+            "graph_reference_id": {{"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"}},
+            "vdb_collection_name": "{actual_corpus_name}_entities"
+          }},
+          "named_outputs": {{
+            "entity_vdb_id": "vdb_reference_id"
+          }}
+        }}]
+      }}
+    }},
+    {{
+      "step_id": "step_4_search_entities",
+      "description": "Search for relevant entities",
+      "action": {{
+        "tools": [{{
+          "tool_id": "Entity.VDBSearch",
+          "inputs": {{
+            "vdb_reference_id": {{"from_step_id": "step_3_build_vdb", "named_output_key": "entity_vdb_id"}},
+            "query_text": "plan_inputs.main_query",
+            "top_k_results": 5
+          }},
+          "named_outputs": {{
+            "search_results": "similar_entities"
+          }}
+        }}]
+      }}
+    }},
+    {{
+      "step_id": "step_5_onehop",
+      "description": "Retrieve one-hop related entities",
+      "action": {{
+        "tools": [{{
+          "tool_id": "Relationship.OneHopNeighbors",
+          "inputs": {{
+            "graph_reference_id": {{"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"}},
+            "entity_ids": {{"from_step_id": "step_4_search_entities", "named_output_key": "search_results"}}
+          }},
+          "named_outputs": {{}}
+        }}]
+      }}
+    }},
+    {{
+      "step_id": "step_6_get_text",
+      "description": "Get text chunks for entities",
+      "action": {{
+        "tools": [{{
+          "tool_id": "Chunk.GetTextForEntities",
+          "inputs": {{
+            "graph_reference_id": {{"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"}},
+            "entity_ids": {{"from_step_id": "step_4_search_entities", "named_output_key": "search_results"}}
+          }},
+          "named_outputs": {{}}
+        }}]
+      }}
+    }}
+  ]
+}}
+
+Generate the ExecutionPlan JSON for the user's query."""
+        
+        # Optionally include corpus instruction if provided
+        if actual_corpus_name:
+            base_prompt += f"\n\nTarget dataset: '{actual_corpus_name}'"
+        
+        full_prompt = base_prompt + "\n\n" + tool_documentation
+        return full_prompt
+
     def _get_tool_documentation_for_prompt(self) -> str:
         """
         Generates a string containing the documentation for all available tools,
@@ -176,6 +305,93 @@ class PlanningAgent:
 
         return "\n".join(docs_parts)
 
+    async def _translate_nl_step_to_pydantic(
+        self, 
+        nl_step: str, 
+        user_query: str,
+        actual_corpus_name: Optional[str] = None
+    ) -> Optional[ExecutionPlan]:
+        """
+        Translate a single natural language step into a Pydantic ExecutionPlan.
+        """
+        if not self.llm_provider:
+            logger.error("LLM provider not initialized. Cannot translate NL step.")
+            return None
+            
+        tool_docs = self._get_tool_documentation_for_prompt()
+        
+        system_prompt = """You are an expert at translating natural language instructions into precise tool execution plans.
+
+Given a single natural language step and the available tools, create a JSON ExecutionPlan that executes ONLY that specific step.
+
+## Rules:
+1. Create a plan with exactly ONE step that implements the given natural language instruction
+2. Select the most appropriate tool from the available tools
+3. Set all required parameters based on context
+4. Use these default IDs when relevant:
+   - Graph ID: "kg_graph"
+   - Entity VDB ID: "entities_vdb"
+   - Relationship VDB ID: "relationships_vdb"
+5. For named_outputs, use the exact field names from the tool's output model
+
+## ExecutionPlan Schema:
+{
+  "plan_id": "string",
+  "plan_description": "string", 
+  "target_dataset_name": "string",
+  "plan_inputs": { "main_query": "string" },
+  "steps": [
+    {
+      "step_id": "string",
+      "description": "string",
+      "action": {
+        "tools": [
+          {
+            "tool_id": "string",
+            "description": "string",
+            "parameters": { },
+            "inputs": { },
+            "named_outputs": { }
+          }
+        ]
+      }
+    }
+  ]
+}"""
+
+        corpus_instruction = ""
+        if actual_corpus_name:
+            corpus_instruction = f"\nTarget dataset: {actual_corpus_name}"
+            
+        user_prompt = f"""Natural Language Step: "{nl_step}"
+Original User Query: "{user_query}"{corpus_instruction}
+
+Available Tools:
+{tool_docs}
+
+Translate this single step into a JSON ExecutionPlan. Return ONLY the JSON."""
+
+        try:
+            execution_plan = await self.llm_provider.instructor_async_completion(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                response_model=ExecutionPlan,
+                temperature=0.0
+            )
+            
+            if execution_plan:
+                logger.info(f"Successfully translated NL step to Pydantic: {nl_step}")
+                return execution_plan
+            else:
+                logger.error(f"Failed to translate NL step: {nl_step}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error translating NL step to Pydantic: {e}")
+            return None
+
     async def _generate_plan_with_llm(self, system_prompt: str, user_prompt_content: str) -> Optional[ExecutionPlan]: # Use Optional
         """
         Calls the configured LLM using LiteLLMProvider's instructor completion
@@ -203,6 +419,7 @@ class PlanningAgent:
                 messages=messages,
                 response_model=ExecutionPlan,
                 max_retries=2,
+                max_tokens=4000,  # Add max_tokens to handle longer plans
             )
 
             if execution_plan:
@@ -214,125 +431,201 @@ class PlanningAgent:
             logger.error(f"PlanningAgent: Error during LLM call for plan generation with instructor: {e}", exc_info=True)
             return None
 
-    async def generate_plan(self, user_query: str) -> Optional[ExecutionPlan]: # Use Optional
+    async def _generate_natural_language_plan(self, user_query: str, actual_corpus_name: Optional[str] = None) -> List[str]:
+        """
+        Generate a high-level natural language plan for the query.
+        Returns a list of natural language steps.
+        """
+        if not self.llm_provider:
+            logger.error("LLM provider not initialized. Cannot generate natural language plan.")
+            return []
+            
+        tool_docs = self._get_tool_documentation_for_prompt()
+        
+        system_prompt = """You are an expert planning agent. Create a high-level, step-by-step plan in natural language to answer the user's query.
+
+## Available Tools (for reference):
+{tool_docs}
+
+## Planning Guidelines:
+1. Break down the task into clear, sequential steps
+2. Each step should be a complete sentence describing what needs to be done
+3. Consider prerequisites (e.g., "Build a graph before searching it")
+4. Use tool names when relevant but write in natural language
+5. Return ONLY a JSON array of strings, where each string is one step
+
+Example output format:
+[
+    "Prepare the corpus from the specified directory",
+    "Build an entity-relationship graph from the prepared corpus",
+    "Create a vector database index for the entities",
+    "Search the vector database for entities matching the query",
+    "Retrieve the associated text for the found entities",
+    "Summarize the findings to answer the user's question"
+]"""
+
+        corpus_instruction = ""
+        if actual_corpus_name:
+            corpus_instruction = f"\nThe target dataset is: {actual_corpus_name}\n"
+            
+        user_prompt = f"""User Query: "{user_query}"{corpus_instruction}
+
+Generate a natural language plan as a JSON array of steps."""
+
+        messages = [
+            {"role": "system", "content": system_prompt.format(tool_docs=tool_docs)},
+            {"role": "user", "content": user_prompt}
+        ]
+        
+        try:
+            response = await self.llm_provider.acompletion(messages=messages, temperature=0.0)
+            content = response.choices[0].message.content.strip()
+            
+            # Parse JSON array from response
+            import json
+            steps = json.loads(content)
+            
+            if isinstance(steps, list) and all(isinstance(s, str) for s in steps):
+                logger.info(f"Generated natural language plan with {len(steps)} steps")
+                return steps
+            else:
+                logger.error("Invalid natural language plan format")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error generating natural language plan: {e}")
+            return []
+
+    async def generate_plan(self, user_query: str, actual_corpus_name: Optional[str] = None) -> Optional[ExecutionPlan]: # Use Optional
         """
         Generates an ExecutionPlan based on the user_query using an LLM.
         """
         tool_docs = self._get_tool_documentation_for_prompt()
 
-        system_prompt = """You are an expert planning agent. Your task is to create a valid JSON execution plan
-to answer the user's query by selecting and orchestrating a sequence of available tools.
+        system_prompt = self._get_system_task_prompt_for_planning(tool_docs, actual_corpus_name)
 
-## Constraints:
-- The output MUST be a valid JSON object that conforms to the ExecutionPlan schema provided below.
-- Refer to tools by their exact `tool_id` as listed in the 'Available Tools' section.
-- For tool inputs:
-    - If the input value comes directly from the overall plan's inputs (like the user's main query),
-      use the format: "plan_inputs.your_plan_input_key" (e.g., "plan_inputs.main_query").
-    - If the input value comes from the output of a PREVIOUS step in the plan, use the ToolInputSource object format:
-      {"from_step_id": "id_of_previous_step", "named_output_key": "key_of_output_from_that_step"}
-- Ensure `named_outputs` for each tool call have unique and descriptive keys (e.g., "vdb_search_results", "ranked_ppr_entities"). These keys are used by subsequent steps to reference the output.
-- The `target_dataset_name` in the plan should typically be "MySampleTexts".
-- Provide a brief `plan_description` summarizing the plan.
-- Each `step` must have a `step_id` (e.g., "step_1_vdb", "step_2_ppr") and a `description`.
-- Each `tool_call` within a step's `action.tools` list must have a `tool_id` and a `description`.
-- Only include parameters in the `parameters` dictionary if you are overriding their default values or if they are required and have no defaults. Do not include optional parameters if they are not needed for the query.
+        # Build the user prompt content
+        corpus_instruction = ""
+        if actual_corpus_name:
+            corpus_instruction = f"\n## IMPORTANT: The target dataset for this operation is '{actual_corpus_name}'. " \
+                               f"Use '{actual_corpus_name}' as the 'target_dataset_name' field in the ExecutionPlan.\n"
 
-## ExecutionPlan Schema Outline (Simplified for understanding, actual output must be full JSON):
-{
-  "plan_id": "string (e.g., llm_generated_plan_unique_id)",
-  "plan_description": "string",
-  "target_dataset_name": "string (e.g., MySampleTexts)",
-  "plan_inputs": { "main_query": "string (user's original query)" },
+        user_prompt_parts = [
+            "## Available Tools:",
+            tool_docs,
+            corpus_instruction,
+            "## User Query:",
+            f'"{user_query}"',
+            "",
+            '## Example for "What are the main entities in my documents?":',
+            """{
+  "plan_id": "extract_main_entities",
+  "plan_description": "Prepare corpus, build graph, create VDB, and find main entities from documents",
+  "target_dataset_name": "MySampleTexts",
+  "plan_inputs": { "main_query": "What are the main entities in my documents?" },
   "steps": [
     {
-      "step_id": "string (e.g., step_1_name)",
-      "description": "string",
+      "step_id": "prepare_corpus",
+      "description": "Prepare corpus from the source directory",
       "action": {
-        "tools": [
-          {
-            "tool_id": "string (e.g., Entity.VDBSearch)",
-            "description": "string (tool call description)",
-            "parameters": { /* tool-specific parameters, e.g., "top_k_results": 5 */ },
-            "inputs": { /* mapping of tool's input fields to sources */ },
-            "named_outputs": { /* mapping of output keys to descriptions, e.g., "vdb_output": "Results from VDB Search" */ }
+        "tools": [{
+          "tool_id": "corpus.PrepareFromDirectory",
+          "inputs": {
+            "input_directory_path": "Data/MySampleTexts",
+            "output_directory_path": "results/MySampleTexts",
+            "target_corpus_name": "MySampleTexts"
+          },
+          "named_outputs": {
+            "prepared_corpus_name": "corpus_json_path"
           }
-        ]
+        }]
+      }
+    },
+    {
+      "step_id": "step_2_build_er_graph",
+      "description": "Build ER graph from corpus",
+      "action": {
+        "tools": [{
+          "tool_id": "graph.BuildERGraph",
+          "inputs": {
+            "target_dataset_name": "MySampleTexts"
+          },
+          "named_outputs": {
+            "er_graph_id": "graph_id"
+          }
+        }]
+      }
+    },
+    {
+      "step_id": "step_3_build_entity_vdb",
+      "description": "Build entity VDB from graph",
+      "action": {
+        "tools": [{
+          "tool_id": "Entity.VDB.Build",
+          "inputs": {
+            "graph_reference_id": {"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"},
+            "vdb_collection_name": "MySampleTexts_entities"
+          },
+          "named_outputs": {
+            "entity_vdb_id": "vdb_reference_id"
+          }
+        }]
+      }
+    },
+    {
+      "step_id": "step_4_search_entities",
+      "description": "Search for relevant entities",
+      "action": {
+        "tools": [{
+          "tool_id": "Entity.VDBSearch",
+          "inputs": {
+            "vdb_reference_id": {"from_step_id": "step_3_build_entity_vdb", "named_output_key": "entity_vdb_id"},
+            "query_text": "plan_inputs.main_query",
+            "top_k_results": 5
+          },
+          "named_outputs": {
+            "search_results": "similar_entities"
+          }
+        }]
+      }
+    },
+    {
+      "step_id": "step_5_onehop",
+      "description": "Retrieve one-hop related entities",
+      "action": {
+        "tools": [{
+          "tool_id": "Relationship.OneHopNeighbors",
+          "inputs": {
+            "graph_reference_id": {"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"},
+            "entity_ids": {"from_step_id": "step_4_search_entities", "named_output_key": "search_results"}
+          },
+          "named_outputs": {}
+        }]
+      }
+    },
+    {
+      "step_id": "step_6_get_text",
+      "description": "Get text chunks for entities",
+      "action": {
+        "tools": [{
+          "tool_id": "Chunk.GetTextForEntities",
+          "inputs": {
+            "graph_reference_id": {"from_step_id": "step_2_build_er_graph", "named_output_key": "er_graph_id"},
+            "entity_ids": {"from_step_id": "step_4_search_entities", "named_output_key": "search_results"}
+          },
+          "named_outputs": {}
+        }]
       }
     }
   ]
-}
-"""
-
-        user_prompt_content = f"""
-## Available Tools:
-{tool_docs}
-
-## User Query:
-"{user_query}"
-
-## Example of a 2-step plan JSON (for query: "Find entities similar to 'AI impact' and then rank them with PPR"):
-{{
-  "plan_id": "llm_plan_example_vdb_ppr",
-  "plan_description": "Find entities with VDB for 'AI impact' and then run PPR on the results.",
-  "target_dataset_name": "MySampleTexts",
-  "plan_inputs": {{ "main_query": "AI impact" }},
-  "steps": [
-    {{
-      "step_id": "step_1_vdb_search_ai",
-      "description": "Perform VDB search for entities related to 'AI impact'.",
-      "action": {{
-        "tools": [
-          {{
-            "tool_id": "Entity.VDBSearch",
-            "description": "Find initial relevant entities using VDB for 'AI impact'.",
-            "parameters": {{
-              "vdb_reference_id": "entities_vdb",
-              "top_k_results": 3
-            }},
-            "inputs": {{
-              "query_text": "plan_inputs.main_query"
-            }},
-            "named_outputs": {{
-              "vdb_search_results_object": "Raw EntityVDBSearchOutputs object from VDB search for AI impact."
-            }}
-          }}
+}""",
+            "",
+            f'Now, based on the user query: "{user_query}" and the available tools, generate the JSON ExecutionPlan.',
+            "Return ONLY the JSON plan object, starting with '{' and ending with '}'. Do not include any other text before or after the JSON."
         ]
-      }}
-    }},
-    {{
-      "step_id": "step_2_ppr_on_ai_results",
-      "description": "Run Personalized PageRank on entities found by VDB search.",
-      "action": {{
-        "tools": [
-          {{
-            "tool_id": "Entity.PPR",
-            "description": "Calculate PPR scores for seed entities related to AI impact.",
-            "parameters": {{
-              "graph_reference_id": "kg_graph",
-              "personalization_weight_alpha": 0.15,
-              "top_k_results": 5
-            }},
-            "inputs": {{
-              "seed_entity_ids": {{
-                "from_step_id": "step_1_vdb_search_ai",
-                "named_output_key": "vdb_search_results_object"
-              }}
-            }},
-            "named_outputs": {{
-              "ppr_ai_ranked_entities": "List of (entity_id, ppr_score) tuples from PPR for AI impact entities."
-            }}
-          }}
-        ]
-      }}
-    }}
-  ]
-}}
-
-Now, based on the user query: "{user_query}" and the available tools, generate the JSON ExecutionPlan.
-Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do not include any other text before or after the JSON.
-"""
-
+        
+        user_prompt_content = "\n".join(user_prompt_parts)
+        
         execution_plan = await self._generate_plan_with_llm(system_prompt=system_prompt, user_prompt_content=user_prompt_content)
 
         if execution_plan:
@@ -343,7 +636,7 @@ Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do no
 
         return execution_plan
 
-    async def process_query(self, user_query: str) -> Any | None:
+    async def process_query(self, user_query: str, actual_corpus_name: Optional[str] = None) -> Any | None:
         """
         Takes a natural language query, generates a plan, executes it,
         generates a natural language answer based on the retrieved context,
@@ -357,8 +650,8 @@ Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do no
             logger.error("LLM Provider not initialized in PlanningAgent. Cannot generate plan or answer.")
             return {"error": "LLM Provider not initialized.", "generated_answer": "Error: LLM Provider not initialized."}
 
-        logger.info(f"PlanningAgent: Processing query: {user_query}")
-        execution_plan = await self.generate_plan(user_query)
+        logger.info(f"PlanningAgent: Processing query: {user_query} with corpus: {actual_corpus_name}")
+        execution_plan = await self.generate_plan(user_query, actual_corpus_name)
 
         retrieved_context = None
         generated_answer = "No answer generated." # Default message
@@ -367,6 +660,10 @@ Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do no
         if execution_plan:
             logger.info(f"PlanningAgent: Executing generated plan ID: {execution_plan.plan_id}")
             try:
+                current_plan: Optional[ExecutionPlan] = execution_plan
+                orchestrator_step_outputs: Dict[str, Any] = {}
+                serializable_context_for_prompt: Dict[str, Any] = {}
+                
                 retrieved_context = await self.orchestrator.execute_plan(plan=execution_plan)
                 logger.info(f"PlanningAgent: Plan execution finished. Retrieved context: {retrieved_context}")
                 final_result["retrieved_context"] = retrieved_context
@@ -374,40 +671,136 @@ Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do no
                 is_retrieval_error = isinstance(retrieved_context, dict) and retrieved_context.get("error")
 
                 if retrieved_context and not is_retrieval_error:
-                    # Prepare context for JSON serialization, handling Pydantic models
-                    serializable_context_for_prompt = {}
-                    if isinstance(retrieved_context, dict):
-                        for key, value in retrieved_context.items():
-                            if isinstance(value, BaseModel):  # BaseModel from Pydantic
-                                serializable_context_for_prompt[key] = value.model_dump()
-                            else:
-                                serializable_context_for_prompt[key] = value
-                    elif isinstance(retrieved_context, BaseModel):
-                        serializable_context_for_prompt = retrieved_context.model_dump()
-                    elif isinstance(retrieved_context, list):
-                        serializable_context_for_prompt = [
-                            item.model_dump() if isinstance(item, BaseModel) else item
-                            for item in retrieved_context
-                        ]
+                    original_user_query = current_plan.plan_inputs.get("main_query", "the user's query")
+                    all_step_outputs = self.orchestrator.step_outputs
+
+                    logger.debug(f"PlanningAgent: Full retrieved context from orchestrator: {all_step_outputs}")
+
+                    # Build comprehensive context from all steps
+                    prompt_context_summary = ""
+                    
+                    # 1. VDB Search Results
+                    found_entities_data = None
+                    search_step_id_in_plan = None
+                    search_results_alias_in_plan = None
+
+                    for step_definition in current_plan.steps:
+                        if step_definition.action and step_definition.action.tools:
+                            for tool_call_def in step_definition.action.tools:
+                                if tool_call_def.tool_id == "Entity.VDBSearch":
+                                    search_step_id_in_plan = step_definition.step_id
+                                    if tool_call_def.named_outputs:
+                                        # Find the alias for 'similar_entities' field
+                                        # named_outputs maps alias -> field_name, so we need to find where value is 'similar_entities'
+                                        for alias, pydantic_field in tool_call_def.named_outputs.items():
+                                            if pydantic_field == "similar_entities":
+                                                search_results_alias_in_plan = alias
+                                                break
+                                    break
+                            if search_step_id_in_plan and search_results_alias_in_plan:
+                                break
+
+                    if search_step_id_in_plan and search_results_alias_in_plan:
+                        search_step_actual_outputs = all_step_outputs.get(search_step_id_in_plan, {})
+                        logger.debug(f"PlanningAgent: Outputs from VDB search step ('{search_step_id_in_plan}'): {search_step_actual_outputs}")
+                        found_entities_data = search_step_actual_outputs.get(search_results_alias_in_plan)
                     else:
-                        serializable_context_for_prompt = retrieved_context # Fallback
+                        logger.warning("PlanningAgent: Could not find 'Entity.VDBSearch' step or its 'similar_entities' named output alias in the plan.")
 
-                    context_str_for_prompt = json.dumps(serializable_context_for_prompt, indent=2)
+                    logger.debug(f"PlanningAgent: Extracted 'found_entities_data' for final prompt: {found_entities_data}")
 
-                    generation_prompt_messages = [
-                        {
-                            "role": "system",
-                            "content": "You are a helpful AI assistant. Based on the provided user query and the retrieved context, generate a concise and informative answer to the user's query. If the context is empty or does not seem relevant to the query, state that you could not find specific information to answer the query based on the context."
-                        },
-                        {
-                            "role": "user",
-                            "content": f"Original User Query:\n\"\"\"\n{user_query}\n\"\"\"\n\nRetrieved Context:\n\"\"\"\n{context_str_for_prompt}\n\"\"\"\n\nPlease provide a natural language answer to the original user query based on the retrieved context."
-                        }
-                    ]
+                    # 2. One-hop Relationships
+                    onehop_step_outputs = None
+                    for step_id, outputs in all_step_outputs.items():
+                        if "onehop" in step_id.lower():
+                            onehop_step_outputs = outputs
+                            break
+                    
+                    if onehop_step_outputs and isinstance(onehop_step_outputs, dict):
+                        relationships = onehop_step_outputs.get('one_hop_relationships', onehop_step_outputs.get('one_hop_neighbors', []))
+                        if relationships:
+                            prompt_context_summary += "**Related Information (Graph Relationships):**\n"
+                            for rel in relationships[:10]:  # Limit to first 10 relationships
+                                if isinstance(rel, dict):
+                                    src = rel.get('src_id', 'Unknown')
+                                    tgt = rel.get('tgt_id', 'Unknown')
+                                    desc = rel.get('description', '')
+                                    if desc:
+                                        prompt_context_summary += f"- {src} → {tgt}: {desc}\n"
+                                    else:
+                                        prompt_context_summary += f"- {src} → {tgt}\n"
+                            prompt_context_summary += "\n"
+                    
+                    # 3. Text Chunks
+                    text_step_outputs = None
+                    for step_id, outputs in all_step_outputs.items():
+                        if "get_text" in step_id.lower() or "chunk" in step_id.lower():
+                            text_step_outputs = outputs
+                            break
+                    
+                    if text_step_outputs and isinstance(text_step_outputs, dict):
+                        # Handle different possible output formats
+                        text_content = text_step_outputs.get('text_chunks', text_step_outputs.get('chunks', text_step_outputs.get('text', [])))
+                        if isinstance(text_content, list) and text_content:
+                            prompt_context_summary += "**Relevant Text Content:**\n"
+                            for i, chunk in enumerate(text_content[:3]):  # Limit to first 3 chunks
+                                if isinstance(chunk, dict):
+                                    content = chunk.get('content', chunk.get('text', str(chunk)))
+                                elif hasattr(chunk, 'content'):
+                                    content = chunk.content
+                                else:
+                                    content = str(chunk)
+                                prompt_context_summary += f"[Chunk {i+1}]: {content[:500]}...\n\n"  # Limit each chunk to 500 chars
+                        elif isinstance(text_content, str) and text_content:
+                            prompt_context_summary += f"**Relevant Text Content:**\n{text_content[:1500]}...\n\n"
+                        else:
+                            prompt_context_summary += "**Relevant Text Content:** No text chunks found. Please use one-hop relationships for context.\n"
+                    
+                    if found_entities_data and isinstance(found_entities_data, list) and len(found_entities_data) > 0:
+                        prompt_context_summary += "**Relevant Entities Found:**\n"
+                        for item_data in found_entities_data:
+                            entity_name = "Unknown Entity"
+                            score_val = "N/A"
+                            if isinstance(item_data, dict):
+                                entity_name = item_data.get('entity_name', item_data.get('node_id'))
+                                score_val = item_data.get('score')
+                            elif hasattr(item_data, 'entity_name'):
+                                entity_name = getattr(item_data, 'entity_name', getattr(item_data, 'node_id', None))
+                                score_val = getattr(item_data, 'score', None)
+                            
+                            score_str = f"{score_val:.3f}" if isinstance(score_val, float) else str(score_val)
+                            prompt_context_summary += f"- {entity_name} (Similarity: {score_str})\n"
+                        prompt_context_summary += "\n"
+                    
+                    if not prompt_context_summary:
+                        prompt_context_summary = "No specific entities or information were found that seem relevant to the query."
+                    else:
+                        prompt_context_summary += "\nPlease synthesize the above information to answer the user's query."
+                    
+                    system_prompt = f"""You are a helpful assistant. Your task is to answer the user's query based *only* on the 'Retrieved Context' provided below.
+User's Query: "{original_user_query}"
 
-                    logger.info("PlanningAgent: Generating natural language answer based on retrieved context...")
+Retrieved Context:
+{prompt_context_summary}
+
+Instructions:
+1. If text content is available, use it as the primary source for your answer.
+2. If text content is not available but entity relationships are shown, synthesize an answer from the entity names and their relationships.
+3. Look for entities that directly answer the query - for example, if asked about causes, look for entities named after causes or events.
+4. Pay special attention to relationships between entities as they often contain the answer.
+5. Do NOT use any general knowledge. Base your answer ONLY on the provided context.
+6. If the context doesn't contain information to answer the query, explicitly state that.
+
+Based on the entities and relationships found, provide your answer."""
+
+                    messages = [{"role": "system", "content": system_prompt}]
+                    # You might add: messages.append({"role": "user", "content": original_user_query}) if your LLM provider/model benefits from it.
+
+                    logger.info("PlanningAgent: Generating final natural language answer.")
+                    logger.debug(f"PlanningAgent: Data for final LLM prompt: {found_entities_data}")
+                    
                     try:
-                        llm_response = await self.llm_provider.acompletion(messages=generation_prompt_messages)
+                        llm_response = await self.llm_provider.acompletion(messages=messages)
                         generated_answer = self.llm_provider.get_choice_text(llm_response)
                         logger.info(f"PlanningAgent: Generated answer: {generated_answer}")
                     except Exception as e:
@@ -441,4 +834,76 @@ Return ONLY the JSON plan object, starting with `{{` and ending with `}}`. Do no
         final_result["generated_answer"] = generated_answer
         return final_result
 
-# END: /home/brian/digimon/Core/AgentBrain/agent_brain.py
+    async def process_query_react(self, user_query: str, actual_corpus_name: Optional[str] = None) -> Any | None:
+        """
+        Experimental ReAct-style query processing.
+        Plans in natural language, executes one step at a time, observes, and adapts.
+        """
+        if not self.orchestrator:
+            logger.error("Orchestrator not initialized. Cannot process query.")
+            return {"error": "Orchestrator not initialized."}
+            
+        if not self.llm_provider:
+            logger.error("LLM Provider not initialized. Cannot process query.")
+            return {"error": "LLM Provider not initialized."}
+            
+        logger.info(f"PlanningAgent (ReAct): Processing query: {user_query}")
+        
+        # Step 1: Generate natural language plan
+        nl_plan = await self._generate_natural_language_plan(user_query, actual_corpus_name)
+        if not nl_plan:
+            return {"error": "Failed to generate natural language plan."}
+            
+        logger.info(f"ReAct: Generated NL plan with {len(nl_plan)} steps:")
+        for i, step in enumerate(nl_plan):
+            logger.info(f"  {i+1}. {step}")
+            
+        # For this initial implementation, execute only the first step
+        if nl_plan:
+            first_step = nl_plan[0]
+            logger.info(f"ReAct: Translating first step to Pydantic: {first_step}")
+            
+            # Step 2: Translate first NL step to Pydantic
+            single_step_plan = await self._translate_nl_step_to_pydantic(
+                first_step, 
+                user_query,
+                actual_corpus_name
+            )
+            
+            if not single_step_plan:
+                return {"error": f"Failed to translate step: {first_step}"}
+                
+            logger.info(f"ReAct: Executing plan for first step")
+            
+            # Step 3: Execute the single step
+            try:
+                step_results = await self.orchestrator.execute_plan(
+                    plan=single_step_plan,
+                    graphrag_context=self.graphrag_context,
+                    main_config=self.config
+                )
+                logger.info(f"ReAct: First step execution complete. Results: {step_results}")
+                
+                # Step 4: Basic observation and response
+                # In a full implementation, we would:
+                # - Analyze results
+                # - Update context
+                # - Decide next step
+                # - Loop until goal achieved
+                
+                return {
+                    "react_mode": True,
+                    "natural_language_plan": nl_plan,
+                    "executed_steps": [first_step],
+                    "step_results": step_results,
+                    "message": f"Executed first step: '{first_step}'. Full ReAct loop not yet implemented.",
+                    "next_steps": nl_plan[1:] if len(nl_plan) > 1 else []
+                }
+                
+            except Exception as e:
+                logger.error(f"ReAct: Error executing first step: {e}")
+                return {"error": f"Error executing first step: {str(e)}"}
+                
+        return {"error": "No steps in natural language plan."}
+
+# END: /home/brian/digimon/Core/AgentBrain/agent_brain.py  

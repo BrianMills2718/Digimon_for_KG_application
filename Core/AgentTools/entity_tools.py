@@ -86,50 +86,42 @@ async def entity_vdb_search_tool(
         logger.error(f"Entity.VDBSearch: VDB reference '{params.vdb_reference_id}' not found in context. Available VDBs: {list(graphrag_context.vdbs.keys())}")
         return EntityVDBSearchOutputs(similar_entities=[])
 
-    # ... (rest of the VDB search logic using vdb_instance, which should be a FaissIndex) ...
-    # This part should already be mostly correct, assuming vdb_instance is a FaissIndex object
-    # that has the _index attribute pointing to a LlamaIndex VectorStoreIndex.
-
     try:
-        llamaindex_actual_index = None
-        if hasattr(vdb_instance, '_index') and vdb_instance._index is not None:
-            llamaindex_actual_index = vdb_instance._index
-            logger.info(f"Entity.VDBSearch: Accessing LlamaIndex VectorStoreIndex via vdb_instance._index. Type: {type(llamaindex_actual_index)}")
-        else:
-            logger.error("Entity.VDBSearch: Could not access underlying LlamaIndex VectorStoreIndex from vdb_instance._index.")
-            return EntityVDBSearchOutputs(similar_entities=[])
-
-        results_with_scores = [] # Initialize
+        # Use FaissIndex's retrieval method directly
         if params.query_text:
-            # Assuming llamaindex_actual_index is a LlamaIndex BaseIndex (e.g., VectorStoreIndex)
-            retriever = llamaindex_actual_index.as_retriever(similarity_top_k=params.top_k_results)
-            # Ensure query_text is a string for aretrieve
-            results_with_scores = await retriever.aretrieve(str(params.query_text)) # list of NodeWithScore
-        elif params.query_embedding:
-            logger.warning("Entity.VDBSearch: Querying by direct embedding is not fully implemented for FaissIndex wrapper yet.")
-            # Potentially use:
-            # from llama_index.core.vector_stores import VectorStoreQuery
-            # query = VectorStoreQuery(query_embedding=params.query_embedding, similarity_top_k=params.top_k_results)
-            # query_result = await vdb_instance._vector_store.aquery(query) # If _vector_store is accessible and supports this
-            # Then map query_result.nodes and query_result.similarities
-            pass # Placeholder for query_embedding logic
-
-        output_entities: List[VDBSearchResultItem] = [] # VDBSearchResultItem needs to be imported
-        if results_with_scores:
-            for node_with_score in results_with_scores:
+            logger.info(f"Entity.VDBSearch: Using FaissIndex retrieval method for query: '{params.query_text}'")
+            results = await vdb_instance.retrieval(
+                query=params.query_text,
+                top_k=params.top_k_results
+            )
+            
+            output_entities: List[VDBSearchResultItem] = []
+            
+            # Process the NodeWithScore results from FaissIndex
+            for node_with_score in results:
                 node = node_with_score.node
-                entity_name = node.metadata.get("entity_name", node.metadata.get("id", node.node_id)) # Prefer entity_name, fallback
+                
+                # Extract entity_name from metadata
+                entity_name = node.metadata.get("name", node.metadata.get("entity_name", node.metadata.get("id", "")))
+                node_id = node.metadata.get("id", node.node_id)
+                
                 if not entity_name:
-                    entity_name = node.text 
-                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node.node_id}. Using node.text as fallback.")
+                    entity_name = node.text[:50]  # Use first 50 chars of text as fallback
+                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node_id}. Using text excerpt as fallback.")
                 
                 output_entities.append(
-                    VDBSearchResultItem( # VDBSearchResultItem needs to be imported
-                        node_id=str(node.node_id), 
+                    VDBSearchResultItem(
+                        node_id=str(node_id), 
                         entity_name=str(entity_name), 
                         score=float(node_with_score.score) if node_with_score.score is not None else 0.0
                     )
                 )
+                
+                logger.debug(f"Entity.VDBSearch: Found entity '{entity_name}' with score {node_with_score.score}")
+                
+        elif params.query_embedding:
+            logger.warning("Entity.VDBSearch: Querying by direct embedding is not implemented yet for FaissIndex.")
+            return EntityVDBSearchOutputs(similar_entities=[])
         
         logger.info(f"Entity.VDBSearch: Found {len(output_entities)} similar entities.")
         return EntityVDBSearchOutputs(similar_entities=output_entities)
@@ -151,7 +143,7 @@ async def entity_ppr_tool(
     """
     logger.info(f"Executing tool 'Entity.PPR' with parameters: {params.model_dump_json(indent=2)}")
 
-    graph_instance: Optional[BaseGraph] = graphrag_context.graph_instance
+    graph_instance: Optional[BaseGraph] = graphrag_context.get_graph_instance(params.graph_reference_id)
     if not graph_instance:
         logger.error("Entity.PPR: Graph instance not found in GraphRAGContext.")
         raise ValueError("Graph instance is required for PPR.")
@@ -265,8 +257,7 @@ async def entity_ppr_tool(
     logger.info(f"Executing tool 'Entity.PPR' with parameters: {params}")
 
     # --- 1. Get necessary components from GraphRAGContext ---
-    graph_instance = graphrag_context.graph_instance
-    entities_vdb_instance = graphrag_context.entities_vdb_instance
+    graph_instance = graphrag_context.get_graph_instance(params.graph_reference_id)
 
     if not graph_instance:
         logger.error("Entity.PPR: Graph instance not found in GraphRAGContext.")
@@ -301,16 +292,10 @@ async def entity_ppr_tool(
         logger.error(f"Entity.PPR: Provided final_retriever_config_values was: {final_retriever_config_values}")
         raise ValueError(f"Failed to create RetrieverConfig for Entity.PPR: {e}")
 
-    entities_vdb_instance = graphrag_context.entities_vdb_instance
-    if retriever_config.use_entity_similarity_for_ppr and not entities_vdb_instance:
-        logger.error("Entity.PPR: Entities VDB instance is required for similarity-based PPR but not found in GraphRAGContext.")
-        raise ValueError("Entities VDB instance not found in GraphRAGContext (required for similarity-based PPR).")
-
     # --- 3. Instantiate EntityRetriever ---
     entity_retriever = EntityRetriever(
         config=retriever_config,
-        graph=graph_instance,
-        entities_vdb=entities_vdb_instance
+        graph=graph_instance
     )
     # Ensure internal top_k for retriever processing is sufficient
     entity_retriever.config.top_k = internal_top_k 
@@ -321,13 +306,9 @@ async def entity_ppr_tool(
         return EntityPPROutputs(ranked_entities=[])
 
     placeholder_query_for_vdb = params.seed_entity_ids[0] 
-    attempt_linking = bool(entities_vdb_instance) 
+    attempt_linking = False
     
     seed_entities_arg = params.seed_entity_ids
-    if not attempt_linking and not retriever_config.use_entity_similarity_for_ppr:
-        seed_entities_arg = [{"entity_name": eid} for eid in params.seed_entity_ids]
-        logger.info(f"Entity.PPR: VDB not available for linking & not using VDB for PPR sim. Passing seed entities as list of dicts.")
-    
     logger.info(f"Entity.PPR: Calling _find_relevant_entities_by_ppr with {len(params.seed_entity_ids)} seeds. Linking: {attempt_linking}. Args: {seed_entities_arg}")
 
     try:

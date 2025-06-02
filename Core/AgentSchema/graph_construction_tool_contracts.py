@@ -3,7 +3,7 @@ Pydantic contracts for agent tools that construct various types of knowledge gra
 Each tool has an input and output schema, with config overrides for graph-specific parameters.
 """
 from pydantic import BaseModel, Field, AliasChoices
-from typing import Optional
+from typing import Optional, Any
 
 # =========================
 # Base Output Schema
@@ -17,6 +17,10 @@ class BaseGraphBuildOutputs(BaseModel):
     edge_count: Optional[int] = Field(default=None, description="Number of edges in the built graph (if applicable).")
     layer_count: Optional[int] = Field(default=None, description="Number of layers in the built graph (for tree graphs).")
     artifact_path: Optional[str] = Field(default=None, description="Path to the primary persisted graph artifact.")
+    graph_instance: Optional[Any] = Field(default=None, description="The actual populated graph instance.", exclude=True)
+    
+    class Config:
+        arbitrary_types_allowed = True  # Allow non-pydantic types like graph instances
 
 # =========================
 # ERGraph

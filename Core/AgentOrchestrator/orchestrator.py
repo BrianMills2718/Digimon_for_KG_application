@@ -12,6 +12,7 @@ from Core.AgentSchema.tool_contracts import (
     RelationshipVDBBuildInputs,
     RelationshipVDBSearchInputs,
     ChunkFromRelationshipsInputs,
+    ChunkGetTextForEntitiesInput,
     EntityVDBSearchOutputs, 
     VDBSearchResultItem, 
     GraphVisualizerInput, 
@@ -38,7 +39,7 @@ from Core.AgentTools.graph_construction_tools import (
 from Core.AgentTools.corpus_tools import prepare_corpus_from_directory
 from Core.AgentTools.graph_visualization_tools import visualize_graph
 from Core.AgentTools.graph_analysis_tools import analyze_graph
-from Core.AgentTools.chunk_tools import chunk_from_relationships_tool
+from Core.AgentTools.chunk_tools import chunk_from_relationships_tool, chunk_get_text_for_entities_tool
 from Core.AgentTools.entity_vdb_tools import entity_vdb_build_tool
 # from Core.AgentTools.subgraph_tools import ...
 # from Core.AgentTools.community_tools import ...
@@ -72,6 +73,7 @@ class AgentOrchestrator:
             "Relationship.VDB.Build": (relationship_vdb_build_tool, RelationshipVDBBuildInputs),
             "Relationship.VDB.Search": (relationship_vdb_search_tool, RelationshipVDBSearchInputs),
             "Chunk.FromRelationships": (chunk_from_relationships_tool, ChunkFromRelationshipsInputs),
+            "Chunk.GetTextForEntities": (chunk_get_text_for_entities_tool, ChunkGetTextForEntitiesInput),
             # Add other tools here as they are implemented
             "graph.BuildERGraph": (build_er_graph, BuildERGraphInputs),
             "graph.BuildRKGraph": (build_rk_graph, BuildRKGraphInputs),
@@ -247,44 +249,78 @@ class AgentOrchestrator:
                         if hasattr(tool_output, 'graph_id') and hasattr(tool_output, 'status'):
                             logger.debug(f"Orchestrator: Status={tool_output.status}, Graph ID={tool_output.graph_id}")
                             if tool_output.status == "success" and tool_output.graph_id:
-                                # Get the graph instance from graph factory
-                                from Core.Graph.GraphFactory import get_graph
-                                try:
-                                    logger.info(f"Orchestrator: Attempting to register graph '{tool_output.graph_id}'...")
-                                    # Recreate the graph instance to register it
-                                    temp_config = self.main_config.model_copy(deep=True)
-                                    graph_type = None
-                                    if "ERGraph" in tool_output.graph_id:
-                                        graph_type = "er_graph"
-                                    elif "RKGraph" in tool_output.graph_id:
-                                        graph_type = "rk_graph"
-                                    elif "TreeGraphBalanced" in tool_output.graph_id:
-                                        graph_type = "tree_graph_balanced"
-                                    elif "TreeGraph" in tool_output.graph_id:
-                                        graph_type = "tree_graph"
-                                    elif "PassageGraph" in tool_output.graph_id:
-                                        graph_type = "passage_graph"
+                                # First check if the tool returned a graph instance
+                                actual_built_graph_instance = getattr(tool_output, "graph_instance", None)
+                                
+                                if actual_built_graph_instance:
+                                    logger.info(f"Orchestrator: Using graph instance returned by tool for '{tool_output.graph_id}'")
                                     
-                                    if graph_type:
-                                        temp_config.graph.type = graph_type
-                                        graph_instance = get_graph(
-                                            config=temp_config,
-                                            llm=self.llm,
-                                            encoder=self.encoder
-                                        )
-                                        # Set the namespace for the graph
-                                        if hasattr(graph_instance._graph, 'namespace'):
-                                            dataset_name = tool_output.graph_id.replace(f"_{graph_type.replace('_', '').title()}", "").replace("Graph", "").replace("_ERGraph", "")
-                                            graph_instance._graph.namespace = self.chunk_factory.get_namespace(dataset_name)
-                                            logger.debug(f"Orchestrator: Set graph namespace to {dataset_name}")
+                                    # Set the namespace if needed
+                                    if hasattr(actual_built_graph_instance._graph, 'namespace'):
+                                        # Extract dataset name from graph_id
+                                        dataset_name = tool_output.graph_id
+                                        for suffix in ["_ERGraph", "_RKGraph", "_TreeGraphBalanced", "_TreeGraph", "_PassageGraph"]:
+                                            if dataset_name.endswith(suffix):
+                                                dataset_name = dataset_name[:-len(suffix)]
+                                                break
                                         
-                                        # Register in context
-                                        self.graphrag_context.add_graph_instance(tool_output.graph_id, graph_instance)
-                                        logger.info(f"Orchestrator: Successfully registered graph '{tool_output.graph_id}' in GraphRAGContext")
+                                        actual_built_graph_instance._graph.namespace = self.chunk_factory.get_namespace(dataset_name)
+                                        logger.debug(f"Orchestrator: Set graph namespace to {dataset_name}")
+                                    
+                                    # Register the populated instance
+                                    self.graphrag_context.add_graph_instance(tool_output.graph_id, actual_built_graph_instance)
+                                    logger.info(f"Orchestrator: Successfully registered ACTUAL BUILT graph instance '{tool_output.graph_id}' in GraphRAGContext. Instance type: {type(actual_built_graph_instance)}")
+                                else:
+                                    # Fallback to the old behavior if no instance was returned
+                                    logger.warning(f"Orchestrator: Graph build tool did not return a graph_instance, falling back to creating new instance")
+                                    
+                                    # First check if the graph already exists in context
+                                    existing_graph = self.graphrag_context.get_graph_instance(tool_output.graph_id)
+                                    if existing_graph:
+                                        logger.info(f"Orchestrator: Graph '{tool_output.graph_id}' already exists in context, skipping recreation")
+                                        graph_instance = existing_graph
                                     else:
-                                        logger.warning(f"Orchestrator: Could not determine graph type for '{tool_output.graph_id}'")
-                                except Exception as e:
-                                    logger.error(f"Orchestrator: Failed to register graph '{tool_output.graph_id}': {e}", exc_info=True)
+                                        logger.info(f"Orchestrator: Creating new graph instance for '{tool_output.graph_id}'")
+                                        temp_config = self.main_config.model_copy(deep=True)
+                                        graph_type = None
+                                        if "ERGraph" in tool_output.graph_id:
+                                            graph_type = "er_graph"
+                                        elif "RKGraph" in tool_output.graph_id:
+                                            graph_type = "rk_graph"
+                                        elif "TreeGraphBalanced" in tool_output.graph_id:
+                                            graph_type = "tree_graph_balanced"
+                                        elif "TreeGraph" in tool_output.graph_id:
+                                            graph_type = "tree_graph"
+                                        elif "PassageGraph" in tool_output.graph_id:
+                                            graph_type = "passage_graph"
+                                        
+                                        if graph_type:
+                                            temp_config.graph.type = graph_type
+                                            graph_instance = get_graph(
+                                                config=temp_config,
+                                                llm=self.llm,
+                                                encoder=self.encoder
+                                            )
+                                            # Set the namespace for the graph
+                                            if hasattr(graph_instance._graph, 'namespace'):
+                                                dataset_name = tool_output.graph_id.replace(f"_{graph_type.replace('_', '').title()}", "").replace("Graph", "").replace("_ERGraph", "")
+                                                graph_instance._graph.namespace = self.chunk_factory.get_namespace(dataset_name)
+                                                logger.debug(f"Orchestrator: Set graph namespace to {dataset_name}")
+                                            
+                                            # Try to load persisted graph if it exists
+                                            try:
+                                                loaded = await graph_instance.load_persisted_graph()
+                                                if loaded:
+                                                    logger.info(f"Orchestrator: Successfully loaded persisted graph for '{tool_output.graph_id}'")
+                                                else:
+                                                    logger.warning(f"Orchestrator: No persisted graph found for '{tool_output.graph_id}'")
+                                            except Exception as e:
+                                                logger.warning(f"Orchestrator: Could not load persisted graph for '{tool_output.graph_id}': {e}")
+                                        
+                                            # Register in context
+                                            if not existing_graph:
+                                                self.graphrag_context.add_graph_instance(tool_output.graph_id, graph_instance)
+                                                logger.info(f"Orchestrator: Successfully registered graph '{tool_output.graph_id}' in GraphRAGContext")
                             else:
                                 logger.debug(f"Orchestrator: Graph build not successful or no graph_id")
                         else:

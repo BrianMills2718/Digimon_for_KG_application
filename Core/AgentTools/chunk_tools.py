@@ -312,3 +312,186 @@ async def chunk_occurrence_tool(
         )
 
     return ChunkOccurrenceOutputs(ranked_occurrence_chunks=dummy_ranked_chunks)
+
+
+# --- Tool Implementation for: Chunk.GetTextForEntities ---
+# tool_id: "Chunk.GetTextForEntities"
+
+async def chunk_get_text_for_entities_tool(
+    params: Dict[str, Any],
+    context: GraphRAGContext
+) -> Dict[str, Any]:
+    """
+    Get text chunks associated with specific entities.
+    
+    This tool retrieves the original text chunks that mention or are associated
+    with the given entity IDs.
+    """
+    from Core.AgentSchema.tool_contracts import (
+        ChunkGetTextForEntitiesInput,
+        ChunkGetTextForEntitiesOutput,
+        ChunkTextResultItem
+    )
+    
+    logger.info(f"Executing Chunk.GetTextForEntities with params: {params}")
+    
+    try:
+        # Validate input
+        validated_input = ChunkGetTextForEntitiesInput(**params)
+        
+        # Get graph instance
+        graph_instance = context.get_graph_instance(validated_input.graph_reference_id)
+        if not graph_instance:
+            error_msg = f"Graph '{validated_input.graph_reference_id}' not found in context"
+            logger.error(error_msg)
+            return {
+                "retrieved_chunks": [],
+                "status_message": f"Error: {error_msg}"
+            }
+        
+        # Extract NetworkX graph - try different access patterns
+        nx_graph = None
+        try:
+            # Try _graph.graph pattern (as seen in relationship_tools.py)
+            if hasattr(graph_instance, '_graph') and hasattr(graph_instance._graph, 'graph'):
+                nx_graph = graph_instance._graph.graph
+                logger.debug(f"Accessed NetworkX graph via _graph.graph pattern")
+            # Try direct .graph pattern
+            elif hasattr(graph_instance, 'graph'):
+                nx_graph = graph_instance.graph
+                logger.debug(f"Accessed NetworkX graph via direct .graph pattern")
+            else:
+                raise AttributeError("Could not find NetworkX graph in graph instance")
+        except Exception as e:
+            logger.error(f"Failed to extract NetworkX graph: {e}")
+            return {
+                "retrieved_chunks": [],
+                "status_message": f"Error extracting graph: {str(e)}"
+            }
+        
+        retrieved_chunks_data = []
+        chunks_per_entity = {}
+        
+        # Process each entity
+        for entity_id in validated_input.entity_ids:
+            if entity_id not in nx_graph:
+                logger.warning(f"Entity '{entity_id}' not found in graph")
+                continue
+                
+            # Get node data
+            node_data = nx_graph.nodes[entity_id]
+            
+            # Look for chunk associations in node data
+            # Common patterns: 'chunk_id', 'source_chunk_id', 'chunk_ids', 'source_chunks'
+            chunk_ids = []
+            
+            # Single chunk ID
+            if 'chunk_id' in node_data:
+                chunk_ids.append(node_data['chunk_id'])
+            elif 'source_chunk_id' in node_data:
+                chunk_ids.append(node_data['source_chunk_id'])
+            
+            # Multiple chunk IDs
+            if 'chunk_ids' in node_data:
+                if isinstance(node_data['chunk_ids'], list):
+                    chunk_ids.extend(node_data['chunk_ids'])
+                else:
+                    chunk_ids.append(node_data['chunk_ids'])
+            elif 'source_chunks' in node_data:
+                if isinstance(node_data['source_chunks'], list):
+                    chunk_ids.extend(node_data['source_chunks'])
+                else:
+                    chunk_ids.append(node_data['source_chunks'])
+            
+            # Also check edges for chunk associations
+            # Some graphs store entity-chunk relationships as edges
+            for neighbor in nx_graph.neighbors(entity_id):
+                neighbor_data = nx_graph.nodes[neighbor]
+                # Check if neighbor is a chunk node (common pattern: node_type='chunk')
+                if neighbor_data.get('node_type') == 'chunk' or neighbor_data.get('type') == 'chunk':
+                    chunk_ids.append(neighbor)
+            
+            # Limit chunks per entity
+            if validated_input.max_chunks_per_entity and len(chunk_ids) > validated_input.max_chunks_per_entity:
+                chunk_ids = chunk_ids[:validated_input.max_chunks_per_entity]
+            
+            chunks_per_entity[entity_id] = chunk_ids
+        
+        # If specific chunk_ids were provided, use those instead
+        if validated_input.chunk_ids:
+            chunk_ids_to_retrieve = validated_input.chunk_ids
+        else:
+            # Collect all unique chunk IDs from entity associations
+            chunk_ids_to_retrieve = []
+            for chunk_list in chunks_per_entity.values():
+                chunk_ids_to_retrieve.extend(chunk_list)
+            chunk_ids_to_retrieve = list(set(chunk_ids_to_retrieve))
+        
+        # Retrieve chunk content
+        chunk_storage = context.services.chunk_storage_manager
+        
+        for chunk_id in chunk_ids_to_retrieve:
+            try:
+                # Try to get chunk from storage
+                if chunk_storage and hasattr(chunk_storage, 'get'):
+                    chunk_data = await chunk_storage.get(chunk_id)
+                    if chunk_data:
+                        # Find which entity this chunk is associated with
+                        associated_entity = None
+                        for entity_id, entity_chunks in chunks_per_entity.items():
+                            if chunk_id in entity_chunks:
+                                associated_entity = entity_id
+                                break
+                        
+                        chunk_item = {
+                            "entity_id": associated_entity,
+                            "chunk_id": chunk_id,
+                            "text_content": chunk_data.get('content', chunk_data.get('text', '')),
+                            "metadata": {
+                                k: v for k, v in chunk_data.items() 
+                                if k not in ['content', 'text', 'chunk_id', 'id']
+                            }
+                        }
+                        retrieved_chunks_data.append(chunk_item)
+                else:
+                    # Fallback: try to get chunk content from graph node
+                    if chunk_id in nx_graph:
+                        chunk_node = nx_graph.nodes[chunk_id]
+                        content = chunk_node.get('content', chunk_node.get('text', ''))
+                        if content:
+                            # Find associated entity
+                            associated_entity = None
+                            for entity_id, entity_chunks in chunks_per_entity.items():
+                                if chunk_id in entity_chunks:
+                                    associated_entity = entity_id
+                                    break
+                            
+                            chunk_item = {
+                                "entity_id": associated_entity,
+                                "chunk_id": chunk_id,
+                                "text_content": content,
+                                "metadata": {
+                                    k: v for k, v in chunk_node.items()
+                                    if k not in ['content', 'text'] and not k.startswith('_')
+                                }
+                            }
+                            retrieved_chunks_data.append(chunk_item)
+            except Exception as e:
+                logger.warning(f"Failed to retrieve chunk {chunk_id}: {e}")
+                continue
+        
+        status_msg = f"Retrieved {len(retrieved_chunks_data)} chunks for {len(validated_input.entity_ids)} entities"
+        logger.info(status_msg)
+        
+        return {
+            "retrieved_chunks": retrieved_chunks_data,
+            "status_message": status_msg
+        }
+        
+    except Exception as e:
+        error_msg = f"Error in Chunk.GetTextForEntities: {str(e)}"
+        logger.error(error_msg, exc_info=True)
+        return {
+            "retrieved_chunks": [],
+            "status_message": error_msg
+        }

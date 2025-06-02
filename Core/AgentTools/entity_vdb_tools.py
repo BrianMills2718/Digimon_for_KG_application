@@ -143,6 +143,13 @@ async def entity_vdb_build_tool(
         # Register the VDB in context
         graphrag_context.add_vdb_instance(vdb_id, entity_vdb)
         
+        # Verify registration with detailed logging
+        available_vdbs = list(graphrag_context._vdbs.keys()) if hasattr(graphrag_context, '_vdbs') else []
+        logger.info(
+            f"Entity.VDB.Build: Successfully built AND REGISTERED VDB with ID: '{vdb_id}'. "
+            f"Available VDBs in context now: {available_vdbs}"
+        )
+        
         logger.info(
             f"Successfully built entity VDB '{vdb_id}' with "
             f"{len(entities_data)} entities indexed"
