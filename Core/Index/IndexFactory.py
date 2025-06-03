@@ -21,6 +21,7 @@ from Core.Index.Schema import (
 )
 from Core.Index.VectorIndex import VectorIndex
 from Core.Index.FaissIndex import FaissIndex
+from Core.Index.EnhancedFaissIndex import EnhancedFaissIndex
 from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage
 
 
@@ -60,7 +61,11 @@ class RAGIndexFactory(ConfigBasedFactory):
 
     
     def _create_faiss(self, config):
-       return FaissIndex(config)
+        # Use enhanced version if batch embedding optimization is enabled
+        if getattr(config, 'use_enhanced_batch_embedding', False):
+            logger.info("Using EnhancedFaissIndex with batch embedding optimization")
+            return EnhancedFaissIndex(config)
+        return FaissIndex(config)
 
 
 get_index = RAGIndexFactory().get_index
