@@ -19,14 +19,9 @@ from Core.Index.FaissIndex import FaissIndex
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
 from pydantic import BaseModel
 
-# A simple placeholder for the config that FaissIndex expects.
-class MockIndexConfig(BaseModel):
-    persist_path: str
-    embed_model: Any
-    retrieve_top_k: Optional[int] = 10
-    name: Optional[str] = None
-    class Config:
-        arbitrary_types_allowed = True
+# Import proper index configuration
+from Core.Index.Schema import FAISSIndexConfig
+from Core.AgentTools.index_config_helper import create_faiss_index_config
 
 logger = logging.getLogger(__name__)
 
@@ -251,11 +246,10 @@ async def relationship_vdb_build_tool(
         # Create VDB storage path
         vdb_storage_path = f"storage/vdb/{vdb_id}"
         
-        # Create index configuration
-        config = MockIndexConfig(
+        # Create index configuration using proper schema
+        config = create_faiss_index_config(
             persist_path=vdb_storage_path,
             embed_model=embedding_provider,
-            retrieve_top_k=10,
             name=vdb_id
         )
         

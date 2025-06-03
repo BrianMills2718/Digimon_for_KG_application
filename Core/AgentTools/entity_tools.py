@@ -46,14 +46,9 @@ from Core.Index.FaissIndex import FaissIndex
 from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
 from Core.Index.BaseIndex import BaseIndex
 
-# A simple placeholder for the config that FaissIndex expects.
-class MockIndexConfig(BaseModel):
-    persist_path: str
-    embed_model: LlamaIndexBaseEmbedding
-    retrieve_top_k: Optional[int] = 10
-    name: Optional[str] = None
-    class Config:
-        arbitrary_types_allowed = True
+# Import proper index configuration
+from Core.Index.Schema import FAISSIndexConfig
+from Core.AgentTools.index_config_helper import create_faiss_index_config
 
 #from Core.Provider.EmbeddingProvider import EmbeddingProvider
 from Core.Provider.BaseEmb import BaseEmb

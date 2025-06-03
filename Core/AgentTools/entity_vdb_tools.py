@@ -16,13 +16,8 @@ from Core.Index.Schema import FAISSIndexConfig
 from Core.Storage.NameSpace import Workspace, NameSpace
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
 
-# Dummy config for VDB 
-class MockIndexConfig:
-    def __init__(self, persist_path, embed_model, retrieve_top_k, name):
-        self.persist_path = persist_path
-        self.embed_model = embed_model
-        self.retrieve_top_k = retrieve_top_k
-        self.name = name
+# Import proper index configuration helper
+from Core.AgentTools.index_config_helper import create_faiss_index_config
 
 async def entity_vdb_build_tool(
     params: EntityVDBBuildInputs,
@@ -122,11 +117,10 @@ async def entity_vdb_build_tool(
         # Create VDB storage path
         vdb_storage_path = f"storage/vdb/{vdb_id}"
         
-        # Create index configuration
-        config = MockIndexConfig(
+        # Create index configuration using proper schema
+        config = create_faiss_index_config(
             persist_path=vdb_storage_path,
             embed_model=embedding_provider,
-            retrieve_top_k=10,
             name=vdb_id
         )
         
