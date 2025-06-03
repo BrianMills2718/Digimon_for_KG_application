@@ -1,0 +1,68 @@
+# Optional dependencies for DIGIMON advanced features
+# Install these based on your specific needs
+
+# === Graph Visualization ===
+# For graph visualization and analysis
+matplotlib>=3.10.0
+seaborn>=0.13.0
+graspologic>=3.4.0  # Microsoft graph algorithms
+igraph>=0.11.0  # Alternative graph library
+
+# === Advanced NLP ===
+# For enhanced text processing
+nltk>=3.9.0
+gensim>=4.3.0  # Topic modeling
+sentence-transformers>=4.0.0  # Advanced embeddings
+transformers>=4.49.0  # Hugging Face models
+
+# === Alternative LLM Providers ===
+# For using different LLM providers
+anthropic>=0.49.0  # Claude API
+ollama>=0.3.0  # Local models
+instructor>=1.0.0  # Structured outputs
+
+# === Alternative Embeddings ===
+# For different embedding models
+llama-index-embeddings-huggingface>=0.5.0
+llama-index-embeddings-ollama>=0.6.0
+
+# === ColBERT Support ===
+# For ColBERT-based retrieval (has dependency conflicts)
+# colbert-ai==0.2.21
+# transformers==4.21.0  # Required by ColBERT
+# tokenizers==0.12.1  # Required by ColBERT
+
+# === Database Support ===
+# For PostgreSQL vector database
+pgvector>=0.4.0
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+llama-index-vector-stores-postgres>=0.4.0
+
+# === Advanced Analytics ===
+# For evaluation and metrics
+rouge-score>=0.1.0
+mauve-text>=0.4.0  # Text generation metrics
+statsmodels>=0.14.0
+
+# === Streamlit UI ===
+# For web-based UI
+streamlit>=1.28.0
+streamlit-agraph>=0.0.45  # Graph visualization
+
+# === Performance Monitoring ===
+# For production monitoring
+prometheus-client>=0.19.0
+psutil>=5.9.0
+
+# === GPU Support ===
+# For GPU acceleration (if available)
+# torch>=2.6.0  # PyTorch with CUDA
+# faiss-gpu>=1.7.4  # GPU-accelerated FAISS
+
+# === Development Tools ===
+# For development and debugging
+ipython>=8.0.0
+jupyter>=1.0.0
+black>=23.0.0  # Code formatting
+ruff>=0.1.0  # Linting

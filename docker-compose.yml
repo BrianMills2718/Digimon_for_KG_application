@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Minimal API service
+  api-minimal:
+    build:
+      context: .
+      dockerfile: Dockerfile.minimal
+    ports:
+      - "5000:5000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./Data:/app/Data
+      - ./results:/app/results
+      - ./Option:/app/Option
+    command: python api.py
+
+  # Full-featured service
+  digimon-full:
+    build:
+      context: .
+      dockerfile: Dockerfile.full
+    ports:
+      - "5001:5000"  # API
+      - "8502:8502"  # Streamlit
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DISABLE_COLBERT=true
+    volumes:
+      - ./Data:/app/Data
+      - ./results:/app/results
+      - ./Option:/app/Option
+      - ./storage:/app/storage
+    command: api
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5002:5000"  # API
+      - "8888:8888"  # Jupyter
+      - "5678:5678"  # Debugger
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app  # Mount entire directory for development
+    stdin_open: true
+    tty: true
+    command: bash
+
+  # PostgreSQL for vector storage (optional)
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      - POSTGRES_USER=digimon
+      - POSTGRES_PASSWORD=digimon_pass
+      - POSTGRES_DB=digimon_vectors
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

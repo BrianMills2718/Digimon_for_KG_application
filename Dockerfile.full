@@ -1,0 +1,53 @@
+# Full DIGIMON Docker image with all features
+# Note: This excludes ColBERT due to dependency conflicts
+
+FROM python:3.10
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy all requirements files
+COPY requirements.txt requirements-minimal.txt requirements-optional.txt ./
+
+# Install Python dependencies (excluding ColBERT)
+RUN pip install --no-cache-dir -r requirements.txt || \
+    (echo "Full requirements failed, trying without ColBERT..." && \
+     grep -v colbert requirements.txt > requirements-no-colbert.txt && \
+     pip install --no-cache-dir -r requirements-no-colbert.txt)
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p Data results storage/vdb Option logs
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV DISABLE_COLBERT=true
+
+# Expose ports
+EXPOSE 5000 8501 8502
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+if [ "$1" = "api" ]; then\n\
+    python api.py\n\
+elif [ "$1" = "streamlit" ]; then\n\
+    streamlit run streamlit_agent_frontend.py --server.port 8502\n\
+elif [ "$1" = "cli" ]; then\n\
+    python digimon_cli.py "${@:2}"\n\
+else\n\
+    exec "$@"\n\
+fi' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["api"]

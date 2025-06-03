@@ -1,0 +1,73 @@
+# Development DIGIMON Docker image with debugging tools
+# Includes Jupyter, testing frameworks, and development utilities
+
+FROM python:3.10
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    vim \
+    htop \
+    tmux \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements files
+COPY requirements-minimal.txt requirements-optional.txt ./
+
+# Install minimal requirements first
+RUN pip install --no-cache-dir -r requirements-minimal.txt
+
+# Install development tools
+RUN pip install --no-cache-dir \
+    ipython \
+    jupyter \
+    notebook \
+    pytest \
+    pytest-asyncio \
+    pytest-cov \
+    black \
+    ruff \
+    mypy \
+    debugpy
+
+# Install optional dependencies for development
+RUN pip install --no-cache-dir \
+    matplotlib \
+    seaborn \
+    streamlit \
+    anthropic \
+    instructor
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p Data results storage/vdb Option logs notebooks
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV JUPYTER_ENABLE_LAB=yes
+
+# Expose ports
+EXPOSE 5000 8501 8502 8888 5678
+
+# Create development entrypoint
+RUN echo '#!/bin/bash\n\
+if [ "$1" = "jupyter" ]; then\n\
+    jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root\n\
+elif [ "$1" = "test" ]; then\n\
+    python -m pytest "${@:2}"\n\
+elif [ "$1" = "debug" ]; then\n\
+    python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "${@:2}"\n\
+else\n\
+    exec "$@"\n\
+fi' > /dev-entrypoint.sh && chmod +x /dev-entrypoint.sh
+
+ENTRYPOINT ["/dev-entrypoint.sh"]
+CMD ["bash"]
