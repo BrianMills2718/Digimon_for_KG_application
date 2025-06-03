@@ -14,7 +14,10 @@ from Core.Common.Logger import logger
 from Core.AgentSchema.tool_contracts import (
     ChunkFromRelationshipsInputs, 
     ChunkFromRelationshipsOutputs,
-    ChunkData
+    ChunkData,
+    ChunkGetTextForEntitiesInput,
+    ChunkGetTextForEntitiesOutput,
+    ChunkTextResultItem
 )
 from Core.AgentSchema.context import GraphRAGContext
 
@@ -318,7 +321,7 @@ async def chunk_occurrence_tool(
 # tool_id: "Chunk.GetTextForEntities"
 
 async def chunk_get_text_for_entities_tool(
-    params: Dict[str, Any],
+    params: Union[Dict[str, Any], ChunkGetTextForEntitiesInput],
     context: GraphRAGContext
 ) -> Dict[str, Any]:
     """
@@ -327,17 +330,15 @@ async def chunk_get_text_for_entities_tool(
     This tool retrieves the original text chunks that mention or are associated
     with the given entity IDs.
     """
-    from Core.AgentSchema.tool_contracts import (
-        ChunkGetTextForEntitiesInput,
-        ChunkGetTextForEntitiesOutput,
-        ChunkTextResultItem
-    )
-    
     logger.info(f"Executing Chunk.GetTextForEntities with params: {params}")
     
     try:
-        # Validate input
-        validated_input = ChunkGetTextForEntitiesInput(**params)
+        # Handle both dict and Pydantic model inputs
+        if isinstance(params, dict):
+            validated_input = ChunkGetTextForEntitiesInput(**params)
+        else:
+            # params is already a Pydantic model instance
+            validated_input = params
         
         # Get graph instance
         graph_instance = context.get_graph_instance(validated_input.graph_reference_id)
@@ -380,9 +381,10 @@ async def chunk_get_text_for_entities_tool(
                 
             # Get node data
             node_data = nx_graph.nodes[entity_id]
+            logger.debug(f"Processing entity '{entity_id}' with node data keys: {list(node_data.keys())}")
             
             # Look for chunk associations in node data
-            # Common patterns: 'chunk_id', 'source_chunk_id', 'chunk_ids', 'source_chunks'
+            # Common patterns: 'chunk_id', 'source_chunk_id', 'chunk_ids', 'source_chunks', 'source_id'
             chunk_ids = []
             
             # Single chunk ID
@@ -390,6 +392,15 @@ async def chunk_get_text_for_entities_tool(
                 chunk_ids.append(node_data['chunk_id'])
             elif 'source_chunk_id' in node_data:
                 chunk_ids.append(node_data['source_chunk_id'])
+            elif 'source_id' in node_data:
+                # Handle source_id which may contain chunk references
+                source_id = node_data['source_id']
+                if isinstance(source_id, str):
+                    # May be a single chunk ID or multiple separated by <SEP>
+                    if '<SEP>' in source_id:
+                        chunk_ids.extend(source_id.split('<SEP>'))
+                    else:
+                        chunk_ids.append(source_id)
             
             # Multiple chunk IDs
             if 'chunk_ids' in node_data:
@@ -416,6 +427,7 @@ async def chunk_get_text_for_entities_tool(
                 chunk_ids = chunk_ids[:validated_input.max_chunks_per_entity]
             
             chunks_per_entity[entity_id] = chunk_ids
+            logger.debug(f"Entity '{entity_id}' associated with chunk IDs: {chunk_ids}")
         
         # If specific chunk_ids were provided, use those instead
         if validated_input.chunk_ids:
@@ -428,31 +440,90 @@ async def chunk_get_text_for_entities_tool(
             chunk_ids_to_retrieve = list(set(chunk_ids_to_retrieve))
         
         # Retrieve chunk content
-        chunk_storage = context.services.chunk_storage_manager
+        chunk_storage = context.chunk_storage_manager
+        
+        # First, get all chunks for the dataset
+        all_chunks_dict = {}
+        if chunk_storage:
+            try:
+                # Extract dataset name from graph_reference_id
+                dataset_name = validated_input.graph_reference_id
+                for suffix in ["_ERGraph", "_RKGraph", "_TreeGraph", "_PassageGraph"]:
+                    if dataset_name.endswith(suffix):
+                        dataset_name = dataset_name[:-len(suffix)]
+                        break
+                
+                # Get all chunks for the dataset
+                chunks_list = await chunk_storage.get_chunks_for_dataset(dataset_name)
+                # Convert to dict for easy lookup - try multiple key formats
+                all_chunks_dict = {}
+                
+                # Store chunks by their actual chunk_id
+                for chunk_id, chunk in chunks_list:
+                    all_chunks_dict[chunk_id] = chunk
+                    
+                    # Also store by doc_id-based keys for backward compatibility
+                    doc_id_key = f"chunk_{chunk.doc_id}"
+                    all_chunks_dict[doc_id_key] = chunk
+                    
+                logger.info(f"Loaded {len(chunks_list)} chunks for dataset '{dataset_name}' (indexed with {len(all_chunks_dict)} keys)")
+                # Debug: show some chunk IDs
+                logger.debug(f"Sample chunk IDs in storage: {list(all_chunks_dict.keys())[:10]}")
+            except Exception as e:
+                logger.warning(f"Failed to load chunks from storage: {e}")
         
         for chunk_id in chunk_ids_to_retrieve:
             try:
-                # Try to get chunk from storage
-                if chunk_storage and hasattr(chunk_storage, 'get'):
-                    chunk_data = await chunk_storage.get(chunk_id)
-                    if chunk_data:
-                        # Find which entity this chunk is associated with
-                        associated_entity = None
-                        for entity_id, entity_chunks in chunks_per_entity.items():
-                            if chunk_id in entity_chunks:
-                                associated_entity = entity_id
-                                break
-                        
-                        chunk_item = {
-                            "entity_id": associated_entity,
-                            "chunk_id": chunk_id,
-                            "text_content": chunk_data.get('content', chunk_data.get('text', '')),
-                            "metadata": {
-                                k: v for k, v in chunk_data.items() 
-                                if k not in ['content', 'text', 'chunk_id', 'id']
-                            }
+                # Try to get chunk from our loaded chunks
+                chunk_data = None
+                chunk_obj = None
+                
+                # Try direct lookup first
+                if chunk_id in all_chunks_dict:
+                    chunk_obj = all_chunks_dict[chunk_id]
+                else:
+                    # If chunk_id looks like a hash, try to find by matching content
+                    # This handles the case where graph has hash-based IDs but corpus has simple IDs
+                    if chunk_id.startswith('chunk-') and len(chunk_id) > 10:
+                        # This might be a hash-based ID, look for chunks by index
+                        # The graph seems to use hashes, but we can try to match by order
+                        for stored_id, stored_chunk in all_chunks_dict.items():
+                            if stored_id.startswith('chunk_') and stored_chunk.doc_id is not None:
+                                # Try to match based on entity content being in chunk
+                                if entity_id.lower() in stored_chunk.content.lower():
+                                    chunk_obj = stored_chunk
+                                    logger.debug(f"Matched entity '{entity_id}' to chunk via content search")
+                                    break
+                
+                if chunk_obj:
+                    # chunk_obj is a TextChunk object
+                    chunk_data = {
+                        'content': chunk_obj.content,
+                        'doc_id': chunk_obj.doc_id,
+                        'title': chunk_obj.title,
+                        'index': chunk_obj.index,
+                        'tokens': chunk_obj.tokens
+                    }
+                    logger.debug(f"Found chunk {chunk_id} with content length: {len(chunk_obj.content)}")
+                
+                if chunk_data:
+                    # Find which entity this chunk is associated with
+                    associated_entity = None
+                    for entity_id, entity_chunks in chunks_per_entity.items():
+                        if chunk_id in entity_chunks:
+                            associated_entity = entity_id
+                            break
+                    
+                    chunk_item = {
+                        "entity_id": associated_entity,
+                        "chunk_id": chunk_id,
+                        "text_content": chunk_data.get('content', ''),
+                        "metadata": {
+                            k: v for k, v in chunk_data.items() 
+                            if k not in ['content', 'text', 'chunk_id', 'id']
                         }
-                        retrieved_chunks_data.append(chunk_item)
+                    }
+                    retrieved_chunks_data.append(chunk_item)
                 else:
                     # Fallback: try to get chunk content from graph node
                     if chunk_id in nx_graph:

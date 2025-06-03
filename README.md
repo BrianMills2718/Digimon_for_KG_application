@@ -94,7 +94,8 @@ The central aim is an intelligent agent that dynamically plans and executes RAG 
     * **Corpus Preparation Tool:** `PrepareCorpusFromDirectoryTool` implemented and tested, allowing the agent to process raw `.txt` files.
 * **Pydantic-based Execution Plans:** The agent's reasoning (planned or ReACT-driven) aims to produce structured sequences of tool calls.
 * **Agent Orchestrator:** (`Core/AgentOrchestrator/orchestrator.py`) Executes tool calls based on the agent's decisions.
-* **Agent Brain:** (`Core/AgentBrain/agent_brain.py`) Houses the planning logic (currently using an LLM to generate plans). Future work will enhance this for ReACT-style reasoning.
+* **Agent Brain:** (`Core/AgentBrain/agent_brain.py`) Houses the core agent logic, including LLM-driven plan generation and answer synthesis from retrieved context (VDB search results, graph relationships, text chunks). Future work will enhance this for ReACT-style reasoning and more sophisticated strategy selection.
+    * **End-to-End Pipeline Orchestration (Iterative Improvement):** The agent can currently orchestrate a multi-step RAG pipeline, including corpus preparation, ER graph construction, vector database building, entity search, one-hop neighbor retrieval, and text chunk fetching, culminating in an LLM-generated answer. Ongoing work focuses on improving plan robustness and answer grounding.
 
 ---
 

@@ -78,7 +78,6 @@ async def entity_vdb_search_tool(
         # Consider returning an error status in EntityVDBSearchOutputs
         return EntityVDBSearchOutputs(similar_entities=[])
 
-
     # Use the get_vdb_instance method from GraphRAGContext
     vdb_instance = graphrag_context.get_vdb_instance(params.vdb_reference_id) 
 
@@ -89,34 +88,80 @@ async def entity_vdb_search_tool(
     try:
         # Use FaissIndex's retrieval method directly
         if params.query_text:
-            logger.info(f"Entity.VDBSearch: Using FaissIndex retrieval method for query: '{params.query_text}'")
+            # Apply query expansion to improve search relevance
+            from Core.AgentTools.query_expansion import query_expander
+            expanded_terms = query_expander.expand_query(params.query_text)
+            
+            logger.info(f"Entity.VDBSearch: Original query: '{params.query_text}'")
+            logger.info(f"Entity.VDBSearch: Expanded to {len(expanded_terms)} terms")
+            
+            # Search with multiple terms and aggregate results
+            all_results = []
+            seen_entities = set()
+            
+            # Search with original query first
+            logger.info(f"Entity.VDBSearch: Searching with original query: '{params.query_text}'")
             results = await vdb_instance.retrieval(
                 query=params.query_text,
-                top_k=params.top_k_results
+                top_k=params.top_k_results * 2  # Get more results to filter later
             )
             
-            output_entities: List[VDBSearchResultItem] = []
-            
-            # Process the NodeWithScore results from FaissIndex
+            # Process initial results
             for node_with_score in results:
                 node = node_with_score.node
-                
-                # Extract entity_name from metadata
                 entity_name = node.metadata.get("name", node.metadata.get("entity_name", node.metadata.get("id", "")))
                 node_id = node.metadata.get("id", node.node_id)
                 
+                if entity_name and entity_name not in seen_entities:
+                    seen_entities.add(entity_name)
+                    all_results.append((node_with_score, entity_name, node_id))
+            
+            # Search with expanded terms if we don't have enough results
+            if len(all_results) < params.top_k_results:
+                for term in expanded_terms[:5]:  # Limit to top 5 expanded terms
+                    if term != params.query_text.lower():  # Skip original query
+                        logger.debug(f"Entity.VDBSearch: Searching with expanded term: '{term}'")
+                        try:
+                            expanded_results = await vdb_instance.retrieval(
+                                query=term,
+                                top_k=params.top_k_results
+                            )
+                            
+                            for node_with_score in expanded_results:
+                                node = node_with_score.node
+                                entity_name = node.metadata.get("name", node.metadata.get("entity_name", node.metadata.get("id", "")))
+                                node_id = node.metadata.get("id", node.node_id)
+                                
+                                if entity_name and entity_name not in seen_entities:
+                                    seen_entities.add(entity_name)
+                                    # Slightly reduce score for expanded results
+                                    adjusted_score = node_with_score.score * 0.9 if node_with_score.score else 0.0
+                                    all_results.append((node_with_score._replace(score=adjusted_score), entity_name, node_id))
+                                    
+                            if len(all_results) >= params.top_k_results * 2:
+                                break
+                                
+                        except Exception as e:
+                            logger.warning(f"Entity.VDBSearch: Error searching with term '{term}': {e}")
+            
+            # Sort all results by score and take top k
+            all_results.sort(key=lambda x: x[0].score if x[0].score is not None else 0.0, reverse=True)
+            top_results = all_results[:params.top_k_results]
+            
+            # Build output
+            output_entities: List[VDBSearchResultItem] = []
+            for node_with_score, entity_name, node_id in top_results:
                 if not entity_name:
-                    entity_name = node.text[:50]  # Use first 50 chars of text as fallback
-                    logger.warning(f"Entity.VDBSearch: 'entity_name' not found in metadata for node_id {node_id}. Using text excerpt as fallback.")
+                    entity_name = node_with_score.node.text[:50]
+                    logger.warning(f"Entity.VDBSearch: No entity name found for node {node_id}, using text excerpt")
                 
                 output_entities.append(
                     VDBSearchResultItem(
-                        node_id=str(node_id), 
-                        entity_name=str(entity_name), 
+                        node_id=str(node_id),
+                        entity_name=str(entity_name),
                         score=float(node_with_score.score) if node_with_score.score is not None else 0.0
                     )
                 )
-                
                 logger.debug(f"Entity.VDBSearch: Found entity '{entity_name}' with score {node_with_score.score}")
                 
         elif params.query_embedding:

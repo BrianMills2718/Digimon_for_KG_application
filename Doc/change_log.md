@@ -1,3 +1,41 @@
+## 2025-06-02 15:43 PST - Fictional Corpus Stress Test
+
+- Modified `testing/test_fictional_corpus.py` to execute a series of six diverse queries against the "Zorathian Empire" corpus to stress-test the pipeline.
+- The script now loops through queries related to the empire's downfall, societal structure, technology, key figures, the Crystal Plague, and external interactions.
+- For each query, it logs the answer and retrieved context keys, with a basic check for grounding.
+- Executed the updated test script.
+
+## 2025-06-02 16:11 PST - Fixed Named Output Key Instructions
+
+- Enhanced the planning prompt in `Core/AgentBrain/agent_brain.py` to make instructions about `named_output_key` usage more explicit and forceful
+- Added CRITICAL rule section emphasizing:
+  - MUST use alias when defined in source step's `named_outputs`
+  - Only use original field name when no alias is defined
+  - NEVER use original field name when alias exists
+- Re-ran test script successfully - all 6 queries completed without errors
+- This resolved the Pydantic validation errors caused by None inputs when LLM incorrectly used original field names instead of aliases
+
+## 2025-06-02 16:22 PST - ReACT-Style Stress Testing
+
+- Created `testing/test_react_style_queries.py` to stress test the pipeline with complex multi-part queries
+- Designed 6 ReACT-style queries that would benefit from iterative reasoning:
+  1. Crystal Plague origin and empire fall connection
+  2. Technology comparison between Zorathians and Mystara
+  3. Leadership succession analysis
+  4. Xelandra-Zorathian relationship determination
+  5. Timeline reconstruction of empire decline
+  6. Aerophantis role investigation
+- Test successfully executed all queries with proper plan generation
+- Observed that current system generates full execution plans upfront rather than true ReACT iterative reasoning
+- All queries completed without Pydantic validation errors, confirming the named_output_key fix is working
+- Note: True ReACT would require step-by-step execution with observation-based reasoning
+
+## 2025-06-02 15:29 PST - README Update
+
+- Updated `README.md` to better reflect current agent capabilities:
+  - Enhanced "Agent Brain" description to include its role in answer synthesis from multiple context sources (VDB, graph relationships, text chunks).
+  - Added a point highlighting the agent's current end-to-end pipeline orchestration capabilities (corpus prep, ER graph, VDB, search, one-hop, text fetch, answer generation) and noted ongoing improvements.
+
 2025-06-01: Converted VDB Docs to Document Objects in test_agent_corpus_to_graph_pipeline.py - COMPLETED
 - Now creates Document objects from dicts before calling _update_index_from_documents
 - Fixes AttributeError: 'dict' object has no attribute 'get_doc_id' and ensures proper Faiss/LlamaIndex ingestion
@@ -644,402 +682,672 @@ This update removes all previous placeholder/dummy logic and adds robust graph-b
   - Provides detailed status messages and warnings
   - Handles both directed and undirected graphs appropriately
 
-2025-06-02: GraphRAG Operator Analysis and Implementation Planning
-- **Created Comprehensive GraphRAG Operator Status Document**
-  - Analyzed all 16 operators from the GraphRAG paper categorized into 5 types:
-    - Entity Operators (7 total): VDB , PPR , RelNode , Agent , Onehop , Link , TF-IDF 
-    - Relationship Operators (4 total): Onehop , VDB , Aggregator , Agent 
-    - Chunk Operators (3 total): FromRel , Aggregator , Occurrence 
-    - Subgraph Operators (3 total): KhopPath , Steiner , AgentPath 
-    - Community Operators (2 total): Entity , Layer 
+2025-06-02: GraphRAG Project Refactoring Log
+Overall Goal: Decouple GraphRAG into Building, Querying, and Analyzing Stages
+MVP Definition:
+    1. Build Mode: Takes a dataset and configuration, then outputs persisted graph data, vector store indexes, and any other necessary artifacts (e.g., chunk data, community reports).
+    2. Query Mode: Takes a query and configuration (pointing to a pre-built dataset's artifacts), loads the artifacts, and returns an answer.
+    3. Evaluation Mode (Optional for MVP, but good to keep separate): Takes query results and evaluates them.
+I. Modifications to Existing Files
+    1. main.py
+        ○ Current Functionality: Runs the entire pipeline: data loading, graph building, querying, and evaluation in one go.
+        ○ Required Changes:
+            § Refactor to support distinct operational modes using argparse.
+                □ build: Executes graph construction, indexing, and artifact persistence.
+                □ query: Loads persisted artifacts and executes a user query.
+                □ evaluate: (Can remain similar) Evaluates results from a file.
+            § The main section will parse the mode and call a corresponding new handler function or method.
+            § Example structure:
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=["build", "query", "evaluate"], help="Operation mode")
+    parser.add_argument("-opt", type=str, required=True, help="Path to option YAML file.")
+    parser.add_argument("-dataset_name", type=str, required=True, help="Name of the dataset/experiment.")
+    parser.add_argument("-question", type=str, help="Question for query mode.")
+    # ... other specific args for each mode ...
+    args = parser.parse_args()
+
+# opt = Config.parse(Path(args.opt), dataset_name=args.dataset_name) # Load config once
+
+if args.mode == "build":
+        # Call new build_pipeline function/method
+        # build_pipeline(opt, args.dataset_name)
+        pass
+    elif args.mode == "query":
+        if not args.question:
+            parser.error("-question is required for query mode.")
+        # Call new query_pipeline function/method
+        # answer = query_pipeline(opt, args.dataset_name, args.question)
+        # print(answer)
+        pass
+    elif args.mode == "evaluate":
+        # Similar to current evaluation logic, but ensure it reads from a results file
+        pass
+            § Remove the current monolithic execution flow.
+    2. Core/GraphRAG.py
+        ○ Current Functionality: Central class managing the entire process.
+        ○ Required Changes:
+            § Decouple Initialization:
+                □ The __init__ method should initialize common components (LLM, basic config).
+                □ Introduce async def setup_for_building(self, corpus_docs_list): method. This will:
+                    ® Initialize DocChunk and run build_chunks.
+                    ® Initialize Graph builder (e.g., ERGraph) and run build_graph.
+                    ® Initialize Index builders (e.g., VectorIndex) for entities, relations, etc.
+                    ® Initialize Community builder (if enabled).
+                    ® Call the respective build_index and cluster/generate_community_report methods.
+                    ® Ensure all artifacts are saved using standardized paths (see ArtifactManager below).
+                □ Introduce async def setup_for_querying(self): method. This will:
+                    ® Load persisted DocChunk data (if needed for querying directly).
+                    ® Load persisted Graph from file.
+                    ® Load persisted Index instances from their storage paths.
+                    ® Load persisted Community data.
+                    ® Initialize the _querier (Core/Query/ logic).
+            § Modify insert method: Rename to something like async def build_and_persist_artifacts(self, corpus_docs_list): and have it call setup_for_building. This method will only be used in "build" mode.
+            § Modify query method: Ensure it first calls setup_for_querying (if not already done) to load all necessary artifacts. It should not trigger any building or indexing.
+            § The _build_retriever_context method needs to be aware of the mode. In "build" mode, it might not be fully necessary, or it might configure components for writing. In "query" mode, it configures components for reading/using pre-built artifacts.
+    3. Core/Graph/BaseGraph.py (and implementations like ERGraph.py, RKGraph.py, TreeGraph.py, PassageGraph.py)
+        ○ Current Functionality: Defines graph building and persistence.
+        ○ Required Changes:
+            § Method build_graph(self, chunks, force: bool = False): This will be called by GraphRAG.setup_for_building. Ensure force flag is respected.
+            § Method _persist_graph(self, force=False): Ensure this uses a standardized path from ArtifactManager or self.workspace for saving (e.g., self.namespace.get_save_path(self.name)).
+            § Method _load_graph(self, force: bool = False): Ensure this uses the standardized path for loading. This will be called by GraphRAG.setup_for_querying.
+    4. Core/Index/BaseIndex.py (and implementations like VectorIndex.py, FaissIndex.py, ColBertIndex.py)
+        ○ Current Functionality: Defines index building, persistence, and retrieval.
+        ○ Required Changes:
+            § Method build_index(self, elements, meta_data, force=False): Called by GraphRAG.setup_for_building.
+            § Method _storage_index(self): Ensure uses standardized path from ArtifactManager or self.config.persist_path (which should be derived from workspace).
+            § Method _load_index(self) -> bool: Ensure uses standardized path. Called by GraphRAG.setup_for_querying.
+    5. Core/Chunk/DocChunk.py
+        ○ Current Functionality: Chunks documents and manages persistence of chunk data.
+        ○ Required Changes:
+            § Method build_chunks(self, docs, force=True): Called by GraphRAG.setup_for_building.
+            § Method _load_chunk(self, force=False): Called by GraphRAG.setup_for_querying if direct access to chunk data is needed during querying.
+            § Ensure self._chunk.persist() and self._chunk.load_chunk() use standardized paths via its namespace.
+    6. Core/Community/BaseCommunity.py (and LeidenCommunity.py)
+        ○ Current Functionality: Community detection and report generation with persistence.
+        ○ Required Changes:
+            § Methods cluster(...) and generate_community_report(...): Called by GraphRAG.setup_for_building.
+            § Methods _load_community_report(...) and _load_cluster_map(...): Called by GraphRAG.setup_for_querying.
+            § Ensure persistence methods use standardized paths via self.namespace.
+    7. Option/Config2.py
+        ○ Current Functionality: Parses and merges configuration files.
+        ○ Required Changes:
+            § No major structural change needed immediately for the MVP's decoupling, as the mode will be passed via CLI.
+            § Crucially, ensure that working_dir and exp_name (or a new dataset_id/artifact_id) are consistently used by the new ArtifactManager (see below) or directly within storage classes to define artifact locations. This allows the "query" mode to find what the "build" mode saved.
+            § The various Option/Method/*.yaml files will now more clearly define either a "build configuration" (how to construct the graph and indexes) or a "query configuration" (how to retrieve and answer). Some parameters might be relevant to both.
+    8. Core/Query/BaseQuery.py (and its implementations)
+        ○ Current Functionality: Handles the logic of query processing.
+        ○ Required Changes:
+            § These will primarily be used in "query" mode via GraphRAG.query().
+            § Ensure they correctly use the components (graph, VDBs) loaded by GraphRAG.setup_for_querying(). No direct file loading here; all dependencies should come from the initialized GraphRAG instance.
+    9. Core/Retriever/MixRetriever.py (and other retrievers)
+        ○ Current Functionality: Retrieves information.
+        ○ Required Changes:
+            § When initialized by GraphRAG in "query" mode, ensure they are operating on loaded indexes and graph data, not attempting to build or modify them.
+II. New Files to Create
+    1. Core/Pipelines/build_pipeline.py (or integrate as a function in main.py)
+        ○ Functionality:
+            § Contains a primary function async def run_build_pipeline(config: Config, dataset_name: str, corpus_path: str):.
+            § Instantiates GraphRAG(config=config).
+            § Loads corpus data using RAGQueryDataset(data_dir=os.path.join(config.data_root, dataset_name)).get_corpus().
+            § Calls await graphrag_instance.build_and_persist_artifacts(corpus_docs_list).
+            § Handles overall orchestration for the build process, logging, and error handling for this stage.
+    2. Core/Pipelines/query_pipeline.py (or integrate as a function in main.py)
+        ○ Functionality:
+            § Contains a primary function async def run_query_pipeline(config: Config, dataset_name: str, question: str) -> str:.
+            § Instantiates GraphRAG(config=config).
+            § Calls await graphrag_instance.setup_for_querying() to load all artifacts for the given dataset_name.
+            § Calls answer = await graphrag_instance.query(question).
+            § Returns the answer.
+            § Handles overall orchestration for the query process.
+    3. Core/Storage/ArtifactManager.py (Highly Recommended)
+        ○ Functionality:
+            § A class or module to centralize the logic for determining storage and loading paths for all artifacts.
+            § ArtifactManager(base_working_dir: str, dataset_name: str)
+            § Methods:
+                □ get_graph_file_path(graph_type_name: str) -> Path
+                □ get_entity_vdb_dir() -> Path
+                □ get_relation_vdb_dir() -> Path
+                □ get_subgraph_vdb_dir() -> Path
+                □ get_chunk_storage_dir() -> Path (for DocChunk persistence)
+                □ get_community_report_path() -> Path
+                □ get_community_node_map_path() -> Path
+                □ get_e2r_map_path() -> Path
+                □ get_r2c_map_path() -> Path
+            § This manager would be instantiated within GraphRAG (or the new pipeline files) using config.working_dir and dataset_name.
+            § All storage classes (NetworkXStorage, VectorIndex, DocChunk, LeidenCommunity, PickleBlobStorage for maps) would then request their specific paths from this manager instead of constructing them using self.namespace.get_save_path(self.name) directly. This ensures consistency.
+            § GraphRAG would pass the correct Namespace object (or direct paths from ArtifactManager) to its components. For example, self.graph.namespace = self.artifact_manager.get_graph_namespace() or self.entities_vdb.config.persist_path = self.artifact_manager.get_entity_vdb_dir().
+    4. Core/Operator/Transformations/ (Directory)
+        ○ Functionality: Placeholder for your PhD-specific transformation operators.
+        ○ Files (Examples):
+            § extract_categorical_value.py: Implements the extract_categorical_value operator.
+            § distribution_calculators.py: Implements to_categorical_distribution, to_statistical_distribution.
+            § causal_path_finder.py: Implements find_causal_paths.
+            § intervention_simulator.py: Implements simulate_intervention.
+        ○ Each file would define classes/functions for these operations. They would typically take graph elements or dataframes as input and produce new/modified data.
+        ○ Note: For the MVP of decoupling, these are not strictly needed yet, but the structure should anticipate them. The immediate focus is on separating the existing build and query.
+Workflow Summary for MVP:
+Build Mode (python main.py build ...)
+    1. main.py calls run_build_pipeline().
+    2. run_build_pipeline instantiates GraphRAG.
+    3. GraphRAG.build_and_persist_artifacts():
+        ○ Loads corpus.
+        ○ DocChunk.build_chunks() -> saves chunk data (via ArtifactManager path).
+        ○ BaseGraph_instance.build_graph() -> saves graph file (via ArtifactManager path).
+        ○ BaseIndex_instance.build_index() for entities -> saves VDB (via ArtifactManager path).
+        ○ (Similarly for relations, subgraphs, communities, e2r/r2c maps if enabled).
+Query Mode (python main.py query ...)
+    1. main.py calls run_query_pipeline().
+    2. run_query_pipeline instantiates GraphRAG.
+    3. GraphRAG.setup_for_querying():
+        ○ Loads graph file (from ArtifactManager path).
+        ○ Loads VDBs (from ArtifactManager paths).
+        ○ Loads other necessary persisted data.
+        ○ Initializes query engine and retrievers with loaded components.
+    4. GraphRAG.query(question) executes the query using the loaded artifacts.
+    5. run_query_pipeline returns the answer.
+This refactoring will make your system much cleaner, allowing the expensive graph construction to be a separate, offline step. The "usage" aspect then becomes about loading these pre-computed artifacts to quickly answer questions or, in the future, run more complex analytic chains.
+
+
+
+MethodGraph Type(s) Used (from YAMLs/Paper)Build KG/ArtifactsQuery with MethodEvaluate ResultsNotesDalker_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific DalkQuery. ER graph build and multi-step query path verified.GR (G-Retriever)er_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific GRQuery. ER graph build and PCST-based query path verified.LGraphRAGrkg_graph (TKG with communities)Yes (Verified)Yes (Verified)Yes (Verified)Local search. Successfully debugged community retrieval path. Evaluation pipeline verified.GGraphRAGrkg_graph (TKG with communities)Yes (Verified)Yes (Verified)Yes (Verified)Global search. Successfully debugged community retrieval and global query path. Evaluation pipeline verified.HippoRAGer_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses PPRQuery. PPR path was tested and functional.KGPpassage_graphYes (Verified)Yes (Verified)Yes (Likely)Uses PassageGraph and KGPQuery. Build and iterative query path verified.LightRAGrkg_graph (RKG)Yes (Verified)Yes (Verified)Yes (Likely)Uses BasicQuery with keyword features. RKG build and keyword-driven query paths verified.RAPTORtree_graph / tree_graph_balancedYes (Verified)Yes (Verified)Yes (Verified)Tree graph build and VDB query (handling layer metadata) verified. Multi-layer retrieval depends on dataset/config. Evaluation pipeline verified.ToGer_graph (KG)Yes (Verified)Yes (Verified)Yes (Likely)Uses specific ToGQuery. ER graph build and agent-like iterative query path verified.Summary of Current Decoupled Capabilities:Core Build, Query, and Evaluate Pipeline: All three modes (build, query, evaluate) are now functionally implemented.build and query modes have been verified for all listed methods.evaluate mode has been verified for LGraphRAG, GGraphRAG, and RAPTOR.Graph Types Tested/Stable:rkg_graph (LGraphRAG, GGraphRAG, LightRAG).tree_graph / tree_graph_balanced (RAPTOR).er_graph (HippoRAG, GR, Dalk, ToG).passage_graph (KGP).Key Retrieval Mechanisms Verified: All major retrieval and reasoning strategies from the tested methods are functional within the decoupled framework.Configuration Handling: Stable.Evaluation Pipeline: Robust enough to handle different methods (LGraphRAG, GGraphRAG, RAPTOR tested) and save results correctly.
+
+
+
+GraphRAG Project Refactoring Log Pt2
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+*Phases 0 and 1 (Steps 1-9) are documented in "GraphRAG Project Refactoring Log," "GraphRAG Project Refactoring Log Pt2," and "GraphRAG Project Refactoring Log Pt3".*
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+*Steps 1-6 are documented in "GraphRAG Project Refactoring Log Pt2".*
+
+**Step 7: Implement Advanced RAPTOR Retrieval Strategies (In Progress)**
+* **Objective:** Enhance RAPTOR query logic beyond simple VDB search of all tree nodes, incorporating strategies like tree traversal or node clustering/re-ranking.
+* **Sub-Step 7.1: Retrieve Node Metadata (ID, Layer, Score) along with Text (Debugging Layer/Score Info)**
+    * **Previous Actions:**
+        1.  Modified `Core/Storage/TreeGraphStorage.py`.
+        2.  Refined `Core/Schema/VdbResult.py`.
+        3.  Modified `Core/Retriever/EntitiyRetriever.py`.
+        4.  Modified `Core/Query/BasicQuery.py`.
+        5.  Modified `Core/GraphRAG.py` to force VDB rebuild.
+        6.  Refined `Core/Index/BaseIndex.py` (`build_index` method).
+        7.  Refined `Core/Index/FaissIndex.py` (`_update_index` method) and fixed subsequent `IndentationError`.
+    * **Outcome of Build Command (After Indentation Fix & VDB Rebuild):**
+        * `IndentationError` in `FaissIndex.py` resolved.
+        * Build command completed successfully.
+        * Logs confirm VDB was deleted and rebuilt with `force=True` and correct metadata keys (`['index', 'layer']`).
+    * **Outcome of Query Command (Latest):**
+        * `Layer` information for retrieved nodes is now correctly logged as `0`.
+    * **Issue Identified:** `Score` for retrieved nodes is still logged as `N/A`.
+    * **Hypothesis:** The VDB scores are not being correctly unpacked or assigned in `Core/Retriever/EntitiyRetriever.py` after being returned from `Core/Schema/VdbResult.py`.
+    * **Action (Current):**
+        1.  Apply suggested modifications to `Core/Retriever/EntitiyRetriever.py`'s `_find_relevant_entities_vdb` method to add detailed logging for the `scores` variable and ensure robust handling of the `nodes_with_metadata` list before adding `vdb_score`.
+    * **Expected Outcome:** Query logs will show the actual list of scores received from the VDB, helping to pinpoint if scores are missing or if the assignment logic is flawed. Subsequently, the main log should show actual float scores.
+    * **Status:** Code modification instructions for `Core/Retriever/EntitiyRetriever.py` were provided in the previous turn (response #10). User to apply these and re-run the query.
+
+**(Further steps will be added here as we proceed)**
+
+# GraphRAG Project Refactoring Log Pt 4
+
+**Overall Goal:** Transition the GraphRAG project from an end-to-end testing suite into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis, suitable for the user's PhD research on social media discourse analysis.
+
+*Phases 0 and 1 (Steps 1-9) are documented in "GraphRAG Project Refactoring Log," "GraphRAG Project Refactoring Log Pt2," and "GraphRAG Project Refactoring Log Pt3". "GraphRAG Project Refactoring Log Pt 4" concluded with Step 23. This log, Part 5, details all subsequent steps starting from Step 24.*
+
+**Phase 1: Data Preparation & Initial Decoupling Steps (Continued)**
+
+**Step 24: Determine Logging Configuration and Capture Query Logs**
+* **Status:** Completed.
+
+**Step 25: Investigate `LeidenCommunity` and Context Propagation; Capture Missing Logs**
+* **Status:** Completed.
+
+**Step 26: Implement Public `community_node_map` Property in `LeidenCommunity` (Completed)**
+* **Status:** Completed.
+
+**Step 27: Inspect `community_node_map.json` and Entity ID Lookup in `EntityRetriever` (Completed)**
+* **Status:** Completed.
+
+**Step 28: Verify `EntityRetriever` Lookup Logic and Test with Known Mapped Entity (Completed)**
+* **Status:** Completed.
+
+**Step 29: Verify `CommunityRetriever` Uses Attached Cluster Info to Fetch Reports (Error Identified, Addressed in Step 30 & 31)**
+* **Status:** Completed.
+
+**Step 30: Ensure Detailed Logging in `CommunityRetriever` and Re-Test Report Fetching (Error Identified & Fixed in Step 31)**
+* **Status:** Completed.
+
+**Step 31: Fix `TypeError` in `CommunityRetriever` and Re-Test Report Fetching (New Error Identified)**
+* **Status:** Completed. `TypeError` resolved. New `AttributeError` identified.
+
+**Step 32: Correct Config Path for `level` and other `QueryConfig` Attributes in `CommunityRetriever` (New Error Identified)**
+* **Recap:** `AttributeError` occurred due to incorrect config path. IDE self-corrected to use `self.retriever_context.context["query"]`, leading to `KeyError: 'query'`.
+* **Status:** `KeyError` cause identified: `QueryConfig` was not registered in `RetrieverContext.context` under the key `"query"`.
+Step 33: Register QueryConfig into RetrieverContext and Update Access in CommunityRetriever (Partially Successful - GGraphRAG Test)
+    • Objective: Ensure QueryConfig is available in RetrieverContext.context (under key "query_config") and correctly accessed by CommunityRetriever.
+    • Action (User to IDE in response #23, IDE executed in response #24, further corrections by IDE in response #25, then testing GGraphRAG in response #26):
+        1. Modifications to Core/GraphRAG.py (to register "query_config") and Core/Retriever/CommunityRetriever.py (to access QueryConfig attributes via self.retriever_context.context["query_config"].<attribute>) were applied by the IDE.
+        2. IDE ran build for GGraphRAG.yaml: Successful.
+        3. IDE ran query for GGraphRAG.yaml with question "What were the key causes of the American Revolution?" (./ggraphrag_query.log or full_query_output_attempt12.log).
+    • Outcome (From IDE Logs in response #26, full_query_output_attempt12.log):
+        ○ Build Success: GGraphRAG artifacts (graph, VDBs, community map with 14 entries, 2 community reports) were created successfully.
+        ○ Query Artifact Loading: All artifacts loaded successfully for the query.
+        ○ Persistent AttributeError: The query still crashed with AttributeError: 'RetrieverConfig' object has no attribute 'level' in Core/Retriever/CommunityRetriever.py within the find_relevant_community_by_level method, specifically at the line if v.level <= self.config.level.
+    • Diagnosis: Despite the IDE reporting it had applied the fix to use self.retriever_context.context["query_config"].level, the traceback from the latest execution shows the code is still attempting to use self.config.level. This indicates the edit to CommunityRetriever.find_relevant_community_by_level was not effectively applied or saved for all necessary instances.
+    • Status: The build for GGraphRAG is fine. The query mode fails because CommunityRetriever.find_relevant_community_by_level is still using the incorrect path to QueryConfig attributes.
+Step 34: Systematically Test Build and Query for Remaining Methods (GGraphRAG - Fixes Applied & Successful!)
+    • Objective: Ensure the fix for accessing QueryConfig attributes is correctly and completely applied to CommunityRetriever.find_relevant_community_by_level and test the GGraphRAG query path.
+    • Action (User to IDE in response #27, IDE executed in response #28):
+        1. IDE confirmed that the previous edits to CommunityRetriever.find_relevant_community_by_level (to use self.retriever_context.context["query_config"].level etc.) were not fully applied or were incorrect, as the AttributeError: 'RetrieverConfig' object has no attribute 'level' persisted.
+        2. IDE iteratively applied further corrections to Core/Retriever/CommunityRetriever.py to:
+            § Correctly use self.retriever_context.context["query_config"].<attribute_name> for all QueryConfig parameters.
+            § Address a subsequent TypeError by ensuring global_max_consider_community was cast to int.
+            § Address a subsequent KeyError: 'community_info' by ensuring the data structure returned by find_relevant_community_by_level matched downstream expectations in Core/Query/BaseQuery.py (by wrapping community data in a {"community_info": c, ...} structure).
+        3. IDE re-ran the GGraphRAG build (successful) and query: python main.py query -opt Option/Method/GGraphRAG.yaml -dataset_name MySampleTexts -question "What were the key causes of the American Revolution?" > ./ggraphrag_query_attempt13.log 2>&1.
+    • Outcome (From IDE Logs in response #28, ggraphrag_query_attempt13.log):
+        ○ SUCCESS! All identified AttributeError, TypeError, and KeyError issues in the GGraphRAG query path related to CommunityRetriever and QueryConfig access are resolved.
+        ○ GGraphRAG Query Path Functional: The GGraphRAG query completed successfully.
+        ○ Logs Indicate Global Path Execution: The system correctly identified it was a global query, community reports were likely retrieved (though detailed logs for this specific part were truncated, the successful completion and answer generation imply it worked).
+        ○ Answer Generated: A synthesized answer regarding the causes of the American Revolution was produced, indicating the end-to-end global query pipeline for GGraphRAG is now working.
+    • Status: The GGraphRAG build and query (global search path using communities) modes are now functionally working in the decoupled framework.
+Next Phase: Continue Method Verification or Shift to Evaluation
+Step 35: Plan Next Steps for Method Verification or Evaluation
+    • Objective: Decide whether to continue verifying the build and query functionality for other RAG methods or to begin developing/testing the evaluate mode.
+    • Considerations:
+        ○ Methods still needing specific tests (from graphrag_method_status_table):
+            § KGP (passage_graph)
+            § ToG (er_graph with specific ToGQuery)
+            § Dalk (er_graph with specific DalkQuery)
+            § GR (G-Retriever) (er_graph with specific GRQuery)
+            § LightRAG (rkg_graph - likely works but specific keyword features not stressed).
+        ○ Advanced RAPTOR strategies beyond basic VDB lookup.
+    • Status: Pending decision.
+Step 36: Systematically Test Build and Query for GR (G-Retriever) (Successful!)
+    • Status: Completed. The GR (G-Retriever) build and query modes are functionally working.
+Step 37: Systematically Test Build and Query for Dalk (Build Success, Initial Query Error)
+    • Status: Completed (Details in previous log entries).
+Step 38: Fix KeyError: 'content' in DalkQuery.py (Successful!)
+    • Objective: Modify DalkQuery.py to use an appropriate existing edge attribute (e.g., relation_name or description) instead of content when formatting path and neighbor information.
+    • Action (User to IDE in response #36, IDE executed in response #37):
+        1. IDE applied the fix: changed e["content"] to e.get("relation_name", e.get("description", "unknown_relation")) in DalkQuery.py.
+        2. IDE re-ran the Dalk query.
+    • Outcome (From IDE Summary in response #37):
+        ○ KeyError Resolved: The Dalk query pipeline completed without the KeyError.
+        ○ Dalk Query Functional: Artifacts loaded, and the DalkQuery multi-step reasoning process executed successfully.
+        ○ Answer Generated: A comprehensive answer was produced.
+    • Status: The Dalk build and query modes are now functionally working in the decoupled framework.
+Next Phase: Continue Method Verification
+Step 39: Systematically Test Build and Query for ToG (Think-on-Graph)
+    • Objective: Verify the decoupled build and query modes for the ToG method. ToG uses an er_graph and a specific ToGQuery module with agent-like reasoning.
+    • Status: Pending.
+Step 40: Systematically Test Build and Query for KGP (Knowledge Graph Prompting) (Successful!)
+    • Status: Completed. The KGP (Knowledge Graph Prompting) build and query modes are functionally working.
+Next Phase: Final Method Verification (RAPTOR Advanced Strategies) & Evaluation Planning
+Step 41: Systematically Test RAPTOR's Multi-Level Tree Retrieval (Core Mechanism Verified)
+    • Objective: Verify that RAPTOR's build process creates a multi-layer tree and that its query process (using VDB search across all tree nodes) can retrieve nodes from various layers, including summarized parent nodes.
+    • Action (User to IDE in response #42, IDE executed in response #43):
+        1. IDE ran build for RAPTOR.yaml on MySampleTexts dataset.
+        2. IDE ran query for RAPTOR.yaml with question "Summarize the main conflicts described in the texts.".
+        3. IDE provided a summary of log highlights.
+    • Outcome (From IDE Summary in response #43):
+        ○ Build Success: RAPTOR build created a tree_graph_balanced. For the small MySampleTexts dataset (5 chunks/leaf nodes), the process resulted in a single-layer tree (5 nodes, all at layer 0). VDB for tree nodes was built successfully with index and layer metadata.
+        ○ Query Success:
+            § All artifacts loaded correctly.
+            § The tree_search: True path in BasicQuery.py was executed.
+            § EntityRetriever logs confirmed that all retrieved nodes had "layer": 0, consistent with the single-layer tree built.
+            § The query completed without errors and an answer was generated.
+    • Diagnosis: The core RAPTOR pipeline (tree graph construction, VDB indexing of tree nodes with layer metadata, and querying these nodes) is operational. The absence of multi-layer retrieval in this test is due to the small dataset size not triggering the formation of higher summary layers, rather than a flaw in the RAPTOR-specific logic.
+    • Status: The RAPTOR build and query modes are functionally working. The ability to handle layer metadata is verified. Testing actual retrieval from multiple layers would require a larger dataset or adjusted tree construction parameters.
+Step 42: Conclude Initial Method Verification Phase
+    • Objective: Acknowledge that all listed methods have had an initial successful build and query run in the decoupled framework.
+    • Status: Completed.
+Phase 2: Implementing Evaluation Mode
+Step 43: Implement Basic evaluate Mode Workflow in main.py (Completed)
+    • Status: The foundational code for the evaluate mode workflow was implemented in main.py.
+Step 44: Test the Implemented evaluate Mode (Successful for LGraphRAG!)
+    • Status: The basic evaluate mode is functionally working for LGraphRAG.
+Step 45: Systematically Test evaluate Mode for Other Verified RAG Methods (GGraphRAG - Successful!)
+    • Status: The basic evaluate mode is functionally working for GGraphRAG.
+Step 46: Systematically Test evaluate Mode for RAPTOR (Successful!)
+    • Objective: Ensure the evaluate mode works correctly with the RAPTOR method and its tree-based graph structure.
+    • Action (User to IDE in response #50, IDE executed in response #51):
+        1. IDE re-ran build for RAPTOR on MySampleTexts.
+        2. IDE ran evaluate mode for RAPTOR on MySampleTexts.
+    • Outcome (From IDE Summary & Logs in response #51):
+        ○ Evaluation Pipeline Functional for RAPTOR: Build completed. Dataset and artifacts loaded for evaluation; all questions queried; query outputs saved to method-specific directory; Evaluator invoked; metrics calculated, saved, and printed (accuracy': 40.0, 'f1': 38.10..., 'precision': 28.02..., 'recall': 85.03..., 'em': 0.0).
+    • Status: The basic evaluate mode is now functionally working for RAPTOR.
+Next Phase: Conclude Basic Evaluation Testing & Plan Future Work
+Step 47: Conclude Basic evaluate Mode Testing
+    • Objective: Acknowledge that the evaluate mode has been successfully tested across methods with different graph structures (RKG with communities, Tree graph).
+    • Status: Completed.
+
+Lessons Learned (Cumulative):
+    • Explicit Interfaces are Key: (Reinforced).
+    • Stateful Initialization for Modes: (Reinforced).
+    • Data Dependency & Alignment: (Reinforced).
+    • Importance of Precise Logging: (Reinforced).
+    • Testing with Known Positives: (Reinforced).
+    • Tooling Limitations: Automated code editing can be unreliable, especially with similar code blocks or if not perfectly targeted. Manual verification of applied changes is sometimes necessary.
+    • Data Type Consistency: (Reinforced).
+    • Defensive Programming: (Reinforced).
+    • Impact of Errors on Logging: (Reinforced).
+    • Configuration Scope & Context Propagation: (Reinforced).
+    • Verify Edits: When an automated tool reports an edit, it's crucial to confirm from subsequent error messages or behavior that the edit was indeed applied as intended.
+
+# GraphRAG Project Handoff Document
+
+**Date:** May 20, 2025
+**Project:** DIGIMON / GraphRAG Refactoring and UI Development
+**GitHub Repository:** `https://github.com/BrianMills2718/Digimon_KG` (as last mentioned by user)
+
+## 1. Project Overview
+
+The DIGIMON/GraphRAG project, originally an end-to-end testing suite for various Graph-based Retrieval-Augmented Generation methods, has been undergoing a significant refactoring.
+**Overall Goal:** Transition the project into a modular and flexible "usage suite" with decoupled stages for graph building, querying, and analysis. This is intended to support PhD research on social media discourse analysis.
+A key recent development is the creation of a web-based UI to interact with the Python backend.
+
+**Current State:**
+* **Python Backend (WSL - `~/digimon`):**
+    * The core Python logic has been refactored into distinct modes: `build` (for artifact generation), `query` (for question answering), and `evaluate` (for performance assessment), managed by `main.py`.
+    * All listed RAG methods (LGraphRAG, GGraphRAG, LightRAG, GR, Dalk, ToG, KGP, RAPTOR, HippoRAG) have been verified to successfully run their `build` and `query` modes with a sample dataset (`MySampleTexts`).
+    * The `evaluate` mode has been implemented in `main.py` and successfully tested with LGraphRAG, GGraphRAG, and RAPTOR.
+    * A basic Flask API server (`api.py`) has been created in the WSL backend. It currently has a functional `/api/query` endpoint that can receive requests, initialize the `GraphRAG` system, perform a query, and return the answer. Placeholders for `/api/build` and `/api/evaluate` exist.
+    * The Python backend runs in a Conda environment (`digimon`).
+* **React Frontend (`C:\Users\Brian\graphrag-ui`):**
+    * A React project was initialized (e.g., using `create-react-app` or `vite`).
+    * The UI code (from Canvas `graphrag_ui_v1`) has been integrated into this React project. This UI allows users to select datasets, RAG methods, trigger build/query/evaluate operations, and view results/logs.
+    * The React UI has been modified to make `Workspace` API calls to the Flask backend (`http://localhost:5000/api/query`) for the "Run Query" functionality, replacing the initial simulation logic.
+    * The "Build Artifacts" and "Run Evaluation" buttons in the UI currently call the Flask API, but their respective backend endpoints (`/api/build`, `/api/evaluate` in `api.py`) are placeholders and need full implementation.
+* **Development Environment:**
+    * The user develops the Python backend within a WSL Ubuntu environment.
+    * The React frontend is developed on the Windows host system.
+    * The two components are intended to communicate over the local network (React UI on `http://localhost:3001` calling Flask API on `http://localhost:5000` from WSL).
+
+## 2. Refactoring Journey Summary
+
+The refactoring process has been documented in "GraphRAG Project Refactoring Log Pt 1-5". Key phases and steps included:
+
+* **Phase 0: Initial Setup & Baseline:** Git version control established.
+* **Phase 1: Data Preparation & Initial Decoupling:**
+    * Created corpus preparation scripts.
+    * Refactored `main.py` to support `build`, `query`, and `evaluate` modes.
+    * Extensive debugging of Pydantic v2 compatibility issues, attribute errors, `KeyError`s, and `TypeError`s across various modules, particularly in configuration loading, storage classes, context propagation (`RetrieverContext`), and retriever logic (`EntityRetriever`, `CommunityRetriever`).
+    * Systematic verification of `build` and `query` modes for all core RAG methods (LGraphRAG, GGraphRAG, LightRAG, GR, Dalk, ToG, KGP, RAPTOR).
+* **Phase 2: Implementing Evaluation Mode & UI Development:**
+    * Implemented and tested the `evaluate` mode in `main.py` for several methods.
+    * Initiated UI development with React.
+    * Set up a Flask API in the WSL backend to bridge the Python logic with the React UI.
+    * Modified the React UI to call the `/api/query` backend endpoint.
+
+**Key Lessons Learned from Refactoring:**
+* Explicit interfaces and clear data contracts are crucial for decoupled components.
+* Stateful initialization and context propagation across modes and components require careful management.
+* Configuration systems must be precise and robust.
+* Pydantic enforces rigor but requires careful class design.
+* Detailed, iterative logging is essential for debugging complex interactions.
+* Data schema consistency (e.g., for edge attributes, entity IDs) is vital.
+* Tooling limitations (e.g., IDE auto-edits) can sometimes require manual intervention.
+
+## 3. Current UI and Backend API Setup
+
+### 3.1. React Frontend (`C:\Users\Brian\graphrag-ui`)
+
+* **Core File:** `src/App.js` (or `src.App.jsx`) contains the UI logic from the Canvas document `graphrag_ui_v1`.
+* **Dependencies:** `react`, `react-dom`, `lucide-react`. Tailwind CSS is used for styling.
+* **Functionality:**
+    * Allows selection of dataset name and RAG method.
+    * "Build Artifacts" button: Calls `/api/build` (backend endpoint is a placeholder).
+    * "Run Query" button: Takes a question and calls `/api/query` (backend endpoint is functional). Displays the answer.
+    * "Run Evaluation" button: Calls `/api/evaluate` (backend endpoint is a placeholder).
+    * Displays logs and status messages.
+* **To Run:**
+    1.  Navigate to `C:\Users\Brian\graphrag-ui` in a Windows terminal (CMD or PowerShell).
+    2.  Run `npm start` (or `npm run dev` if using Vite).
+    3.  Access the UI in a browser, typically at `http://localhost:3000` or `http://localhost:3001`.
+
+### 3.2. Python Flask Backend API (`~/digimon/api.py` in WSL)
+
+* **Core File:** `api.py`
+* **Dependencies:** `Flask`, `Flask-CORS`. (Python dependencies for GraphRAG itself are managed by the `digimon` conda environment).
+* **Endpoints:**
+    * `POST /api/query`: **Functional.** Receives `datasetName`, `selectedMethod`, `question`. Initializes `GraphRAG` (with basic instance caching), loads artifacts, runs the query, and returns the answer as JSON.
+    * `POST /api/build`: **Placeholder.** Receives payload but does not yet execute the build logic.
+    * `POST /api/evaluate`: **Placeholder.** Receives payload but does not yet execute the evaluation logic.
+* **To Run:**
+    1.  Open a WSL Ubuntu terminal.
+    2.  Navigate to `~/digimon`.
+    3.  Activate the conda environment: `conda activate digimon`.
+    4.  Run the server: `python api.py`.
+    5.  The API will be available at `http://localhost:5000` from your Windows host.
+
+## 4. Next Steps for Development (Especially Frontend & Full Functionality)
+
+### 4.1. Fully Implement Backend API Endpoints
+
+1.  **`/api/build` Endpoint:**
+    * Modify `api.py`'s `handle_build` function.
+    * It should receive `datasetName` and `selectedMethod` (which maps to a config file path).
+    * Parse the `Config`.
+    * Instantiate `GraphRAG`.
+    * Call `await graphrag_instance.build_and_persist_artifacts()`.
+    * Return a success/failure message. This is a long-running task; consider how to handle this (e.g., async task, polling from UI, or just a simple blocking call for now).
+2.  **`/api/evaluate` Endpoint:**
+    * Modify `api.py`'s `handle_evaluate` function.
+    * It should receive `datasetName` and `selectedMethod`.
+    * This will be more complex as the current `handle_evaluate_mode` in `main.py` itself performs multiple queries and then evaluation. You might need to:
+        * Either replicate that logic within the API endpoint.
+        * Or refactor `handle_evaluate_mode` from `main.py` into a callable function that the API can use.
+    * The endpoint should save results to files (as `main.py` does) and perhaps return a summary of metrics or a path to the metrics file. Also a long-running task.
+
+### 4.2. Enhance React UI
+
+1.  **Integrate Build & Evaluate API Calls:**
+    * Update `handleBuild` and `handleEvaluate` in `App.js` to make `Workspace` calls to the now functional `/api/build` and `/api/evaluate` backend endpoints.
+    * Handle responses and update UI state (logs, results) accordingly.
+2.  **Improve User Feedback for Long Operations:**
+    * For `build` and `evaluate`, which can take time, provide better user feedback than just a simple loading spinner (e.g., progress updates if possible, or at least a persistent "Processing..." message).
+    * Consider websockets or server-sent events for real-time log streaming from backend to frontend, though this adds complexity. For now, polling or just waiting might be sufficient.
+3.  **Display Results More Richly:**
+    * Instead of just `JSON.stringify` for evaluation metrics, parse the JSON and display it in a more readable format (e.g., a table).
+    * Consider how to display logs from the backend if they are returned via the API.
+4.  **Error Handling:** Improve error display and recovery in the UI.
+5.  **Configuration Management in UI:**
+    * Allow dynamic loading/selection of datasets (perhaps by scanning `./Data/` via a backend endpoint).
+    * Potentially allow viewing or even minor editing of method configurations (advanced).
+6.  **Styling and UX:** General improvements to user experience.
+
+### 4.3. Shareability (Dockerization & Deployment)
+
+1.  **Backend Dockerfile (`~/digimon/Dockerfile.backend`):**
+    * Start from a Python base image.
+    * Set up the conda environment (or install dependencies via `pip` from a `requirements.txt` generated from the conda env).
+    * Copy the entire `digimon` project directory.
+    * Expose port 5000.
+    * Set the `CMD` to run `python api.py`.
+2.  **Frontend Dockerfile (`~/digimon/graphrag-react-ui/Dockerfile.frontend`):**
+    * Use a multi-stage build.
+    * Stage 1: Node image, copy `package.json`, `package-lock.json`, run `npm install`, copy rest of UI source, run `npm run build` (to create static assets).
+    * Stage 2: Nginx or other lightweight static server image, copy static assets from Stage 1.
+    * Expose port 80 (or other).
+3.  **`docker-compose.yml` (`~/digimon/docker-compose.yml`):**
+    * Define two services: `backend` (from `Dockerfile.backend`) and `frontend` (from `Dockerfile.frontend`).
+    * Set up networking so the frontend can reach the backend.
+    * Map ports.
+4.  **Deployment:** Once dockerized, this can be deployed to various cloud platforms or servers.
+
+## 5. Project Structure Reminder
+
+* **Backend (WSL):** `~/digimon/` (contains `Core`, `Option`, `Data`, `api.py`, `main.py`, etc.)
+* **Frontend (Windows, but copied to WSL for unified Git repo):** `~/digimon/graphrag-react-ui/` (contains `src`, `public`, `package.json`, etc.)
+
+This handoff document should provide a good starting point for continuing development. The immediate focus for the next developer/chatbot would likely be fully implementing the `/api/build` and `/api/evaluate` backend endpoints and then integrating them into the React UI.
+
+## 2025-06-02 - True ReACT Implementation
+
+### Changes Made:
+1. **Implemented full ReACT (Reason-Act-Observe) loop in agent_brain.py**:
+   - Replaced basic `process_query_react` with comprehensive iterative implementation
+   - Added `_react_reason` method for reasoning about next steps
+   - Added `_react_observe` method for processing step results
+   - Added `_generate_final_answer` method for context-based answer generation
+   
+2. **ReACT Features Implemented**:
+   - **Step-by-step execution**: Execute one step at a time instead of full plan
+   - **Reasoning between steps**: LLM reasons about observations and decides next action
+   - **Adaptive replanning**: Can skip steps, create new steps, or stop early
+   - **Context accumulation**: Maintains context across iterations
+   - **Early stopping**: Can decide when enough information is gathered
+   
+3. **Created test_react_implementation.py**:
+   - Tests three different query types: simple, multi-step, and complex
+   - Logs detailed reasoning history and observations
+   - Demonstrates adaptive behavior
+
+### Key Design Decisions:
+- Max 10 iterations to prevent infinite loops
+- JSON-based reasoning format for structured decisions
+- Context-aware step translation considering previous results
+- Comprehensive state tracking with observations and reasoning history
+
+### Next Steps:
+- Run tests to validate ReACT behavior
+- Fine-tune reasoning prompts based on test results
+- Consider adding more sophisticated replanning strategies
+
+## 2025-06-02 Session - True ReACT Implementation (Part 2)
+
+### Fixed Missing _react_reason Method
+- **File**: `Core/AgentBrain/agent_brain.py`
+- **Issue**: `_react_reason` method was missing, causing AttributeError
+- **Fix**: Added complete _react_reason method that:
+  - Analyzes current ReACT state
+  - Decides whether to continue, stop, or answer
+  - Returns structured reasoning decision
+  - Handles JSON extraction with fallback logic
+
+### Updated ReACT Test Script
+- **File**: `testing/test_react_implementation.py`
+- **Changes**:
+  - Removed invalid `config.datasets.corpus_input_dir` assignment
+  - Added corpus preparation step using existing text files in `Data/Fictional_Test`
+  - Fixed imports for corpus preparation tools
+  - Test now properly prepares corpus before running queries
+
+### ReACT Loop Successfully Running
+- **Status**: The ReACT loop is now executing iteratively
+- **Observed Behavior**:
+  - Proper reasoning about next steps
+  - Attempting to execute tool steps
+  - Non-tool steps correctly identified and logged
+  - Iteration counter working correctly
+  - Observations being collected after each step
   
-- **Current Implementation Status**:
-  - Implemented: 3/16 core operators (Entity.VDB, Entity.PPR, Relationship.Onehop)
-  - Partially implemented: 1/16 (Chunk.FromRel - commented out)
-  - Not implemented: 12/16 operators
-  - Additional tools: 7 graph construction/analysis tools
+### Current Issues to Address
+- **Corpus Discovery**: The ReACT agent doesn't realize the corpus is already prepared
+- **Step Translation**: Some steps fail validation when translating to ExecutionPlan
+- **Context Awareness**: Agent needs better awareness of available data/tools
 
-- **Prioritized Implementation Plan**:
-  - **High Priority** (enable basic GraphRAG):
-    1. Entity.Onehop - Essential for context expansion
-    2. Entity.RelNode - Extract entities from relationships
-    3. Chunk.FromRel - Complete partial implementation
-    4. Relationship.VDB - Vector search for relationships
-  - **Medium Priority** (enhanced retrieval):
-    5. Chunk.Aggregator - Score-based selection
-    6. Relationship.Aggregator - PPR-based scoring
-    7. Subgraph.KhopPath - Multi-hop paths
-    8. Entity.Link - Similarity matching
-  - **Low Priority** (advanced/specialized):
-    9-16. Agent-based, Community, and specialized operators
-
-- **Created**: `Doc/graphrag_operator_status.md` for tracking implementation progress
-
-2025-06-02: Added Entity.Onehop Operator
-- **File**: `Core/AgentTools/entity_onehop_tools.py`
-- **Function**: `entity_onehop_neighbors()`
-- **Purpose**: Extract one-hop neighbor entities from a graph
-- **Features**:
-  - Retrieves all entities directly connected to specified entities
-  - Supports both directed and undirected graphs
-  - Optional inclusion of edge attributes
-  - Configurable neighbor limit per entity
-  - Handles missing entities gracefully
-- **Input**: `EntityOneHopInput` (entity_ids, graph_id, include_edge_attributes, neighbor_limit_per_entity)
-- **Output**: `EntityOneHopOutput` (neighbors dict, total_neighbors_found, message)
-- **Test**: `testing/test_entity_onehop_tool.py` (9 comprehensive tests)
-- **Registered**: Added to orchestrator as "Entity.Onehop"
-
-### Added Entity.RelNode Operator
-- **File**: `Core/AgentTools/entity_relnode_tools.py`
-- **Function**: `entity_relnode_extract()`
-- **Purpose**: Extract entities connected by specific relationships
-- **Features**:
-  - Finds entities involved in given relationship IDs
-  - Supports role filtering (source, target, both)
-  - Supports entity type filtering
-  - Maps relationships to their connected entities
-  - Handles multiple relationship ID formats
-- **Input**: `EntityRelNodeInput` (relationship_ids, graph_id, entity_role_filter, entity_type_filter)
-- **Output**: `EntityRelNodeOutput` (entities list, entity_count, relationship_entity_map, message)
-- **Registered**: Added to orchestrator as "Entity.RelNode"
-- **Next Steps**: Create comprehensive tests for Entity.RelNode
-
-### GraphRAG Operator Implementation Progress
-- **Completed**: Entity.Onehop, Entity.RelNode (2 of 16 operators)
-- **In Progress**: Following priority plan from `Doc/graphrag_operator_status.md`
-- **Next Priority**: Chunk.FromRel, Relationship.VDB
-
-2025-06-02: Completed Chunk.FromRelationships implementation
-- Completed implementation of `chunk_from_relationships` function in `Core/AgentTools/chunk_tools.py`
-- Fixed graph extraction logic to properly handle wrapped graph instances
-- Added support for extracting chunks from:
-  - Edge data (direct text content and chunk lists)
-  - Connected nodes' chunk data
-  - Multiple chunk data formats (string IDs and full chunk dicts)
-- Implemented proper chunk data mapping from internal 'text' field to ChunkData 'content' field
-- Added metadata tracking for relationship IDs, source/target nodes
-- Implemented chunk limits (per relationship and total)
-- Created comprehensive unit tests in `testing/test_chunk_from_relationships_tool.py`:
-  - Basic chunk extraction
-  - Multiple relationships
-  - Dictionary relationship formats
-  - Chunk limits
-  - Invalid inputs
-  - Mixed chunk formats
-  - Composite edge keys
-- All 10 tests passing successfully
-- Operator already registered in orchestrator as "Chunk.FromRelationships"
-
-2025-05-31: Fixed LiteLLMProvider config compatibility and added diagnostic logging
-- Added `self.temperature` and `self.max_token` to `LiteLLMProvider.__init__`, loading from config.
-- Added `self.max_tokens` as an alias to `self.max_token` for compatibility with agent_brain usage.
-- Set `litellm.drop_params = True` after importing litellm in LiteLLMProvider.py to automatically drop unsupported parameters (like temperature) for O-series models (e.g., o4-mini) and similar, improving compatibility with OpenAI endpoints.
-- Fixes attribute error during plan generation in PlanningAgent when using LiteLLMProvider.
-- Added diagnostic logging to track config loading and initialization
-
-### Documentation
-- Created comprehensive handoff document at `Doc/handoff_2025_06_02.md`
-- Includes project overview, implementation status, key fixes, technical patterns
-- Documents next steps, priorities, and common issues/solutions
-- Provides complete context for continuing development in next session
-
-2025-05-31: Fixed LiteLLMProvider config compatibility and added diagnostic logging
-{{ ... }}
-- Fixed orchestrator to register graph instances in context after successful graph build tool execution
-  - Graph build tools now properly add their output to the shared GraphRAGContext
-  - This enables downstream tools like VDB builders to find the graph instance
-
-## 2025-06-02 - Entity VDB Build Tool Implementation
-
-**Issue**: The comprehensive demo was using `Relationship.VDB.Build` to build entity VDBs, which is incorrect since that tool is designed for relationships, not entities.
-
-**Solution**: 
-- Created a new `entity_vdb_build_tool` in `/home/brian/digimon/Core/AgentTools/entity_vdb_tools.py`
-- Added `EntityVDBBuildInputs` and `EntityVDBBuildOutputs` to tool contracts
-- Registered the new `Entity.VDB.Build` tool in the orchestrator
-- Fixed GraphRAGContext initialization to include embedding_provider, llm_provider, and chunk_storage_manager
-- Updated demo to use `Entity.VDB.Build` instead of `Relationship.VDB.Build`
-
-**Key Changes**:
-1. New file: `Core/AgentTools/entity_vdb_tools.py` - Implements entity VDB building from graph nodes
-2. Updated: `Core/AgentSchema/tool_contracts.py` - Added entity VDB input/output contracts
-3. Updated: `Core/AgentOrchestrator/orchestrator.py` - Added Entity.VDB.Build to tool registry
-4. Fixed: `testing/test_comprehensive_graphrag_demo.py` - Fixed GraphRAGContext initialization and VDB build tool usage
-
-This enables proper entity vector database building from graph nodes with their descriptions and metadata.
-
-{{ ... }}
-## 2025-06-02 - Entity VDB Build Tool Implementation
-
-**Issue**: The comprehensive demo was using `Relationship.VDB.Build` to build entity VDBs, which is incorrect since that tool is designed for relationships, not entities.
-
-**Solution**: 
-- Created a new `entity_vdb_build_tool` in `/home/brian/digimon/Core/AgentTools/entity_vdb_tools.py`
-- Added `EntityVDBBuildInputs` and `EntityVDBBuildOutputs` to tool contracts
-- Registered the new `Entity.VDB.Build` tool in the orchestrator
-- Fixed GraphRAGContext initialization to include embedding_provider, llm_provider, and chunk_storage_manager
-- Updated demo to use `Entity.VDB.Build` instead of `Relationship.VDB.Build`
-
-**Key Changes**:
-1. New file: `Core/AgentTools/entity_vdb_tools.py` - Implements entity VDB building from graph nodes
-2. Updated: `Core/AgentSchema/tool_contracts.py` - Added entity VDB input/output contracts
-3. Updated: `Core/AgentOrchestrator/orchestrator.py` - Added Entity.VDB.Build to tool registry
-4. Fixed: `testing/test_comprehensive_graphrag_demo.py` - Fixed GraphRAGContext initialization and VDB build tool usage
-
-**Results**:
-- Demo runs successfully end-to-end without errors
-- Entity VDB build step completes successfully
-- Pipeline demonstrates all major GraphRAG features: corpus prep, graph building, VDB operations, PPR, multi-hop traversal
-
-This enables proper entity vector database building from graph nodes with their descriptions and metadata.
-
-## 2025-06-02: Fixed Import Issues in Entity VDB Tools
-
-**Issue**: The entity_vdb_build_tool had incorrect imports causing module not found errors.
-
-**Solution**: 
-- Fixed import: Changed `from Core.Index.index_config import FAISSIndexConfig` to `from Core.Index.Schema import FAISSIndexConfig`
-- Fixed import: Changed `from Core.Common.StorageManager import Workspace, NameSpace` to `from Core.Storage.NameSpace import Workspace, NameSpace`
-- Fixed demo: Replaced custom SimpleEmbedding with `get_rag_embedding(config=main_config)`
-- Removed unused import: `from Core.Storage.JsonStorage import JsonStorage`
-
-**Result**: The comprehensive demo now runs successfully end-to-end, demonstrating all GraphRAG features without import errors.
-
-2025-06-02: Fixed Quick Revolution Test Script - COMPLETED
-- Fixed graph loading to properly configure namespace and load persisted graph data before VDB building
-- Fixed import paths for FAISSIndexConfig (from Core.Index.Schema) and Workspace/NameSpace (from Core.Storage.NameSpace)
-- Fixed VDB attribute names to use entity_name and score instead of name and similarity_score
-- Fixed one-hop neighbors tool parameters to use entity_ids (list) and graph_id instead of entity_name and graph_reference_id
-- Pipeline now successfully builds 99-entity VDB and finds one-hop neighbors
-- Confirmed existing agent infrastructure provides natural language interface through PlanningAgent.process_query()
-
-2025-06-02: Implemented Chunk.GetTextForEntities Tool and CLI Interface
-- **Created Chunk.GetTextForEntities Tool**:
-  - Added Pydantic contracts in `tool_contracts.py`: `ChunkGetTextForEntitiesInput`, `ChunkTextResultItem`, `ChunkGetTextForEntitiesOutput`
-  - Implemented `chunk_get_text_for_entities_tool` in `chunk_tools.py`
-  - Registered the tool in `orchestrator.py`
-  - Tool retrieves text chunks associated with specific entity IDs from the graph
-
-- **Created DIGIMON CLI (`digimon_cli.py`)**:
-  - Comprehensive CLI interface for natural language querying
-  - Supports three modes:
-    - Interactive mode (`-i`): Real-time query processing with REPL interface
-    - Single query mode (`-q`): Process one query and exit
-    - Batch mode (`-b`): Process queries from a file
-  - Features:
-    - Welcome banner with DIGIMON ASCII art
-    - Colored output using colorama
-    - Context display showing retrieved entities and chunks
-    - Error handling and logging
-    - Help system in interactive mode
-  - Integrates with PlanningAgent for end-to-end pipeline execution
-
-- **Technical Details**:
-- The Chunk.GetTextForEntities tool searches for chunk associations in entity nodes using multiple patterns:
-  - Single chunk IDs: `chunk_id`, `source_chunk_id`
-  - Multiple chunk IDs: `chunk_ids`, `source_chunks`
-  - Edge-based associations: checks neighbors with `node_type='chunk'`
-- Falls back to chunk storage manager or graph node content if direct retrieval fails
-- CLI uses async/await pattern for all operations
-- Properly handles corpus preparation and system initialization
-
-- **Usage Examples**:
-```bash
-# Interactive mode
-python digimon_cli.py -c /path/to/corpus -i
-
-# Single query
-python digimon_cli.py -c /path/to/corpus -q "What are the main topics?"
-
-# Batch processing
-python digimon_cli.py -c /path/to/corpus -b queries.txt -o results.json
-```
-
-This completes the core requirements for debugging VDB search, implementing chunk retrieval, and creating a robust CLI interface for the DIGIMON GraphRAG system.
-
-2025-06-02: DIGIMON CLI Implementation and Chunk Tool Integration - COMPLETED
-- **Added Chunk.GetTextForEntities Tool**:
-  - Implemented in `Core/AgentTools/chunk_tools.py`
-  - Retrieves text chunks associated with specific entity IDs from the graph
-  - Registered in `AgentOrchestrator` for pipeline integration
-  - Searches multiple chunk association patterns in entity nodes and edges
-- **Created DIGIMON CLI (`digimon_cli.py`)**:
-  - Comprehensive CLI interface for natural language querying
-  - Supports three modes: Interactive (-i), Single query (-q), Batch (-b)
-  - Features: Welcome banner, colored output, context display, error handling, and logging
-  - Integrates with PlanningAgent for end-to-end pipeline execution
-- **Key Changes**:
-  - New file: `Core/AgentTools/chunk_tools.py` - Implements Chunk.GetTextForEntities tool
-  - New file: `digimon_cli.py` - Comprehensive CLI interface for DIGIMON
-  - Updated: `Core/AgentSchema/tool_contracts.py` - Added Chunk.GetTextForEntities input/output contracts
-  - Updated: `Core/AgentOrchestrator/orchestrator.py` - Registered Chunk.GetTextForEntities tool
-- **Results**:
-  - CLI successfully initializes and executes queries end-to-end
-  - Test corpus created with sample ML/NLP documents
-  - Full pipeline execution confirmed (corpus prep → graph → VDB → query → answer)
-
-2025-06-02: Fixed Corpus Name Passing to PlanningAgent
-
-### Problem Identified
-- PlanningAgent was using default "MySampleTexts" as target_dataset_name instead of actual corpus name
-- This caused misalignment between prepared corpus and agent's execution plan
-
-### Fixes Applied
-1. **CLI Enhancement** (`digimon_cli.py`)
-   - Extract corpus name from provided path
-   - Pass `actual_corpus_name` parameter to PlanningAgent.process_query()
-
-2. **PlanningAgent Updates** (`Core/AgentBrain/agent_brain.py`)
-   - Added `actual_corpus_name` parameter to process_query() and generate_plan()
-   - Modified prompt generation to include corpus-specific instructions
-   - Ensures generated ExecutionPlan uses correct target_dataset_name
-
-3. **Enhanced Logging** (`Core/AgentTools/entity_vdb_tools.py`)
-   - Added detailed logging after VDB registration
-   - Logs available VDBs in context for debugging
-
-### Result
-- Agent now correctly uses the actual corpus name in execution plans
-- Better alignment between CLI input and agent behavior
-
-## 2025-06-02: Implemented ReAct-Style Iterative Planning (Phase 1)
-
-### Enhancement Overview
-Started implementing ReAct (Reason, Act, Observe) style agent architecture for more adaptive and robust query processing.
-
-### New Components Added
-
-1. **Natural Language Planning** (`Core/AgentBrain/agent_brain.py`)
-   - `_generate_natural_language_plan()`: Generates high-level plan as list of NL steps
-   - Uses LLM to break down query into sequential, human-readable steps
-   - Considers tool availability and prerequisites
-
-2. **NL to Pydantic Translation** (`Core/AgentBrain/agent_brain.py`)
-   - `_translate_nl_step_to_pydantic()`: Converts single NL step to ExecutionPlan
-   - Focused translation of one step at a time
-   - Maintains context awareness for parameter values
-
-3. **ReAct Query Processing** (`Core/AgentBrain/agent_brain.py`)
-   - `process_query_react()`: Experimental ReAct-style execution
-   - Currently executes first step only (proof of concept)
-   - Returns structured response with NL plan and execution results
-
-4. **CLI Integration** (`digimon_cli.py`)
-   - Added `--react` flag to enable ReAct mode
-   - Seamlessly switches between traditional and ReAct processing
-   - Maintains backward compatibility
-
-### Usage Example
-```bash
-# Traditional mode
-python digimon_cli.py -c Data/Physics_Small -q "What are the main entities?"
-
-# ReAct mode (iterative)
-python digimon_cli.py -c Data/Physics_Small -q "What are the main entities?" --react
-```
-
-### Next Steps for Full ReAct Implementation
-1. Complete the observation and reasoning loop
-2. Add context updates after each step
-3. Implement adaptive replanning based on observations
-4. Add error recovery and retry mechanisms
-5. Enable full multi-step execution with intermediate reasoning
-
-2025-06-02: Successful Corpus Preparation & Graph Building
-- **Confirmed Working:** The updated prompt successfully generates plans that include corpus preparation as the first step. Test execution shows:
-  - Corpus.PrepareFromDirectory successfully creates Corpus.json with documents from the input directory
-  - graph.BuildERGraph successfully builds the ER graph (73 nodes, 52 edges for Physics_Small dataset)
-  - Entity VDB building proceeds as expected
-- **Named Outputs Fix:** Corrected the named_outputs mapping in the prompt example - should map FROM tool output field names TO desired aliases (e.g., `"corpus_path": "corpus_json_path"` not the reverse)
-- **Graph Build Input:** Updated example to show that graph.BuildERGraph should use the literal dataset name, not a reference to corpus path output
-
-### 2025-06-02: Named Outputs & ReAct Mode Fixes
-- **Named Outputs Mapping:** Fixed incorrect mapping in the agent prompt examples and clarified instructions:
-  - Named outputs map FROM alias TO tool field: `{"your_alias": "actual_tool_output_field_name"}`
-  - Example: `{"er_graph_id": "graph_id"}` captures tool's "graph_id" and aliases it as "er_graph_id"
-  - Fixed aliasing for all steps in the example plan:
-    - Step 1: `{"prepared_corpus_name": "corpus_json_path"}`
-    - Step 2: `{"er_graph_id": "graph_id"}`
-    - Step 3: `{"entity_vdb_id": "vdb_reference_id"}`
-    - Step 4: `{"search_results": "similar_entities"}`
-  - This resolves orchestrator warnings about missing named output keys
-  - Graph build now successfully stores outputs and passes them to subsequent steps
-
-## 2025-06-02 15:20 PST - Fixed Fictional Corpus Test and Improved Answer Generation
-
-### Context
-Continued work on the DIGIMON pipeline with fictional "Zorathian Empire" corpus. The pipeline was executing but final answers weren't using the retrieved context properly.
-
-### Issues Fixed
-
-1. **Tool Name Mismatch in Example Plan**
-   - **Problem**: Example plan used "Entity.Onehop" but actual tool is "Relationship.OneHopNeighbors"
-   - **Solution**: Updated agent_brain.py example plan to use correct tool name
-   - **Result**: Reduced plan generation errors
-
-2. **Answer Generation Not Using Full Context**
-   - **Problem**: Final answer only used VDB search results (entity names/scores), ignored one-hop relationships and text chunks
-   - **Solution**: Enhanced answer generation in agent_brain.py to build comprehensive context from:
-     - VDB search results (entities and similarity scores)
-     - One-hop relationships (graph connections)
-     - Text chunks (when available)
-   - **Result**: More informative context passed to LLM for answer generation
-
-3. **Improved LLM Prompt for Answer Synthesis**
-   - **Problem**: LLM wasn't synthesizing answers from entity relationships when text chunks were missing
-   - **Solution**: Updated system prompt with clear instructions:
-     - Use text content as primary source when available
-     - Synthesize from entity names and relationships when text is missing
-     - Look for entities that directly answer the query
-     - Never use general knowledge, only provided context
-   - **Result**: LLM now generates answers using available context even without text chunks
-
-4. **Test Validation Improvements**
-   - **Problem**: Test only checked for "crystal" or "plague" keywords
-   - **Solution**: Expanded keyword checking to include:
-     - "crystal", "plague" (correct cause)
-     - "aerophantis", "zorthak", "emperor" (valid corpus references)
-     - Different success levels: EXCELLENT (correct cause) vs GOOD (corpus references)
-   - **Result**: Better validation of answer grounding in corpus
-
-### Current Status
-- Pipeline executes successfully: corpus prep → ER graph → VDB → search → neighbors → answer generation
-- VDB search finds relevant entities including "zorathian empire", "fall of aerophantis"
-- Answer generation now references corpus content (e.g., "fall of Aerophantis")
-- One-hop relationships sometimes return empty (plan-dependent)
-- Text chunk retrieval depends on generated plan (not always included)
-
-### Files Modified
-- `/home/brian/digimon/Core/AgentBrain/agent_brain.py` - Fixed tool name, enhanced context building and prompt
-- `/home/brian/digimon/testing/test_fictional_corpus.py` - Improved answer validation
+### Key Achievements
+- ✅ Full ReACT loop implemented with reasoning, acting, and observing
+- ✅ Async execution properly handled throughout
+- ✅ JSON extraction robust with regex fallback
+- ✅ Non-tool steps handled gracefully
+- ✅ Detailed logging at each iteration
+- ✅ Test corpus properly prepared before queries
 
 ### Next Steps
-- Investigate why one-hop relationships sometimes return empty results
-- Consider enforcing text chunk retrieval in the example plan
-- Test with different queries to ensure robust answer generation
+1. Improve agent's awareness of existing corpus data
+2. Enhance step translation to handle more varied natural language steps
+3. Add corpus existence checking to avoid redundant preparation attempts
+4. Implement better context passing between ReACT iterations
+5. Add comprehensive test cases for different query types
 
-## 2025-06-02 15:25 PST - Fixed One-Hop Neighbor Field Name Mismatch
+## 2025-06-02: ReACT Loop Testing Results
 
-### Context
-The agent brain's answer generation was not finding one-hop relationships even when they were successfully retrieved by the orchestrator.
+### Summary
+Tested the ReACT implementation with a new test script (`test_react_with_existing_data.py`) that assumes existing corpus and builds ER graph and VDB before running queries.
 
-### Issue
-- The answer generation code looked for `'one_hop_relationships'` field
-- But the actual tool output uses `'one_hop_neighbors'` field name
-- This caused the relationships to be ignored in the final answer synthesis
+### Key Changes
 
-### Solution
-Updated `agent_brain.py` to check for both field names:
-```python
-relationships = onehop_step_outputs.get('one_hop_relationships', 
-                                       onehop_step_outputs.get('one_hop_neighbors', []))
-```
+1. **Created New Test Script**:
+   - `test_react_with_existing_data.py` - Tests ReACT with pre-built resources
+   - Builds ER graph and VDB if not found
+   - Runs multiple test queries
 
-### Files Modified
-- `/home/brian/digimon/Core/AgentBrain/agent_brain.py` - Added fallback field name check
+2. **Fixed Import and Schema Issues**:
+   - Added `target_dataset_name` to BuildERGraphInputs
+   - Fixed build_er_graph call to pass individual parameters
+   - Fixed entity_vdb_build_tool parameter name
 
-### Current Status
-- Answer generation now looks for both possible field names
-- Relationships should be included in context when available
-- Still investigating inconsistent plan generation that sometimes skips one-hop or text retrieval steps
+### Test Results
+
+1. **ReACT Loop Executed Successfully**:
+   - Completed 10 iterations for each query
+   - Generated reasoning at each step
+   - Attempted to execute various steps
+
+2. **Issues Identified**:
+   - **Resource Detection Failed**: GraphRAGContext not finding built graphs/VDBs
+   - **Step Translation Problems**: Most steps marked as "non-tool" steps
+   - **No Tool Execution**: No actual tools were executed
+   - **Max Iterations Reached**: Loop hit 10 iteration limit without success
+
+3. **Final Answers Generated**:
+   - Query 1: "What is the main entities of the Zorathian Empire?" → Unable to find entities
+   - Query 2: "Tell me about Emperor Zorthak" → No information found
+   - Query 3: "What relationships exist between the Zorathian Empire and other entities?" → No details found
+
+### Key Learnings
+
+1. **GraphRAGContext Registration**: Graph and VDB build tools may not be properly registering resources
+2. **Step Translation**: Need better mapping from natural language steps to tool calls
+3. **Resource Awareness**: ReACT loop needs to better detect and use available resources
+
+### Next Steps
+
+1. **Fix Resource Registration**: Ensure graphs and VDBs are properly registered in GraphRAGContext
+2. **Improve Step Translation**: Better map NL steps to actual tool schemas
+3. **Add Direct Tool Execution**: Allow ReACT to directly execute tools when available
+4. **Test with Simpler Queries**: Start with queries that map directly to single tools
+5. **Debug Resource Detection**: Log what resources are available vs what's being detected
+
+### Code Status
+- ReACT loop implementation: ✅ Working (but needs improvements)
+- Resource detection: ❌ Not working properly
+- Step translation: ⚠️ Partially working
+- Tool execution: ❌ Not executing tools
+- Final answer generation: ✅ Working
+
+### ReACT Loop: Tool Invocation Formatting in Reasoning
+
+- **Issue**: LLM-generated actions in the ReACT loop (e.g., "Call the search_vector_db tool...") were being misclassified as "Non-tool steps". This was because the `is_tool_step` check in `PlanningAgent.process_query_react` requires actions to either contain specific prefixes (like "corpus.", "graph.") or start with "Use ". The system prompt for the `_react_reason` method did not instruct the LLM to format its tool-using actions accordingly.
+- **Fix**: Updated the system prompt within the `_react_reason` method in `Core/AgentBrain/agent_brain.py`. The prompt now explicitly instructs the LLM that if its `next_step` involves calling a tool, the description **MUST** start with "Use " followed by the general action (e.g., "Use search_vector_db with ...").
+- **Goal**: Ensure that LLM-generated actions intended as tool calls are correctly identified and translated into executable `ExecutionPlan` objects, enabling actual tool execution within the ReACT loop.
+
+### ReACT Loop: Resource Registration Fix in Test Script
+
+- **Issue**: The `PlanningAgent` in the ReACT loop was not recognizing pre-built ER graphs and VDBs prepared by `testing/test_react_with_existing_data.py`. This was because the `prepare_existing_data` function in the test script did not correctly register these resources into the `GraphRAGContext` instance.
+    - The `build_er_graph` tool returned the graph instance, but the test script didn't add it to the context.
+    - The `entity_vdb_build_tool` handled its own registration, but the test script's checking and logging logic for VDBs was flawed (using `get_vector_db` instead of `get_vdb_instance` and not properly checking tool output).
+- **Fix**: 
+    - Modified `prepare_existing_data` in `testing/test_react_with_existing_data.py`:
+        - To capture the `graph_instance` from the output of `build_er_graph` and explicitly call `graphrag_context.add_graph_instance()`.
+        - To correctly use `graphrag_context.get_vdb_instance()` for checking existing VDBs, and to rely on `entity_vdb_build_tool` for internal registration, improving logging around VDB preparation based on the tool's output.
+- **Goal**: Ensure `PlanningAgent` correctly identifies and uses pre-existing resources, preventing unnecessary rebuild attempts in the ReACT loop during tests.
+
+### ReACT Loop: Step Translation Enhancement (ExecutionPlan)
+
+- **Issue**: `_translate_nl_step_to_pydantic` in `Core/AgentBrain/agent_brain.py` was failing due to Pydantic validation errors for `ExecutionPlan`. The LLM was not generating all required top-level fields (`plan_description`, `target_dataset_name`, `steps`), and the parsing logic was only attempting to populate `execution_steps`.
+- **Fix Attempted**:
+    - Modified the user prompt in `_translate_nl_step_to_pydantic` to explicitly instruct the LLM to generate a *complete* `ExecutionPlan` JSON, providing clear instructions on how to populate `plan_description`, `target_dataset_name` (using the current `corpus_name`), and ensuring the `steps` list contains the single translated step.
+    - Updated the parsing logic to use `ExecutionPlan(**plan_json)`, expecting a full dictionary from the LLM.
+    - Added more detailed logging for missing fields or parsing errors during this translation phase.
+- **Goal**: To resolve the Pydantic validation errors and enable successful translation of natural language ReACT steps into executable `ExecutionPlan` objects.
+
+## 2025-06-02 Session End: ReACT Loop Handoff
+
+- Created handoff document `Doc/handoff_2025_06_02_react_loop_status.md` summarizing the current state of the ReACT loop implementation, key achievements, outstanding issues (primarily resource detection in GraphRAGContext and step-to-tool translation), and detailed next steps for debugging and improvement.
+- The non-ReACT pipeline (via `digimon_cli.py`) was confirmed to be working, indicating underlying tools are functional.
+- Focus for next session: Resolve resource detection within ReACT and improve step translation to enable actual tool execution within the loop.

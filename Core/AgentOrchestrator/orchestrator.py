@@ -353,7 +353,15 @@ class AgentOrchestrator:
                             logger.info(f"Orchestrator: Stored output '{key}' for step {step.step_id} (tool {tool_call.tool_id}).")
 
                     elif tool_output is not None:
-                         logger.info(f"Orchestrator: Tool {tool_call.tool_id} produced output, but no 'named_outputs' defined in plan. Output not stored by specific name.")
+                        logger.info(f"Orchestrator: Tool {tool_call.tool_id} produced output, but no 'named_outputs' defined in plan. Storing entire output.")
+                        # Store the entire output under a default key when no named_outputs defined
+                        if isinstance(tool_output, dict):
+                            # Store all keys from the output dict
+                            for key, value in tool_output.items():
+                                current_step_outputs[key] = value
+                        else:
+                            # Store under tool_id as key
+                            current_step_outputs[tool_call.tool_id] = tool_output
 
                 except Exception as e:
                     logger.error(f"Orchestrator: Error during execution of tool {tool_call.tool_id} in step {step.step_id}. Exception: {str(e)}", exc_info=True)

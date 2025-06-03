@@ -1,0 +1,34 @@
+{
+  "corpus_name": "Fictional_Test",
+  "documents": [
+    {
+      "id": "doc1",
+      "title": "The Zorathian Empire",
+      "content": "The Zorathian Empire was a vast interstellar civilization that spanned multiple galaxies. Its capital, Xelandra Prime, was known for its crystalline architecture and advanced technology. The empire was ruled by Emperor Zara'thul for over three centuries before the Crystal Plague led to its downfall.",
+      "entities": [
+        {"name": "Zorathian Empire", "type": "Organization"},
+        {"name": "Xelandra Prime", "type": "Location"},
+        {"name": "Emperor Zara'thul", "type": "Person"},
+        {"name": "Crystal Plague", "type": "Event"}
+      ],
+      "relations": [
+        {"source": "Zorathian Empire", "target": "Xelandra Prime", "type": "has_capital"},
+        {"source": "Emperor Zara'thul", "target": "Zorathian Empire", "type": "rules"},
+        {"source": "Crystal Plague", "target": "Zorathian Empire", "type": "caused_downfall_of"}
+      ]
+    },
+    {
+      "id": "doc2",
+      "title": "The Mystara Confederation",
+      "content": "The Mystara Confederation was a democratic alliance of seven star systems that rivaled the Zorathian Empire. They pioneered the use of quantum entanglement for faster-than-light communication and developed the first sentient AI collective known as the Synthminds.",
+      "entities": [
+        {"name": "Mystara Confederation", "type": "Organization"},
+        {"name": "Synthminds", "type": "Technology"}
+      ],
+      "relations": [
+        {"source": "Mystara Confederation", "target": "Zorathian Empire", "type": "rivals"},
+        {"source": "Mystara Confederation", "target": "Synthminds", "type": "developed"}
+      ]
+    }
+  ]
+}

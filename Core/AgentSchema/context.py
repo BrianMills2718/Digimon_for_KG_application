@@ -2,7 +2,7 @@
 
 import uuid
 from pydantic import BaseModel, Field
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Index.BaseIndex import BaseIndex
 from Option.Config2 import Config as FullConfig # Use FullConfig alias
@@ -35,21 +35,39 @@ class GraphRAGContext(BaseModel):
         validate_assignment = True 
 
     def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
+        logger.debug(f"GraphRAGContext: Before adding graph '{graph_id}'. Current graphs: {list(self.graphs.keys())}")
         self.graphs[graph_id] = graph_instance
-        logger.info(f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}).")
+        logger.info(f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}). Updated graphs: {list(self.graphs.keys())}")
 
     def get_graph_instance(self, graph_id: str) -> Optional[BaseGraph]:
+        logger.debug(f"GraphRAGContext: Attempting to get graph '{graph_id}'. Current available graphs: {list(self.graphs.keys())}")
         instance = self.graphs.get(graph_id)
-        if not instance:
+        if instance:
+            logger.debug(f"GraphRAGContext: Successfully retrieved graph '{graph_id}'.")
+        else:
             logger.warning(f"GraphRAGContext: Graph ID '{graph_id}' not found. Available: {list(self.graphs.keys())}")
         return instance
 
     def add_vdb_instance(self, vdb_id: str, vdb_instance: BaseIndex):
+        logger.debug(f"GraphRAGContext: Before adding VDB '{vdb_id}'. Current VDBs: {list(self.vdbs.keys())}")
         self.vdbs[vdb_id] = vdb_instance
-        logger.info(f"GraphRAGContext: Added VDB '{vdb_id}' (type: {type(vdb_instance)}).")
+        logger.info(f"GraphRAGContext: Added VDB '{vdb_id}' (type: {type(vdb_instance)}). Updated VDBs: {list(self.vdbs.keys())}")
 
     def get_vdb_instance(self, vdb_id: str) -> Optional[BaseIndex]:
+        logger.debug(f"GraphRAGContext: Attempting to get VDB '{vdb_id}'. Current available VDBs: {list(self.vdbs.keys())}")
         instance = self.vdbs.get(vdb_id)
-        if not instance:
+        if instance:
+            logger.debug(f"GraphRAGContext: Successfully retrieved VDB '{vdb_id}'.")
+        else:
             logger.warning(f"GraphRAGContext: VDB ID '{vdb_id}' not found. Available: {list(self.vdbs.keys())}")
         return instance
+
+    def list_graphs(self) -> List[str]:
+        keys = list(self.graphs.keys())
+        logger.debug(f"GraphRAGContext: Listing all graph keys. Found: {keys}")
+        return keys
+
+    def list_vdbs(self) -> List[str]:
+        keys = list(self.vdbs.keys())
+        logger.debug(f"GraphRAGContext: Listing all VDB keys. Found: {keys}")
+        return keys

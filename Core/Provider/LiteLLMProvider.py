@@ -17,6 +17,8 @@ from Core.Common.Logger import logger, log_llm_stream
 from Core.Common.CostManager import CostManager
 from Core.Common.Constants import USE_CONFIG_TIMEOUT
 from Core.Utils.TokenCounter import count_input_tokens, count_output_tokens
+from Core.Common.RetryUtils import retry_llm_call
+from Core.Common.CacheManager import cached, get_cache_manager
 
 # This is the import for the decorator functionality
 from Core.Provider.LLMProviderRegister import register_provider # Ensure this is clean
@@ -73,6 +75,7 @@ class LiteLLMProvider(BaseLLM):
         # Filter out None values for optional LiteLLM params like api_key, base_url
         return {k: v for k, v in params.items() if v is not None}
 
+    @retry_llm_call(max_attempts=3)
     async def _achat_completion(self, messages: list[dict], timeout: Optional[int] = None, max_tokens: Optional[int] = None, **kwargs) -> litellm.ModelResponse:
         """
         Core asynchronous completion call using LiteLLM.
@@ -129,6 +132,7 @@ class LiteLLMProvider(BaseLLM):
             self._update_costs(calculated_usage) #
         return response
 
+    @retry_llm_call(max_attempts=3)
     async def _achat_completion_stream(self, messages: list[dict], timeout: Optional[int] = None, max_tokens: Optional[int] = None, **kwargs) -> AsyncGenerator[str, None]:
         """
         Core asynchronous streaming completion call using LiteLLM.
