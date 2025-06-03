@@ -1,7 +1,18 @@
 import faiss
 import os
 from Core.Common.BaseFactory import ConfigBasedFactory
-from Core.Index.ColBertIndex import ColBertIndex
+from Core.Common.Logger import logger
+
+# Try to import ColBERT, but make it optional
+COLBERT_AVAILABLE = False
+try:
+    from Core.Index.ColBertIndex import ColBertIndex
+    COLBERT_AVAILABLE = True
+    logger.info("ColBERT support is available")
+except ImportError as e:
+    logger.warning(f"ColBERT support is not available due to missing dependencies: {e}")
+    logger.warning("System will use FAISS for all vector indexing needs")
+
 from Core.Index.Schema import (
     BaseIndexConfig,
     VectorIndexConfig,
@@ -33,6 +44,18 @@ class RAGIndexFactory(ConfigBasedFactory):
 
     @classmethod
     def _create_colbert(cls, config: ColBertIndexConfig):
+        if not COLBERT_AVAILABLE:
+            error_msg = (
+                "ColBERT index was requested but ColBERT is not available due to dependency issues.\n"
+                "This is likely due to incompatible transformers/tokenizers versions.\n"
+                "Options:\n"
+                "1. Set 'vdb_type: faiss' in your config instead of 'colbert'\n"
+                "2. Set 'disable_colbert: true' in your Config2.yaml\n"
+                "3. Fix the dependency conflict by installing: pip install transformers==4.21.0 tokenizers==0.12.1\n"
+                "Note: Option 3 may break other components that need newer transformers."
+            )
+            logger.error(error_msg)
+            raise ImportError(error_msg)
         return ColBertIndex(config)
 
     

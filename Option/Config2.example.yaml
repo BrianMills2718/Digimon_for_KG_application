@@ -18,3 +18,7 @@ data_root: "./Data"
 
 working_dir: ./results
 exp_name: test
+
+# Optional: Disable ColBERT to avoid dependency issues
+# Set to true if you encounter ColBERT/transformers compatibility problems
+disable_colbert: false

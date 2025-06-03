@@ -140,3 +140,9 @@ DIGIMON is a modular GraphRAG system built around an intelligent agent framework
 **Testing Pattern**: Tools tested both individually and in integrated agent workflows
 
 **Configuration Override**: Agent tools can override default configs for dynamic operation
+
+**ColBERT Dependency Issues**: If you encounter ColBERT/transformers compatibility errors:
+- Set `vdb_type: faiss` in method configs instead of `colbert`
+- Or add `disable_colbert: true` to your Config2.yaml
+- The system will automatically fall back to FAISS for vector indexing
+- Note: Existing ColBERT indexes must be rebuilt as FAISS indexes

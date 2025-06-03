@@ -1,6 +1,7 @@
 """
 Index Config Factory.
 """
+from Core.Common.Logger import logger
 from Core.Index import get_rag_embedding
 from Core.Index.Schema import (
     VectorIndexConfig,
@@ -37,6 +38,26 @@ class IndexConfigFactory:
 
     @staticmethod
     def _create_colbert_config(config, persist_path):
+        # Check if ColBERT should be disabled via config
+        if hasattr(config, 'disable_colbert') and config.disable_colbert:
+            logger.warning("ColBERT is disabled via configuration. Using FAISS instead.")
+            return FAISSIndexConfig(
+                persist_path=persist_path,
+                embed_model=get_rag_embedding(config.embedding.api_type, config)
+            )
+        
+        # Check if ColBERT is available
+        try:
+            from Core.Index.IndexFactory import COLBERT_AVAILABLE
+            if not COLBERT_AVAILABLE:
+                logger.warning("ColBERT requested in config but not available. Using FAISS instead.")
+                return FAISSIndexConfig(
+                    persist_path=persist_path,
+                    embed_model=get_rag_embedding(config.embedding.api_type, config)
+                )
+        except ImportError:
+            pass
+        
         return ColBertIndexConfig(persist_path=persist_path, index_name="nbits_2",
                                   model_name=config.colbert_checkpoint_path, nbits=2)
 

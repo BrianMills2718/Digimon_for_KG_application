@@ -76,6 +76,7 @@ class Config(WorkingParams, YamlModel):
 
     # ColBert Option
     use_colbert: bool = True
+    disable_colbert: bool = False  # Force disable ColBERT even if use_colbert is True (for dependency issues)
     colbert_checkpoint_path: str = "/home/yingli/HippoRAG/exp/colbertv2.0"
     index_name: str = "nbits_2"
     similarity_max: float = 1.0
