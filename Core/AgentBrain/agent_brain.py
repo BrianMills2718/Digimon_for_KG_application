@@ -475,7 +475,7 @@ The output MUST be a single JSON object conforming to the ExecutionPlan schema.
         try:
             log_with_context(logger, "INFO", "Calling LLM for plan generation", 
                            prompt_length=len(full_prompt_for_logging),
-                           model=self.llm_provider.model)
+                           model=str(self.llm_provider.model))
             
             execution_plan: Optional[ExecutionPlan] = await self.llm_provider.async_instructor_completion(
                 messages=messages,

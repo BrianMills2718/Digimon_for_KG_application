@@ -9,10 +9,18 @@ import pytest
 from pathlib import Path
 from typing import Dict, Any, Optional
 from unittest.mock import Mock, AsyncMock, patch
+import warnings
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# Suppress warnings during test imports
+warnings.filterwarnings("ignore", category=ImportWarning)
+warnings.filterwarnings("ignore", message="Tensorflow not installed")
+
+# Set minimal test environment
+os.environ["DIGIMON_TEST_MODE"] = "true"
 
 from Config.LLMConfig import LLMConfig
 from Core.Provider.LiteLLMProvider import LiteLLMProvider
@@ -49,20 +57,53 @@ def mock_llm_config():
 
 
 @pytest.fixture
+def mock_config():
+    """Mock full configuration for testing."""
+    from Option.Config2 import Config
+    from Config.LLMConfig import LLMConfig
+    from Config.EmbConfig import EmbeddingConfig
+    
+    # Create minimal config with required fields
+    config_data = {
+        'llm': {
+            'api_type': 'litellm',
+            'model': 'openai/gpt-3.5-turbo',
+            'api_key': 'test-key',
+            'temperature': 0.0,
+            'max_token': 1000
+        },
+        'embedding': {
+            'api_type': 'openai',
+            'api_key': 'test-key',
+            'model': 'text-embedding-3-small',
+            'dimensions': 1024
+        },
+        'data_root': './Data',
+        'working_dir': './results',
+        'exp_name': 'test'
+    }
+    
+    return Config(**config_data)
+
+
+@pytest.fixture
 def mock_llm_provider(mock_llm_config):
     """Mock LLM provider that doesn't make real API calls."""
-    with patch('Core.Provider.LiteLLMProvider.LiteLLMProvider') as MockProvider:
-        provider = MockProvider(mock_llm_config)
-        
-        # Mock common methods
-        provider.acompletion = AsyncMock(return_value=Mock(
-            choices=[Mock(message=Mock(content="Test response"))]
-        ))
-        provider.async_instructor_completion = AsyncMock()
-        provider.model = "openai/gpt-3.5-turbo"
-        provider.max_tokens = 1000
-        
-        yield provider
+    from Core.Provider.LiteLLMProvider import LiteLLMProvider
+    
+    # Create a real instance but mock its methods
+    provider = LiteLLMProvider(mock_llm_config)
+    
+    # Mock the actual API calls
+    provider.acompletion = AsyncMock(return_value=Mock(
+        choices=[Mock(message=Mock(content="Test response"))]
+    ))
+    provider.async_instructor_completion = AsyncMock()
+    provider._achat_completion = AsyncMock(return_value=Mock(
+        choices=[Mock(message=Mock(content="Test response"))]
+    ))
+    
+    return provider
 
 
 @pytest.fixture
