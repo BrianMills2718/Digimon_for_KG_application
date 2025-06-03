@@ -38,12 +38,8 @@ class EnhancedAgentOrchestrator(AgentOrchestrator):
         # Wrap LLM and encoder with enhanced versions if not already wrapped
         if not isinstance(llm_instance, EnhancedLiteLLMProvider):
             logger.info("Wrapping LLM with EnhancedLiteLLMProvider")
-            self.enhanced_llm = EnhancedLiteLLMProvider(
-                api_key=getattr(llm_instance, '_api_key', main_config.llm.api_key),
-                model=getattr(llm_instance, '_model_name', main_config.llm.model),
-                temperature=getattr(llm_instance, '_temperature', main_config.llm.temperature),
-                base_provider=llm_instance
-            )
+            # EnhancedLiteLLMProvider expects an LLMConfig object
+            self.enhanced_llm = EnhancedLiteLLMProvider(main_config.llm)
         else:
             self.enhanced_llm = llm_instance
             
@@ -58,9 +54,9 @@ class EnhancedAgentOrchestrator(AgentOrchestrator):
         
         # Initialize adaptive timeout
         self.adaptive_timeout = AdaptiveTimeout(
-            initial_timeout=60.0,
-            max_timeout=600.0,
-            min_timeout=10.0
+            base_timeout=60,
+            max_timeout=600,
+            min_timeout=10
         )
         
     async def _execute_tool_with_monitoring(
@@ -84,7 +80,7 @@ class EnhancedAgentOrchestrator(AgentOrchestrator):
                 else:
                     estimated_tokens = 1000  # Default for other tools
                     
-                timeout = self.adaptive_timeout.get_timeout(estimated_tokens)
+                timeout = await self.adaptive_timeout.get_timeout(estimated_tokens)
                 
                 # Execute with timeout
                 result = await asyncio.wait_for(
@@ -94,7 +90,7 @@ class EnhancedAgentOrchestrator(AgentOrchestrator):
                 
                 # Update adaptive timeout on success
                 duration = (datetime.now() - start_time).total_seconds()
-                self.adaptive_timeout.update(estimated_tokens, duration, success=True)
+                await self.adaptive_timeout.update_performance(duration, estimated_tokens)
                 
                 # Log performance metrics
                 logger.info(f"Tool {tool_id} completed in {duration:.2f}s")
@@ -103,7 +99,7 @@ class EnhancedAgentOrchestrator(AgentOrchestrator):
                 
         except asyncio.TimeoutError:
             duration = (datetime.now() - start_time).total_seconds()
-            self.adaptive_timeout.update(estimated_tokens, duration, success=False)
+            await self.adaptive_timeout.update_performance(duration, estimated_tokens)
             
             raise LLMTimeoutError(
                 message=f"Tool {tool_id} timed out after {timeout:.0f}s",
