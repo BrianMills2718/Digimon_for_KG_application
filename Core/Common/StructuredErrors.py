@@ -24,6 +24,9 @@ class ErrorCategory(Enum):
     LLM_INVALID_RESPONSE = "llm_invalid_response"
     LLM_API_ERROR = "llm_api_error"
     
+    # Embedding related
+    EMBEDDING_ERROR = "embedding_error"
+    
     # Data related
     DATA_NOT_FOUND = "data_not_found"
     DATA_INVALID_FORMAT = "data_invalid_format"
@@ -135,7 +138,7 @@ class LLMError(StructuredError):
         super().__init__(message, ErrorCategory.LLM_API_ERROR, **kwargs)
 
 
-class LLMTimeoutError(LLMError):
+class LLMTimeoutError(StructuredError):
     """LLM request timeout error."""
     
     def __init__(
@@ -173,7 +176,7 @@ class LLMTimeoutError(LLMError):
         ))
 
 
-class LLMRateLimitError(LLMError):
+class LLMRateLimitError(StructuredError):
     """LLM rate limit error."""
     
     def __init__(
@@ -202,6 +205,35 @@ class LLMRateLimitError(LLMError):
             action="use_fallback_model",
             description="Use a fallback model with lower rate limits",
             params={"fallback_models": ["gpt-3.5-turbo", "claude-instant"]}
+        ))
+
+
+class EmbeddingError(StructuredError):
+    """Embedding generation error."""
+    
+    def __init__(
+        self,
+        message: str,
+        model: Optional[str] = None,
+        **kwargs
+    ):
+        super().__init__(
+            message,
+            category=ErrorCategory.EMBEDDING_ERROR,
+            **kwargs
+        )
+        self.model = model
+        
+        # Add recovery strategies
+        self.add_recovery_strategy(RecoveryStrategy(
+            action="retry_with_smaller_batch",
+            description="Retry with smaller batch size",
+            params={"batch_size": 16}
+        ))
+        self.add_recovery_strategy(RecoveryStrategy(
+            action="use_fallback_embedding",
+            description="Use fallback embedding method",
+            params={"method": "tfidf"}
         ))
 
 

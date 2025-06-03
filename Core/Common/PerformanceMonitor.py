@@ -167,6 +167,29 @@ class PerformanceMonitor:
                 f"  CPU: mean={stats['cpu_delta']['mean']:.1f}%, "
                 f"max={stats['cpu_delta']['max']:.1f}%"
             )
+    
+    def measure_operation(self, operation_name: str):
+        """Context manager for measuring operation performance."""
+        from contextlib import contextmanager
+        
+        @contextmanager
+        def _measure():
+            operation_id = f"{operation_name}_{id(self)}_{time.time()}"
+            self.start_monitoring(operation_id)
+            exception = None
+            try:
+                yield
+            except Exception as e:
+                exception = e
+                raise
+            finally:
+                self.stop_monitoring(
+                    operation_id,
+                    operation_name,
+                    exception=exception
+                )
+        
+        return _measure()
 
 
 # Global performance monitor instance
