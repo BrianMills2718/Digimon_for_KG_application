@@ -101,6 +101,17 @@ class DynamicToolRegistry:
         from Core.AgentTools.graph_visualization_tools import visualize_graph
         from Core.AgentTools.graph_analysis_tools import analyze_graph
         
+        # Import social media analysis tools
+        try:
+            from Core.AgentTools.social_media_dataset_tools import (
+                ingest_covid_conspiracy_dataset, DatasetIngestionInput
+            )
+            from Core.AgentTools.automated_interrogative_planner import (
+                generate_interrogative_analysis_plans, AutoInterrogativePlanInput
+            )
+        except ImportError:
+            logger.warning("Social media analysis tools not found, skipping registration")
+        
         # Import input models
         from Core.AgentSchema.tool_contracts import (
             EntityVDBSearchInputs, EntityVDBBuildInputs, EntityPPRInputs,
@@ -331,6 +342,40 @@ class DynamicToolRegistry:
                 tags=["graph", "analysis", "statistics"]
             )
         )
+        
+        # Register social media analysis tools if available
+        try:
+            self.register_tool(
+                tool_id="social.IngestCOVIDDataset",
+                function=ingest_covid_conspiracy_dataset,
+                metadata=ToolMetadata(
+                    tool_id="social.IngestCOVIDDataset",
+                    name="COVID Conspiracy Dataset Ingestion",
+                    description="Ingest COVID-19 conspiracy theory tweets from Hugging Face",
+                    category=ToolCategory.WRITE,
+                    capabilities={ToolCapability.DATA_PREPARATION},
+                    input_model=DatasetIngestionInput,
+                    tags=["social", "dataset", "covid", "conspiracy", "twitter"],
+                    performance_hint="Downloads dataset from internet"
+                )
+            )
+            
+            self.register_tool(
+                tool_id="social.AutoInterrogativePlanner",
+                function=generate_interrogative_analysis_plans,
+                metadata=ToolMetadata(
+                    tool_id="social.AutoInterrogativePlanner",
+                    name="Automated Interrogative Analysis Planner",
+                    description="Generate diverse analysis scenarios with interrogative views",
+                    category=ToolCategory.ANALYZE,
+                    capabilities={ToolCapability.ANALYSIS},
+                    input_model=AutoInterrogativePlanInput,
+                    tags=["social", "planning", "analysis", "interrogative"],
+                    performance_hint="LLM-powered planning"
+                )
+            )
+        except Exception as e:
+            logger.warning(f"Could not register social media tools: {e}")
         
         logger.info(f"DynamicToolRegistry: Initialized with {len(self._tools)} default tools")
     
