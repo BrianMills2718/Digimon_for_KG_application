@@ -25,11 +25,19 @@ dataset_cache = {}
 
 @app.route('/api/ingest-dataset', methods=['POST'])
 def ingest_dataset():
-    """Ingest dataset from Hugging Face"""
+    """Ingest dataset from Hugging Face or local CSV"""
     try:
         data = request.json
         dataset_name = data.get('dataset_name', 'webimmunization/COVID-19-conspiracy-theories-tweets')
         max_rows = data.get('max_rows')
+        source_type = data.get('source_type', 'huggingface')
+        
+        # Check if local file exists
+        if source_type == 'auto':
+            if Path(dataset_name).exists() and dataset_name.endswith('.csv'):
+                source_type = 'local'
+            else:
+                source_type = 'huggingface'
         
         # Create temporary directory for output
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -40,7 +48,8 @@ def ingest_dataset():
                 dataset_name=dataset_name,
                 split='train',
                 output_path=output_path,
-                max_rows=max_rows if max_rows else None
+                max_rows=max_rows if max_rows else None,
+                source_type=source_type
             )
             
             # Run async function in sync context

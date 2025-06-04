@@ -9,10 +9,11 @@ from Core.Common.Logger import logger
 
 class DatasetIngestionInput(BaseToolParams):
     """Input for dataset ingestion tool"""
-    dataset_name: str = Field(description="Hugging Face dataset name")
-    split: str = Field(default="train", description="Dataset split to load")
+    dataset_name: str = Field(description="Hugging Face dataset name or local CSV path")
+    split: str = Field(default="train", description="Dataset split to load (for HF datasets)")
     output_path: str = Field(description="Path to save processed dataset")
     max_rows: Optional[int] = Field(default=None, description="Maximum rows to process")
+    source_type: str = Field(default="huggingface", description="Source type: 'huggingface' or 'local'")
 
 class DatasetIngestionOutput(BaseToolOutput):
     """Output from dataset ingestion"""
@@ -29,15 +30,20 @@ class SocialMediaDatasetIngestor:
         self.logger = logger
     
     def ingest_covid_conspiracy_dataset(self, input_data: DatasetIngestionInput) -> DatasetIngestionOutput:
-        """Ingest COVID conspiracy tweets dataset from Hugging Face"""
+        """Ingest COVID conspiracy tweets dataset from Hugging Face or local file"""
         try:
             self.logger.info(f"Loading dataset: {input_data.dataset_name}")
             
-            # Load dataset from Hugging Face
-            dataset = load_dataset(input_data.dataset_name, split=input_data.split)
-            
-            # Convert to pandas for easier processing
-            df = dataset.to_pandas()
+            # Load dataset based on source type
+            if input_data.source_type == "local":
+                # Load from local CSV file
+                df = pd.read_csv(input_data.dataset_name)
+                self.logger.info(f"Loaded {len(df)} rows from local CSV")
+            else:
+                # Load dataset from Hugging Face
+                dataset = load_dataset(input_data.dataset_name, split=input_data.split)
+                # Convert to pandas for easier processing
+                df = dataset.to_pandas()
             
             # Limit rows if specified
             if input_data.max_rows:
