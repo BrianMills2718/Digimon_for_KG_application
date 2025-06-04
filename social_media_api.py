@@ -146,20 +146,66 @@ def generate_plan():
 
 @app.route('/api/execute-analysis', methods=['POST'])
 def execute_analysis():
-    """Execute analysis scenarios (placeholder for now)"""
+    """Execute analysis scenarios using DIGIMON engine"""
     try:
         data = request.json
         scenarios = data.get('scenarios', [])
         
-        # TODO: Implement actual execution using DIGIMON's graph building and analysis tools
-        # For now, return a placeholder response
+        # Import the execution engine
+        from social_media_execution import SocialMediaAnalysisExecutor
+        
+        # Create executor
+        executor = SocialMediaAnalysisExecutor()
+        
+        # Get dataset info from cache
+        dataset_info = dataset_cache.get('current', {})
+        dataset_info['path'] = data.get('dataset_path', 'COVID-19-conspiracy-theories-tweets.csv')
+        
+        # Run analysis in background (in production, use proper task queue)
+        import threading
+        
+        def run_analysis():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            results = loop.run_until_complete(
+                executor.execute_all_scenarios(scenarios, dataset_info)
+            )
+            # Store results
+            dataset_cache['analysis_results'] = results
+        
+        thread = threading.Thread(target=run_analysis)
+        thread.start()
         
         return jsonify({
             'success': True,
             'message': f'Analysis execution started for {len(scenarios)} scenarios',
-            'status': 'in_progress'
+            'status': 'in_progress',
+            'check_status_url': '/api/analysis-status'
         }), 200
         
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/analysis-status', methods=['GET'])
+def get_analysis_status():
+    """Get the status of ongoing analysis"""
+    try:
+        results = dataset_cache.get('analysis_results')
+        
+        if results:
+            return jsonify({
+                'status': 'completed',
+                'results': results
+            }), 200
+        else:
+            return jsonify({
+                'status': 'in_progress',
+                'message': 'Analysis is still running...'
+            }), 200
+            
     except Exception as e:
         return jsonify({
             'success': False,

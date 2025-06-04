@@ -217,18 +217,36 @@
                         </template>
                     </div>
                     
-                    <div x-show="analysisPlan?.scenarios?.length > 0" class="mt-6 flex justify-center">
-                        <button 
-                            @click="executeAnalysis()"
-                            :disabled="loading.execution"
-                            class="bg-purple-600 text-white py-2 px-6 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                        >
-                            <span x-show="!loading.execution">Execute All Scenarios</span>
-                            <span x-show="loading.execution" class="flex items-center">
-                                <div class="loading-spinner w-5 h-5 mr-2"></div>
-                                Executing...
-                            </span>
-                        </button>
+                    <div x-show="analysisPlan?.scenarios?.length > 0" class="mt-6">
+                        <div class="flex justify-center">
+                            <button 
+                                @click="executeAnalysis()"
+                                :disabled="loading.execution || analysisProgress > 0"
+                                class="bg-purple-600 text-white py-2 px-6 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <span x-show="!loading.execution && analysisProgress === 0">Execute All Scenarios</span>
+                                <span x-show="loading.execution" class="flex items-center">
+                                    <div class="loading-spinner w-5 h-5 mr-2"></div>
+                                    Starting...
+                                </span>
+                                <span x-show="analysisProgress > 0 && analysisProgress < 100">
+                                    Analysis in Progress...
+                                </span>
+                            </button>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div x-show="analysisProgress > 0" class="mt-4">
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div 
+                                    class="bg-purple-600 h-3 rounded-full transition-all duration-500"
+                                    :style="`width: ${analysisProgress}%`"
+                                ></div>
+                            </div>
+                            <p class="text-center mt-2 text-sm text-gray-600">
+                                <span x-text="analysisProgress"></span>% Complete
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -304,6 +322,116 @@
                 </div>
             </div>
         </div>
+
+        <!-- Analysis Results Modal -->
+        <div 
+            x-show="showResults && analysisResults" 
+            x-transition
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click.away="showResults = false"
+        >
+            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6" @click.stop>
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-2xl font-semibold">Analysis Results</h3>
+                    <button 
+                        @click="showResults = false"
+                        class="text-gray-400 hover:text-gray-600"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-6" x-show="analysisResults?.scenario_results">
+                    <template x-for="(result, index) in analysisResults.scenario_results" :key="index">
+                        <div class="border rounded-lg p-4">
+                            <h4 class="text-lg font-semibold mb-2" x-text="result.scenario"></h4>
+                            <p class="text-gray-600 mb-4" x-text="result.research_question"></p>
+                            
+                            <!-- Insights -->
+                            <div class="space-y-4" x-show="result.insights && result.insights.length > 0">
+                                <template x-for="insight in result.insights" :key="insight.interrogative">
+                                    <div class="bg-gray-50 rounded p-3">
+                                        <h5 class="font-semibold text-blue-700 mb-2">
+                                            <span x-text="insight.interrogative"></span>: <span x-text="insight.focus"></span>
+                                        </h5>
+                                        
+                                        <!-- Entity findings -->
+                                        <div x-show="insight.type === 'entities' && insight.findings">
+                                            <ul class="space-y-1">
+                                                <template x-for="finding in insight.findings" :key="finding.entity">
+                                                    <li class="text-sm">
+                                                        <strong x-text="finding.entity"></strong>
+                                                        <span class="text-gray-600" x-text="`(score: ${finding.score.toFixed(2)})`"></span>
+                                                        - <span x-text="finding.description"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                        
+                                        <!-- Narrative findings -->
+                                        <div x-show="insight.type === 'narratives' && insight.findings">
+                                            <ul class="space-y-1">
+                                                <template x-for="finding in insight.findings" :key="finding.narrative">
+                                                    <li class="text-sm">
+                                                        <strong x-text="finding.narrative"></strong>
+                                                        <span class="text-gray-600" x-text="`(${finding.frequency} mentions, ${finding.sentiment})`"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                        
+                                        <!-- Mechanism findings -->
+                                        <div x-show="insight.type === 'mechanisms' && insight.findings">
+                                            <ul class="space-y-1">
+                                                <template x-for="finding in insight.findings" :key="finding.mechanism">
+                                                    <li class="text-sm">
+                                                        <strong x-text="finding.mechanism"></strong>
+                                                        <span class="text-gray-600" x-text="`(effectiveness: ${(finding.effectiveness * 100).toFixed(0)}%)`"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <!-- Metrics -->
+                            <div x-show="result.metrics" class="mt-4 grid grid-cols-2 gap-2 text-sm">
+                                <div class="bg-blue-50 p-2 rounded">
+                                    <strong>Entities:</strong> <span x-text="result.metrics?.entities_found || 0"></span>
+                                </div>
+                                <div class="bg-blue-50 p-2 rounded">
+                                    <strong>Relationships:</strong> <span x-text="result.metrics?.relationships_found || 0"></span>
+                                </div>
+                                <div class="bg-blue-50 p-2 rounded">
+                                    <strong>Clusters:</strong> <span x-text="result.metrics?.clusters_identified || 0"></span>
+                                </div>
+                                <div class="bg-blue-50 p-2 rounded">
+                                    <strong>Time:</strong> <span x-text="`${result.metrics?.processing_time || 0}s`"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button 
+                        @click="downloadResults()"
+                        class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                    >
+                        Download Results (JSON)
+                    </button>
+                    <button 
+                        @click="showResults = false"
+                        class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -328,6 +456,9 @@
                 analysisPlan: null,
                 selectedScenario: null,
                 showScenarioDetails: false,
+                analysisProgress: 0,
+                analysisResults: null,
+                showResults: false,
                 
                 // API base URL - adjust this to match your backend
                 apiBase: 'http://localhost:5000',
@@ -416,12 +547,76 @@
                 async executeAnalysis() {
                     this.loading.execution = true;
                     try {
-                        // Simulate execution
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        alert('Analysis execution started! Check the console for progress.');
+                        const response = await fetch(`${this.apiBase}/api/execute-analysis`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                scenarios: this.analysisPlan.scenarios,
+                                dataset_path: this.datasetConfig.name
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to start analysis');
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Start polling for status
+                            this.pollAnalysisStatus();
+                            alert('Analysis execution started! The system is now building graphs and analyzing your scenarios.');
+                        } else {
+                            alert('Failed to start analysis: ' + (data.error || 'Unknown error'));
+                        }
+                    } catch (error) {
+                        console.error('Execution error:', error);
+                        alert('Error starting analysis: ' + error.message);
                     } finally {
                         this.loading.execution = false;
                     }
+                },
+                
+                async pollAnalysisStatus() {
+                    const checkStatus = async () => {
+                        try {
+                            const response = await fetch(`${this.apiBase}/api/analysis-status`);
+                            const data = await response.json();
+                            
+                            if (data.status === 'completed' && data.results) {
+                                console.log('Analysis completed:', data.results);
+                                this.analysisResults = data.results;
+                                this.showResults = true;
+                                this.analysisProgress = 100;
+                            } else if (data.progress) {
+                                this.analysisProgress = data.progress;
+                                // Check again in 3 seconds
+                                setTimeout(checkStatus, 3000);
+                            } else {
+                                // Check again in 5 seconds
+                                setTimeout(checkStatus, 5000);
+                            }
+                        } catch (error) {
+                            console.error('Status check error:', error);
+                        }
+                    };
+                    
+                    // Start checking after 2 seconds
+                    setTimeout(checkStatus, 2000);
+                },
+                
+                downloadResults() {
+                    if (!this.analysisResults) return;
+                    
+                    const dataStr = JSON.stringify(this.analysisResults, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileDefaultName = `analysis_results_${new Date().toISOString().slice(0,10)}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
                 },
                 
                 getDemoScenarios() {
