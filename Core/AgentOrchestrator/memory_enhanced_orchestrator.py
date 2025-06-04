@@ -1,6 +1,6 @@
 # Core/AgentOrchestrator/memory_enhanced_orchestrator.py
 
-from typing import Dict, Any, Optional, AsyncGenerator
+from typing import Dict, Any, Optional, AsyncGenerator, List
 import time
 from datetime import datetime
 
