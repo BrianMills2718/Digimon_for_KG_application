@@ -22,7 +22,13 @@ class TracedSocialMediaAnalysisExecutor:
     
     def __init__(self, config_path: str = "Option/Config2.yaml", trace_callback: Optional[Callable] = None):
         """Initialize with optional trace callback"""
-        self.config = Config.from_yaml(config_path)
+        try:
+            # Try to load config
+            self.config = Config.from_yaml_file(config_path)
+        except Exception as e:
+            logger.warning(f"Could not load config from {config_path}: {e}, using default")
+            self.config = Config.default()
+        
         self.llm = None
         self.encoder = None
         self.chunk_factory = None

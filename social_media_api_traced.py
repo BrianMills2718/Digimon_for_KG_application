@@ -173,8 +173,27 @@ def execute_analysis():
             'error': None
         }
         
-        # Import the enhanced execution engine
-        from social_media_execution_traced import TracedSocialMediaAnalysisExecutor
+        # Import execution engine - try full version first, fall back to simplified
+        executor_module = None
+        try:
+            from social_media_execution_traced import TracedSocialMediaAnalysisExecutor
+            executor_module = TracedSocialMediaAnalysisExecutor
+            print("Using full TracedSocialMediaAnalysisExecutor")
+        except Exception as e:
+            print(f"Warning: Could not load full executor ({e}), trying simplified version...")
+            try:
+                from social_media_execution_simple import SimplifiedSocialMediaAnalysisExecutor
+                executor_module = SimplifiedSocialMediaAnalysisExecutor
+                print("Using SimplifiedSocialMediaAnalysisExecutor")
+            except Exception as e2:
+                print(f"Error: Could not load any executor: {e2}")
+                execution_traces[job_id]['error'] = f"Failed to load execution engine: {str(e)}"
+                execution_traces[job_id]['status'] = 'failed'
+                return jsonify({
+                    'success': False,
+                    'job_id': job_id,
+                    'error': 'Execution engine not available'
+                }), 500
         
         # Get dataset info from cache
         dataset_info = dataset_cache.get('current', {})
@@ -201,7 +220,14 @@ def execute_analysis():
                         execution_traces[job_id]['error'] = event_data
                         execution_traces[job_id]['status'] = 'failed'
                 
-                executor = TracedSocialMediaAnalysisExecutor(trace_callback=trace_callback)
+                # Try to create executor - handle config errors gracefully
+                try:
+                    executor = executor_module(trace_callback=trace_callback)
+                except Exception as config_error:
+                    print(f"Config error, using simplified executor: {config_error}")
+                    # Force simplified executor if config fails
+                    from social_media_execution_simple import SimplifiedSocialMediaAnalysisExecutor
+                    executor = SimplifiedSocialMediaAnalysisExecutor(trace_callback=trace_callback)
                 
                 # Update status
                 execution_traces[job_id]['status'] = 'initializing'
