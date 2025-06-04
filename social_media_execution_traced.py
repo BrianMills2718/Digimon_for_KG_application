@@ -50,24 +50,25 @@ class TracedSocialMediaAnalysisExecutor:
             self._trace("init_start", {"component": "DIGIMON"})
             
             # Import necessary components
-            from Core.Provider.LLMProviderRegister import llm_provider_register
+            from Core.Provider.LLMProviderRegister import LLM_REGISTRY, create_llm_instance
             from Core.Provider.EnhancedLiteLLMProvider import EnhancedLiteLLMProvider
             from Core.Chunk.ChunkFactory import ChunkFactory
+            from Config.LLMConfig import LLMType
             
             # Register LLM provider
             self._trace("init_step", {"step": "Registering LLM provider"})
-            llm_provider_register.register("litellm", EnhancedLiteLLMProvider)
+            LLM_REGISTRY.register(LLMType.LITELLM, EnhancedLiteLLMProvider)
             
             # Create LLM instance
             self._trace("init_step", {"step": "Creating LLM instance"})
-            llm_class = llm_provider_register.get(self.config.llm.provider)
-            self.llm = llm_class(self.config)
+            self.llm = create_llm_instance(self.config.llm)
             
             # Create encoder instance
             self._trace("init_step", {"step": "Creating encoder instance"})
-            from Core.Index.EmbeddingFactory import EmbeddingFactory
-            embedding_factory = EmbeddingFactory(self.config)
-            self.encoder = embedding_factory.get_embedding()
+            from Core.Index.EmbeddingFactory import RAGEmbeddingFactory
+            from Config.EmbConfig import EmbeddingType
+            embedding_factory = RAGEmbeddingFactory()
+            self.encoder = embedding_factory.get_rag_embedding(EmbeddingType.OPENAI, self.config)
             
             # Create chunk factory
             self._trace("init_step", {"step": "Creating chunk factory"})
