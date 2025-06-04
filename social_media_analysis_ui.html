@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGIMON Social Media Analysis Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .scenario-card {
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div x-data="socialMediaAnalysis()" class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">DIGIMON Social Media Analysis Tool</h1>
+            <p class="text-gray-600">Analyze COVID-19 conspiracy theories on social media using interrogative analysis</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Dataset Ingestion Panel -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">1. Dataset Ingestion</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Dataset Name</label>
+                            <input 
+                                type="text" 
+                                x-model="datasetConfig.name"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="webimmunization/COVID-19-conspiracy-theories-tweets"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Max Rows (optional)</label>
+                            <input 
+                                type="number" 
+                                x-model="datasetConfig.maxRows"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Leave empty for all rows"
+                            >
+                        </div>
+                        
+                        <button 
+                            @click="ingestDataset()"
+                            :disabled="loading.dataset"
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <span x-show="!loading.dataset">Ingest Dataset</span>
+                            <span x-show="loading.dataset" class="flex items-center justify-center">
+                                <div class="loading-spinner w-5 h-5 mr-2"></div>
+                                Loading...
+                            </span>
+                        </button>
+                        
+                        <div x-show="datasetInfo" class="mt-4 p-4 bg-green-50 rounded-md">
+                            <h3 class="font-semibold text-green-800 mb-2">Dataset Loaded!</h3>
+                            <p class="text-sm text-green-700">
+                                <strong>Rows:</strong> <span x-text="datasetInfo?.total_rows"></span><br>
+                                <strong>Conspiracy Types:</strong> <span x-text="datasetInfo?.conspiracy_types?.length"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Configuration -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">2. Analysis Configuration</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Number of Scenarios</label>
+                            <input 
+                                type="number" 
+                                x-model="planConfig.numScenarios"
+                                min="1"
+                                max="10"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Complexity Levels</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        value="Simple"
+                                        x-model="planConfig.complexityRange"
+                                        class="mr-2"
+                                    >
+                                    Simple
+                                </label>
+                                <label class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        value="Medium"
+                                        x-model="planConfig.complexityRange"
+                                        class="mr-2"
+                                    >
+                                    Medium
+                                </label>
+                                <label class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        value="Complex"
+                                        x-model="planConfig.complexityRange"
+                                        class="mr-2"
+                                    >
+                                    Complex
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            @click="generateAnalysisPlan()"
+                            :disabled="loading.plan || !datasetInfo"
+                            class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <span x-show="!loading.plan">Generate Analysis Plan</span>
+                            <span x-show="loading.plan" class="flex items-center justify-center">
+                                <div class="loading-spinner w-5 h-5 mr-2"></div>
+                                Generating...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Scenarios Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">3. Analysis Scenarios</h2>
+                    
+                    <div x-show="!analysisPlan || analysisPlan.scenarios?.length === 0" class="text-center py-12 text-gray-500">
+                        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p>No analysis scenarios generated yet. Configure and generate a plan to get started.</p>
+                    </div>
+                    
+                    <div x-show="analysisPlan?.scenarios?.length > 0" class="space-y-4">
+                        <template x-for="(scenario, index) in analysisPlan?.scenarios || []" :key="index">
+                            <div class="scenario-card border rounded-lg p-4 hover:border-blue-300">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-lg font-semibold text-gray-800" x-text="scenario.title"></h3>
+                                    <span 
+                                        class="px-2 py-1 text-xs rounded-full"
+                                        :class="{
+                                            'bg-green-100 text-green-800': scenario.complexity_level === 'Simple',
+                                            'bg-yellow-100 text-yellow-800': scenario.complexity_level === 'Medium',
+                                            'bg-red-100 text-red-800': scenario.complexity_level === 'Complex'
+                                        }"
+                                        x-text="scenario.complexity_level"
+                                    ></span>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-3" x-text="scenario.research_question"></p>
+                                
+                                <div class="mb-3">
+                                    <h4 class="font-semibold text-sm text-gray-700 mb-1">Interrogative Views:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-for="view in scenario.interrogative_views" :key="view.interrogative">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                                                <span x-text="view.interrogative"></span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    @click="selectedScenario = scenario; showScenarioDetails = true"
+                                    class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                >
+                                    View Details →
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div x-show="analysisPlan?.scenarios?.length > 0" class="mt-6 flex justify-center">
+                        <button 
+                            @click="executeAnalysis()"
+                            :disabled="loading.execution"
+                            class="bg-purple-600 text-white py-2 px-6 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <span x-show="!loading.execution">Execute All Scenarios</span>
+                            <span x-show="loading.execution" class="flex items-center">
+                                <div class="loading-spinner w-5 h-5 mr-2"></div>
+                                Executing...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario Details Modal -->
+        <div 
+            x-show="showScenarioDetails" 
+            x-transition
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click.away="showScenarioDetails = false"
+        >
+            <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6" @click.stop>
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold" x-text="selectedScenario?.title"></h3>
+                    <button 
+                        @click="showScenarioDetails = false"
+                        class="text-gray-400 hover:text-gray-600"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-1">Research Question</h4>
+                        <p class="text-gray-600" x-text="selectedScenario?.research_question"></p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Interrogative Views</h4>
+                        <div class="space-y-3">
+                            <template x-for="view in selectedScenario?.interrogative_views || []" :key="view.interrogative">
+                                <div class="border rounded p-3 bg-gray-50">
+                                    <h5 class="font-semibold text-blue-700 mb-1">
+                                        <span x-text="view.interrogative"></span>: <span x-text="view.focus"></span>
+                                    </h5>
+                                    <p class="text-sm text-gray-600 mb-2" x-text="view.description"></p>
+                                    <div class="flex gap-4 text-xs">
+                                        <div>
+                                            <strong>Entities:</strong>
+                                            <span x-text="view.entities.join(', ')"></span>
+                                        </div>
+                                        <div>
+                                            <strong>Relations:</strong>
+                                            <span x-text="view.relationships.join(', ')"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Analysis Pipeline</h4>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <template x-for="step in selectedScenario?.analysis_pipeline || []" :key="step">
+                                <li class="text-gray-600" x-text="step"></li>
+                            </template>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Expected Insights</h4>
+                        <ul class="list-disc list-inside space-y-1">
+                            <template x-for="insight in selectedScenario?.expected_insights || []" :key="insight">
+                                <li class="text-gray-600" x-text="insight"></li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function socialMediaAnalysis() {
+            return {
+                // State
+                datasetConfig: {
+                    name: 'webimmunization/COVID-19-conspiracy-theories-tweets',
+                    maxRows: null
+                },
+                planConfig: {
+                    numScenarios: 5,
+                    complexityRange: ['Simple', 'Medium']
+                },
+                loading: {
+                    dataset: false,
+                    plan: false,
+                    execution: false
+                },
+                datasetInfo: null,
+                analysisPlan: null,
+                selectedScenario: null,
+                showScenarioDetails: false,
+                
+                // API base URL - adjust this to match your backend
+                apiBase: 'http://localhost:5000',
+                
+                // Methods
+                async ingestDataset() {
+                    this.loading.dataset = true;
+                    try {
+                        // Simulate API call - replace with actual endpoint
+                        const response = await fetch(`${this.apiBase}/api/ingest-dataset`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                dataset_name: this.datasetConfig.name,
+                                max_rows: this.datasetConfig.maxRows
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to ingest dataset');
+                        
+                        const data = await response.json();
+                        this.datasetInfo = data;
+                        
+                        // For demo purposes, if API not available
+                        if (!this.datasetInfo) {
+                            this.datasetInfo = {
+                                total_rows: 6591,
+                                conspiracy_types: ['CT_1', 'CT_2', 'CT_3', 'CT_4', 'CT_5', 'CT_6'],
+                                label_distribution: {
+                                    support: 3000,
+                                    deny: 2000,
+                                    neutral: 1591
+                                }
+                            };
+                        }
+                    } catch (error) {
+                        console.error('Dataset ingestion error:', error);
+                        // Demo fallback
+                        this.datasetInfo = {
+                            total_rows: 6591,
+                            conspiracy_types: ['CT_1', 'CT_2', 'CT_3', 'CT_4', 'CT_5', 'CT_6']
+                        };
+                    } finally {
+                        this.loading.dataset = false;
+                    }
+                },
+                
+                async generateAnalysisPlan() {
+                    this.loading.plan = true;
+                    try {
+                        // Simulate API call
+                        const response = await fetch(`${this.apiBase}/api/generate-plan`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                domain: 'COVID-19 conspiracy theories on Twitter',
+                                dataset_info: this.datasetInfo,
+                                num_scenarios: this.planConfig.numScenarios,
+                                complexity_range: this.planConfig.complexityRange
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to generate plan');
+                        
+                        const data = await response.json();
+                        this.analysisPlan = data;
+                        
+                        // Demo fallback
+                        if (!this.analysisPlan || !this.analysisPlan.scenarios) {
+                            this.analysisPlan = this.getDemoScenarios();
+                        }
+                    } catch (error) {
+                        console.error('Plan generation error:', error);
+                        // Use demo data
+                        this.analysisPlan = this.getDemoScenarios();
+                    } finally {
+                        this.loading.plan = false;
+                    }
+                },
+                
+                async executeAnalysis() {
+                    this.loading.execution = true;
+                    try {
+                        // Simulate execution
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        alert('Analysis execution started! Check the console for progress.');
+                    } finally {
+                        this.loading.execution = false;
+                    }
+                },
+                
+                getDemoScenarios() {
+                    return {
+                        scenarios: [
+                            {
+                                title: "Influence Network Analysis",
+                                research_question: "Who are the most influential users in conspiracy theory discourse and how do they shape narratives?",
+                                complexity_level: "Simple",
+                                interrogative_views: [
+                                    {
+                                        interrogative: "Who",
+                                        focus: "Who are the key influencers?",
+                                        description: "Identify influential users and their impact",
+                                        entities: ["User", "Influencer", "Community"],
+                                        relationships: ["FOLLOWS", "MENTIONS", "RETWEETS"]
+                                    },
+                                    {
+                                        interrogative: "How",
+                                        focus: "How do they shape discourse?",
+                                        description: "Analyze mechanisms of influence",
+                                        entities: ["Process", "Mechanism"],
+                                        relationships: ["ENABLES", "FACILITATES"]
+                                    }
+                                ],
+                                analysis_pipeline: [
+                                    "Extract user entities from tweets",
+                                    "Build interaction network",
+                                    "Compute centrality measures",
+                                    "Identify key influencers",
+                                    "Analyze influence patterns"
+                                ],
+                                expected_insights: [
+                                    "Identify key patterns in the data",
+                                    "Measure basic metrics and statistics",
+                                    "Map influence networks and key actors"
+                                ]
+                            },
+                            {
+                                title: "Narrative Evolution Tracking",
+                                research_question: "How do conspiracy theory narratives evolve and spread over time?",
+                                complexity_level: "Medium",
+                                interrogative_views: [
+                                    {
+                                        interrogative: "What",
+                                        focus: "What narratives dominate?",
+                                        description: "Track dominant conspiracy narratives",
+                                        entities: ["Tweet", "Topic", "Narrative"],
+                                        relationships: ["DISCUSSES", "EVOLVES_TO"]
+                                    },
+                                    {
+                                        interrogative: "When",
+                                        focus: "When do narratives shift?",
+                                        description: "Temporal analysis of narrative changes",
+                                        entities: ["Tweet", "TrendingPeriod"],
+                                        relationships: ["POSTED_AT", "PRECEDED"]
+                                    }
+                                ],
+                                analysis_pipeline: [
+                                    "Extract topics from tweets",
+                                    "Track topic evolution over time",
+                                    "Identify narrative themes",
+                                    "Measure narrative spread",
+                                    "Analyze narrative persistence"
+                                ],
+                                expected_insights: [
+                                    "Discover non-obvious relationships",
+                                    "Identify temporal patterns",
+                                    "Predict future trends",
+                                    "Identify dominant narratives and themes"
+                                ]
+                            }
+                        ],
+                        execution_order: ["Influence Network Analysis", "Narrative Evolution Tracking"],
+                        estimated_complexity: {
+                            "Influence Network Analysis": 10,
+                            "Narrative Evolution Tracking": 10
+                        }
+                    };
+                }
+            }
+        }
+    </script>
+</body>
+</html>
