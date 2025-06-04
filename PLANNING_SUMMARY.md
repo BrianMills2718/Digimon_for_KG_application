@@ -16,8 +16,10 @@ This document summarizes all planning documentation for the DIGIMON GraphRAG sys
 
 ### Technical Planning
 5. **AGENT_INTELLIGENCE_PLANNING.MD** - Agent architecture analysis and recommendations
-6. **DIGIMON_ARCHITECTURE_REPORT.md** - Current system architecture
-7. **improvements_*.md** files - Specific component improvements
+6. **STRATEGIC_UPDATE_AI_AGENTS.md** - Critical gaps and cognitive architecture requirements
+7. **MCP_INTEGRATION_PLAN.md** - Model Context Protocol implementation for tool/agent coordination (NEW)
+8. **DIGIMON_ARCHITECTURE_REPORT.md** - Current system architecture
+9. **improvements_*.md** files - Specific component improvements
 
 ### Progress Tracking
 8. **CHECKPOINT_PROGRESS.md** - Implementation status tracking
@@ -66,6 +68,14 @@ Recent addition based on "Atom of Thoughts" paper analysis:
 - **Markov Process**: Transform queries into atomic, memoryless states
 - **Benefits**: Eliminates historical information accumulation
 - **Implementation**: Phase into Checkpoint 4 as query preprocessor
+
+### 5. **New: MCP (Model Context Protocol) Integration**
+Critical infrastructure for multi-agent coordination:
+- **Standardized Communication**: Unified protocol for all tool interactions
+- **Agent Coordination**: Enables formal multi-agent collaboration
+- **Performance**: Concurrent tool execution with shared context
+- **Dynamic Discovery**: Runtime tool/agent discovery and negotiation
+- **Cross-Modal Bridge**: Facilitates UKRF integration requirements
 
 ## 📊 Planning Alignment Matrix
 
@@ -119,6 +129,9 @@ Recent addition based on "Atom of Thoughts" paper analysis:
 1. **Architecture Scope**: Should DIGIMON remain GraphRAG-focused or become truly universal orchestrator?
 2. **Performance vs Intelligence**: How to balance <2s latency requirement with sophisticated reasoning?
 3. **Integration Approach**: Gradual enhancement or architectural redesign for UKRF?
+4. **Cognitive Architecture**: Which proven patterns (Soar, ACT-R, BDI) to adopt?
+5. **Coordination Mechanism**: Blackboard vs ACL vs natural language for agents?
+6. **Security Model**: How to prevent collusion and ensure explainability in MAS?
 
 ## 📝 Recommendations
 
