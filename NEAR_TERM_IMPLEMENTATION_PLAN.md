@@ -81,14 +81,16 @@ This document provides a detailed checkpoint-based implementation plan for trans
 #### Implementation Tasks:
 1. Implement embedding cache system
 2. Add result caching with TTL
-- Build query optimization pipeline
+3. Build query optimization pipeline
 4. Create performance monitoring
+5. **NEW**: Integrate AOT atomic query preprocessing
 
 #### Test Criteria:
 - [ ] Cache hit rate >90% for repeated operations
 - [ ] End-to-end latency tests
 - [ ] Concurrent query stress tests
 - [ ] Memory usage validation
+- [ ] AOT query simplification effectiveness tests
 
 #### Success Metrics:
 - 60% reduction in average latency
@@ -225,6 +227,16 @@ class CacheManager:
         self.embedding_cache = TTLCache(maxsize=10000, ttl=3600)
         self.result_cache = TTLCache(maxsize=1000, ttl=1800)
 
+# AOT Integration for Query Simplification
+class AOTQueryProcessor:
+    async def preprocess_query(self, query: str):
+        """Apply AOT decomposition-contraction for complex queries"""
+        if self.is_complex_multi_hop(query):
+            dag = await self.decompose_to_dag(query)
+            atomic_query = await self.contract_to_atomic(dag)
+            return atomic_query
+        return query
+
 # Evaluation framework
 class QualityEvaluator:
     async def evaluate(self, query, answer, context):
@@ -337,3 +349,5 @@ After completing this 8-week plan:
 2. Conduct user acceptance testing
 3. Begin Q2 advanced agent intelligence features
 4. Expand to production deployments
+5. **NEW**: Full AOT integration for Markov-style reasoning
+6. **NEW**: Cross-modal reasoning with UKRF requirements

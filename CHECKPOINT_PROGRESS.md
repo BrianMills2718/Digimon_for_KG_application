@@ -80,18 +80,25 @@
 ## Next Checkpoints
 
 ### 🔄 Checkpoint 4: Performance Optimization Core (Week 3-4)
-**Status**: PENDING
+**Status**: IN PROGRESS
 
 #### Goals:
 - Implement embedding cache system
 - Add result caching with TTL
 - Build query optimization pipeline
 - Create performance monitoring
+- **NEW**: Integrate AOT (Atom of Thoughts) for query simplification
 
 #### Expected Outcomes:
 - 60% reduction in average latency
 - <10s for 95% of queries
 - Support 10+ concurrent queries
+- **NEW**: Complex multi-hop queries simplified to atomic states
+
+#### Recent Updates:
+- Added AOT query preprocessing design
+- Planning Markov-style reasoning integration
+- Targeting historical information elimination
 
 ---
 
