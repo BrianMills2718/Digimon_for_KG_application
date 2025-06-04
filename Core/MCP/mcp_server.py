@@ -93,10 +93,17 @@ class MCPTool:
     async def execute(self, params: Dict[str, Any], context: Dict[str, Any]) -> Any:
         """Execute the tool with given parameters"""
         try:
-            # Merge context into params if handler expects it
-            if 'context' in self.handler.__code__.co_varnames:
+            # Check if handler expects context and if there's a naming collision
+            handler_params = self.handler.__code__.co_varnames
+            
+            if 'context' in handler_params and 'context' not in params:
+                # No collision, pass context as keyword arg
                 return await self.handler(**params, context=context)
+            elif 'context' in handler_params and 'context' in params:
+                # Collision! Pass MCP context as mcp_context
+                return await self.handler(**params, mcp_context=context)
             else:
+                # Handler doesn't expect context
                 return await self.handler(**params)
         except Exception as e:
             logger.error(f"Tool execution failed: {self.name}", exc_info=True)

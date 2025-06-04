@@ -9,6 +9,7 @@ from .mcp_client_enhanced import (
     ServerHealth, RequestCache, LoadBalancer, EnhancedMCPConnection
 )
 from .shared_context import SharedContextStore, ContextSession
+from .digimon_mcp_server import DigimonToolServer
 
 __all__ = [
     'DigimonMCPServer',
@@ -27,5 +28,6 @@ __all__ = [
     'LoadBalancer',
     'EnhancedMCPConnection',
     'SharedContextStore',
-    'ContextSession'
+    'ContextSession',
+    'DigimonToolServer'
 ]
