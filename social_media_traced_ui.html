@@ -50,6 +50,12 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">DIGIMON Social Media Analysis with Execution Tracing</h1>
             <p class="text-gray-600">Real-time execution tracking and detailed analysis of COVID-19 conspiracy theories</p>
+            <div x-show="planConfig.useDiscourseFramework" class="mt-3 inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                </svg>
+                Discourse Analysis Mode Active
+            </div>
         </div>
 
         <!-- Main Layout -->
@@ -95,6 +101,28 @@
                                 min="1" max="10"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <input 
+                                    type="checkbox" 
+                                    x-model="planConfig.useDiscourseFramework"
+                                    class="mr-2"
+                                >
+                                Use Discourse Analysis Framework
+                            </label>
+                            <p class="text-xs text-gray-600 mt-1">Enable advanced discourse analysis using the five interrogatives (Who/Says What/To Whom/In What Setting/With What Effect)</p>
+                        </div>
+                        
+                        <div x-show="planConfig.useDiscourseFramework" class="p-3 bg-indigo-50 rounded-md">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Research Focus</label>
+                            <textarea 
+                                x-model="planConfig.researchFocus"
+                                rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                placeholder="E.g., How do conspiracy theories spread on social media and what effects do they have?"
+                            ></textarea>
                         </div>
                         
                         <button 
@@ -337,7 +365,9 @@
                 datasetInfo: null,
                 planConfig: {
                     numScenarios: 3,
-                    complexityRange: ['Simple', 'Medium']
+                    complexityRange: ['Simple', 'Medium'],
+                    useDiscourseFramework: false,
+                    researchFocus: 'How do conspiracy theories spread on social media and what effects do they have?'
                 },
                 loading: {
                     dataset: false,
@@ -391,15 +421,22 @@
                 async generateAnalysisPlan() {
                     this.loading.plan = true;
                     try {
+                        const requestBody = {
+                            domain: 'COVID-19 conspiracy theories on Twitter',
+                            dataset_info: this.datasetInfo,
+                            num_scenarios: this.planConfig.numScenarios,
+                            complexity_range: this.planConfig.complexityRange,
+                            use_discourse_framework: this.planConfig.useDiscourseFramework
+                        };
+                        
+                        if (this.planConfig.useDiscourseFramework) {
+                            requestBody.research_focus = this.planConfig.researchFocus;
+                        }
+                        
                         const response = await fetch(`${this.apiBase}/api/generate-plan`, {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                domain: 'COVID-19 conspiracy theories on Twitter',
-                                dataset_info: this.datasetInfo,
-                                num_scenarios: this.planConfig.numScenarios,
-                                complexity_range: this.planConfig.complexityRange
-                            })
+                            body: JSON.stringify(requestBody)
                         });
                         
                         if (!response.ok) throw new Error('Failed to generate plan');
@@ -422,7 +459,8 @@
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 scenarios: this.analysisPlan.scenarios,
-                                dataset_path: 'COVID-19-conspiracy-theories-tweets.csv'
+                                dataset_path: 'COVID-19-conspiracy-theories-tweets.csv',
+                                use_discourse_framework: this.planConfig.useDiscourseFramework
                             })
                         });
                         

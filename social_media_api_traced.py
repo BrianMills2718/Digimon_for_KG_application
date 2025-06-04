@@ -21,6 +21,10 @@ from Core.AgentTools.automated_interrogative_planner import (
     generate_interrogative_analysis_plans,
     AutoInterrogativePlanInput
 )
+from Core.AgentTools.discourse_enhanced_planner import (
+    DiscourseEnhancedPlanner,
+    DiscourseAnalysisScenario
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -95,19 +99,37 @@ def generate_plan():
     """Generate analysis plan using interrogative planner"""
     try:
         data = request.json
+        use_discourse_framework = data.get('use_discourse_framework', False)
         
-        # Create input for planner
-        tool_input = AutoInterrogativePlanInput(
-            domain=data.get('domain', 'COVID-19 conspiracy theories on Twitter'),
-            dataset_info=data.get('dataset_info', dataset_cache.get('current', {})),
-            num_scenarios=data.get('num_scenarios', 5),
-            complexity_range=data.get('complexity_range', ['Simple', 'Medium'])
-        )
-        
-        # Run async function
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(generate_interrogative_analysis_plans(tool_input))
+        if use_discourse_framework:
+            # Use discourse-enhanced planner
+            planner = DiscourseEnhancedPlanner()
+            research_focus = data.get('research_focus', 
+                'How do conspiracy theories spread on social media and what effects do they have?')
+            num_scenarios = data.get('num_scenarios', 5)
+            
+            scenarios = planner.generate_scenarios(research_focus, num_scenarios)
+            
+            # Format result similar to standard planner
+            result = type('Result', (), {
+                'success': True,
+                'scenarios': scenarios,
+                'execution_order': list(range(len(scenarios))),
+                'estimated_complexity': sum(len(s.interrogative_views) for s in scenarios)
+            })()
+        else:
+            # Use standard planner
+            tool_input = AutoInterrogativePlanInput(
+                domain=data.get('domain', 'COVID-19 conspiracy theories on Twitter'),
+                dataset_info=data.get('dataset_info', dataset_cache.get('current', {})),
+                num_scenarios=data.get('num_scenarios', 5),
+                complexity_range=data.get('complexity_range', ['Simple', 'Medium'])
+            )
+            
+            # Run async function
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            result = loop.run_until_complete(generate_interrogative_analysis_plans(tool_input))
         
         if result.success:
             # Convert scenarios to dict format
@@ -124,7 +146,10 @@ def generate_plan():
                             'description': view.description,
                             'entities': view.entities,
                             'relationships': view.relationships,
-                            'analysis_goals': view.analysis_goals
+                            'properties': view.properties if hasattr(view, 'properties') else [],
+                            'analysis_goals': view.analysis_goals,
+                            'retrieval_operators': view.retrieval_operators if hasattr(view, 'retrieval_operators') else [],
+                            'transformation_operators': view.transformation_operators if hasattr(view, 'transformation_operators') else []
                         }
                         for view in scenario.interrogative_views
                     ],
@@ -173,27 +198,40 @@ def execute_analysis():
             'error': None
         }
         
-        # Import execution engine - try full version first, fall back to simplified
+        # Import execution engine - check for discourse mode first
+        use_discourse_framework = data.get('use_discourse_framework', False)
         executor_module = None
-        try:
-            from social_media_execution_traced import TracedSocialMediaAnalysisExecutor
-            executor_module = TracedSocialMediaAnalysisExecutor
-            print("Using full TracedSocialMediaAnalysisExecutor")
-        except Exception as e:
-            print(f"Warning: Could not load full executor ({e}), trying simplified version...")
+        
+        if use_discourse_framework:
             try:
-                from social_media_execution_simple import SimplifiedSocialMediaAnalysisExecutor
-                executor_module = SimplifiedSocialMediaAnalysisExecutor
-                print("Using SimplifiedSocialMediaAnalysisExecutor")
-            except Exception as e2:
-                print(f"Error: Could not load any executor: {e2}")
-                execution_traces[job_id]['error'] = f"Failed to load execution engine: {str(e)}"
-                execution_traces[job_id]['status'] = 'failed'
-                return jsonify({
-                    'success': False,
-                    'job_id': job_id,
-                    'error': 'Execution engine not available'
-                }), 500
+                from social_media_execution_discourse import DiscourseEnhancedSocialMediaExecutor
+                executor_module = DiscourseEnhancedSocialMediaExecutor
+                print("Using DiscourseEnhancedSocialMediaExecutor")
+            except Exception as e:
+                print(f"Warning: Could not load discourse executor ({e}), falling back...")
+                use_discourse_framework = False
+        
+        if not use_discourse_framework:
+            # Try standard executors
+            try:
+                from social_media_execution_traced import TracedSocialMediaAnalysisExecutor
+                executor_module = TracedSocialMediaAnalysisExecutor
+                print("Using full TracedSocialMediaAnalysisExecutor")
+            except Exception as e:
+                print(f"Warning: Could not load full executor ({e}), trying simplified version...")
+                try:
+                    from social_media_execution_simple import SimplifiedSocialMediaAnalysisExecutor
+                    executor_module = SimplifiedSocialMediaAnalysisExecutor
+                    print("Using SimplifiedSocialMediaAnalysisExecutor")
+                except Exception as e2:
+                    print(f"Error: Could not load any executor: {e2}")
+                    execution_traces[job_id]['error'] = f"Failed to load execution engine: {str(e)}"
+                    execution_traces[job_id]['status'] = 'failed'
+                    return jsonify({
+                        'success': False,
+                        'job_id': job_id,
+                        'error': 'Execution engine not available'
+                    }), 500
         
         # Get dataset info from cache
         dataset_info = dataset_cache.get('current', {})

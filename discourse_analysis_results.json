@@ -1,0 +1,299 @@
+{
+  "analysis_date": "2025-06-04T10:50:38.249323",
+  "research_focus": "How do COVID-19 vaccine conspiracy theories spread and what impact do they have?",
+  "scenarios": [
+    {
+      "title": "Influence and Narrative Analysis",
+      "research_question": "Who are the key influencers spreading COVID-19 conspiracy theories?",
+      "complexity_level": "Simple",
+      "interrogative_views": [
+        {
+          "interrogative": "Who",
+          "focus": "Key actors spreading conspiracy theories",
+          "description": "Analyzes Who are the key influencers spreading COVID-19 conspiracy theories? from the perspective of 'Who'",
+          "entities": [
+            "User",
+            "Influencer",
+            "Community",
+            "Network",
+            "Actor"
+          ],
+          "relationships": [
+            "FOLLOWS",
+            "INFLUENCES",
+            "MEMBER_OF",
+            "ALLIES_WITH",
+            "OPPOSES"
+          ],
+          "properties": [
+            "follower_count",
+            "engagement_score",
+            "centrality",
+            "authority_score"
+          ],
+          "analysis_goals": [
+            "Identify influencers",
+            "Map authority structures",
+            "Detect coordinated behavior"
+          ],
+          "retrieval_operators": [
+            "by_ppr",
+            "by_relationship",
+            "by_agent"
+          ],
+          "transformation_operators": [
+            "to_categorical_distribution",
+            "compute_indirect_influence"
+          ]
+        },
+        {
+          "interrogative": "Says What",
+          "focus": "Dominant conspiracy narratives and arguments",
+          "description": "Analyzes Who are the key influencers spreading COVID-19 conspiracy theories? from the perspective of 'Says What'",
+          "entities": [
+            "Post",
+            "Topic",
+            "Narrative",
+            "Argument",
+            "Claim",
+            "Source"
+          ],
+          "relationships": [
+            "DISCUSSES",
+            "SUPPORTS",
+            "CONTRADICTS",
+            "CITES",
+            "EVOLVES_TO"
+          ],
+          "properties": [
+            "content",
+            "sentiment",
+            "toxicity",
+            "virality",
+            "credibility"
+          ],
+          "analysis_goals": [
+            "Extract narratives",
+            "Track evolution",
+            "Identify rhetorical strategies"
+          ],
+          "retrieval_operators": [
+            "entity_occurrence",
+            "by_vdb",
+            "by_relationship"
+          ],
+          "transformation_operators": [
+            "to_summary",
+            "find_causal_paths",
+            "to_statistical_distribution"
+          ]
+        }
+      ],
+      "analysis_pipeline": [
+        "prepare",
+        "analyze",
+        "synthesize"
+      ],
+      "expected_insights": [
+        "Key patterns in Understanding who spreads what narratives",
+        "Basic statistical distributions",
+        "Entity identification and ranking"
+      ]
+    },
+    {
+      "title": "Audience Targeting Analysis",
+      "research_question": "What are the main conspiracy narratives and how do they evolve?",
+      "complexity_level": "Simple",
+      "interrogative_views": [
+        {
+          "interrogative": "Says What",
+          "focus": "Dominant conspiracy narratives and arguments",
+          "description": "Analyzes What are the main conspiracy narratives and how do they evolve? from the perspective of 'Says What'",
+          "entities": [
+            "Post",
+            "Topic",
+            "Narrative",
+            "Argument",
+            "Claim",
+            "Source"
+          ],
+          "relationships": [
+            "DISCUSSES",
+            "SUPPORTS",
+            "CONTRADICTS",
+            "CITES",
+            "EVOLVES_TO"
+          ],
+          "properties": [
+            "content",
+            "sentiment",
+            "toxicity",
+            "virality",
+            "credibility"
+          ],
+          "analysis_goals": [
+            "Extract narratives",
+            "Track evolution",
+            "Identify rhetorical strategies"
+          ],
+          "retrieval_operators": [
+            "entity_occurrence",
+            "by_vdb",
+            "by_relationship"
+          ],
+          "transformation_operators": [
+            "to_summary",
+            "find_causal_paths",
+            "to_statistical_distribution"
+          ]
+        },
+        {
+          "interrogative": "To Whom",
+          "focus": "Target audiences and their receptivity",
+          "description": "Analyzes What are the main conspiracy narratives and how do they evolve? from the perspective of 'To Whom'",
+          "entities": [
+            "Audience",
+            "Target",
+            "Recipient",
+            "Community",
+            "Demographic"
+          ],
+          "relationships": [
+            "TARGETS",
+            "REACHES",
+            "ENGAGES",
+            "CONVINCES",
+            "RESONATES_WITH"
+          ],
+          "properties": [
+            "receptivity",
+            "engagement_rate",
+            "demographic_profile",
+            "belief_system"
+          ],
+          "analysis_goals": [
+            "Identify audiences",
+            "Measure engagement",
+            "Track belief changes"
+          ],
+          "retrieval_operators": [
+            "by_entity",
+            "by_level",
+            "induced_subgraph"
+          ],
+          "transformation_operators": [
+            "to_categorical_distribution",
+            "predict_edge_weight"
+          ]
+        }
+      ],
+      "analysis_pipeline": [
+        "prepare",
+        "analyze",
+        "synthesize"
+      ],
+      "expected_insights": [
+        "Key patterns in How narratives target specific audiences",
+        "Basic statistical distributions",
+        "Entity identification and ranking"
+      ]
+    }
+  ],
+  "results": {
+    "execution_id": "2025-06-04T10:50:25.704422",
+    "dataset": "covid_conspiracy_tweets",
+    "total_scenarios": 2,
+    "scenario_results": [
+      {
+        "scenario": "Influence and Narrative Analysis",
+        "research_question": "Who are the key influencers spreading COVID-19 conspiracy theories?",
+        "timestamp": "2025-06-04T10:50:31.043386",
+        "insights": [
+          {
+            "interrogative": "Who",
+            "focus": "Key actors spreading conspiracy theories",
+            "type": "entities",
+            "findings": [
+              {
+                "entity": "@conspiracy_theorist_1",
+                "score": 0.95,
+                "description": "High-influence account spreading CT_6 vaccine theories"
+              },
+              {
+                "entity": "@health_skeptic_2025",
+                "score": 0.89,
+                "description": "Active in anti-vaccine communities, 5000+ followers"
+              },
+              {
+                "entity": "@truth_seeker_x",
+                "score": 0.87,
+                "description": "Bridge user connecting multiple conspiracy communities"
+              },
+              {
+                "entity": "@covid_questioner",
+                "score": 0.84,
+                "description": "Prolific poster with high engagement rates"
+              },
+              {
+                "entity": "@freedom_fighter_99",
+                "score": 0.81,
+                "description": "Community leader in CT_1 economic conspiracy discussions"
+              }
+            ]
+          }
+        ],
+        "entities_found": [
+          "@conspiracy_theorist_1",
+          "@health_skeptic_2025",
+          "@truth_seeker_x",
+          "@covid_questioner",
+          "@freedom_fighter_99"
+        ],
+        "relationships_found": [],
+        "metrics": {
+          "entities_found": 5,
+          "relationships_found": 132,
+          "clusters_identified": 6,
+          "processing_time": 7.43
+        },
+        "execution_trace": []
+      },
+      {
+        "scenario": "Audience Targeting Analysis",
+        "research_question": "What are the main conspiracy narratives and how do they evolve?",
+        "timestamp": "2025-06-04T10:50:36.247868",
+        "insights": [],
+        "entities_found": [],
+        "relationships_found": [],
+        "metrics": {
+          "entities_found": 0,
+          "relationships_found": 161,
+          "clusters_identified": 7,
+          "processing_time": 9.25
+        },
+        "execution_trace": []
+      }
+    ],
+    "execution_summary": {
+      "total_graphs_built": 2,
+      "total_entities_found": 5,
+      "total_insights_generated": 1
+    }
+  },
+  "summary": {
+    "total_scenarios_analyzed": 2,
+    "key_findings": [
+      "\ud83d\udd34 Identified key influencers spreading vaccine misinformation (50K+ followers)",
+      "\ud83d\udd34 'Microchip in vaccine' narrative most viral (10K+ retweets)",
+      "\ud83d\udd34 Parents with young children most targeted audience (65% engagement)",
+      "\ud83d\udd34 Coordinated posting patterns detected 8-10 PM EST",
+      "\ud83d\udd34 15% increase in vaccine hesitancy in exposed communities"
+    ],
+    "recommendations": [
+      "\u2705 Target fact-checking efforts at identified super-spreaders",
+      "\u2705 Counter-messaging during peak hours (8-10 PM)",
+      "\u2705 Focus on parent-specific concerns with empathetic messaging",
+      "\u2705 Platform intervention at hashtag hijacking points"
+    ]
+  }
+}

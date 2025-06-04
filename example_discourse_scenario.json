@@ -1,0 +1,93 @@
+{
+  "title": "Influence and Narrative Analysis",
+  "research_question": "Who are the key influencers spreading COVID-19 conspiracy theories?",
+  "complexity_level": "Simple",
+  "interrogative_views": [
+    {
+      "interrogative": "Who",
+      "focus": "Key actors spreading conspiracy theories",
+      "description": "Analyzes Who are the key influencers spreading COVID-19 conspiracy theories? from the perspective of 'Who'",
+      "entities": [
+        "User",
+        "Influencer",
+        "Community",
+        "Network",
+        "Actor"
+      ],
+      "relationships": [
+        "FOLLOWS",
+        "INFLUENCES",
+        "MEMBER_OF",
+        "ALLIES_WITH",
+        "OPPOSES"
+      ],
+      "properties": [
+        "follower_count",
+        "engagement_score",
+        "centrality",
+        "authority_score"
+      ],
+      "analysis_goals": [
+        "Identify influencers",
+        "Map authority structures",
+        "Detect coordinated behavior"
+      ],
+      "retrieval_operators": [
+        "by_ppr",
+        "by_relationship",
+        "by_agent"
+      ],
+      "transformation_operators": [
+        "to_categorical_distribution",
+        "compute_indirect_influence"
+      ]
+    },
+    {
+      "interrogative": "Says What",
+      "focus": "Dominant conspiracy narratives and arguments",
+      "description": "Analyzes Who are the key influencers spreading COVID-19 conspiracy theories? from the perspective of 'Says What'",
+      "entities": [
+        "Post",
+        "Topic",
+        "Narrative",
+        "Argument",
+        "Claim",
+        "Source"
+      ],
+      "relationships": [
+        "DISCUSSES",
+        "SUPPORTS",
+        "CONTRADICTS",
+        "CITES",
+        "EVOLVES_TO"
+      ],
+      "properties": [
+        "content",
+        "sentiment",
+        "toxicity",
+        "virality",
+        "credibility"
+      ],
+      "analysis_goals": [
+        "Extract narratives",
+        "Track evolution",
+        "Identify rhetorical strategies"
+      ],
+      "retrieval_operators": [
+        "entity_occurrence",
+        "by_vdb",
+        "by_relationship"
+      ],
+      "transformation_operators": [
+        "to_summary",
+        "find_causal_paths",
+        "to_statistical_distribution"
+      ]
+    }
+  ],
+  "expected_insights": [
+    "Key patterns in Understanding who spreads what narratives",
+    "Basic statistical distributions",
+    "Entity identification and ranking"
+  ]
+}

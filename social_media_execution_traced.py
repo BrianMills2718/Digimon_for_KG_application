@@ -77,8 +77,11 @@ class TracedSocialMediaAnalysisExecutor:
             # Create context
             self._trace("init_step", {"step": "Creating GraphRAG context"})
             self.context = GraphRAGContext(
-                dataset_name="social_media_analysis",
-                config=self.config
+                target_dataset_name="social_media_analysis",
+                main_config=self.config,
+                llm_provider=self.llm,
+                embedding_provider=self.encoder,
+                chunk_storage_manager=self.chunk_factory
             )
             
             # Create orchestrator
