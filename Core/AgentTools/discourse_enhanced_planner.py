@@ -5,7 +5,7 @@ This planner generates analysis scenarios based on the five interrogatives
 of discourse analysis: Who, Says What, To Whom, In What Setting, With What Effect
 """
 
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, Union
 import json
 import random
 from pydantic import BaseModel, Field
@@ -309,11 +309,24 @@ class DiscourseEnhancedPlanner:
         
         return chain
     
-    def generate_scenarios(self, research_focus: str, num_scenarios: int = 5) -> List[DiscourseAnalysisScenario]:
-        """Generate discourse analysis scenarios from a research focus"""
-        # Generate research questions from the focus
-        research_questions = self._generate_research_questions(research_focus, num_scenarios)
-        return self._generate_scenarios_from_questions(research_questions, research_focus)
+    def generate_scenarios(self, research_focus, num_scenarios: int = 5) -> List[DiscourseAnalysisScenario]:
+        """Generate discourse analysis scenarios from a research focus
+        
+        Args:
+            research_focus: Either a string domain or a list of research questions
+            num_scenarios: Number of scenarios to generate (used when research_focus is a string)
+        """
+        # Handle both string and list inputs
+        if isinstance(research_focus, list):
+            # If given a list of questions, use them directly
+            research_questions = research_focus
+            domain = num_scenarios if isinstance(num_scenarios, str) else "COVID-19 conspiracy theories"
+        else:
+            # Generate research questions from the focus
+            research_questions = self._generate_research_questions(research_focus, num_scenarios)
+            domain = research_focus
+        
+        return self._generate_scenarios_from_questions(research_questions, domain)
     
     def _generate_research_questions(self, research_focus: str, num_questions: int) -> List[str]:
         """Generate specific research questions from a broad focus"""

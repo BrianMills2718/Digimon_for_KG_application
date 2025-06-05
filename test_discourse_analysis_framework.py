@@ -146,7 +146,7 @@ class DiscourseAnalysisTestFramework:
                 ['vaccine_control', 'bioweapon', 'gates_conspiracy'][i % 3]
                 for i in range(100)
             ],
-            'label': ['support', 'deny', 'neutral'][i % 3] for i in range(100)
+            'label': [['support', 'deny', 'neutral'][i % 3] for i in range(100)]
         }
         
         df = pd.DataFrame(sample_data)

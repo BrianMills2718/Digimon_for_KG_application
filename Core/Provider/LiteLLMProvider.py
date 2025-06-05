@@ -52,12 +52,19 @@ class LiteLLMProvider(BaseLLM):
 
     def _prepare_litellm_kwargs(self, messages: List[Dict[str, str]], stream: bool = False, **kwargs) -> Dict[str, Any]:
         """Prepares common arguments for LiteLLM calls."""
+        # Calculate dynamic max_tokens if not explicitly provided
+        max_tokens = kwargs.get("max_tokens")
+        if max_tokens is None:
+            # Use get_max_completion_tokens to dynamically calculate available tokens
+            from Core.Utils.TokenCounter import get_max_completion_tokens
+            max_tokens = get_max_completion_tokens(messages, self.model, self.config.max_token)
+        
         params = {
             "model": self.model,
             "messages": messages,
             "stream": stream,
             "temperature": kwargs.get("temperature", self.config.temperature),
-            "max_tokens": kwargs.get("max_tokens", self.config.max_token),
+            "max_tokens": max_tokens,
             "api_key": self.api_key, # Pass if available, LiteLLM handles None and uses env vars
             "base_url": self.base_url, # Pass if available
             "timeout": self.get_timeout(kwargs.get("timeout", USE_CONFIG_TIMEOUT)),

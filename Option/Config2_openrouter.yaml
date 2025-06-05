@@ -1,0 +1,45 @@
+llm:
+  api_type: "litellm"
+  # OpenRouter endpoint
+  base_url: "https://openrouter.ai/api/v1"
+  
+  # Choose one of these high-context models:
+  # model: "openrouter/anthropic/claude-3-opus"      # 200k context
+  # model: "openrouter/anthropic/claude-3-sonnet"    # 200k context  
+  # model: "openrouter/google/gemini-pro-1.5"        # 1M+ context
+  model: "openrouter/anthropic/claude-3-haiku"       # 200k context, cheaper
+  
+  # Get your API key from https://openrouter.ai/keys
+  api_key: "YOUR_OPENROUTER_API_KEY"
+  
+  temperature: 0.0
+  max_token: 100000  # Massive output capacity!
+  
+  # OpenRouter specific headers
+  extra_headers:
+    HTTP-Referer: "https://github.com/your-repo"  # Optional, for stats
+    X-Title: "DIGIMON Discourse Analysis"          # Optional, shows in dashboard
+
+embedding:
+  # Keep existing OpenAI embeddings (they work well)
+  api_type: "openai"
+  api_key: "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"
+  model: "text-embedding-3-small"
+  cache_dir: ""
+  dimensions: 1024
+  max_token_size: 8102
+  embed_batch_size: 128
+  embedding_func_max_async: 16
+
+data_root: "./Data"
+working_dir: ./results
+exp_name: discourse_analysis
+
+# Optional: Disable problematic features
+graph:
+  chunk_size: 1024      # Larger chunks for discourse analysis
+  chunk_overlap: 200    # More overlap for context
+  enable_cache: true
+  
+# Increase timeouts for large outputs
+timeout: 300  # 5 minutes for complex analysis

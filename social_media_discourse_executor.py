@@ -95,8 +95,8 @@ class DiscourseEnhancedSocialMediaExecutor:
             # Create context with discourse metadata
             self._trace("init_step", {"step": "Creating discourse-enhanced GraphRAG context"})
             self.context = GraphRAGContext(
-                dataset_name="social_media_discourse_analysis",
-                config=self.config
+                target_dataset_name="social_media_discourse_analysis",
+                main_config=self.config
             )
             
             # Create orchestrator
@@ -173,9 +173,9 @@ class DiscourseEnhancedSocialMediaExecutor:
                 "discourse_enhanced": True
             })
             
-            # Create a corpus directory structure
-            corpus_dir = Path(f"./discourse_corpus_{dataset_name}")
-            corpus_dir.mkdir(exist_ok=True)
+            # Create a corpus directory structure in results folder where ChunkFactory expects it
+            corpus_dir = Path(f"./results/{dataset_name}")
+            corpus_dir.mkdir(exist_ok=True, parents=True)
             
             # For CSV files, convert with discourse metadata
             if dataset_path.endswith('.csv'):
@@ -231,6 +231,7 @@ class DiscourseEnhancedSocialMediaExecutor:
             plan = ExecutionPlan(
                 plan_id=f"prepare_discourse_{dataset_name}",
                 plan_description=f"Prepare discourse-enhanced corpus from {corpus_dir}",
+                target_dataset_name=dataset_name,
                 steps=[
                     ExecutionStep(
                         step_id="prepare_corpus",
@@ -240,9 +241,9 @@ class DiscourseEnhancedSocialMediaExecutor:
                                 ToolCall(
                                     tool_id="corpus.PrepareFromDirectory",
                                     inputs={
-                                        "directory_path": str(corpus_dir),
-                                        "corpus_name": dataset_name,
-                                        "output_path": str(corpus_dir)
+                                        "input_directory_path": str(corpus_dir.absolute()),
+                                        "output_directory_path": str(corpus_dir.absolute()),
+                                        "target_corpus_name": dataset_name
                                     }
                                 )
                             ]
@@ -311,6 +312,7 @@ class DiscourseEnhancedSocialMediaExecutor:
             plan = ExecutionPlan(
                 plan_id=f"build_discourse_{graph_id}",
                 plan_description=f"Build discourse-aware {graph_type}",
+                target_dataset_name=dataset_name,
                 steps=[
                     ExecutionStep(
                         step_id="build_graph",
@@ -320,11 +322,13 @@ class DiscourseEnhancedSocialMediaExecutor:
                                 ToolCall(
                                     tool_id=tool_id,
                                     inputs={
-                                        "dataset_name": dataset_name,
-                                        "use_existing_corpus": True,
-                                        "chunk_size": 256,  # Optimal for discourse analysis
-                                        "chunk_overlap": 50,
-                                        "custom_ontology_path": str(ontology_path)
+                                        "target_dataset_name": dataset_name,
+                                        "force_rebuild": False,
+                                        "config_overrides": {
+                                            "custom_ontology_path_override": str(ontology_path),
+                                            "chunk_size": 256,
+                                            "chunk_overlap": 50
+                                        }
                                     }
                                 )
                             ]
@@ -341,18 +345,23 @@ class DiscourseEnhancedSocialMediaExecutor:
             if ontology_path.exists():
                 ontology_path.unlink()
             
-            if "build_graph" in results and not results["build_graph"].get("error"):
+            # Check if graph build was successful
+            build_result = results.get("build_graph", {})
+            if (not build_result.get("error") and 
+                build_result.get("status") == "success" and 
+                build_result.get("graph_id")):
                 self._trace("discourse_graph_build_complete", {
-                    "graph_id": graph_id,
+                    "graph_id": build_result["graph_id"],
                     "status": "success"
                 })
-                logger.info(f"Successfully built discourse-aware graph: {graph_id}")
-                return graph_id
+                logger.info(f"Successfully built discourse-aware graph: {build_result['graph_id']}")
+                return build_result["graph_id"]
             else:
                 self._trace("discourse_graph_build_failed", {
                     "graph_id": graph_id,
-                    "error": str(results)
+                    "error": build_result.get("message", str(results))
                 })
+                logger.error(f"Failed to build graph: {build_result.get('message', 'Unknown error')}")
                 return None
                 
         except Exception as e:
@@ -466,6 +475,7 @@ class DiscourseEnhancedSocialMediaExecutor:
             plan = ExecutionPlan(
                 plan_id=f"build_{vdb_type}_vdb_{graph_id}",
                 plan_description=f"Build {vdb_type} VDB for discourse analysis",
+                target_dataset_name=graph_id.split('_')[0] if '_' in graph_id else graph_id,
                 steps=[
                     ExecutionStep(
                         step_id=f"build_{vdb_type}_vdb",
@@ -521,6 +531,7 @@ class DiscourseEnhancedSocialMediaExecutor:
             plan = ExecutionPlan(
                 plan_id=f"discourse_step_{step_num}",
                 plan_description=step.get("description", "Discourse retrieval"),
+                target_dataset_name=graph_id.split('_')[0] if '_' in graph_id else graph_id,
                 steps=[
                     ExecutionStep(
                         step_id=f"step_{step_num}",

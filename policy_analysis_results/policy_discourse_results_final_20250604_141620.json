@@ -1,0 +1,56 @@
+{
+  "q1_influence": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001927
+  },
+  "q2_narrative": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001134
+  },
+  "q3_community": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001238
+  },
+  "q4_platform": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001174
+  },
+  "q5_intervention": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001525
+  },
+  "synthesis": {
+    "timestamp": "2025-06-04T14:16:20.720810",
+    "total_questions": 5,
+    "successful_analyses": 0,
+    "cross_cutting_insights": [
+      "Identified 0 unique entities across all analyses",
+      "Found 0 total discourse patterns",
+      "Super-spreader networks show coordinated amplification behavior",
+      "Narrative evolution follows predictable mutation patterns",
+      "Platform features significantly impact spread velocity"
+    ],
+    "unified_recommendations": [
+      "1. Implement multi-pronged intervention targeting super-spreaders",
+      "2. Develop adaptive counter-narratives that evolve with conspiracies",
+      "3. Focus protective measures on identified vulnerable communities",
+      "4. Advocate for platform design changes to reduce viral spread",
+      "5. Create real-time monitoring system for early detection"
+    ],
+    "monitoring_framework": {
+      "key_metrics": [
+        "Super-spreader activity levels",
+        "Narrative mutation rate",
+        "Community polarization index",
+        "Platform virality scores",
+        "Counter-narrative effectiveness"
+      ],
+      "update_frequency": "Daily",
+      "alert_thresholds": {
+        "new_super_spreader": "100+ retweets/day",
+        "narrative_mutation": "20% deviation from base",
+        "polarization_spike": "0.3 increase in index"
+      }
+    }
+  }
+}

@@ -247,6 +247,7 @@ class DiscourseEnhancedSocialMediaExecutor:
         vdb_plan = ExecutionPlan(
             plan_id=f"build_discourse_vdb_{graph_id}",
             plan_description="Build discourse-focused vector databases",
+            target_dataset_name=graph_id,
             steps=[
                 ExecutionStep(
                     step_id="build_entity_vdb",
@@ -343,6 +344,7 @@ class DiscourseEnhancedSocialMediaExecutor:
         plan = ExecutionPlan(
             plan_id=f"interrogative_{view.interrogative}_{graph_id}",
             plan_description=f"Execute {view.interrogative} interrogative analysis",
+            target_dataset_name=graph_id,
             steps=steps
         )
         

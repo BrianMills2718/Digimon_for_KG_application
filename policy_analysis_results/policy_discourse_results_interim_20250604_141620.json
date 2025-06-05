@@ -1,0 +1,22 @@
+{
+  "q1_influence": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001927
+  },
+  "q2_narrative": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001134
+  },
+  "q3_community": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001238
+  },
+  "q4_platform": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001174
+  },
+  "q5_intervention": {
+    "error": "Failed to initialize",
+    "analysis_time": 0.001525
+  }
+}

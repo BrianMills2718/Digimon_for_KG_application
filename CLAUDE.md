@@ -19,6 +19,11 @@ conda env create -f experiment.yml -n digimon
 # Copy and edit main config (required before running)
 cp Option/Config2.example.yaml Option/Config2.yaml
 # Edit API keys and model settings in Config2.yaml
+
+# Default models (update in Config2.yaml):
+# - OpenAI: o4-mini
+# - Gemini: gemini-2.0-flash  
+# - Claude: claude-sonnet-4-20250514
 ```
 
 ### Core System Operations
@@ -52,20 +57,35 @@ streamlit run streamlit_agent_frontend.py --server.port 8502
 
 ### Testing
 ```bash
-# Backend integration tests
-python test_backend_comprehensive.py
+# Run all tests with pytest
+pytest -v
 
-# Agent system tests
-python testing/test_agent_orchestrator.py
+# Run specific test categories
+pytest tests/unit/ -v
+pytest tests/integration/ -v
+pytest tests/e2e/ -v
 
-# Individual tool tests
-python testing/test_*_tool.py
+# Run a single test file
+pytest tests/integration/test_agent_orchestrator.py -v
 
-# End-to-end workflow tests
-python testing/test_agent_e2e_workflow.py
+# Run with coverage
+pytest --cov=Core --cov-report=html
 
-# Fictional corpus tests
-python test_fictional_corpus.py
+# Common test files:
+# - test_discourse_analysis_framework.py - Discourse analysis testing
+# - test_agent_orchestrator.py - Agent system tests
+# - test_graph_tools.py - Graph construction tests
+# - test_corpus_tools.py - Corpus preparation tests
+```
+
+### Linting and Code Quality
+```bash
+# Run linters (if configured)
+ruff check .
+mypy Core/
+
+# Format code
+black Core/
 ```
 
 ## Architecture Overview
@@ -136,6 +156,8 @@ DIGIMON is a modular GraphRAG system built around an intelligent agent framework
 **Graph Storage**: Uses NetworkX with custom storage backends in `Core/Storage/`
 
 **LLM Integration**: All LLM calls go through `Core/Provider/LiteLLMProvider.py`
+- Dynamic token calculation: System automatically uses maximum available tokens based on model limits
+- Token counting integrated for cost tracking via `Core/Utils/TokenCounter.py`
 
 **Testing Pattern**: Tools tested both individually and in integrated agent workflows
 
@@ -146,3 +168,22 @@ DIGIMON is a modular GraphRAG system built around an intelligent agent framework
 - Or add `disable_colbert: true` to your Config2.yaml
 - The system will automatically fall back to FAISS for vector indexing
 - Note: Existing ColBERT indexes must be rebuilt as FAISS indexes
+
+### Special Analysis Capabilities
+
+**Discourse Analysis Framework**
+- Enhanced planner for social media discourse analysis (`Core/AgentTools/discourse_enhanced_planner.py`)
+- Supports WHO/SAYS WHAT/TO WHOM/IN WHAT SETTING/WITH WHAT EFFECT analysis paradigm
+- Automated interrogative planning for generating research questions
+- Mini-ontology generation for focused entity/relationship extraction
+
+**Social Media Analysis**
+- Specialized tools in `Core/AgentTools/social_media_dataset_tools.py`
+- COVID-19 conspiracy theory dataset included for testing
+- Execution framework in `social_media_discourse_executor.py`
+
+### MCP (Model Context Protocol) Integration
+- MCP server implementation in `Core/MCP/`
+- Blackboard architecture for shared context
+- Knowledge sources for dynamic information sharing
+- Run MCP server: `./run_mcp_server.sh`

@@ -44,6 +44,7 @@ TOKEN_COSTS = {
     "o1-preview-2024-09-12": {"prompt": 0.015, "completion": 0.06},
     "o1-mini": {"prompt": 0.003, "completion": 0.012},
     "o1-mini-2024-09-12": {"prompt": 0.003, "completion": 0.012},
+    "o4-mini": {"prompt": 0.00015, "completion": 0.0006},  # O4-mini pricing
     "text-embedding-ada-002": {"prompt": 0.0004, "completion": 0.0},
     "glm-3-turbo": {"prompt": 0.0007, "completion": 0.0007},  # 128k version, prompt + completion tokens=0.005￥/k-tokens
     "glm-4": {"prompt": 0.014, "completion": 0.014},  # 128k version, prompt + completion tokens=0.1￥/k-tokens
@@ -221,6 +222,7 @@ TOKEN_MAX = {
     "o1-preview-2024-09-12": 128000,
     "o1-mini": 128000,
     "o1-mini-2024-09-12": 128000,
+    "o4-mini": 128000,  # O4-mini token limit
     "gpt-4o": 128000,
     "gpt-4o-2024-05-13": 128000,
     "gpt-4o-2024-08-06": 128000,
@@ -410,6 +412,7 @@ def count_input_tokens(messages, model="gpt-3.5-turbo-0125"):
         "o1-preview-2024-09-12",
         "o1-mini",
         "o1-mini-2024-09-12",
+        "o4-mini",
     }:
         tokens_per_message = 3  # # every reply is primed with <|start|>assistant<|message|>
         tokens_per_name = 1

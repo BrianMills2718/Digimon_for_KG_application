@@ -1,0 +1,287 @@
+[
+  {
+    "timestamp": "2025-06-04T14:16:20.704482",
+    "event": "policy_question_start",
+    "data": {
+      "question": "Who are the super-spreaders of COVID conspiracy theories, what are their network characteristics, and how do they coordinate to amplify misinformation?"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.704514",
+    "event": "init_start",
+    "data": {
+      "component": "DIGIMON",
+      "discourse_enhanced": true
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.704525",
+    "event": "init_step",
+    "data": {
+      "step": "Registering LLM provider"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.704529",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-aware LLM instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.704879",
+    "event": "init_step",
+    "data": {
+      "step": "Creating encoder instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.704989",
+    "event": "init_step",
+    "data": {
+      "step": "Creating chunk factory"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.705529",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-enhanced GraphRAG context"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.705716",
+    "event": "init_failed",
+    "data": {
+      "error": "2 validation errors for GraphRAGContext\ntarget_dataset_name\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing\nmain_config\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.708682",
+    "event": "policy_question_start",
+    "data": {
+      "question": "How do conspiracy narratives evolve and mutate as they spread through social networks, and what linguistic markers indicate narrative transformation?"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.708709",
+    "event": "init_start",
+    "data": {
+      "component": "DIGIMON",
+      "discourse_enhanced": true
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.708719",
+    "event": "init_step",
+    "data": {
+      "step": "Registering LLM provider"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.708722",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-aware LLM instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.709054",
+    "event": "init_step",
+    "data": {
+      "step": "Creating encoder instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.709116",
+    "event": "init_step",
+    "data": {
+      "step": "Creating chunk factory"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.709204",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-enhanced GraphRAG context"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.709364",
+    "event": "init_failed",
+    "data": {
+      "error": "2 validation errors for GraphRAGContext\ntarget_dataset_name\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing\nmain_config\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712103",
+    "event": "policy_question_start",
+    "data": {
+      "question": "Which communities are most susceptible to conspiracy theories, what are their demographic and psychographic characteristics, and how does exposure lead to polarization?"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712134",
+    "event": "init_start",
+    "data": {
+      "component": "DIGIMON",
+      "discourse_enhanced": true
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712145",
+    "event": "init_step",
+    "data": {
+      "step": "Registering LLM provider"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712149",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-aware LLM instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712508",
+    "event": "init_step",
+    "data": {
+      "step": "Creating encoder instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712593",
+    "event": "init_step",
+    "data": {
+      "step": "Creating chunk factory"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712684",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-enhanced GraphRAG context"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.712860",
+    "event": "init_failed",
+    "data": {
+      "error": "2 validation errors for GraphRAGContext\ntarget_dataset_name\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing\nmain_config\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.715671",
+    "event": "policy_question_start",
+    "data": {
+      "question": "What platform features (hashtags, retweets, algorithms) most effectively facilitate conspiracy theory spread, and how do different platforms compare?"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.715699",
+    "event": "init_start",
+    "data": {
+      "component": "DIGIMON",
+      "discourse_enhanced": true
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.715710",
+    "event": "init_step",
+    "data": {
+      "step": "Registering LLM provider"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.715713",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-aware LLM instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.716058",
+    "event": "init_step",
+    "data": {
+      "step": "Creating encoder instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.716129",
+    "event": "init_step",
+    "data": {
+      "step": "Creating chunk factory"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.716215",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-enhanced GraphRAG context"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.716382",
+    "event": "init_failed",
+    "data": {
+      "error": "2 validation errors for GraphRAGContext\ntarget_dataset_name\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing\nmain_config\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719035",
+    "event": "policy_question_start",
+    "data": {
+      "question": "What are the measurable effects of different counter-narrative strategies, and which interventions most effectively reduce conspiracy belief and spread?"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719063",
+    "event": "init_start",
+    "data": {
+      "component": "DIGIMON",
+      "discourse_enhanced": true
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719072",
+    "event": "init_step",
+    "data": {
+      "step": "Registering LLM provider"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719075",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-aware LLM instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719567",
+    "event": "init_step",
+    "data": {
+      "step": "Creating encoder instance"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719666",
+    "event": "init_step",
+    "data": {
+      "step": "Creating chunk factory"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.719822",
+    "event": "init_step",
+    "data": {
+      "step": "Creating discourse-enhanced GraphRAG context"
+    }
+  },
+  {
+    "timestamp": "2025-06-04T14:16:20.720012",
+    "event": "init_failed",
+    "data": {
+      "error": "2 validation errors for GraphRAGContext\ntarget_dataset_name\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing\nmain_config\n  Field required [type=missing, input_value={'dataset_name': 'social_...pk_entity=10, k_hop=2))}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/missing"
+    }
+  }
+]

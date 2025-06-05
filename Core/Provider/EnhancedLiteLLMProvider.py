@@ -129,6 +129,7 @@ class EnhancedLiteLLMProvider(LiteLLMProvider):
         **kwargs
     ) -> litellm.ModelResponse:
         """Enhanced completion with caching and adaptive timeout."""
+        estimated_tokens = 1000  # Default estimate
         try:
             # Estimate tokens for timeout calculation
             estimated_tokens = self._estimate_tokens(messages, max_tokens)
@@ -196,9 +197,11 @@ class EnhancedLiteLLMProvider(LiteLLMProvider):
         except Exception as e:
             # Track failed request
             if self.enable_performance_tracking:
+                # Use estimated_tokens if defined, otherwise use a default
+                prompt_tokens = estimated_tokens // 2 if 'estimated_tokens' in locals() else 1000
                 await self.performance_tracker.track_request(
                     model=self.model,
-                    prompt_tokens=estimated_tokens // 2,
+                    prompt_tokens=prompt_tokens,
                     completion_tokens=0,
                     duration=time.time() - start_time if 'start_time' in locals() else 0,
                     success=False,
@@ -261,9 +264,11 @@ class EnhancedLiteLLMProvider(LiteLLMProvider):
         except Exception as e:
             # Track failed request
             if self.enable_performance_tracking:
+                # Use estimated_tokens if defined, otherwise use a default
+                prompt_tokens = estimated_tokens // 2 if 'estimated_tokens' in locals() else 1000
                 await self.performance_tracker.track_request(
                     model=self.model,
-                    prompt_tokens=estimated_tokens // 2,
+                    prompt_tokens=prompt_tokens,
                     completion_tokens=0,
                     duration=time.time() - start_time if 'start_time' in locals() else 0,
                     success=False,
