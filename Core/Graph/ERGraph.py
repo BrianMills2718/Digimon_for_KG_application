@@ -61,7 +61,7 @@ class ERGraph(BaseGraph):
         
         # Append entity type guidance to the prompt
         ner_messages = GraphPrompt.NER.format(user_input=passage) + entity_type_guidance
-        llm_output_str = await self.llm.aask(ner_messages, format="json", operation="graph_extraction")
+        llm_output_str = await self.llm.aask(ner_messages, format="json")
         
         parsed_output = None
         if isinstance(llm_output_str, str):
@@ -132,7 +132,7 @@ class ERGraph(BaseGraph):
             named_entity_json=json.dumps(named_entity_json)
         ) + ontology_guidance
         
-        llm_output_str = await self.llm.aask(prompt_with_ontology, format="json", operation="graph_extraction")
+        llm_output_str = await self.llm.aask(prompt_with_ontology, format="json")
         
         parsed_output = None
         if isinstance(llm_output_str, str):
