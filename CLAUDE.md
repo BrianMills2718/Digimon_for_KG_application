@@ -342,130 +342,227 @@ For each test, verify:
 
 **Current Status:** System is broken - cannot even complete basic ER graph building due to orchestrator output key mismatches. This MUST be fixed first.
 
-## Recent Fixes Applied (2025-06-05 Update)
+## Critical Issues & Staged Fix Protocol (2025-06-05)
 
-### Critical Fixes Implemented
+### Current Critical Issues
 
-1. **Orchestrator State Preservation (FIXED)**
-   - Issue: ReAct mode was losing state between iterations
-   - Fix: Modified `Core/AgentOrchestrator/orchestrator.py` to preserve `step_outputs` between plan executions
-   - Result: Steps can now reference outputs from previous plans in ReAct mode
+Based on latest testing with Social_Discourse_Test dataset:
 
-2. **Ontology Generator (FIXED)**  
-   - Issue: `aask()` was called with unsupported 'operation' parameter
-   - Fix: Removed `operation="ontology_generation"` from call in `Core/Graph/ontology_generator.py`
-   - Result: Ontology generation no longer crashes
+1. **Entity Extraction Format Error**
+   - ER Graph builder receives malformed entity data (dict instead of string for entity_name)
+   - Error: `TypeError: unhashable type: 'dict'`
+   - Root cause: LLM returning `entity_name={'text': 'SOCIAL NETWORK ACTOR PROFILES', 'type': 'TextSegment'}`
 
-3. **Corpus Path Resolution (WORKING)**
-   - Issue: ChunkFactory looks for corpus in multiple locations
-   - Current behavior: Checks both `results/{dataset}/Corpus.json` and `Data/{dataset}/Corpus.json`
-   - Result: Corpus preparation tool creates files in correct location
+2. **Missing Tool Implementations**
+   - Agent references non-existent tools: `vector_db.CreateIndex`, `vector_db.QueryIndex`, `graph.GetClusters`
+   - These appear to be LLM hallucinations
 
-### Synthetic Test Data Available
+3. **Configuration Attribute Errors**
+   - PassageGraph expects `config.summary_max_tokens` but Config object lacks this attribute
+   - Fixed with getattr default, but more config issues may exist
 
-Created comprehensive test datasets for all capabilities:
+4. **Corpus Path Resolution**
+   - ChunkFactory expects corpus at `results/{dataset}/Corpus.json`
+   - Corpus tool creates at `results/{dataset}/corpus/Corpus.json`
+   - Mismatch causes "No input chunks found" errors
 
-```bash
-# Create synthetic test data
-python create_synthetic_test_data.py
+5. **Graph Registration Failures**
+   - Successfully built graphs not registered in GraphRAGContext
+   - Subsequent tools can't find graphs even when built
 
-# Available datasets:
-# - Synthetic_Test: 4 documents covering AI, climate, politics, space
-# - Discourse_Test: UBI debate with clear discourse patterns  
-# - Community_Test: Startup ecosystem with community structures
+## Staged Fix Protocol
+
+### Stage 1: Entity Extraction Format Fix
+**Goal**: Ensure entity extraction returns proper string entity names, not dicts
+
+**Test Criteria**:
+```python
+# test_stage1_entity_extraction.py
+# MUST verify:
+# 1. Entity names are strings, not dicts
+# 2. ER graph builds successfully with >0 nodes and edges
+# 3. Can retrieve entity data from built graph
+
+# EVIDENCE REQUIRED:
+# - entity_name: <string value> (NOT dict)
+# - node_count: <integer > 0>
+# - edge_count: <integer > 0>
+# - sample_entity: <actual entity name and description>
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE: 
+# COMMIT: 
 ```
 
-### Current Testing Status
+**Implementation**:
+1. Check ERGraph entity extraction prompts
+2. Add validation in entity extraction to ensure string names
+3. Add type checking before graph construction
 
-1. ✓ Orchestrator state preservation - Verified working
-2. ✓ ReAct mode execution - Completes 7 iterations successfully
-3. ✓ Corpus preparation - Creates Corpus.json correctly
-4. ~ Graph building - Builds but agent doesn't recognize success
-5. ? Entity/relationship extraction - Needs verification
-6. ? VDB operations - Not yet tested
-7. ? Complex queries - Not yet tested
+### Stage 2: Tool Hallucination Prevention
+**Goal**: Prevent agent from using non-existent tools
 
-### Final Status (2025-06-05) - CORE FIXES COMPLETE
+**Test Criteria**:
+```python
+# test_stage2_tool_validation.py
+# MUST verify:
+# 1. Agent only uses tools from registered tool list
+# 2. No attempts to call non-existent tools
+# 3. Agent adapts plan when tools not available
 
-**5-Stage Fix Protocol Successfully Applied**
+# EVIDENCE REQUIRED:
+# - registered_tools: [list of actual tool IDs]
+# - plan_tools: [list of tools in generated plan]
+# - validation: ALL plan_tools IN registered_tools
+# - no_errors: No "Tool ID 'X' not found" errors
 
-All critical orchestrator and agent issues have been resolved:
-
-**Stage 1: ✓ Orchestrator Output Storage** 
-- Fixed: Orchestrator now preserves `_status` and `_message` fields alongside named outputs
-- Impact: Agent can now detect tool failures properly
-
-**Stage 2: ✓ Agent Failure Detection**
-- Fixed: Agent's `_react_observe` method checks both 'status' and '_status' fields
-- Impact: Failed steps are properly identified and skipped in ReAct mode
-
-**Stage 3: ✓ Tool-Specific Fixes**
-- Fixed: EntityRetriever handles missing `entities_to_relationships` attribute gracefully
-- Fixed: Identified non-existent tools (Chunk.GetTextForClusters, report.Generate) as LLM hallucinations
-- Impact: PPR calculations work without crashes
-
-**Stage 4: ✓ Field Naming & Tool Validation**
-- Fixed: Added tool validation to warn about non-existent tools
-- Fixed: Updated agent prompts to explicitly list invalid tool names
-- Fixed: Clarified named_output alias usage in documentation
-- Impact: Agent generates valid plans with correct field references
-
-**Stage 5: ✓ Dataset Resolution**
-- Verified: ChunkFactory correctly resolves dataset names and paths
-- Verified: Corpus tool handles relative/absolute paths properly
-- Verified: Graph namespace extraction from IDs works correctly
-- Impact: No code changes needed - already working correctly
-
-**Current System Status**
-
-Core functionality restored:
-- ✓ Corpus preparation from text files
-- ✓ All graph types build successfully (ER, RK, Tree, TreeBalanced, Passage)
-- ✓ Graph instances properly registered in context
-- ✓ Entity VDB operations work when VDB is built first
-- ✓ Tool failure detection and handling
-- ✓ ReAct mode preserves state between iterations
-
-**Known Remaining Issues**
-
-1. **VDB Auto-Building**: Agent doesn't always realize it needs to build VDB before searching
-   - Workaround: Explicitly mention "build entity VDB" in queries
-   
-2. **Empty Results**: Some queries return empty results due to:
-   - Small test datasets with limited entities
-   - Need for better entity extraction prompts
-   
-3. **Token Limits**: Complex multi-step plans may exceed token limits
-   - Workaround: Break complex queries into smaller parts
-
-**Recommended Usage Pattern**
-
-```bash
-# Step 1: Prepare corpus (if not already done)
-python digimon_cli.py -c Data/YourDataset -q "Prepare the corpus"
-
-# Step 2: Build graph and VDB explicitly
-python digimon_cli.py -c Data/YourDataset -q "Build an ER graph and create entity VDB"
-
-# Step 3: Run analysis queries
-python digimon_cli.py -c Data/YourDataset -q "Find main themes and entities"
+# STATUS: [ ] NOT STARTED
+# EVIDENCE:
+# COMMIT:
 ```
 
-**Test Commands That Work**
+**Implementation**:
+1. Update agent prompts to include exact tool list
+2. Add tool validation in plan generation
+3. Add fallback strategies for missing tools
 
-```bash
-# Test basic graph building
-python test_basic_graph.py
+### Stage 3: Corpus Path Standardization
+**Goal**: Ensure corpus files are found regardless of creation method
 
-# Test orchestrator fixes
-python test_orchestrator_state.py
+**Test Criteria**:
+```python
+# test_stage3_corpus_paths.py
+# MUST verify:
+# 1. Corpus created by tool is found by ChunkFactory
+# 2. Graphs can load chunks successfully
+# 3. No "Corpus file not found" errors
 
-# Test agent fixes  
-python test_stage4_simple.py
+# EVIDENCE REQUIRED:
+# - corpus_created_at: <path where corpus tool creates file>
+# - corpus_expected_at: <path where ChunkFactory looks>
+# - chunks_loaded: <integer > 0>
+# - graph_built: success with chunks
 
-# Full system test
-python digimon_cli.py -c Data/Russian_Troll_Sample -q "Analyze the content"
+# STATUS: [ ] NOT STARTED
+# EVIDENCE:
+# COMMIT:
 ```
+
+**Implementation**:
+1. Standardize corpus output location
+2. Update ChunkFactory to check multiple locations
+3. Add corpus path resolution logic
+
+### Stage 4: Graph Registration & Context Management
+**Goal**: Ensure built graphs are accessible to subsequent tools
+
+**Test Criteria**:
+```python
+# test_stage4_graph_registration.py
+# MUST verify:
+# 1. Built graphs appear in GraphRAGContext
+# 2. Subsequent tools can access graphs
+# 3. VDB build succeeds using registered graph
+
+# EVIDENCE REQUIRED:
+# - graph_built: <graph_id>
+# - graphs_in_context: [list containing graph_id]
+# - vdb_built_from_graph: success
+# - entities_indexed: <integer > 0>
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE:
+# COMMIT:
+```
+
+**Implementation**:
+1. Fix graph registration in orchestrator
+2. Ensure GraphRAGContext persists between steps
+3. Add graph instance passing between tools
+
+### Stage 5: End-to-End Query Success
+**Goal**: Complete full query pipeline successfully
+
+**Test Criteria**:
+```python
+# test_stage5_e2e_query.py
+# MUST verify:
+# 1. Full pipeline: corpus → graph → VDB → search → retrieve text
+# 2. Final answer contains actual data from corpus
+# 3. No errors in any pipeline stage
+
+# EVIDENCE REQUIRED:
+# - corpus_docs: <integer > 0>
+# - graph_nodes: <integer > 0>
+# - vdb_entities: <integer > 0>
+# - search_results: [list of found entities]
+# - retrieved_text: <actual text from corpus>
+# - final_answer: <meaningful answer with corpus data>
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE:
+# COMMIT:
+```
+
+**Implementation**:
+1. Run full test on Social_Discourse_Test dataset
+2. Verify each stage completes successfully
+3. Ensure final answer contains real data
+
+## Testing Protocol
+
+**CRITICAL**: Each stage MUST be completed and verified before proceeding to the next:
+
+1. Create test file for stage
+2. Run test and capture output
+3. Verify ALL criteria are met
+4. Update test file with:
+   - STATUS: [X] PASSED
+   - EVIDENCE: <paste actual output proving success>
+   - COMMIT: <commit hash after fixes>
+5. Commit changes with message: "fix: Stage N - <description>"
+6. Only then proceed to next stage
+
+**Test Datasets Available**:
+- `Data/Social_Discourse_Test`: Rich social network with 10 actors, 20 posts, clear communities
+- `Data/Russian_Troll_Sample`: Real Twitter data but sparse
+- `Data/MySampleTexts`: Historical documents (American/French Revolution)
+
+## Success Metrics
+
+The system is considered functional when:
+1. Can build ER graph with proper entities (strings not dicts)
+2. Uses only registered tools (no hallucinations)
+3. Finds corpus files reliably
+4. Maintains graph context between tools
+5. Completes full query pipeline returning real data
+
+Each stage must show concrete evidence of success before moving forward.
+
+## Previous Fixes Applied (2025-06-05)
+
+### Already Fixed Issues
+
+1. **Orchestrator State Preservation** ✓
+   - Fixed orchestrator to preserve `_status` and `_message` fields
+   - Agent can now detect tool failures
+
+2. **PassageGraph Config Error** ✓
+   - Added default for missing `summary_max_tokens`
+   - PassageGraph no longer crashes
+
+3. **Basic Path Resolution** ✓
+   - Corpus tool resolves paths under Data/ directory
+   - Basic corpus preparation works
+
+### Test Data Created
+
+1. **Social_Discourse_Test** - New!
+   - 10 Twitter accounts with clear roles
+   - 4 distinct communities
+   - 20+ posts with rich mention network
+   - 5 discourse phases over 24 hours
+   - Perfect for testing social network analysis
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
