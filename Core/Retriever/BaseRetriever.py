@@ -95,11 +95,19 @@ class BaseRetriever(ABC):
             # Please refer to the HippoRAG code for more details: https://github.com/OSU-NLP-Group/HippoRAG/tree/main
             if not hasattr(self, "entity_chunk_count"):
                 # Register the entity-chunk count matrix into the class when you first use it.
-                e2r = await self.entities_to_relationships.get()
-                r2c = await self.relationships_to_chunks.get()
-                c2e = e2r.dot(r2c).T
-                c2e[c2e.nonzero()] = 1
-                self.entity_chunk_count = c2e.sum(0).T
+                # Check if entities_to_relationships exists before using it
+                if hasattr(self, "entities_to_relationships") and self.entities_to_relationships is not None:
+                    e2r = await self.entities_to_relationships.get()
+                    r2c = await self.relationships_to_chunks.get()
+                    c2e = e2r.dot(r2c).T
+                    c2e[c2e.nonzero()] = 1
+                    self.entity_chunk_count = c2e.sum(0).T
+                else:
+                    # Fallback: create a dummy entity_chunk_count if e2r/r2c not available
+                    logger.warning("entities_to_relationships not available, using default entity_chunk_count")
+                    # Get total number of nodes to create proper sized array
+                    num_nodes = len(await self.graph.get_nodes())
+                    self.entity_chunk_count = np.ones(num_nodes)  # Default to 1 for all entities
 
             for entity in query_entities:
     

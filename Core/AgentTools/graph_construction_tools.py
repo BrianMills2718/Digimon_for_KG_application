@@ -114,7 +114,7 @@ async def build_er_graph(
             encoder=encoder_instance,
         )
         if hasattr(er_graph_instance._graph, 'namespace'):
-            er_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name)
+            er_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="er_graph")
         input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
         if not input_chunks:
             return BuildERGraphOutputs(
@@ -184,7 +184,7 @@ async def build_rk_graph(
             encoder=encoder_instance,
         )
         if hasattr(rk_graph_instance._graph, 'namespace'):
-            rk_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name)
+            rk_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="rkg_graph")
         input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
         if not input_chunks:
             return BuildRKGraphOutputs(
@@ -234,7 +234,7 @@ async def build_tree_graph(
             encoder=encoder_instance,
         )
         if hasattr(tree_graph_instance._graph, 'namespace'):
-            tree_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name)
+            tree_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="tree_graph")
         input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
         if not input_chunks:
             return BuildTreeGraphOutputs(
@@ -284,7 +284,7 @@ async def build_tree_graph_balanced(
             encoder=encoder_instance,
         )
         if hasattr(tree_graph_balanced_instance._graph, 'namespace'):
-            tree_graph_balanced_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name)
+            tree_graph_balanced_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="tree_graph_balanced")
         input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
         if not input_chunks:
             return BuildTreeGraphBalancedOutputs(
@@ -334,7 +334,7 @@ async def build_passage_graph(
             encoder=encoder_instance,
         )
         if hasattr(passage_graph_instance._graph, 'namespace'):
-            passage_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name)
+            passage_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="passage_of_graph")
         input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
         if not input_chunks:
             return BuildPassageGraphOutputs(

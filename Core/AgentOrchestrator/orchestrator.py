@@ -27,6 +27,7 @@ from Option.Config2 import Config
 from Core.Provider.BaseLLM import BaseLLM
 from Core.Provider.BaseEmb import BaseEmb as LlamaIndexBaseEmbedding
 from Core.Chunk.ChunkFactory import ChunkFactory
+from Core.Graph.GraphFactory import get_graph
 
 # Import tool functions (we'll add more as they become relevant)
 from Core.AgentTools.entity_tools import entity_vdb_search_tool, entity_ppr_tool
@@ -185,7 +186,9 @@ class AgentOrchestrator:
 
     async def execute_plan(self, plan: ExecutionPlan) -> Dict[str, Any]: 
         logger.info(f"Orchestrator: Starting execution of plan ID: {plan.plan_id} - {plan.plan_description}")
-        self.step_outputs: Dict[str, Dict[str, Any]] = {}
+        # Don't reset step_outputs - preserve outputs from previous plans in ReAct mode
+        if not hasattr(self, 'step_outputs'):
+            self.step_outputs: Dict[str, Dict[str, Any]] = {}
 
         for step_index, step in enumerate(plan.steps):
             logger.info(f"Orchestrator: Executing Step {step_index + 1}/{len(plan.steps)}: {step.step_id} - {step.description}")
@@ -351,6 +354,14 @@ class AgentOrchestrator:
                         for key, value in output_data_to_store.items():
                             current_step_outputs[key] = value 
                             logger.info(f"Orchestrator: Stored output '{key}' for step {step.step_id} (tool {tool_call.tool_id}).")
+                        
+                        # ALWAYS preserve status and message fields alongside named outputs
+                        if hasattr(tool_output, 'status'):
+                            current_step_outputs['_status'] = tool_output.status
+                            logger.debug(f"Orchestrator: Preserved _status='{tool_output.status}' for step {step.step_id}")
+                        if hasattr(tool_output, 'message'):
+                            current_step_outputs['_message'] = tool_output.message
+                            logger.debug(f"Orchestrator: Preserved _message='{tool_output.message[:100]}...' for step {step.step_id}")
 
                     elif tool_output is not None:
                         logger.info(f"Orchestrator: Tool {tool_call.tool_id} produced output, but no 'named_outputs' defined in plan. Storing entire output.")

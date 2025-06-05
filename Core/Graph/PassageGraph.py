@@ -33,7 +33,13 @@ class PassageGraph(BaseGraph):
     2. The associated research paper: https://arxiv.org/abs/2308.11730
     """
     def __init__(self, config, llm, encoder):
-        super().__init__(config, llm, encoder)
+        # Create a tokenizer wrapper for BaseGraph compatibility
+        from Core.Common.TokenizerWrapper import TokenizerWrapper
+        tokenizer = TokenizerWrapper()
+        
+        super().__init__(config, llm, tokenizer)  # Pass tokenizer instead of encoder
+        # Keep encoder for potential future use
+        self.encoder = encoder
         self.k: int = 30
         self.k_nei: int = 3
         self._graph = NetworkXStorage()
@@ -122,8 +128,10 @@ class PassageGraph(BaseGraph):
             #     *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the relationship of chunks
             await self.__passage_graph__(results, chunk_list)
+            return True  # Return success
         except Exception as e:
             logger.exception(f"Error building graph: {e}")
+            return False  # Return failure
         finally:
             logger.info("Constructing graph finished")
 

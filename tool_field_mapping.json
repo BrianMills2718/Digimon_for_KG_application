@@ -1,0 +1,206 @@
+{
+  "tool_inputs": {
+    "Entity.VDBSearch": {
+      "class": "EntityVDBSearchInputs",
+      "required_fields": [
+        "vdb_reference_id"
+      ],
+      "optional_fields": [
+        "query_text",
+        "query_embedding",
+        "embedding_model_id",
+        "top_k_results"
+      ]
+    },
+    "Entity.VDB.Build": {
+      "class": "EntityVDBBuildInputs",
+      "required_fields": [
+        "graph_reference_id",
+        "vdb_collection_name"
+      ],
+      "optional_fields": [
+        "entity_types",
+        "include_metadata",
+        "force_rebuild"
+      ]
+    },
+    "Entity.PPR": {
+      "class": "EntityPPRInputs",
+      "required_fields": [
+        "graph_reference_id",
+        "seed_entity_ids"
+      ],
+      "optional_fields": [
+        "personalization_weight_alpha",
+        "max_iterations",
+        "top_k_results"
+      ]
+    },
+    "Entity.Onehop": {
+      "class": "EntityOneHopInput",
+      "required_fields": [
+        "entity_ids",
+        "graph_reference_id"
+      ],
+      "optional_fields": [
+        "include_edge_attributes",
+        "neighbor_limit_per_entity"
+      ]
+    },
+    "Entity.RelNode": {
+      "class": "EntityRelNodeInput",
+      "required_fields": [
+        "relationship_ids",
+        "graph_id"
+      ],
+      "optional_fields": [
+        "entity_role_filter",
+        "entity_type_filter"
+      ]
+    },
+    "Relationship.OneHopNeighbors": {
+      "class": "RelationshipOneHopNeighborsInputs",
+      "required_fields": [
+        "entity_ids"
+      ],
+      "optional_fields": [
+        "graph_reference_id",
+        "relationship_types_to_include",
+        "direction"
+      ]
+    },
+    "Relationship.VDB.Build": {
+      "class": "RelationshipVDBBuildInputs",
+      "required_fields": [
+        "graph_reference_id",
+        "vdb_collection_name"
+      ],
+      "optional_fields": [
+        "embedding_fields",
+        "include_metadata",
+        "force_rebuild"
+      ]
+    },
+    "Relationship.VDB.Search": {
+      "class": "RelationshipVDBSearchInputs",
+      "required_fields": [
+        "vdb_reference_id"
+      ],
+      "optional_fields": [
+        "query_text",
+        "query_embedding",
+        "top_k",
+        "score_threshold"
+      ]
+    },
+    "Chunk.FromRelationships": {
+      "class": "ChunkFromRelationshipsInputs",
+      "required_fields": [
+        "target_relationships",
+        "document_collection_id"
+      ],
+      "optional_fields": [
+        "max_chunks_per_relationship",
+        "top_k_total"
+      ]
+    },
+    "Chunk.GetTextForEntities": {
+      "class": "ChunkGetTextForEntitiesInput",
+      "required_fields": [
+        "graph_reference_id",
+        "entity_ids"
+      ],
+      "optional_fields": [
+        "chunk_ids",
+        "max_chunks_per_entity"
+      ]
+    },
+    "graph.BuildERGraph": {
+      "class": "BuildERGraphInputs",
+      "required_fields": [
+        "target_dataset_name"
+      ],
+      "optional_fields": [
+        "force_rebuild",
+        "config_overrides"
+      ]
+    },
+    "graph.BuildRKGraph": {
+      "class": "BuildRKGraphInputs",
+      "required_fields": [
+        "target_dataset_name"
+      ],
+      "optional_fields": [
+        "force_rebuild",
+        "config_overrides"
+      ]
+    },
+    "graph.BuildTreeGraph": {
+      "class": "BuildTreeGraphInputs",
+      "required_fields": [
+        "target_dataset_name"
+      ],
+      "optional_fields": [
+        "force_rebuild",
+        "config_overrides"
+      ]
+    },
+    "graph.BuildTreeGraphBalanced": {
+      "class": "BuildTreeGraphBalancedInputs",
+      "required_fields": [
+        "target_dataset_name"
+      ],
+      "optional_fields": [
+        "force_rebuild",
+        "config_overrides"
+      ]
+    },
+    "graph.BuildPassageGraph": {
+      "class": "BuildPassageGraphInputs",
+      "required_fields": [
+        "target_dataset_name"
+      ],
+      "optional_fields": [
+        "force_rebuild",
+        "config_overrides"
+      ]
+    },
+    "corpus.PrepareFromDirectory": {
+      "class": "PrepareCorpusInputs",
+      "required_fields": [
+        "input_directory_path",
+        "output_directory_path"
+      ],
+      "optional_fields": [
+        "target_corpus_name"
+      ]
+    },
+    "graph.Visualize": {
+      "class": "GraphVisualizerInput",
+      "required_fields": [
+        "graph_id"
+      ],
+      "optional_fields": [
+        "output_format"
+      ]
+    },
+    "graph.Analyze": {
+      "class": "GraphAnalyzerInput",
+      "required_fields": [
+        "graph_id"
+      ],
+      "optional_fields": [
+        "metrics_to_calculate",
+        "top_k_nodes",
+        "calculate_expensive_metrics"
+      ]
+    }
+  },
+  "tool_outputs": {},
+  "common_aliases": {
+    "prepared_corpus_name": "corpus_json_path",
+    "er_graph_id": "graph_id",
+    "entity_vdb_id": "vdb_reference_id",
+    "search_results": "similar_entities"
+  }
+}

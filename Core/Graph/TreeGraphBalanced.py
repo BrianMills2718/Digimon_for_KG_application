@@ -25,7 +25,13 @@ class TreeGraphBalanced(BaseGraph):
     max_workers: int = 16
     leaf_workers: int = 32
     def __init__(self, config, llm, encoder):
-        super().__init__(config, llm, encoder)
+        # Create a tokenizer wrapper for BaseGraph compatibility
+        from Core.Common.TokenizerWrapper import TokenizerWrapper
+        tokenizer = TokenizerWrapper()
+        
+        super().__init__(config, llm, tokenizer)  # Pass tokenizer instead of encoder
+        # Keep encoder for potential future use
+        self.encoder = encoder
         self._graph: TreeGraphStorage = TreeGraphStorage()  # Tree index
         self.embedding_model = get_rag_embedding(config.embedding.api_type, config)  # Embedding model
         self.config = config.graph # Only keep the graph config
@@ -209,27 +215,32 @@ class TreeGraphBalanced(BaseGraph):
         
 
     async def _build_graph(self, chunks: List[Any]):
-        is_load = await self._graph.load_tree_graph_from_leaves()
-        if is_load:
-            logger.info(f"Loaded {len(self._graph.leaf_nodes)} Leaf Embeddings")
-        else:
-            self._graph.clear()  # clear the storage before rebuilding
-            self._graph.add_layer()
-            with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-                # leaf_tasks = []
-                # for index, chunk in enumerate(chunks):
-                #     logger.info(index)
-                #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
-                for i in range(0, self.max_workers):
-                    leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship_without_embedding), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
-                    as_completed(leaf_tasks)
-                    # time.sleep(2)
-            logger.info(len(chunks))
-            logger.info(f"To batch embed leaves")
-            await self._batch_embed_and_assign(self._graph.num_layers - 1)
-            logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
-            await self._graph.write_tree_leaves()
-        await self._build_tree_from_leaves()
+        try:
+            is_load = await self._graph.load_tree_graph_from_leaves()
+            if is_load:
+                logger.info(f"Loaded {len(self._graph.leaf_nodes)} Leaf Embeddings")
+            else:
+                self._graph.clear()  # clear the storage before rebuilding
+                self._graph.add_layer()
+                with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+                    # leaf_tasks = []
+                    # for index, chunk in enumerate(chunks):
+                    #     logger.info(index)
+                    #     leaf_tasks.append(pool.submit(self._create_task_for(self._extract_entity_relationship), chunk_key_pair=chunk))
+                    for i in range(0, self.max_workers):
+                        leaf_tasks = [pool.submit(self._create_task_for(self._extract_entity_relationship_without_embedding), chunk_key_pair=chunk) for index, chunk in enumerate(chunks) if index % self.max_workers == i]
+                        as_completed(leaf_tasks)
+                        # time.sleep(2)
+                logger.info(len(chunks))
+                logger.info(f"To batch embed leaves")
+                await self._batch_embed_and_assign(self._graph.num_layers - 1)
+                logger.info(f"Created {len(self._graph.leaf_nodes)} Leaf Embeddings")
+                await self._graph.write_tree_leaves()
+            await self._build_tree_from_leaves()
+            return True  # Return success
+        except Exception as e:
+            logger.exception(f"Error building balanced tree graph: {e}")
+            return False  # Return failure
         
     @property
     def entity_metakey(self):

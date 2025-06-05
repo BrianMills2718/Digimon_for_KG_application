@@ -1,0 +1,23 @@
+Title: The Tech Startup Ecosystem of Silicon Valley
+
+COMMUNITY 1: AI/ML Startups
+OpenAI, led by Sam Altman, collaborates closely with Anthropic (Dario Amodei) and Cohere (Aidan Gomez). These companies share researchers, with Dr. Ilya Sutskever mentoring across organizations. They compete but also co-publish papers. Investment firm Andreessen Horowitz funds all three.
+
+DeepMind (Demis Hassabis) maintains connections through former employees who joined Inflection AI (Mustafa Suleyman). Research scientist Dr. Fei-Fei Li advises multiple companies in this cluster.
+
+COMMUNITY 2: Fintech Cluster  
+Stripe (Patrick Collison) has deep ties with Square (Jack Dorsey) through shared payment infrastructure. Plaid (Zach Perret) connects both to banks. PayPal mafia members including Peter Thiel influence this entire ecosystem.
+
+Robinhood (Vlad Tenev) and Coinbase (Brian Armstrong) share regulatory consultants. Both work with the same law firm, Wilson Sonsini. Venture capitalist Marc Andreessen sits on multiple boards.
+
+COMMUNITY 3: Social Media Innovators
+Instagram founders Kevin Systrom and Mike Krieger maintain connections with WhatsApp's Jan Koum. All have ties to Facebook/Meta through acquisition. TikTok's Shou Zi Chew recruited former Instagram employees.
+
+Twitter/X under Elon Musk hired engineers from Meta. LinkedIn (Reid Hoffman) serves as the professional network connecting all players.
+
+INTER-COMMUNITY BRIDGES:
+- Investor Sequoia Capital funds companies across all communities  
+- Stanford University professors advise startups in each cluster
+- Y Combinator alumni network spans all sectors
+
+These communities compete for talent, creating a dynamic ecosystem where employees move between clusters, carrying knowledge and connections.

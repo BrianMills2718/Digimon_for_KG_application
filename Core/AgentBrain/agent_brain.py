@@ -122,7 +122,11 @@ Based on the user's query, generate an ExecutionPlan JSON that orchestrates the 
 1. **Corpus and Graph**: Most queries need corpus preparation and ER graph building as initial steps
 2. **Entity Search**: For informational queries, use Entity.VDBSearch to find relevant entities
 3. **TEXT RETRIEVAL**: ALWAYS follow entity/relationship discovery with Chunk.GetTextForEntities or Chunk.FromRelationships
-4. **Data References**: 
+4. **Tool Validation**: ONLY use tools that are documented below. Common mistakes:
+   - Do NOT use 'Chunk.GetTextForClusters' - use 'Chunk.GetTextForEntities' instead
+   - Do NOT use 'report.Generate' - there is no report generation tool
+   - Do NOT use 'Entity.Extract' - use 'Entity.VDBSearch' or graph building instead
+5. **Data References**: 
    - Plan inputs: Use `"plan_inputs.main_query"` string format for user query reference
    - Step outputs: Use `{{"from_step_id": "step_id", "named_output_key": "alias"}}` for step references
    - Named outputs: `{{"alias": "actual_tool_field"}}` (alias as key, actual field name as value)
@@ -132,7 +136,7 @@ Based on the user's query, generate an ExecutionPlan JSON that orchestrates the 
      * ELSE (if `named_outputs` is empty OR doesn't define an alias for the needed field),
        THEN use the tool's original Pydantic output field name as the `named_output_key`.
      * NEVER use the original field name when an alias is defined in the source step's `named_outputs`.
-4. **Required Format**: Output must be valid JSON ExecutionPlan with `plan_id`, `plan_description`, `target_dataset_name`, `plan_inputs`, and `steps`.
+6. **Required Format**: Output must be valid JSON ExecutionPlan with `plan_id`, `plan_description`, `target_dataset_name`, `plan_inputs`, and `steps`.
 
 ## Example ExecutionPlan:
 {{
@@ -252,6 +256,7 @@ Generate the ExecutionPlan JSON for the user's query."""
         derived from their Pydantic input/output models in tool_contracts.py.
         """
         docs_parts = ["## Available Tools Documentation:"]
+        docs_parts.append("\n### IMPORTANT: Only use tools listed below. Do NOT invent tool names like 'Chunk.GetTextForClusters' or 'report.Generate' - they don't exist!\n")
 
         tools_to_document = [
             {
@@ -717,7 +722,7 @@ Generate a natural language plan as a JSON array of steps."""
             logger.error(f"Error generating natural language plan: {e}", exc_info=True)
             return []
 
-    async def generate_plan(self, user_query: str, actual_corpus_name: Optional[str] = None) -> Optional[ExecutionPlan]: # Use Optional
+    async def generate_plan(self, user_query: str, actual_corpus_name: Optional[str] = None, available_resources: Optional[Dict[str, Any]] = None) -> Optional[ExecutionPlan]: # Use Optional
         """
         Generates an ExecutionPlan based on the user_query using an LLM.
         """
@@ -734,10 +739,26 @@ Generate a natural language plan as a JSON array of steps."""
             corpus_instruction = f"\n## IMPORTANT: The target dataset for this operation is '{actual_corpus_name}'. " \
                                f"Use '{actual_corpus_name}' as the 'target_dataset_name' field in the ExecutionPlan.\n"
 
+        # Add resource information if available
+        resource_info = ""
+        if available_resources:
+            resource_info = "\n## Available Resources:\n"
+            if available_resources.get('corpus_prepared'):
+                resource_info += f"- Corpus already prepared for {actual_corpus_name}\n"
+            if available_resources.get('graphs'):
+                resource_info += f"- Existing graphs: {', '.join(available_resources['graphs'])}\n"
+            if available_resources.get('vdbs'):
+                resource_info += f"- Existing VDBs: {', '.join(available_resources['vdbs'])}\n"
+            resource_info += "\nIMPORTANT: Do NOT include steps to build resources that already exist. Instead:\n"
+            resource_info += "- For existing graphs: Use the graph ID directly in tools that need it\n"
+            resource_info += "- For existing VDBs: Use Entity.VDBSearch with the existing VDB ID, do NOT use Entity.VDB.Build\n"
+            resource_info += "- Only build resources that are missing from the lists above\n"
+        
         user_prompt_parts = [
             "## Available Tools:",
             tool_docs,
             corpus_instruction,
+            resource_info,
             "## User Query:",
             f'"{user_query}"',
             "",
@@ -855,6 +876,15 @@ Generate a natural language plan as a JSON array of steps."""
         if execution_plan:
             logger.info(f"PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.")
             logger.info(f"Generated Plan (Pydantic model):\n{execution_plan.model_dump_json(indent=2)}")
+            
+            # Validate that all tools in the plan exist
+            validation_errors = self._validate_plan_tools(execution_plan)
+            if validation_errors:
+                logger.error(f"PlanningAgent: Plan validation failed with errors: {validation_errors}")
+                # Log which tools are invalid
+                for error in validation_errors:
+                    logger.error(f"  - {error}")
+                # Still return the plan but with warnings logged
         else:
             logger.error("PlanningAgent: Failed to generate ExecutionPlan object with LLM and instructor.")
 
@@ -875,7 +905,26 @@ Generate a natural language plan as a JSON array of steps."""
             return {"error": "LLM Provider not initialized.", "generated_answer": "Error: LLM Provider not initialized."}
 
         logger.info(f"PlanningAgent: Processing query: {user_query} with corpus: {actual_corpus_name}")
-        execution_plan = await self.generate_plan(user_query, actual_corpus_name)
+        
+        # Check available resources before generating plan
+        available_resources = {}
+        if self.graphrag_context:
+            # Check if corpus is prepared
+            corpus_path = f"results/{actual_corpus_name}/corpus/Corpus.json"
+            import os
+            available_resources['corpus_prepared'] = os.path.exists(corpus_path)
+            
+            # Check available graphs
+            graphs = self.graphrag_context.list_graphs()
+            available_resources['graphs'] = list(graphs.keys()) if isinstance(graphs, dict) else graphs
+            
+            # Check available VDBs
+            vdbs = self.graphrag_context.list_vdbs()
+            available_resources['vdbs'] = list(vdbs.keys()) if isinstance(vdbs, dict) else vdbs
+            
+            logger.info(f"Available resources: {available_resources}")
+        
+        execution_plan = await self.generate_plan(user_query, actual_corpus_name, available_resources)
 
         retrieved_context = None
         generated_answer = "No answer generated." # Default message
@@ -1222,9 +1271,12 @@ Based on the entities and relationships found, provide your answer."""
                     if results and isinstance(results, dict):
                         for step_id, step_output in results.items():
                             if step_output:
+                                # Check status from the output
+                                status = step_output.get("status") or step_output.get("_status") or "unknown"
                                 react_state["current_context"][step_id] = {
                                     "output": step_output,
-                                    "status": "success"
+                                    "status": status,
+                                    "success": observation.get("success", status != "failure")
                                 }
                                 
                 except Exception as e:
@@ -1279,10 +1331,15 @@ Based on the current state, decide what to do next.
 
 Your options:
 1. Execute the next planned step
-2. Skip a planned step if it's no longer needed
+2. Skip a planned step if it's no longer needed or depends on failed steps
 3. Create a new step based on observations
 4. Decide we have enough information to answer the query
 5. Stop due to errors or inability to proceed
+
+IMPORTANT: Pay attention to step failures! If a step has failed:
+- Do NOT try to use outputs from failed steps
+- Skip any steps that depend on failed outputs
+- Consider alternative approaches or acknowledge limitations
 
 Respond in JSON format:
 {
@@ -1371,17 +1428,20 @@ What should we do next?"""
         # Check each step result
         for step_id, step_result in results_dict.items():
             if isinstance(step_result, dict):
-                # Check for explicit failure status
-                if step_result.get("status") == "failure":
+                # Check for explicit failure status - check both 'status' and '_status' fields
+                status = step_result.get("status") or step_result.get("_status")
+                message = step_result.get("message") or step_result.get("_message")
+                
+                if status == "failure":
                     observation["success"] = False
-                    summaries.append(f"{step_id}: FAILED - {step_result.get('message', 'Unknown error')}")
+                    summaries.append(f"{step_id}: FAILED - {message or 'Unknown error'}")
                 elif "error" in step_result:
                     observation["success"] = False
                     summaries.append(f"{step_id}: Error - {step_result['error']}")
-                elif "message" in step_result:
+                elif message:
                     # Include status in message if available
-                    status = step_result.get("status", "unknown")
-                    summaries.append(f"{step_id}: [{status}] {step_result['message']}")
+                    status_str = status or "unknown"
+                    summaries.append(f"{step_id}: [{status_str}] {message}")
                 else:
                     # Summarize the output
                     output_summary = self._summarize_output(step_result)
@@ -1410,6 +1470,34 @@ What should we do next?"""
             return f"{len(output)} items"
         else:
             return str(output)[:100]
+    
+    def _validate_plan_tools(self, plan: ExecutionPlan) -> List[str]:
+        """Validate that all tools referenced in the plan exist in the orchestrator."""
+        errors = []
+        
+        # Get available tools from orchestrator if available
+        available_tools = set()
+        if self.orchestrator and hasattr(self.orchestrator, '_tool_registry'):
+            available_tools = set(self.orchestrator._tool_registry.keys())
+        else:
+            # Hardcode known tools if orchestrator not available
+            available_tools = {
+                "Entity.VDBSearch", "Entity.VDB.Build", "Entity.PPR", "Entity.Onehop", "Entity.RelNode",
+                "Relationship.OneHopNeighbors", "Relationship.VDB.Build", "Relationship.VDB.Search",
+                "Chunk.FromRelationships", "Chunk.GetTextForEntities",
+                "graph.BuildERGraph", "graph.BuildRKGraph", "graph.BuildTreeGraph", 
+                "graph.BuildTreeGraphBalanced", "graph.BuildPassageGraph",
+                "corpus.PrepareFromDirectory", "graph.Visualize", "graph.Analyze"
+            }
+        
+        # Check each step in the plan
+        for step in plan.steps:
+            if step.action and hasattr(step.action, 'tools'):
+                for tool_call in step.action.tools:
+                    if tool_call.tool_id not in available_tools:
+                        errors.append(f"Step '{step.step_id}' uses non-existent tool: '{tool_call.tool_id}'. Available tools: {sorted(available_tools)}")
+        
+        return errors
     
     async def _generate_final_answer(
         self, 

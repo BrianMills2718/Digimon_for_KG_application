@@ -27,8 +27,16 @@ from Core.Storage.NetworkXStorage import NetworkXStorage
 class RKGraph(BaseGraph):
 
     def __init__(self, config, llm, encoder):
-        super().__init__(config, llm, encoder)
+        # Create a tokenizer wrapper for BaseGraph compatibility
+        from Core.Common.TokenizerWrapper import TokenizerWrapper
+        tokenizer = TokenizerWrapper()
+        
+        super().__init__(config, llm, tokenizer)  # Pass tokenizer instead of encoder
         self._graph = NetworkXStorage()
+        # Handle both full config and graph config
+        self.graph_config = config.graph if hasattr(config, 'graph') else config
+        # Keep encoder for potential future use
+        self.encoder = encoder
 
     async def _handle_single_entity_extraction(self, record_attributes: list[str], chunk_key: str) -> 'Entity | None':
         if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
@@ -38,7 +46,7 @@ class RKGraph(BaseGraph):
         if not entity_name.strip():
             return None
 
-        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+        custom_ontology = getattr(self.graph_config, 'loaded_custom_ontology', None)
         entity_attributes = {}
         final_entity_type = clean_str(record_attributes[2])
         if custom_ontology and custom_ontology.get('entities'):
@@ -76,8 +84,10 @@ class RKGraph(BaseGraph):
                 *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
             # Build graph based on the extracted entities and triples
             await self.__graph__(elements)
+            return True  # Return success
         except Exception as e:
             logger.exception(f"Error building graph: {e}")
+            return False  # Return failure
         finally:
             logger.info("Constructing graph finished")
 
@@ -89,7 +99,7 @@ class RKGraph(BaseGraph):
         2. https://github.com/HKUDS/LightRAG/tree/main
         """
         context = self._build_context_for_entity_extraction(chunk_info.content)
-        prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD if self.config.enable_edge_keywords else GraphPrompt.ENTITY_EXTRACTION
+        prompt_template = GraphPrompt.ENTITY_EXTRACTION_KEYWORD if getattr(self.graph_config, 'enable_edge_keywords', False) else GraphPrompt.ENTITY_EXTRACTION
         prompt = prompt_template.format(**context)
 
         working_memory = Memory()
@@ -98,7 +108,7 @@ class RKGraph(BaseGraph):
         final_result = await self.llm.aask(prompt)
         working_memory.add(Message(content=final_result, role="assistant"))
 
-        for glean_idx in range(self.config.max_gleaning):
+        for glean_idx in range(getattr(self.graph_config, 'max_gleaning', 1)):
             working_memory.add(Message(content=GraphPrompt.ENTITY_CONTINUE_EXTRACTION, role="user"))
             context = "\n".join(f"{msg.sent_from}: {msg.content}" for msg in working_memory.get())
             glean_result = await self.llm.aask(context)
@@ -106,7 +116,7 @@ class RKGraph(BaseGraph):
             final_result += glean_result
             logger.info(f"Gleaning step {glean_idx + 1}: Accumulated LLM output so far: {glean_result[:500]}...")
 
-            if glean_idx == self.config.max_gleaning - 1:
+            if glean_idx == getattr(self.graph_config, 'max_gleaning', 1) - 1:
                 break
 
             working_memory.add(Message(content=GraphPrompt.ENTITY_IF_LOOP_EXTRACTION, role="user"))
@@ -153,7 +163,7 @@ class RKGraph(BaseGraph):
             return None
 
         #custom_ontology = getattr(self.config.graph_config, 'loaded_custom_ontology', None)
-        custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
+        custom_ontology = getattr(self.graph_config, 'loaded_custom_ontology', None)
         relation_attributes = {}
         final_relation_name = clean_str(record_attributes[0])
         if custom_ontology and custom_ontology.get('relations'):
@@ -176,7 +186,7 @@ class RKGraph(BaseGraph):
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
-            keywords=clean_str(record_attributes[4]) if self.config.enable_edge_keywords else "",
+            keywords=clean_str(record_attributes[4]) if getattr(self.graph_config, 'enable_edge_keywords', False) else "",
             relation_name=final_relation_name,
             attributes=relation_attributes
         )

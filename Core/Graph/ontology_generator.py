@@ -65,7 +65,7 @@ async def generate_custom_ontology(context: str, llm_instance: Any) -> Optional[
         logger.info(f"Generating custom ontology for context: {context[:100]}...")
         
         # Pass operation type for proper token budgeting
-        response = await llm_instance.aask(prompt, format="json", operation="ontology_generation")
+        response = await llm_instance.aask(prompt, format="json")
         logger.debug(f"Raw ontology generation response: {response}")
         
         # Parse response - handle various response formats

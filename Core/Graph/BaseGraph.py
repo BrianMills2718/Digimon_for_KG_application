@@ -110,7 +110,7 @@ class BaseGraph(ABC):
 
         merge_description = (MergeEntity.merge_descriptions(existing_data["description"],
                                                             upsert_nodes_data[
-                                                                "description"]) if self.config.enable_entity_description else None)
+                                                                "description"]) if getattr(self.config, 'enable_entity_description', True) else None)
 
         description = (
             await self._handle_entity_relation_summary(entity_name, merge_description)
@@ -121,7 +121,7 @@ class BaseGraph(ABC):
                                                   upsert_nodes_data["source_id"]))
 
         new_entity_type = (MergeEntity.merge_types(existing_data["entity_type"], upsert_nodes_data[
-            "entity_type"]) if self.config.enable_entity_type else "")
+            "entity_type"]) if getattr(self.config, 'enable_entity_type', True) else "")
 
         node_data = dict(source_id=source_id, entity_name=entity_name, entity_type=new_entity_type,
                          description=description)
@@ -151,21 +151,21 @@ class BaseGraph(ABC):
                                                        upsert_edge_data["weight"]))
         merge_description = (MergeRelationship.merge_descriptions(existing_edge_data["description"],
                                                                   upsert_edge_data[
-                                                                      "description"]) if self.config.enable_edge_description else "")
+                                                                      "description"]) if getattr(self.config, 'enable_edge_description', True) else "")
 
         description = (
             await self._handle_entity_relation_summary((src_id, tgt_id), merge_description)
-            if self.config.enable_edge_description
+            if getattr(self.config, 'enable_edge_description', True)
             else ""
         )
 
         keywords = (MergeRelationship.merge_keywords(existing_edge_data["keywords"],
                                                      upsert_edge_data[
-                                                         "keywords"]) if self.config.enable_edge_keywords else "")
+                                                         "keywords"]) if getattr(self.config, 'enable_edge_keywords', True) else "")
 
         relation_name = (MergeRelationship.merge_relation_name(existing_edge_data["relation_name"],
                                                                upsert_edge_data[
-                                                                   "relation_name"]) if self.config.enable_edge_name else "")
+                                                                   "relation_name"]) if getattr(self.config, 'enable_edge_name', True) else "")
         # Ensure src_id and tgt_id nodes exist
         for node_id in (src_id, tgt_id):
             if not await self._graph.has_node(node_id):
@@ -300,10 +300,20 @@ class BaseGraph(ABC):
         tokens = self.ENCODER.encode(description)
 
         # Check if the token length is within the maximum allowed tokens for summarization
-        if len(tokens) < self.config.summary_max_tokens:
+        summary_max_tokens = getattr(self.config, 'summary_max_tokens', None)
+        if summary_max_tokens is None:
+            # Try to get from graph config
+            summary_max_tokens = getattr(self.config.graph, 'summary_max_tokens', 500) if hasattr(self.config, 'graph') else 500
+        
+        if len(tokens) < summary_max_tokens:
             return description
         # Truncate the description to fit within the maximum token limit
-        use_description = self.ENCODER.decode(tokens[:self.config.llm_model_max_token_size])
+        llm_model_max_token_size = getattr(self.config, 'llm_model_max_token_size', None)
+        if llm_model_max_token_size is None:
+            # Try to get from graph config
+            llm_model_max_token_size = getattr(self.config.graph, 'llm_model_max_token_size', 32768) if hasattr(self.config, 'graph') else 32768
+        
+        use_description = self.ENCODER.decode(tokens[:llm_model_max_token_size])
 
         # Construct the context base for the prompt
         context_base = dict(
