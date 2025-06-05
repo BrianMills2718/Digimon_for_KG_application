@@ -55,9 +55,15 @@ class LiteLLMProvider(BaseLLM):
         # Calculate dynamic max_tokens if not explicitly provided
         max_tokens = kwargs.get("max_tokens")
         if max_tokens is None:
-            # Use get_max_completion_tokens to dynamically calculate available tokens
-            from Core.Utils.TokenCounter import get_max_completion_tokens
-            max_tokens = get_max_completion_tokens(messages, self.model, self.config.max_token)
+            # Use TokenBudgetManager for safe token calculation
+            from Core.Common.TokenBudgetManager import TokenBudgetManager
+            operation = kwargs.get("operation", "default")
+            max_tokens = TokenBudgetManager.calculate_safe_tokens(
+                messages, 
+                self.model, 
+                operation,
+                self.config.max_token
+            )
         
         params = {
             "model": self.model,

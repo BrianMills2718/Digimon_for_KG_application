@@ -36,6 +36,12 @@ class ERGraph(BaseGraph):
 
     async def _named_entity_recognition(self, passage: str):
         from Core.Common.Logger import logger
+        from Core.Common.TokenBudgetManager import TokenBudgetManager
+        
+        # Check if passage needs truncation
+        if TokenBudgetManager.should_chunk_content(passage, self.llm.model, "graph_extraction"):
+            logger.warning(f"Passage too long ({len(passage)} chars), truncating for NER")
+            passage = passage[:3000] + "...[truncated]"
         
         # Get custom ontology if available
         custom_ontology = getattr(self.config, 'loaded_custom_ontology', None)
@@ -55,7 +61,7 @@ class ERGraph(BaseGraph):
         
         # Append entity type guidance to the prompt
         ner_messages = GraphPrompt.NER.format(user_input=passage) + entity_type_guidance
-        llm_output_str = await self.llm.aask(ner_messages, format="json")
+        llm_output_str = await self.llm.aask(ner_messages, format="json", operation="graph_extraction")
         
         parsed_output = None
         if isinstance(llm_output_str, str):
@@ -95,6 +101,13 @@ class ERGraph(BaseGraph):
 
     async def _openie_post_ner_extract(self, chunk, entities):
         from Core.Common.Logger import logger
+        from Core.Common.TokenBudgetManager import TokenBudgetManager
+        
+        # Check if chunk needs truncation
+        if TokenBudgetManager.should_chunk_content(chunk, self.llm.model, "graph_extraction"):
+            logger.warning(f"Chunk too long ({len(chunk)} chars), truncating for OpenIE")
+            chunk = chunk[:3000] + "...[truncated]"
+        
         named_entity_json = {"named_entities": entities}
         
         # Get custom ontology if available
@@ -119,7 +132,7 @@ class ERGraph(BaseGraph):
             named_entity_json=json.dumps(named_entity_json)
         ) + ontology_guidance
         
-        llm_output_str = await self.llm.aask(prompt_with_ontology, format="json")
+        llm_output_str = await self.llm.aask(prompt_with_ontology, format="json", operation="graph_extraction")
         
         parsed_output = None
         if isinstance(llm_output_str, str):
@@ -188,17 +201,31 @@ class ERGraph(BaseGraph):
 
     async def _build_graph(self, chunk_list: List[Any]) -> bool:
         from Core.Common.Logger import logger
+        from Core.Common.TokenBudgetManager import TokenBudgetManager
+        
         try:
             # Generate custom ontology if not already loaded
             if not hasattr(self.config, 'loaded_custom_ontology') or self.config.loaded_custom_ontology is None:
                 # Create context from first few chunks for ontology generation
-                context_chunks = chunk_list[:min(3, len(chunk_list))]
+                context_chunks = chunk_list[:min(10, len(chunk_list))]  # Sample more chunks
                 context = "Content samples:\n"
+                
+                # Build context with token budgeting
                 for chunk in context_chunks:
+                    chunk_content = ""
                     if hasattr(chunk, 'content'):
-                        context += f"- {chunk.content[:200]}...\n"
+                        chunk_content = chunk.content
                     else:
-                        context += f"- {str(chunk)[:200]}...\n"
+                        chunk_content = str(chunk)
+                    
+                    # Add chunk sample to context
+                    sample = chunk_content[:500] + "..." if len(chunk_content) > 500 else chunk_content
+                    context += f"- {sample}\n"
+                    
+                    # Check if context is getting too large
+                    if TokenBudgetManager.should_chunk_content(context, self.llm.model, "ontology_generation"):
+                        logger.info(f"Context size reaching limit, using {len(context_chunks)} chunks for ontology")
+                        break
                 
                 # Import and use ontology generator
                 from Core.Graph.ontology_generator import generate_custom_ontology
@@ -211,9 +238,21 @@ class ERGraph(BaseGraph):
                 else:
                     logger.warning("Failed to generate custom ontology, proceeding with generic extraction")
             
-            results = await asyncio.gather(
-                *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
-            await self.__graph__(results)
+            # Process chunks in batches if needed
+            if len(chunk_list) > 100:
+                logger.info(f"Processing {len(chunk_list)} chunks in batches to manage memory")
+                batch_size = 50
+                for i in range(0, len(chunk_list), batch_size):
+                    batch = chunk_list[i:i + batch_size]
+                    logger.info(f"Processing batch {i//batch_size + 1}/{(len(chunk_list) + batch_size - 1)//batch_size}")
+                    results = await asyncio.gather(
+                        *[self._extract_entity_relationship(chunk) for chunk in batch])
+                    await self.__graph__(results)
+            else:
+                results = await asyncio.gather(
+                    *[self._extract_entity_relationship(chunk) for chunk in chunk_list])
+                await self.__graph__(results)
+            
             logger.info("Successfully built graph")
             return True
         except Exception as e:

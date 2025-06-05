@@ -52,10 +52,20 @@ async def generate_custom_ontology(context: str, llm_instance: Any) -> Optional[
         Dictionary containing the custom ontology or None if generation fails
     """
     try:
+        # Check if context needs to be truncated
+        from Core.Common.TokenBudgetManager import TokenBudgetManager
+        
+        # Check if we need to chunk the context
+        if TokenBudgetManager.should_chunk_content(context, llm_instance.model, "ontology_generation"):
+            logger.warning(f"Context too large ({len(context)} chars), truncating for ontology generation")
+            # Take first 10000 characters as a representative sample
+            context = context[:10000] + "...\n[Context truncated for ontology generation]"
+        
         prompt = ONTOLOGY_GENERATION_PROMPT.format(context=context)
         logger.info(f"Generating custom ontology for context: {context[:100]}...")
         
-        response = await llm_instance.aask(prompt, format="json")
+        # Pass operation type for proper token budgeting
+        response = await llm_instance.aask(prompt, format="json", operation="ontology_generation")
         logger.debug(f"Raw ontology generation response: {response}")
         
         # Parse response - handle various response formats
