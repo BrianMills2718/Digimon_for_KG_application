@@ -195,7 +195,7 @@ class DiscourseEnhancedSocialMediaExecutor:
                     
                     for _, row in chunk_df.iterrows():
                         tweet_id = row.get('tweet_id', i)
-                        tweet = row['tweet']
+                        tweet = str(row.get('tweet', ''))  # Convert to string to handle NaN
                         conspiracy_type = row.get('conspiracy_theory', 'Unknown')
                         label = row.get('label', 'Unknown')
                         
