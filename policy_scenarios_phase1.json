@@ -1,0 +1,37 @@
+{
+  "1": {
+    "title": "Influence and Narrative Analysis",
+    "research_question": "Who are the super-spreaders of COVID conspiracy theories, what are their network characteristics, and how do they coordinate to amplify misinformation?",
+    "has_ontologies": true,
+    "has_retrievals": true,
+    "has_transforms": true
+  },
+  "2": {
+    "title": "Influence and Narrative Analysis",
+    "research_question": "How do conspiracy narratives evolve and mutate as they spread through social networks, and what linguistic markers indicate narrative transformation?",
+    "has_ontologies": true,
+    "has_retrievals": true,
+    "has_transforms": true
+  },
+  "3": {
+    "title": "Influence and Narrative Analysis",
+    "research_question": "Which communities are most susceptible to conspiracy theories, what are their demographic and psychographic characteristics, and how does exposure lead to polarization?",
+    "has_ontologies": true,
+    "has_retrievals": true,
+    "has_transforms": true
+  },
+  "4": {
+    "title": "Influence and Narrative Analysis",
+    "research_question": "What platform features (hashtags, retweets, algorithms) most effectively facilitate conspiracy theory spread, and how do different platforms compare?",
+    "has_ontologies": true,
+    "has_retrievals": true,
+    "has_transforms": true
+  },
+  "5": {
+    "title": "Influence and Narrative Analysis",
+    "research_question": "What are the measurable effects of different counter-narrative strategies, and which interventions most effectively reduce conspiracy belief and spread?",
+    "has_ontologies": true,
+    "has_retrievals": true,
+    "has_transforms": true
+  }
+}
