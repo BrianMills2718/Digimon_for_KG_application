@@ -187,3 +187,64 @@ DIGIMON is a modular GraphRAG system built around an intelligent agent framework
 - Blackboard architecture for shared context
 - Knowledge sources for dynamic information sharing
 - Run MCP server: `./run_mcp_server.sh`
+
+## Recent Fixes (2025-06-05)
+
+### Critical Issues Resolved
+
+1. **Agent Failure Detection** - Fixed in `Core/AgentBrain/agent_brain.py`
+   - Agent now properly detects when tools return `status: "failure"`
+   - Previously only checked for `error` field, missing most failures
+
+2. **Path Resolution** - Fixed in `Core/AgentTools/corpus_tools.py`
+   - Corpus tool now resolves relative paths under `Data/` directory
+   - Handles both absolute and relative paths correctly
+
+3. **Graph Type Naming** - Fixed in `Core/AgentTools/graph_construction_tools.py`
+   - Changed "rk_graph" to "rkg_graph" to match factory expectations
+
+4. **Graph Factory Parameters** - Fixed in `Core/Graph/GraphFactory.py`
+   - TreeGraph and PassageGraph now receive correct parameters (config, llm, encoder)
+   - Removed incorrect data_path and storage parameters
+
+5. **LLM Call Parameters** - Fixed in `Core/Graph/ERGraph.py`
+   - Removed unsupported `operation` parameter from `aask()` calls
+
+### Working Example: Russian Troll Tweets Analysis
+
+```bash
+# Prepare sample dataset
+python create_troll_sample.py  # Creates small sample from larger dataset
+
+# Quick test with agent (now works!)
+python digimon_cli.py -c Data/Russian_Troll_Sample -q "Analyze the themes in these Russian troll tweets"
+
+# Direct graph building test
+python test_basic_graph.py  # Successfully builds graph with 142 nodes, 95 edges
+
+# Important: Agent needs namespace set properly for graphs to work
+# This is now handled automatically in graph construction tools
+```
+
+### Known Working Configuration
+
+- **Model**: o4-mini (OpenAI) - configured in Option/Config2.yaml
+- **Embeddings**: text-embedding-3-small (OpenAI)
+- **Vector DB**: FAISS (ColBERT disabled due to dependency issues)
+- **Graph Types**: All types now working (ER, RKG, Tree, Passage)
+- **Namespace Handling**: Automatic via ChunkFactory.get_namespace()
+
+### Testing the Fixes
+
+```bash
+# Run test suite to verify all fixes
+python test_final.py  # Comprehensive test of agent pipeline
+
+# Check specific functionality
+python -c "
+from Option.Config2 import Config
+config = Config.default()
+print(f'LLM Model: {config.llm.model}')
+print(f'Graph Type: {config.graph.type}')
+"
+```
