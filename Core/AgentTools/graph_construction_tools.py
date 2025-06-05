@@ -177,7 +177,7 @@ async def build_rk_graph(
         apply_overrides(current_graph_config, tool_input.config_overrides)
         temp_full_config = main_config.model_copy(deep=True)
         temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "rk_graph"
+        temp_full_config.graph.type = "rkg_graph"
         rk_graph_instance = get_graph(
             config=temp_full_config,
             llm=llm_instance,

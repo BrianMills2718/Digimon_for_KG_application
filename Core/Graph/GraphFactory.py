@@ -77,12 +77,11 @@ class GraphFactory():
         logger.debug(f"GraphFactory._create_tree_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
         if not isinstance(full_config.graph, GraphConfig):
              logger.error(f"_create_tree_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # Assuming TreeGraph.__init__ also expects data_path, config (GraphConfig), storage_type, storage_instance
+        # TreeGraph expects (config, llm, encoder)
         return TreeGraph(
-            data_path=constructor_kwargs.get("data_path"),
-            config=full_config.graph, # Pass the GraphConfig part
-            storage_type=constructor_kwargs.get("storage_type", "networkx"),
-            storage_instance=constructor_kwargs.get("storage_instance")
+            config=full_config,  # Pass the full config
+            llm=constructor_kwargs.get("llm"),
+            encoder=constructor_kwargs.get("encoder")
         )
 
     @staticmethod
@@ -103,12 +102,11 @@ class GraphFactory():
         logger.debug(f"GraphFactory._create_passage_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
         if not isinstance(full_config.graph, GraphConfig):
              logger.error(f"_create_passage_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # Assuming PassageGraph.__init__ also expects data_path, config (GraphConfig), storage_type, storage_instance
+        # PassageGraph expects (config, llm, encoder)
         return PassageGraph(
-            data_path=constructor_kwargs.get("data_path"),
-            config=full_config.graph, # Pass the GraphConfig part
-            storage_type=constructor_kwargs.get("storage_type", "networkx"),
-            storage_instance=constructor_kwargs.get("storage_instance")
+            config=full_config,  # Pass the full config
+            llm=constructor_kwargs.get("llm"),
+            encoder=constructor_kwargs.get("encoder")
         )
 
 # Make the get_graph method available at the module level, bound to a GraphFactory instance

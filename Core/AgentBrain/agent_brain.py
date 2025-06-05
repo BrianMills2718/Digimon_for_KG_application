@@ -1240,11 +1240,17 @@ What should we do next?"""
         # Check each step result
         for step_id, step_result in results_dict.items():
             if isinstance(step_result, dict):
-                if "error" in step_result:
+                # Check for explicit failure status
+                if step_result.get("status") == "failure":
+                    observation["success"] = False
+                    summaries.append(f"{step_id}: FAILED - {step_result.get('message', 'Unknown error')}")
+                elif "error" in step_result:
                     observation["success"] = False
                     summaries.append(f"{step_id}: Error - {step_result['error']}")
                 elif "message" in step_result:
-                    summaries.append(f"{step_id}: {step_result['message']}")
+                    # Include status in message if available
+                    status = step_result.get("status", "unknown")
+                    summaries.append(f"{step_id}: [{status}] {step_result['message']}")
                 else:
                     # Summarize the output
                     output_summary = self._summarize_output(step_result)

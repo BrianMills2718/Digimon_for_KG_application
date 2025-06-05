@@ -37,6 +37,20 @@ async def prepare_corpus_from_directory(
         input_dir = Path(tool_input.input_directory_path)
         output_dir = Path(tool_input.output_directory_path)
         
+        # If input_dir is not absolute and doesn't exist, try common data directories
+        if not input_dir.is_absolute() and not input_dir.exists():
+            # Try under Data/ directory first
+            data_path = Path("Data") / input_dir
+            if data_path.exists():
+                input_dir = data_path
+                logger.info(f"Resolved input directory to: {input_dir}")
+            else:
+                # Try current directory
+                if input_dir.exists():
+                    input_dir = input_dir.absolute()
+                else:
+                    logger.warning(f"Could not find input directory: {tool_input.input_directory_path}")
+        
         # Handle optional corpus name
         corpus_name = tool_input.target_corpus_name
         if not corpus_name:

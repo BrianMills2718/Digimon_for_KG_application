@@ -1,0 +1,619 @@
+[92m09:50:14 - LiteLLM:ERROR[0m: fallback_utils.py:62 - Fallback attempt failed for model openai/this-model-does-not-exist-gpt: litellm.NotFoundError: OpenAIException - The model `this-model-does-not-exist-gpt` does not exist or you do not have access to it.
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 801, in acompletion
+    headers, response = await self.make_openai_chat_completion_request(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/logging_utils.py", line 135, in async_wrapper
+    result = await func(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 436, in make_openai_chat_completion_request
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 418, in make_openai_chat_completion_request
+    await openai_aclient.chat.completions.with_raw_response.create(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_legacy_response.py", line 381, in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
+    return await self._post(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1748, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1555, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.NotFoundError: Error code: 404 - {'error': {'message': 'The model `this-model-does-not-exist-gpt` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 513, in acompletion
+    response = await init_response
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 848, in acompletion
+    raise OpenAIError(
+litellm.llms.openai.common_utils.OpenAIError: Error code: 404 - {'error': {'message': 'The model `this-model-does-not-exist-gpt` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/fallback_utils.py", line 52, in async_completion_with_fallbacks
+    response = await litellm.acompletion(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1492, in wrapper_async
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1353, in wrapper_async
+    result = await original_function(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 532, in acompletion
+    raise exception_type(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 2239, in exception_type
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 304, in exception_type
+    raise NotFoundError(
+litellm.exceptions.NotFoundError: litellm.NotFoundError: OpenAIException - The model `this-model-does-not-exist-gpt` does not exist or you do not have access to it.
+Task was destroyed but it is pending!
+task: <Task pending name='Task-7' coro=<Logging.async_success_handler() running at /home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/litellm_logging.py:1822>>
+/home/brian/miniconda3/lib/python3.10/asyncio/base_events.py:674: RuntimeWarning: coroutine 'Logging.async_success_handler' was never awaited
+  self._ready.clear()
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+[92m09:50:15 - LiteLLM:ERROR[0m: fallback_utils.py:62 - Fallback attempt failed for model openai/fake-model-1: litellm.NotFoundError: OpenAIException - The model `fake-model-1` does not exist or you do not have access to it.
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 801, in acompletion
+    headers, response = await self.make_openai_chat_completion_request(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/logging_utils.py", line 135, in async_wrapper
+    result = await func(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 436, in make_openai_chat_completion_request
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 418, in make_openai_chat_completion_request
+    await openai_aclient.chat.completions.with_raw_response.create(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_legacy_response.py", line 381, in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
+    return await self._post(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1748, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1555, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.NotFoundError: Error code: 404 - {'error': {'message': 'The model `fake-model-1` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 513, in acompletion
+    response = await init_response
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 848, in acompletion
+    raise OpenAIError(
+litellm.llms.openai.common_utils.OpenAIError: Error code: 404 - {'error': {'message': 'The model `fake-model-1` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/fallback_utils.py", line 52, in async_completion_with_fallbacks
+    response = await litellm.acompletion(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1492, in wrapper_async
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1353, in wrapper_async
+    result = await original_function(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 532, in acompletion
+    raise exception_type(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 2239, in exception_type
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 304, in exception_type
+    raise NotFoundError(
+litellm.exceptions.NotFoundError: litellm.NotFoundError: OpenAIException - The model `fake-model-1` does not exist or you do not have access to it.
+[92m09:50:16 - LiteLLM:ERROR[0m: fallback_utils.py:62 - Fallback attempt failed for model openai/fake-model-2: litellm.NotFoundError: OpenAIException - The model `fake-model-2` does not exist or you do not have access to it.
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 801, in acompletion
+    headers, response = await self.make_openai_chat_completion_request(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/logging_utils.py", line 135, in async_wrapper
+    result = await func(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 436, in make_openai_chat_completion_request
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 418, in make_openai_chat_completion_request
+    await openai_aclient.chat.completions.with_raw_response.create(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_legacy_response.py", line 381, in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
+    return await self._post(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1748, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/openai/_base_client.py", line 1555, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.NotFoundError: Error code: 404 - {'error': {'message': 'The model `fake-model-2` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 513, in acompletion
+    response = await init_response
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/llms/openai/openai.py", line 848, in acompletion
+    raise OpenAIError(
+litellm.llms.openai.common_utils.OpenAIError: Error code: 404 - {'error': {'message': 'The model `fake-model-2` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/fallback_utils.py", line 52, in async_completion_with_fallbacks
+    response = await litellm.acompletion(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1492, in wrapper_async
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/utils.py", line 1353, in wrapper_async
+    result = await original_function(*args, **kwargs)
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/main.py", line 532, in acompletion
+    raise exception_type(
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 2239, in exception_type
+    raise e
+  File "/home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 304, in exception_type
+    raise NotFoundError(
+litellm.exceptions.NotFoundError: litellm.NotFoundError: OpenAIException - The model `fake-model-2` does not exist or you do not have access to it.
+Task was destroyed but it is pending!
+task: <Task pending name='Task-18' coro=<Logging.async_success_handler() running at /home/brian/miniconda3/lib/python3.10/site-packages/litellm/litellm_core_utils/litellm_logging.py:1822>>
+WARNING: Langchain libraries not found. Skipping Langchain ChatLiteLLM test. Install with: pip install langchain-community langchain-core
+Starting comprehensive LLM standalone tests with LITELLM_LOG=DEBUG ...
+
+==================== Reliability: Retries and Fallbacks ====================
+
+
+--- Testing Retries with o4-mini (num_retries=2) ---
+Attempting call to o4-mini with num_retries=2...
+o4-mini - Response received (retries parameter was set).
+Content sample: When Tom opened the dusty attic chest, he found a letter in his own handwriting dated fifty years in...
+
+--- Testing Model Fallback: Primary 'openai/this-model-does-not-exist-gpt', Fallbacks ['gpt-4o', 'claude-3-sonnet-20240229'] ---
+Attempting call with primary model (expected to fail): 'openai/this-model-does-not-exist-gpt' and fallbacks: ['gpt-4o', 'claude-3-sonnet-20240229']...
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Fallback mechanism completed. Response from model: gpt-4o-2024-08-06
+  Content: The capital of Germany is Berlin.
+
+--- Testing Model Fallback: Primary 'openai/fake-model-1', Fallbacks ['openai/fake-model-2', 'deepseek/deepseek-chat'] ---
+Attempting call with primary model (expected to fail): 'openai/fake-model-1' and fallbacks: ['openai/fake-model-2', 'deepseek/deepseek-chat']...
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Fallback mechanism completed. Response from model: deepseek-chat
+  Content: The capital of Germany is **Berlin**.  
+
+Berlin became the capital again after the reunification of Germany in 1990, replacing Bonn, which was the capital of West Germany during the division (1949–1990).  
+
+Would you like any additional details about Berlin or Germany?
+
+==================== Batching Completion Tests ====================
+
+
+--- Testing Batch Completion (Many Calls to 1 Model) with claude-3-sonnet-20240229 ---
+Attempting batch_completion with claude-3-sonnet-20240229 for 2 calls...
+
+claude-3-sonnet-20240229 - Batch Completion (1 model) Responses (2 received):
+  Response 1 Content: 2 + 2 = 4...
+  Response 2 Content: The sky appears blue because of the way sunlight interacts with the gases in Earth's atmosphere. Her...
+
+--- Testing Batch Completion (1 Call to Many Models, Fastest) with ['gpt-4o', 'claude-3-sonnet-20240229', 'deepseek/deepseek-chat', 'gemini/gemini-1.5-flash'] ---
+Attempting batch_completion_models (fastest) with ['gpt-4o', 'claude-3-sonnet-20240229', 'deepseek/deepseek-chat', 'gemini/gemini-1.5-flash']...
+
+Batch Completion (Many Models, Fastest) - Response from model: gpt-4o-2024-08-06
+  Content: Sure! Did you know that in space, there is a phenomenon known as "The Great Attractor"? It's a gravitational anomaly located in the region of the univ...
+
+--- Testing Batch Completion (1 Call to Many Models, All Responses) with ['o4-mini', 'claude-3-sonnet-20240229', 'gemini/gemini-1.5-flash'] ---
+Attempting batch_completion_models_all_responses with ['o4-mini', 'claude-3-sonnet-20240229', 'gemini/gemini-1.5-flash']...
+
+Batch Completion (Many Models, All Responses) - Received 3 responses:
+  Response 1 from o4-mini-2025-04-16: One of the most ubiquitous uses of Python is as a “glue” or scripting language to automate repetitiv...
+  Response 2 from claude-3-sonnet-20240229: Python is a versatile programming language that is used in a wide range of applications and industri...
+  Response 3 from gemini-1.5-flash: One of the most common uses for Python is **data science and machine learning**.  Its extensive libr...
+
+==================== Embedding Tests ====================
+
+
+--- Testing Embedding Generation ---
+
+- Test Case 1: OpenAI Embedding (text-embedding-3-small)
+OpenAI Embedding Response (Model: text-embedding-3-small):
+  Usage: Prompt Tokens - 11, Total Tokens - 11
+  Embedding for input 1 (first 3 dims): [-0.03148902207612991, -0.14087194204330444, 0.0014381293440237641]... Length: 256
+  Embedding for input 2 (first 3 dims): [-0.034403637051582336, -0.04215070605278015, 0.10473811626434326]... Length: 256
+
+- Test Case 2: Cohere Embedding (embed-english-v3.0)
+WARNING: COHERE_API_KEY not found. Skipping Cohere embedding test.
+
+- Conceptual Note: Image Embeddings
+  LiteLLM supports image embeddings for compatible models by passing a base64 encoded image string.
+
+==================== Exception Handling Tests ====================
+
+
+--- Testing Exception Handling ---
+
+- Test Case 1: Triggering APITimeoutError
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+Successfully caught APITimeoutError as expected.
+  Exception Type: <class 'litellm.exceptions.Timeout'>
+  Message: litellm.Timeout: APITimeoutError - Request timed out. Error_str: Request timed out.
+  Status Code: 408
+  litellm._should_retry(408) suggests: True
+  LLM Provider: openai
+
+- Test Case 2: Triggering AuthenticationError
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+Successfully caught AuthenticationError as expected.
+  Exception Type: <class 'litellm.exceptions.AuthenticationError'>
+  Message: litellm.AuthenticationError: AuthenticationError: OpenAIException - Incorrect API key provided: sk-thisi***********************2345. You can find your API key at https://platform.openai.com/account/api-keys.
+  Status Code: 401
+  LLM Provider: openai
+
+==================== Integrations Tests ====================
+
+Skipping Langchain test as libraries are not available.
+
+--- Testing Assistants API (openai) with model gpt-4o ---
+
+1. Creating Assistant...
+Assistant created with ID: asst_3ehGZPauJWMSPIk1hACzS7F5, Name: Test Math Tutor
+
+1b. Listing Assistants...
+Newly created assistant found in list: True
+
+2. Creating Thread...
+Thread created with ID: thread_gsij72nU4T2C90PzoPiT9dSs
+Successfully retrieved thread: thread_gsij72nU4T2C90PzoPiT9dSs
+
+3. Adding another message to Thread (example)...
+Message added to thread thread_gsij72nU4T2C90PzoPiT9dSs. Message ID: msg_diLLap3KtpZ4GVgVr6IopTVY
+Expected content: 'What are the steps?', Actual content: 'Text(annotations=[], value='What are the steps?')'
+
+4. Running Assistant on Thread...
+Run initiated with ID: run_meTPExWZ3we13gM4RD5uoY0j, Status: completed
+Waiting for assistant to process...
+
+5. Retrieving messages from Thread...
+Found 4 messages in the thread:
+  - Role: user, Content: [TextContentBlock(text=Text(annotations=[], value='I need to solve the equation 3x + 11 = 14. Can you help?'), type='text')]...
+  - Role: user, Content: [TextContentBlock(text=Text(annotations=[], value='What are the steps?'), type='text')]...
+  - Role: assistant, Content: [TextContentBlock(text=Text(annotations=[], value="Certainly! To solve the equation \\(3x + 11 = 14\\), you can follow these steps:\n\n1. **Subtract 11 from both sides** to isolate the term with \\(x\...
+  - Role: assistant, Content: [TextContentBlock(text=Text(annotations=[], value='The solution to the equation \\(3x + 11 = 14\\) is indeed \\(x = 1\\), verifying that our manual steps were correct.'), type='text')]...
+
+6. Deleting Assistant ID: asst_3ehGZPauJWMSPIk1hACzS7F5...
+Assistant asst_3ehGZPauJWMSPIk1hACzS7F5 deleted.
+
+==================== OpenAI Models ====================
+
+
+--- Testing Web Search ---
+
+- Using litellm.completion with model: openai/gpt-4o-search-preview
+Attempting web search with openai/gpt-4o-search-preview...
+openai/gpt-4o-search-preview - Web Search (completion) Response:
+Content sample: Recent developments in AI ethics have led to significant advancements in policy, research, and international collaboration. Notable breakthroughs include:
+
+**Establishment of AI Safety Institutes**
+
+I...
+
+- Using litellm.responses with model: gpt-4o
+Attempting web search with gpt-4o via litellm.responses...
+
+gpt-4o - Web Search (responses) Full Response Object:
+id='resp_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDpOb25lO3Jlc3BvbnNlX2lkOnJlc3BfNjg0MWNiMThkMmNjODFhMWJmNWE1ZmI1MzRjZGYzYjAwNTg4NDRlNDNkNWU1M2Yx' created_at=1749142296.0 error=None incomplete_details=None instructions=None metadata={} model='gpt-4o-2024-08-06' object='response' output=[ResponseFunctionWebSearch(id='ws_6841cb19c51081a19acf2ecb46f3ed54058844e43d5e53f1', status='completed', type='web_search_call'), ResponseOutputMessage(id='msg_6841cb1e188081a1b271b00b4b1cd5ba058844e43d5e53f1', content=[ResponseOutputText(annotations=[AnnotationURLCitation(end_index=453, start_index=368, title='2025 in science', type='url_citation', url='https://en.wikipedia.org/wiki/2025_in_science?utm_source=openai')], text='As of June 5, 2025, a significant positive development in the field of medical research has been reported:\n\n**Breakthrough in HIV Cure Research**\n\nResearchers have achieved a major breakthrough in the search for an HIV cure, leaving the scientific community "overwhelmed" with the results. This advancement brings new hope to millions affected by the virus worldwide. ([en.wikipedia.org](https://en.wikipedia.org/wiki/2025_in_science?utm_source=openai))\n\nThis development marks a significant step forward in the ongoing efforts to combat HIV/AIDS. ', type='output_text', logprobs=None)], role='assistant', status='completed', type='message')] parallel_tool_calls=True temperature=1.0 tool_choice='auto' tools=[WebSearchTool(type='web_search_preview', search_context_size='low', user_location=UserLocation(type='approximate', city=None, country='US', region=None, timezone=None))] top_p=1.0 max_output_tokens=None previous_response_id=None reasoning={'effort': None, 'summary': None} status='completed' text=ResponseTextConfig(format=ResponseFormatText(type='text')) truncation='disabled' usage=ResponseAPIUsage(input_tokens=310, input_tokens_details=InputTokensDetails(audio_tokens=None, cached_tokens=0, text_tokens=None), output_tokens=199, output_tokens_details=OutputTokensDetails(reasoning_tokens=0, text_tokens=None), total_tokens=509) user=None
+
+gpt-4o - Web Search (responses) Extracted Content:
+Content sample: As of June 5, 2025, a significant positive development in the field of medical research has been reported:
+
+**Breakthrough in HIV Cure Research**
+
+Researchers have achieved a major breakthrough in the...
+
+--- Testing Function Calling with gpt-4o (using strategy: instructor_openai) ---
+INFO: Using instructor with native OpenAI client for gpt-4o
+Attempting call to gpt-4o with instructor (actual client path: native_openai_via_instructor)...
+
+gpt-4o - Instructor Response (Pydantic Object):
+name='Alex Taylor' age=35 city='Berlin'
+  User Name: Alex Taylor, Age: 35, City: Berlin
+
+--- Testing JSON Mode with gpt-4o ---
+Attempting call to gpt-4o for JSON output...
+
+gpt-4o - Raw LiteLLM Response Object (ModelResponse):
+
+gpt-4o - Raw Content String from Model:
+```
+{"status":"green","uptime":72,"region":"us-west-1"}
+```
+
+gpt-4o - Successfully Parsed JSON:
+{
+  "status": "green",
+  "uptime": 72,
+  "region": "us-west-1"
+}
+
+--- Testing JSON Mode with o4-mini ---
+Attempting call to o4-mini for JSON output...
+
+o4-mini - Raw LiteLLM Response Object (ModelResponse):
+
+o4-mini - Raw Content String from Model:
+```
+{"status":"green","uptime":"72 hours","region":"us-west-1"}
+```
+
+o4-mini - Successfully Parsed JSON:
+{
+  "status": "green",
+  "uptime": "72 hours",
+  "region": "us-west-1"
+}
+
+--- Testing Predicted Outputs with gpt-4o ---
+Attempting call to gpt-4o with predicted output...
+
+gpt-4o - Raw LiteLLM Response Object (ModelResponse):
+
+gpt-4o - Message Content (should be modified code):
+```csharp
+```csharp
+
+/// <summary>
+/// Represents a user with a first name, last name, and email.
+/// </summary>
+public class User
+{
+    /// <summary>
+    /// Gets or sets the user's first name.
+    /// </summary>
+    public string FirstName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's last name.
+    /// </summary>
+    public string LastName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's email.
+    /// </summary>
+    public string Email { get; set; }
+}
+
+```
+```
+INFO: 'Email' property seems to be present and 'Username' (as a property) seems to be removed. Verification needed.
+
+--- Testing Provider-Specific Config Objects (e.g., OpenAIConfig) ---
+
+- Step 1: Call o4-mini with default/per-call max_tokens (e.g., 50)
+  No content in default response.
+
+- Step 2: Applying litellm.OpenAIConfig(max_completion_tokens=10) and calling o4-mini
+o4-mini - Response after setting OpenAIConfig(max_completion_tokens=10):
+  No content in response with config.
+
+- Step 3: Attempting to 'reset' OpenAIConfig max_completion_tokens to a higher value (e.g., None or default).
+INFO: OpenAIConfig max_tokens has been set to None to minimize impact on subsequent tests.
+
+==================== Gemini Models ====================
+
+
+--- Testing Function Calling with gemini/gemini-1.5-pro (using strategy: litellm) ---
+INFO: Set GOOGLE_API_KEY from GEMINI_API_KEY for gemini/gemini-1.5-pro.
+INFO: Using instructor with LiteLLM client for gemini/gemini-1.5-pro
+Attempting call to gemini/gemini-1.5-pro with instructor (actual client path: litellm_via_instructor)...
+
+gemini/gemini-1.5-pro - Instructor Response (Pydantic Object):
+name='Alex Taylor' age=35 city='Berlin'
+  User Name: Alex Taylor, Age: 35, City: Berlin
+
+--- Testing Function Calling with gemini/gemini-1.5-flash (using strategy: litellm) ---
+INFO: Using instructor with LiteLLM client for gemini/gemini-1.5-flash
+Attempting call to gemini/gemini-1.5-flash with instructor (actual client path: litellm_via_instructor)...
+
+gemini/gemini-1.5-flash - Instructor Response (Pydantic Object):
+name='Alex Taylor' age=35 city='Berlin'
+  User Name: Alex Taylor, Age: 35, City: Berlin
+
+--- Testing JSON Mode with gemini/gemini-1.5-flash ---
+Attempting call to gemini/gemini-1.5-flash for JSON output...
+
+gemini/gemini-1.5-flash - Raw LiteLLM Response Object (ModelResponse):
+
+gemini/gemini-1.5-flash - Raw Content String from Model:
+```
+{"status": "green", "uptime": "72 hours", "region": "us-west-1"}
+```
+
+gemini/gemini-1.5-flash - Successfully Parsed JSON:
+{
+  "status": "green",
+  "uptime": "72 hours",
+  "region": "us-west-1"
+}
+
+==================== Anthropic Models ====================
+
+
+--- Testing Function Calling with claude-3-sonnet-20240229 (using strategy: instructor_anthropic) ---
+INFO: Native Anthropic client dependencies not found for instructor. Falling back to LiteLLM for claude-3-sonnet-20240229.
+Attempting call to claude-3-sonnet-20240229 with instructor (actual client path: litellm_fallback_for_anthropic)...
+
+claude-3-sonnet-20240229 - Instructor Response (Pydantic Object):
+name='Alex Taylor' age=35 city='Berlin'
+  User Name: Alex Taylor, Age: 35, City: Berlin
+
+--- Testing JSON Mode with claude-3-sonnet-20240229 ---
+Attempting call to claude-3-sonnet-20240229 for JSON output...
+
+claude-3-sonnet-20240229 - Raw LiteLLM Response Object (ModelResponse):
+
+claude-3-sonnet-20240229 - Raw Content String from Model:
+```
+{"status": "green", "uptime": 72, "region": "us-west-1"}
+```
+
+claude-3-sonnet-20240229 - Successfully Parsed JSON:
+{
+  "status": "green",
+  "uptime": 72,
+  "region": "us-west-1"
+}
+
+--- Testing Pre-fix Assistant Message with claude-3-sonnet-20240229 ---
+Attempting call to claude-3-sonnet-20240229 with a prefixed assistant message...
+claude-3-sonnet-20240229 - Response to prefixed message:
+Content: ' won the 2022 FIFA World Cup, defeating France in a dramatic final that was decided by a penalty shootout after the match ended 3-3 after extra time.
+
+Lionel Messi scored twice for Argentina in the final, while Kylian Mbappé scored all three goals for France to force extra time. Argentina took the lead again in extra time, but Mbappé equalized late to make it 3-3.
+
+In the penalty shootout, Argentina prevailed 4-2 to claim their third World Cup title and Messi's first World Cup triumph. It was a crowning achievement for Messi, widely considered one of the greatest players ever, in what was likely his final World Cup appearance.
+
+The 2022 World Cup took place in Qatar, marking the first time the tournament was held in the Middle East. The dramatic final capped a tournament that provided many memorable moments and stellar performances.'
+INFO: Response seems related to the prefixed content.
+
+--- Testing Provider-Specific Parameters with claude-3-sonnet-20240229 ---
+Attempting to pass 'top_k=3'
+Attempting call to claude-3-sonnet-20240229 with custom param: {'top_k': 3}...
+claude-3-sonnet-20240229 - Response received with custom param passed (no direct validation of effect here, just that call succeeded).
+  Content sample: Here's a short joke for you:
+
+What kind of music do planets listen to? Neptunes!...
+
+==================== DeepSeek Models ====================
+
+
+--- Testing Function Calling with deepseek/deepseek-chat (using strategy: litellm) ---
+INFO: Using instructor with LiteLLM client for deepseek/deepseek-chat
+Attempting call to deepseek/deepseek-chat with instructor (actual client path: litellm_via_instructor)...
+
+deepseek/deepseek-chat - Instructor Response (Pydantic Object):
+name='Alex Taylor' age=35 city='Berlin'
+  User Name: Alex Taylor, Age: 35, City: Berlin
+
+--- Testing JSON Mode with deepseek/deepseek-chat ---
+Attempting call to deepseek/deepseek-chat for JSON output...
+
+deepseek/deepseek-chat - Raw LiteLLM Response Object (ModelResponse):
+
+deepseek/deepseek-chat - Raw Content String from Model:
+```
+{"status":"green","uptime":72,"region":"us-west-1"}
+```
+
+deepseek/deepseek-chat - Successfully Parsed JSON:
+{
+  "status": "green",
+  "uptime": 72,
+  "region": "us-west-1"
+}
+
+--- Testing Pre-fix Assistant Message with deepseek/deepseek-chat ---
+Attempting call to deepseek/deepseek-chat with a prefixed assistant message...
+deepseek/deepseek-chat - Response to prefixed message:
+Content: ' won the **2022 FIFA World Cup**, held in Qatar. They defeated France **4–2 in a penalty shootout** after a thrilling **3–3 draw** in extra time in the final on **December 18, 2022**.  
+
+**Key Highlights:**  
+- **Lionel Messi** scored twice and was named **Player of the Tournament**.  
+- **Kylian Mbappé** (France) became the first player since 1966 to score a **hat-trick in a World Cup final**.  
+- This was Argentina's **third World Cup title** (after 1978 and 1986).  
+
+The tournament was historic as Messi finally lifted the trophy, cementing his legacy as one of the greatest players of all time. 🏆🇦🇷'
+INFO: Response seems related to the prefixed content.
+
+==================== Document Input Tests ====================
+
+
+--- Testing PDF Input with claude-3-sonnet-20240229 ---
+INFO: Model claude-3-sonnet-20240229 does not support PDF input according to litellm.utils.supports_pdf_input(). Skipping PDF input test.
+      Note: This utility might be more accurate with specific provider prefixes if applicable (e.g., 'bedrock/claude-3-sonnet-20240229').
+
+==================== Conceptual Notes on Proxy Features ====================
+
+
+--- Conceptual Notes on LiteLLM Proxy-Specific File Features ---
+
+- Provider Files Endpoints (/files):
+  This feature allows direct interaction with provider's /files endpoints (upload, list, retrieve, delete, get content)
+  It is accessed by making OpenAI-SDK compatible calls to a running LiteLLM Proxy.
+  Requires: LiteLLM Proxy setup with `files_settings` in config.yaml.
+  SDK interaction: Use an OpenAI client pointed at the LiteLLM Proxy URL (e.g., http://localhost:4000/v1).
+  Example: client.files.create(file=..., purpose=..., extra_body={'custom_llm_provider': 'openai'})
+
+- [BETA] LiteLLM Managed Files:
+  This is a LiteLLM Enterprise feature for reusing the same file ID across different providers via the Proxy.
+  It helps manage file permissions and abstracts provider-specific file IDs.
+  Requires: LiteLLM Proxy setup, PostgreSQL database (`DATABASE_URL`), and `general_settings` in config.yaml.
+  SDK interaction: Use an OpenAI client pointed at the LiteLLM Proxy URL.
+  Example for uploading: client.files.create(file=..., purpose=..., extra_body={'target_model_names': 'model1,model2'})
+  Example for using in completion: {'type': 'file', 'file': {'file_id': 'litellm_proxy_managed_id_...'}}
+
+- LiteLLM Proxy SDK Usage (General):
+  To use the LiteLLM SDK to talk to a LiteLLM Proxy (for any endpoint the proxy exposes):
+  1. Prefix model names: `model='litellm_proxy/your-deployed-model-name'`
+  2. Set `litellm.api_base` to your proxy URL and `litellm.api_key` to your proxy key.
+  3. Or, set `litellm.use_litellm_proxy = True` (uses LITELLM_PROXY_API_BASE and LITELLM_PROXY_API_KEY env vars).
+
+These features are powerful for production deployments using the LiteLLM Proxy but are not directly tested
+as standalone SDK calls in this script, as they require a running proxy instance and configuration.
+
+==================== Rerank Tests ====================
+
+
+--- Testing Reranking (litellm.rerank) ---
+
+- Test Case: Cohere Rerank (cohere/rerank-english-v3.0)
+WARNING: COHERE_API_KEY not found. Skipping Cohere rerank test.
+
+==================== Router Tests (SDK) ====================
+
+
+--- Testing LiteLLM Router (SDK) - Basics, Retries, Strategy ---
+
+- Test 1: Initializing Router and basic acompletion call
+Attempting router.acompletion()...
+Async Router Response:
+  Model used: o4-mini-2025-04-16
+  Content: ...
+
+- Test 2: Router synchronous completion call
+Attempting router.completion()...
+Sync Router Response:
+  Model used: gpt-4o-2024-08-06
+  Content: Hello! Here's an inspiring quote for you: "The only way to do great work is to love what you do." — ...
+
+- Test 3: Router retries (conceptual - difficult to force a retryable error cleanly in SDK)
+  Router `num_retries` is set. LiteLLM Router will attempt retries on a failing deployment up to this count.
+  (This test is conceptual as forcing specific retryable errors is complex here).
+
+--- Testing LiteLLM Router (SDK) - Fallbacks, Caching, Prioritization ---
+
+- Test 4: Router-level Fallbacks
+Attempting router.acompletion() with a primary model expected to fail, triggering fallbacks...
+Router Fallback Response:
+  Successfully fell back to model: gpt-4o-2024-08-06
+  Content: Routing fallbacks are mechanisms used in various systems, such as network routing, application reque...
+
+- Test 5: Router-level Caching (In-Memory)
+  Attempting first call to router (should not be cached by this router instance yet)...
+  Router - First response ID: chatcmpl-Bf87GSV5CVeyO45nFzrVMihkEvzS2, Content: ...
+  Attempting second call to router with identical messages (should be cached by this router instance)...
+  Router - Second response ID: chatcmpl-Bf87HJhtZkna4THcsOAEzl6ZZYUVc, Content: ...
+  WARNING: Router - Second call does not appear to be a cache hit. Cache might not be working as expected or params differed.
+  Router caching test completed.
+
+- Test 6: Request Prioritization (Conceptual within Router, testing param passthrough)
+  Attempting acompletion with priority=0 (high)...
+  SUCCESS: Correctly caught expected BadRequestError for 'priority' parameter with OpenAI model: litellm.BadRequestError: OpenAIException - Unknown parameter: 'priority'.. Received Model Group=priority-test-model
+
+LLM isolated tests finished.
+Shutting down LiteLLM to clean up resources...
+LiteLLM shutdown not available in this version.
+LiteLLM shutdown complete.
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f7d044d6dd0>
+Unclosed connector
+connections: ['deque([(<aiohttp.client_proto.ResponseHandler object at 0x7f7d044c9540>, 108279.30904689)])']
+connector: <aiohttp.connector.TCPConnector object at 0x7f7d044d6d70>
