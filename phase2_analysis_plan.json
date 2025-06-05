@@ -1,0 +1,46 @@
+{
+  "title": "Influence and Narrative Analysis",
+  "research_question": "Who are the super-spreaders of COVID conspiracy theories?",
+  "interrogative_views": [
+    {
+      "interrogative": "Who",
+      "focus": "Key actors spreading conspiracy theories",
+      "entities": [
+        "User",
+        "Influencer",
+        "Community",
+        "Network",
+        "Actor"
+      ],
+      "relationships": [
+        "FOLLOWS",
+        "INFLUENCES",
+        "MEMBER_OF",
+        "ALLIES_WITH",
+        "OPPOSES"
+      ]
+    },
+    {
+      "interrogative": "Says What",
+      "focus": "Dominant conspiracy narratives and arguments",
+      "entities": [
+        "Post",
+        "Topic",
+        "Narrative",
+        "Argument",
+        "Claim",
+        "Source"
+      ],
+      "relationships": [
+        "DISCUSSES",
+        "SUPPORTS",
+        "CONTRADICTS",
+        "CITES",
+        "EVOLVES_TO"
+      ]
+    }
+  ],
+  "has_mini_ontologies": true,
+  "retrieval_steps": 6,
+  "transformation_steps": 4
+}
