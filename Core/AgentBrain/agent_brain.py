@@ -334,14 +334,20 @@ Generate the ExecutionPlan JSON for the user's query."""
 
         return "\n".join(docs_parts)
 
-    def _extract_json(self, text: str) -> Optional[dict]:
+    def _extract_json(self, text: str) -> Optional[Any]:
         """
         Extract JSON from the LLM response, handling various formats.
+        Returns dict or list depending on the JSON content.
         """
+        if not text or not text.strip():
+            logger.error("Empty text provided to _extract_json")
+            return None
+            
         try:
             # First try to parse the entire text as JSON
             return json.loads(text)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logger.debug(f"Direct JSON parse failed: {e}")
             # Try to find JSON within the text
             import re
             
@@ -354,9 +360,20 @@ Generate the ExecutionPlan JSON for the user's query."""
                 except json.JSONDecodeError:
                     pass
             
-            # Look for JSON starting with { and ending with }
-            json_pattern = r'\{[\s\S]*\}'
-            matches = re.findall(json_pattern, text)
+            # Look for JSON starting with [ and ending with ] (arrays)
+            array_pattern = r'\[[\s\S]*\]'
+            matches = re.findall(array_pattern, text)
+            for match in matches:
+                try:
+                    result = json.loads(match)
+                    if isinstance(result, list):  # Verify it's actually an array
+                        return result
+                except json.JSONDecodeError:
+                    continue
+            
+            # Look for JSON starting with { and ending with } (objects)
+            object_pattern = r'\{[\s\S]*\}'
+            matches = re.findall(object_pattern, text)
             for match in matches:
                 try:
                     return json.loads(match)
@@ -511,6 +528,108 @@ The output MUST be a single JSON object conforming to the ExecutionPlan schema.
                            error_message=str(e))
             return None
 
+    async def _generate_react_natural_language_plan(self, user_query: str, actual_corpus_name: Optional[str] = None, available_resources: Optional[dict] = None) -> List[str]:
+        """
+        Generate a high-level natural language plan for the query in React mode, considering available resources.
+        Returns a list of natural language steps.
+        """
+        if not self.llm_provider:
+            logger.error("LLM provider not initialized. Cannot generate natural language plan.")
+            return []
+            
+        tool_docs = self._get_tool_documentation_for_prompt()
+        
+        system_prompt = """You are an expert planning agent. Create a high-level, step-by-step plan in natural language to answer the user's query.
+
+## Available Tools (for reference):
+{tool_docs}
+
+## Planning Guidelines:
+1. Break down the task into clear, sequential steps
+2. Each step should be a complete sentence describing what needs to be done
+3. Consider prerequisites (e.g., "Build a graph before searching it")
+4. Use tool names when relevant but write in natural language
+5. Consider existing resources - don't recreate what already exists
+6. Return ONLY a JSON array of strings, where each string is one step
+
+Example output format:
+[
+    "Prepare the corpus from the specified directory",
+    "Build an entity-relationship graph from the prepared corpus",
+    "Create a vector database index for the entities",
+    "Search the vector database for entities matching the query",
+    "Retrieve the associated text for the found entities",
+    "Summarize the findings to answer the user's question"
+]"""
+
+        resource_info = ""
+        if available_resources:
+            resource_info = f"""
+Available Resources:
+- Corpus prepared: {available_resources.get('corpus_prepared', False)}
+- Existing graphs: {available_resources.get('graphs', [])}
+- Existing VDBs: {available_resources.get('vdbs', [])}
+
+If resources already exist (corpus prepared, graphs built, etc.), start from the appropriate point rather than recreating them.
+"""
+            
+        corpus_instruction = ""
+        if actual_corpus_name:
+            corpus_instruction = f"\nThe target dataset is: {actual_corpus_name}\n"
+            
+        user_prompt = f"""User Query: "{user_query}"{corpus_instruction}{resource_info}
+
+Generate a natural language plan as a JSON array of steps."""
+
+        messages = [
+            {"role": "system", "content": system_prompt.format(tool_docs=tool_docs)},
+            {"role": "user", "content": user_prompt}
+        ]
+        
+        try:
+            response = await self.llm_provider.acompletion(messages=messages, temperature=0.0)
+            
+            # Check if response is valid
+            if not response or not hasattr(response, 'choices') or not response.choices:
+                logger.error("Invalid response from LLM provider - no choices returned")
+                return []
+                
+            if not hasattr(response.choices[0], 'message') or not hasattr(response.choices[0].message, 'content'):
+                logger.error("Invalid response structure from LLM provider")
+                return []
+                
+            content = response.choices[0].message.content
+            if not content:
+                logger.error("Empty content in LLM response")
+                return []
+                
+            content = content.strip()
+            
+            # Log the raw response for debugging
+            logger.info(f"Raw LLM response for React natural language plan: {content[:500]}...")
+            
+            # Extract JSON array from response - handle different formats
+            json_content = self._extract_json(content)
+            
+            if json_content is None:
+                logger.error(f"Could not extract JSON from React natural language plan response. Raw content: {content[:500]}...")
+                return []
+            
+            # Check if it's a valid plan array
+            if isinstance(json_content, list) and all(isinstance(s, str) for s in json_content):
+                logger.info(f"Generated React natural language plan with {len(json_content)} steps")
+                return json_content
+            else:
+                logger.error(f"Invalid React natural language plan format. Expected list of strings, got: {type(json_content)}")
+                return []
+                
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in React natural language plan: {e}. Check the LLM response format.")
+            return []
+        except Exception as e:
+            logger.error(f"Error generating React natural language plan: {e}", exc_info=True)
+            return []
+    
     async def _generate_natural_language_plan(self, user_query: str, actual_corpus_name: Optional[str] = None) -> List[str]:
         """
         Generate a high-level natural language plan for the query.
@@ -559,21 +678,43 @@ Generate a natural language plan as a JSON array of steps."""
         
         try:
             response = await self.llm_provider.acompletion(messages=messages, temperature=0.0)
-            content = response.choices[0].message.content.strip()
             
-            # Parse JSON array from response
-            import json
-            steps = json.loads(content)
+            # Check if response is valid
+            if not response or not hasattr(response, 'choices') or not response.choices:
+                logger.error("Invalid response from LLM provider - no choices returned")
+                return []
+                
+            if not hasattr(response.choices[0], 'message') or not hasattr(response.choices[0].message, 'content'):
+                logger.error("Invalid response structure from LLM provider")
+                return []
+                
+            content = response.choices[0].message.content
+            if not content:
+                logger.error("Empty content in LLM response")
+                return []
+                
+            content = content.strip()
             
-            if isinstance(steps, list) and all(isinstance(s, str) for s in steps):
-                logger.info(f"Generated natural language plan with {len(steps)} steps")
-                return steps
+            # Log the raw response for debugging
+            logger.info(f"Raw LLM response for natural language plan: {content[:500]}...")
+            
+            # Extract JSON array from response - handle different formats
+            json_content = self._extract_json(content)
+            
+            if json_content is None:
+                logger.error(f"Could not extract JSON from natural language plan response. Raw content: {content[:500]}...")
+                return []
+            
+            # Check if it's a valid plan array
+            if isinstance(json_content, list) and all(isinstance(s, str) for s in json_content):
+                logger.info(f"Generated natural language plan with {len(json_content)} steps")
+                return json_content
             else:
-                logger.error("Invalid natural language plan format")
+                logger.error(f"Invalid natural language plan format. Expected list of strings, got: {type(json_content)}")
                 return []
                 
         except Exception as e:
-            logger.error(f"Error generating natural language plan: {e}")
+            logger.error(f"Error generating natural language plan: {e}", exc_info=True)
             return []
 
     async def generate_plan(self, user_query: str, actual_corpus_name: Optional[str] = None) -> Optional[ExecutionPlan]: # Use Optional
@@ -994,18 +1135,8 @@ Based on the entities and relationships found, provide your answer."""
         logger.info(f"Available resources: {available_resources}")
         
         # Generate initial natural language plan with context about available resources
-        nl_plan_prompt = f"""Given the query: "{query}"
-
-Available resources:
-- Corpus prepared: {available_resources['corpus_prepared']}
-- Existing graphs: {available_resources['graphs']}
-- Existing VDBs: {available_resources['vdbs']}
-- Target corpus name: {actual_corpus_name or 'Not specified'}
-
-Generate a step-by-step plan to answer this query. If resources already exist (corpus prepared, graphs built, etc.), 
-start from the appropriate point rather than recreating them."""
-        
-        nl_plan = await self._generate_natural_language_plan(nl_plan_prompt)
+        # For React mode, we need a context-aware plan
+        nl_plan = await self._generate_react_natural_language_plan(query, actual_corpus_name, available_resources)
         
         if not nl_plan:
             return {"error": "Failed to generate natural language plan."}
