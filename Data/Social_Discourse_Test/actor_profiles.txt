@@ -1,0 +1,65 @@
+SOCIAL NETWORK ACTOR PROFILES
+================================================================================
+
+
+TECH OPTIMISTS COMMUNITY:
+----------------------------------------
+
+@TechVisionary - Alex Chen
+Role: Tech CEO
+Influence: high
+Followers: 50,000
+
+@AIResearcher - Dr. Sarah Johnson
+Role: AI Researcher
+Influence: high
+Followers: 30,000
+
+@StartupFounder - Mike Williams
+Role: Startup Founder
+Influence: medium
+Followers: 15,000
+
+AI ETHICS COMMUNITY:
+----------------------------------------
+
+@EthicsProf - Prof. Emily Brown
+Role: Ethics Professor
+Influence: high
+Followers: 25,000
+
+@PolicyExpert - James Taylor
+Role: Policy Analyst
+Influence: medium
+Followers: 12,000
+
+@SafetyAdvocate - Lisa Martinez
+Role: AI Safety Advocate
+Influence: medium
+Followers: 8,000
+
+LABOR RIGHTS COMMUNITY:
+----------------------------------------
+
+@UnionLeader - Robert Davis
+Role: Union Representative
+Influence: high
+Followers: 35,000
+
+@WorkerRights - Maria Garcia
+Role: Labor Activist
+Influence: medium
+Followers: 10,000
+
+MEDIA COMMUNITY:
+----------------------------------------
+
+@TechJournalist - Chris Anderson
+Role: Tech Reporter
+Influence: high
+Followers: 40,000
+
+@InvestigativeRep - Amanda White
+Role: Investigative Journalist
+Influence: medium
+Followers: 20,000

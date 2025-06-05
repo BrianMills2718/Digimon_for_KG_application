@@ -1,0 +1,597 @@
+{
+  "dataset_name": "Social_Discourse_Test",
+  "description": "Synthetic dataset for testing social network and discourse analysis",
+  "actors": {
+    "@TechVisionary": {
+      "name": "Alex Chen",
+      "role": "Tech CEO",
+      "community": "tech_optimists",
+      "influence": "high",
+      "followers": 50000
+    },
+    "@AIResearcher": {
+      "name": "Dr. Sarah Johnson",
+      "role": "AI Researcher",
+      "community": "tech_optimists",
+      "influence": "high",
+      "followers": 30000
+    },
+    "@StartupFounder": {
+      "name": "Mike Williams",
+      "role": "Startup Founder",
+      "community": "tech_optimists",
+      "influence": "medium",
+      "followers": 15000
+    },
+    "@EthicsProf": {
+      "name": "Prof. Emily Brown",
+      "role": "Ethics Professor",
+      "community": "ai_ethics",
+      "influence": "high",
+      "followers": 25000
+    },
+    "@PolicyExpert": {
+      "name": "James Taylor",
+      "role": "Policy Analyst",
+      "community": "ai_ethics",
+      "influence": "medium",
+      "followers": 12000
+    },
+    "@SafetyAdvocate": {
+      "name": "Lisa Martinez",
+      "role": "AI Safety Advocate",
+      "community": "ai_ethics",
+      "influence": "medium",
+      "followers": 8000
+    },
+    "@UnionLeader": {
+      "name": "Robert Davis",
+      "role": "Union Representative",
+      "community": "labor_rights",
+      "influence": "high",
+      "followers": 35000
+    },
+    "@WorkerRights": {
+      "name": "Maria Garcia",
+      "role": "Labor Activist",
+      "community": "labor_rights",
+      "influence": "medium",
+      "followers": 10000
+    },
+    "@TechJournalist": {
+      "name": "Chris Anderson",
+      "role": "Tech Reporter",
+      "community": "media",
+      "influence": "high",
+      "followers": 40000
+    },
+    "@InvestigativeRep": {
+      "name": "Amanda White",
+      "role": "Investigative Journalist",
+      "community": "media",
+      "influence": "medium",
+      "followers": 20000
+    }
+  },
+  "posts": [
+    {
+      "post_id": "1000",
+      "author": "@TechVisionary",
+      "author_info": {
+        "name": "Alex Chen",
+        "role": "Tech CEO",
+        "community": "tech_optimists",
+        "influence": "high",
+        "followers": 50000
+      },
+      "timestamp": "2024-03-15T09:00:00",
+      "content": "\ud83d\ude80 Excited to announce our new AI assistant that can automate 70% of office tasks! This will free humans to focus on creative work. The future is here! #AIRevolution #FutureOfWork",
+      "metrics": {
+        "retweets": 5000,
+        "likes": 15000,
+        "replies": 500
+      },
+      "mentions": [],
+      "hashtags": [
+        "#AIRevolution",
+        "#FutureOfWork"
+      ],
+      "discourse_phase": "announcement"
+    },
+    {
+      "post_id": "1001",
+      "author": "@AIResearcher",
+      "author_info": {
+        "name": "Dr. Sarah Johnson",
+        "role": "AI Researcher",
+        "community": "tech_optimists",
+        "influence": "high",
+        "followers": 30000
+      },
+      "timestamp": "2024-03-15T09:15:00",
+      "content": "Congratulations @TechVisionary! The benchmark results are impressive. Our research shows 3x productivity gains when humans collaborate with AI. #AIResearch",
+      "metrics": {
+        "retweets": 1000,
+        "likes": 3000,
+        "replies": 50
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#AIResearch"
+      ],
+      "discourse_phase": "announcement"
+    },
+    {
+      "post_id": "1002",
+      "author": "@StartupFounder",
+      "author_info": {
+        "name": "Mike Williams",
+        "role": "Startup Founder",
+        "community": "tech_optimists",
+        "influence": "medium",
+        "followers": 15000
+      },
+      "timestamp": "2024-03-15T09:30:00",
+      "content": "This is game-changing! @TechVisionary's announcement validates what we've been building. Small businesses can now compete with enterprises. #StartupLife #AITools",
+      "metrics": {
+        "retweets": 500,
+        "likes": 2000,
+        "replies": 30
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#StartupLife",
+        "#AITools"
+      ],
+      "discourse_phase": "announcement"
+    },
+    {
+      "post_id": "1003",
+      "author": "@UnionLeader",
+      "author_info": {
+        "name": "Robert Davis",
+        "role": "Union Representative",
+        "community": "labor_rights",
+        "influence": "high",
+        "followers": 35000
+      },
+      "timestamp": "2024-03-15T11:00:00",
+      "content": "Hold on @TechVisionary. What about the millions of office workers whose jobs will disappear? We need regulations and retraining programs BEFORE deployment. #WorkersRights #AIRegulation",
+      "metrics": {
+        "retweets": 3000,
+        "likes": 8000,
+        "replies": 200
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#WorkersRights",
+        "#AIRegulation"
+      ],
+      "discourse_phase": "criticism"
+    },
+    {
+      "post_id": "1004",
+      "author": "@EthicsProf",
+      "author_info": {
+        "name": "Prof. Emily Brown",
+        "role": "Ethics Professor",
+        "community": "ai_ethics",
+        "influence": "high",
+        "followers": 25000
+      },
+      "timestamp": "2024-03-15T11:30:00",
+      "content": "Important questions from @UnionLeader. Also concerned about bias in these systems. Who audited the AI? What safeguards exist? We need transparency. @TechVisionary #AIEthics #ResponsibleAI",
+      "metrics": {
+        "retweets": 2000,
+        "likes": 5000,
+        "replies": 100
+      },
+      "mentions": [
+        "@UnionLeader",
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#AIEthics",
+        "#ResponsibleAI"
+      ],
+      "discourse_phase": "criticism"
+    },
+    {
+      "post_id": "1005",
+      "author": "@TechJournalist",
+      "author_info": {
+        "name": "Chris Anderson",
+        "role": "Tech Reporter",
+        "community": "media",
+        "influence": "high",
+        "followers": 40000
+      },
+      "timestamp": "2024-03-15T12:00:00",
+      "content": "BREAKING: Sources tell me @TechVisionary's AI has not undergone independent safety testing. Company refused to comment on job displacement numbers. Full investigation coming. #TechNews",
+      "metrics": {
+        "retweets": 4000,
+        "likes": 10000,
+        "replies": 300
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#TechNews"
+      ],
+      "discourse_phase": "criticism"
+    },
+    {
+      "post_id": "1006",
+      "author": "@TechVisionary",
+      "author_info": {
+        "name": "Alex Chen",
+        "role": "Tech CEO",
+        "community": "tech_optimists",
+        "influence": "high",
+        "followers": 50000
+      },
+      "timestamp": "2024-03-15T13:00:00",
+      "content": "To address concerns: 1) We're creating MORE jobs in AI supervision 2) Offering free retraining 3) Gradual rollout with worker input. Innovation and responsibility go hand-in-hand. @UnionLeader @EthicsProf",
+      "metrics": {
+        "retweets": 2000,
+        "likes": 6000,
+        "replies": 150
+      },
+      "mentions": [
+        "@UnionLeader",
+        "@EthicsProf"
+      ],
+      "hashtags": [],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1007",
+      "author": "@PolicyExpert",
+      "author_info": {
+        "name": "James Taylor",
+        "role": "Policy Analyst",
+        "community": "ai_ethics",
+        "influence": "medium",
+        "followers": 12000
+      },
+      "timestamp": "2024-03-15T13:30:00",
+      "content": "Not enough @TechVisionary. We need: mandatory impact assessments, worker compensation funds, algorithmic audits. The EU AI Act provides a good framework. #AIPolicy #Regulation",
+      "metrics": {
+        "retweets": 1500,
+        "likes": 4000,
+        "replies": 80
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#AIPolicy",
+        "#Regulation"
+      ],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1008",
+      "author": "@WorkerRights",
+      "author_info": {
+        "name": "Maria Garcia",
+        "role": "Labor Activist",
+        "community": "labor_rights",
+        "influence": "medium",
+        "followers": 10000
+      },
+      "timestamp": "2024-03-15T14:00:00",
+      "content": "My sister just learned her data entry job will be eliminated. @TechVisionary's 'retraining' is 2-week online course. This is not enough! Real people are suffering. #JobLoss #AIImpact",
+      "metrics": {
+        "retweets": 5000,
+        "likes": 12000,
+        "replies": 400
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#JobLoss",
+        "#AIImpact"
+      ],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1009",
+      "author": "@SafetyAdvocate",
+      "author_info": {
+        "name": "Lisa Martinez",
+        "role": "AI Safety Advocate",
+        "community": "ai_ethics",
+        "influence": "medium",
+        "followers": 8000
+      },
+      "timestamp": "2024-03-15T14:30:00",
+      "content": "Thread: Why @TechVisionary's AI could lead to catastrophic failures \ud83e\uddf5 1/ No external audits 2/ Rushing to market 3/ Ignoring long-term risks 4/ Prioritizing profits over safety [1/8]",
+      "metrics": {
+        "retweets": 3000,
+        "likes": 7000,
+        "replies": 200
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1010",
+      "author": "@PolicyExpert",
+      "author_info": {
+        "name": "James Taylor",
+        "role": "Policy Analyst",
+        "community": "ai_ethics",
+        "influence": "medium",
+        "followers": 12000
+      },
+      "timestamp": "2024-03-15T15:00:00",
+      "content": "Working with @EthicsProf on policy framework. Key insight from @UnionLeader: automation impact varies by region. One-size-fits-all won't work. #PolicyDevelopment",
+      "metrics": {
+        "retweets": 800,
+        "likes": 2500,
+        "replies": 40
+      },
+      "mentions": [
+        "@EthicsProf",
+        "@UnionLeader"
+      ],
+      "hashtags": [
+        "#PolicyDevelopment"
+      ],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1011",
+      "author": "@SafetyAdvocate",
+      "author_info": {
+        "name": "Lisa Martinez",
+        "role": "AI Safety Advocate",
+        "community": "ai_ethics",
+        "influence": "medium",
+        "followers": 8000
+      },
+      "timestamp": "2024-03-15T16:00:00",
+      "content": "@AIResearcher makes good points but we can't ignore existential risks. @EthicsProf's framework addresses near-term issues. We need both perspectives. #AISafety #LongTermism",
+      "metrics": {
+        "retweets": 1200,
+        "likes": 3500,
+        "replies": 90
+      },
+      "mentions": [
+        "@AIResearcher",
+        "@EthicsProf"
+      ],
+      "hashtags": [
+        "#AISafety",
+        "#LongTermism"
+      ],
+      "discourse_phase": "polarization"
+    },
+    {
+      "post_id": "1012",
+      "author": "@InvestigativeRep",
+      "author_info": {
+        "name": "Amanda White",
+        "role": "Investigative Journalist",
+        "community": "media",
+        "influence": "medium",
+        "followers": 20000
+      },
+      "timestamp": "2024-03-15T17:00:00",
+      "content": "EXCLUSIVE: Internal emails show @TechVisionary knew about job losses but buried report. 'Focus on positive messaging' exec wrote. Documents: [link] #AIScandal",
+      "metrics": {
+        "retweets": 8000,
+        "likes": 20000,
+        "replies": 1000
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#AIScandal"
+      ],
+      "discourse_phase": "investigation"
+    },
+    {
+      "post_id": "1013",
+      "author": "@AIResearcher",
+      "author_info": {
+        "name": "Dr. Sarah Johnson",
+        "role": "AI Researcher",
+        "community": "tech_optimists",
+        "influence": "high",
+        "followers": 30000
+      },
+      "timestamp": "2024-03-15T18:00:00",
+      "content": "We need nuanced discussion. Yes, AI displaces some jobs BUT creates others. History shows tech transitions work IF we support workers. Let's find common ground @UnionLeader @EthicsProf",
+      "metrics": {
+        "retweets": 2500,
+        "likes": 6000,
+        "replies": 200
+      },
+      "mentions": [
+        "@UnionLeader",
+        "@EthicsProf"
+      ],
+      "hashtags": [],
+      "discourse_phase": "investigation"
+    },
+    {
+      "post_id": "1014",
+      "author": "@EthicsProf",
+      "author_info": {
+        "name": "Prof. Emily Brown",
+        "role": "Ethics Professor",
+        "community": "ai_ethics",
+        "influence": "high",
+        "followers": 25000
+      },
+      "timestamp": "2024-03-15T19:00:00",
+      "content": "Agree with @AIResearcher. Proposing roundtable with all stakeholders: tech leaders, workers, ethicists, policymakers. @TechVisionary will you participate? Time for dialogue not debate.",
+      "metrics": {
+        "retweets": 3500,
+        "likes": 9000,
+        "replies": 300
+      },
+      "mentions": [
+        "@AIResearcher",
+        "@TechVisionary"
+      ],
+      "hashtags": [],
+      "discourse_phase": "investigation"
+    },
+    {
+      "post_id": "1015",
+      "author": "@TechVisionary",
+      "author_info": {
+        "name": "Alex Chen",
+        "role": "Tech CEO",
+        "community": "tech_optimists",
+        "influence": "high",
+        "followers": 50000
+      },
+      "timestamp": "2024-03-15T20:00:00",
+      "content": "I hear you all. @InvestigativeRep's report missing context but concerns are valid. Accepting @EthicsProf's invitation. Also establishing $50M worker transition fund. We must do better.",
+      "metrics": {
+        "retweets": 4000,
+        "likes": 10000,
+        "replies": 500
+      },
+      "mentions": [
+        "@InvestigativeRep",
+        "@EthicsProf"
+      ],
+      "hashtags": [],
+      "discourse_phase": "investigation"
+    },
+    {
+      "post_id": "1016",
+      "author": "@UnionLeader",
+      "author_info": {
+        "name": "Robert Davis",
+        "role": "Union Representative",
+        "community": "labor_rights",
+        "influence": "high",
+        "followers": 35000
+      },
+      "timestamp": "2024-03-15T21:00:00",
+      "content": "Progress. @TechVisionary's fund is a start. But we need: 1) Worker representation on AI deployment decisions 2) Profit-sharing from automation 3) Right to human review. The fight continues.",
+      "metrics": {
+        "retweets": 4000,
+        "likes": 11000,
+        "replies": 400
+      },
+      "mentions": [
+        "@TechVisionary"
+      ],
+      "hashtags": [],
+      "discourse_phase": "resolution"
+    },
+    {
+      "post_id": "1017",
+      "author": "@WorkerRights",
+      "author_info": {
+        "name": "Maria Garcia",
+        "role": "Labor Activist",
+        "community": "labor_rights",
+        "influence": "medium",
+        "followers": 10000
+      },
+      "timestamp": "2024-03-15T22:00:00",
+      "content": "Powerful testimony from displaced workers at @UnionLeader's rally. Their stories matter more than any tech announcement. Real impact of @TechVisionary's AI. #WorkerStories",
+      "metrics": {
+        "retweets": 3500,
+        "likes": 9000,
+        "replies": 350
+      },
+      "mentions": [
+        "@UnionLeader",
+        "@TechVisionary"
+      ],
+      "hashtags": [
+        "#WorkerStories"
+      ],
+      "discourse_phase": "resolution"
+    },
+    {
+      "post_id": "1018",
+      "author": "@TechJournalist",
+      "author_info": {
+        "name": "Chris Anderson",
+        "role": "Tech Reporter",
+        "community": "media",
+        "influence": "high",
+        "followers": 40000
+      },
+      "timestamp": "2024-03-16T01:00:00",
+      "content": "UPDATE: Industry-wide movement forming. 5 major tech companies joining @TechVisionary's worker fund. @UnionLeader calling it 'small victory'. The AI debate is reshaping Silicon Valley. #TechNews",
+      "metrics": {
+        "retweets": 5000,
+        "likes": 15000,
+        "replies": 600
+      },
+      "mentions": [
+        "@TechVisionary",
+        "@UnionLeader"
+      ],
+      "hashtags": [
+        "#TechNews"
+      ],
+      "discourse_phase": "resolution"
+    },
+    {
+      "post_id": "1019",
+      "author": "@StartupFounder",
+      "author_info": {
+        "name": "Mike Williams",
+        "role": "Startup Founder",
+        "community": "tech_optimists",
+        "influence": "medium",
+        "followers": 15000
+      },
+      "timestamp": "2024-03-16T05:00:00",
+      "content": "Today showed why diverse voices matter in tech. Thanks @EthicsProf @UnionLeader for pushing us to think bigger. Innovation must include everyone. #InclusiveTech #AIForAll",
+      "metrics": {
+        "retweets": 2000,
+        "likes": 7000,
+        "replies": 150
+      },
+      "mentions": [
+        "@EthicsProf",
+        "@UnionLeader"
+      ],
+      "hashtags": [
+        "#InclusiveTech",
+        "#AIForAll"
+      ],
+      "discourse_phase": "resolution"
+    }
+  ],
+  "discourse_phases": {
+    "announcement": "Tech leader announces AI automation tool",
+    "criticism": "Labor and ethics concerns emerge",
+    "polarization": "Communities take sides and debate intensifies",
+    "investigation": "Media reveals hidden information",
+    "resolution": "Stakeholders work toward compromise"
+  },
+  "network_metrics": {
+    "total_actors": 10,
+    "total_posts": 20,
+    "communities": 4,
+    "time_span_hours": 24,
+    "total_mentions": 29,
+    "unique_hashtags": 21
+  }
+}

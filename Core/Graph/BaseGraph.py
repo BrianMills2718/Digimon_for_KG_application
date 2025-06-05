@@ -324,7 +324,8 @@ class BaseGraph(ABC):
         logger.debug(f"Trigger summary: {entity_or_relation_name}")
 
         # Asynchronously generate the summary using the language model
-        return await self.llm.aask(use_prompt, max_tokens=self.config.summary_max_tokens)
+        max_tokens = getattr(self.config, 'summary_max_tokens', 256)  # Default to 256 if not set
+        return await self.llm.aask(use_prompt, max_tokens=max_tokens)
 
     async def _persist_graph(self, force = False):
         await self._graph.persist(force)

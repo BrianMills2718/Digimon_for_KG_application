@@ -1,0 +1,37 @@
+DISCOURSE PHASE: MEDIA REVEALS HIDDEN INFORMATION
+Number of posts: 4
+================================================================================
+
+Author: @InvestigativeRep (Investigative Journalist)
+Community: media
+Timestamp: 2024-03-15T17:00:00
+Content: EXCLUSIVE: Internal emails show @TechVisionary knew about job losses but buried report. 'Focus on positive messaging' exec wrote. Documents: [link] #AIScandal
+Engagement: 8000 retweets, 20000 likes, 1000 replies
+Mentions: @TechVisionary
+Hashtags: #AIScandal
+--------------------------------------------------------------------------------
+
+Author: @AIResearcher (AI Researcher)
+Community: tech_optimists
+Timestamp: 2024-03-15T18:00:00
+Content: We need nuanced discussion. Yes, AI displaces some jobs BUT creates others. History shows tech transitions work IF we support workers. Let's find common ground @UnionLeader @EthicsProf
+Engagement: 2500 retweets, 6000 likes, 200 replies
+Mentions: @UnionLeader, @EthicsProf
+--------------------------------------------------------------------------------
+
+Author: @EthicsProf (Ethics Professor)
+Community: ai_ethics
+Timestamp: 2024-03-15T19:00:00
+Content: Agree with @AIResearcher. Proposing roundtable with all stakeholders: tech leaders, workers, ethicists, policymakers. @TechVisionary will you participate? Time for dialogue not debate.
+Engagement: 3500 retweets, 9000 likes, 300 replies
+Mentions: @AIResearcher, @TechVisionary
+--------------------------------------------------------------------------------
+
+Author: @TechVisionary (Tech CEO)
+Community: tech_optimists
+Timestamp: 2024-03-15T20:00:00
+Content: I hear you all. @InvestigativeRep's report missing context but concerns are valid. Accepting @EthicsProf's invitation. Also establishing $50M worker transition fund. We must do better.
+Engagement: 4000 retweets, 10000 likes, 500 replies
+Mentions: @InvestigativeRep, @EthicsProf
+--------------------------------------------------------------------------------
+

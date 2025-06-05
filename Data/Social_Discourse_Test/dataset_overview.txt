@@ -1,0 +1,45 @@
+SOCIAL DISCOURSE TEST DATASET
+================================================================================
+
+DATASET CHARACTERISTICS:
+- Dense social network with clear communities
+- Rich discourse patterns showing opinion evolution
+- Multiple stakeholder perspectives
+- Clear narrative arc with 5 phases
+- Explicit mentions creating network connections
+
+ACTORS AND COMMUNITIES:
+- @TechVisionary: Alex Chen (Tech CEO) - tech_optimists community, high influence
+- @AIResearcher: Dr. Sarah Johnson (AI Researcher) - tech_optimists community, high influence
+- @StartupFounder: Mike Williams (Startup Founder) - tech_optimists community, medium influence
+- @EthicsProf: Prof. Emily Brown (Ethics Professor) - ai_ethics community, high influence
+- @PolicyExpert: James Taylor (Policy Analyst) - ai_ethics community, medium influence
+- @SafetyAdvocate: Lisa Martinez (AI Safety Advocate) - ai_ethics community, medium influence
+- @UnionLeader: Robert Davis (Union Representative) - labor_rights community, high influence
+- @WorkerRights: Maria Garcia (Labor Activist) - labor_rights community, medium influence
+- @TechJournalist: Chris Anderson (Tech Reporter) - media community, high influence
+- @InvestigativeRep: Amanda White (Investigative Journalist) - media community, medium influence
+
+
+DISCOURSE PHASES:
+- announcement: Tech leader announces AI automation tool
+- criticism: Labor and ethics concerns emerge
+- polarization: Communities take sides and debate intensifies
+- investigation: Media reveals hidden information
+- resolution: Stakeholders work toward compromise
+
+
+KEY THEMES:
+- AI automation and job displacement
+- Tech innovation vs worker protection
+- Ethics and responsible AI development
+- Multi-stakeholder dialogue and compromise
+- Media's role in tech accountability
+
+
+NETWORK ANALYSIS OPPORTUNITIES:
+- Community detection (4 clear communities)
+- Influencer identification (high-follower accounts)
+- Information flow tracing (retweets and mentions)
+- Sentiment evolution over time
+- Bridge actors connecting communities
