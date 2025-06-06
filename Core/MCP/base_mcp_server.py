@@ -90,6 +90,13 @@ class MCPServer:
                     "status": "success",
                     "result": result
                 }
+            elif method == "list_tools":
+                result = await self.handle_list_tools(params)
+                response = {
+                    "id": request_id,
+                    "status": "success",
+                    "result": result
+                }
             else:
                 # Method not found
                 response = {
@@ -128,6 +135,30 @@ class MCPServer:
         """Handle echo request - for testing"""
         message = params.get("message", "")
         return {"echo": message}
+        
+    async def handle_list_tools(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle list tools request"""
+        # For now, return test tools
+        return {
+            "tools": [
+                {
+                    "name": "echo",
+                    "description": "Echo test tool",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {"type": "string"}
+                        }
+                    },
+                    "output_schema": {
+                        "type": "object",
+                        "properties": {
+                            "echo": {"type": "string"}
+                        }
+                    }
+                }
+            ]
+        }
         
     def get_status(self) -> Dict[str, Any]:
         """Get server status"""
