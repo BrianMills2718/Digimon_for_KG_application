@@ -24,12 +24,13 @@ class TestMCPCheckpoint1_1:
         """Start MCP server before tests"""
         cls.server_process = None
         cls.server_url = "ws://localhost:8765"
+        cls.server_task = None
         
     @classmethod
     def teardown_class(cls):
         """Stop MCP server after tests"""
-        if cls.server_process:
-            cls.server_process.terminate()
+        if cls.server_task:
+            cls.server_task.cancel()
     
     async def send_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Send request to MCP server and get response"""
@@ -59,7 +60,8 @@ class TestMCPCheckpoint1_1:
             # Try to connect
             async with websockets.connect(self.server_url) as websocket:
                 print("✓ Connected to server at localhost:8765")
-                assert websocket.open
+                # Check connection is established
+                assert websocket.state.name == 'OPEN'
                 
         except Exception as e:
             pytest.fail(f"Server failed to start: {e}")
