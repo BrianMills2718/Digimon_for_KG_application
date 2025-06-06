@@ -139,6 +139,8 @@ class ChunkFactory:
         possible_corpus_paths = [
             # Check working_dir first (for output from PrepareCorpusFromDirectoryTool)
             Path(self.main_config.working_dir) / dataset_name / "Corpus.json",
+            # Also check corpus subdirectory (agent often creates here)
+            Path(self.main_config.working_dir) / dataset_name / "corpus" / "Corpus.json",
             # Then check data_root (for pre-existing datasets)
             Path(self.main_config.data_root) / dataset_name / "Corpus.json"
         ]
