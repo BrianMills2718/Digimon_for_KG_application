@@ -1,201 +1,374 @@
 """
-Shared context store for MCP communication
+Shared Context Store for MCP Implementation
+
+This module provides thread-safe shared context storage for cross-request state
+management in the DIGIMON MCP system.
 """
 
 import asyncio
-from typing import Dict, Any, Optional
-from datetime import datetime, timedelta
+import time
 import json
 import logging
+from typing import Dict, Any, Optional, List, Tuple
+from dataclasses import dataclass, field
+from collections import defaultdict
+from datetime import datetime, timedelta
+import threading
+import weakref
 
 logger = logging.getLogger(__name__)
 
 
-class ContextSession:
-    """Context session for tracking state across requests"""
+@dataclass
+class ContextEntry:
+    """Represents a single context entry with metadata"""
+    key: str
+    value: Any
+    created_at: float
+    updated_at: float
+    access_count: int = 0
+    ttl_seconds: Optional[float] = None
+    session_id: Optional[str] = None
     
-    def __init__(self, session_id: str):
-        self.session_id = session_id
-        self.data: Dict[str, Any] = {}
-        self.created_at = datetime.utcnow()
-        self.last_accessed = datetime.utcnow()
-        self.access_count = 0
-        self._lock = asyncio.Lock()
+    def is_expired(self) -> bool:
+        """Check if entry has expired based on TTL"""
+        if self.ttl_seconds is None:
+            return False
+        return time.time() - self.created_at > self.ttl_seconds
         
-    async def get(self, key: str, default: Any = None) -> Any:
-        """Get value from session context"""
-        async with self._lock:
-            self.last_accessed = datetime.utcnow()
-            self.access_count += 1
-            return self.data.get(key, default)
+    def access(self):
+        """Record access to this entry"""
+        self.access_count += 1
+        self.updated_at = time.time()
+
+
+@dataclass
+class SessionContext:
+    """Represents a session with its own context namespace"""
+    session_id: str
+    created_at: float
+    last_accessed: float
+    entries: Dict[str, ContextEntry] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     
-    async def set(self, key: str, value: Any):
-        """Set value in session context"""
-        async with self._lock:
-            self.last_accessed = datetime.utcnow()
-            self.data[key] = value
-    
-    async def update(self, updates: Dict[str, Any]):
-        """Update multiple values in session context"""
-        async with self._lock:
-            self.last_accessed = datetime.utcnow()
-            self.data.update(updates)
-    
-    async def clear(self):
-        """Clear session data"""
-        async with self._lock:
-            self.data.clear()
-            self.last_accessed = datetime.utcnow()
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Export session data"""
-        return {
-            'session_id': self.session_id,
-            'data': self.data.copy(),
-            'created_at': self.created_at.isoformat(),
-            'last_accessed': self.last_accessed.isoformat(),
-            'access_count': self.access_count
-        }
+    def access(self):
+        """Update last accessed time"""
+        self.last_accessed = time.time()
+        
+    def is_expired(self, timeout_seconds: float = 3600) -> bool:
+        """Check if session has expired"""
+        return time.time() - self.last_accessed > timeout_seconds
 
 
 class SharedContextStore:
-    """
-    Centralized context storage for cross-tool communication
-    Supports TTL-based cleanup and persistence
-    """
+    """Thread-safe shared context store with session management"""
     
-    def __init__(self, ttl_minutes: int = 60, cleanup_interval_minutes: int = 5):
-        self.sessions: Dict[str, ContextSession] = {}
-        self.ttl = timedelta(minutes=ttl_minutes)
-        self.cleanup_interval = timedelta(minutes=cleanup_interval_minutes)
-        self._lock = asyncio.Lock()
-        self._cleanup_task = None
+    def __init__(self, gc_interval_seconds: float = 60.0):
+        # Thread-safe storage
+        self._lock = threading.RLock()
+        self._global_context: Dict[str, ContextEntry] = {}
+        self._sessions: Dict[str, SessionContext] = {}
         
-        # Start cleanup task
-        self._start_cleanup_task()
-    
-    def _start_cleanup_task(self):
-        """Start background cleanup task"""
-        async def cleanup_loop():
-            while True:
-                try:
-                    await asyncio.sleep(self.cleanup_interval.total_seconds())
-                    await self._cleanup_expired_sessions()
-                except asyncio.CancelledError:
-                    break
-                except Exception as e:
-                    logger.error(f"Cleanup task error: {e}", exc_info=True)
+        # Performance tracking
+        self._operation_times: List[float] = []
+        self._max_operation_samples = 1000
         
-        try:
-            self._cleanup_task = asyncio.create_task(cleanup_loop())
-        except RuntimeError:
-            # No event loop running, skip cleanup task
-            logger.debug("No event loop available for cleanup task")
-    
-    async def _cleanup_expired_sessions(self):
-        """Remove expired sessions"""
-        async with self._lock:
-            now = datetime.utcnow()
-            expired = []
-            
-            for session_id, session in self.sessions.items():
-                if now - session.last_accessed > self.ttl:
-                    expired.append(session_id)
-            
-            for session_id in expired:
-                logger.debug(f"Removing expired session: {session_id}")
-                del self.sessions[session_id]
-            
-            if expired:
-                logger.info(f"Cleaned up {len(expired)} expired sessions")
-    
-    async def get_or_create_session(self, session_id: str) -> ContextSession:
-        """Get existing session or create new one"""
-        async with self._lock:
-            if session_id not in self.sessions:
-                logger.debug(f"Creating new session: {session_id}")
-                self.sessions[session_id] = ContextSession(session_id)
-            return self.sessions[session_id]
-    
-    async def get_context(self, session_id: str) -> Dict[str, Any]:
-        """Get full context for a session"""
-        session = await self.get_or_create_session(session_id)
-        return session.data.copy()
-    
-    async def update_context(self, session_id: str, updates: Dict[str, Any]):
-        """Update context for a session"""
-        session = await self.get_or_create_session(session_id)
-        await session.update(updates)
-    
-    async def get_value(self, session_id: str, key: str, default: Any = None) -> Any:
-        """Get specific value from session context"""
-        session = await self.get_or_create_session(session_id)
-        return await session.get(key, default)
-    
-    async def set_value(self, session_id: str, key: str, value: Any):
-        """Set specific value in session context"""
-        session = await self.get_or_create_session(session_id)
-        await session.set(key, value)
-    
-    async def clear_session(self, session_id: str):
-        """Clear all data for a session"""
-        if session_id in self.sessions:
-            await self.sessions[session_id].clear()
-    
-    async def delete_session(self, session_id: str):
-        """Delete a session entirely"""
-        async with self._lock:
-            if session_id in self.sessions:
-                del self.sessions[session_id]
-                logger.debug(f"Deleted session: {session_id}")
-    
-    async def export_sessions(self) -> Dict[str, Any]:
-        """Export all sessions for persistence"""
-        async with self._lock:
-            return {
-                session_id: session.to_dict()
-                for session_id, session in self.sessions.items()
-            }
-    
-    async def import_sessions(self, data: Dict[str, Any]):
-        """Import sessions from persisted data"""
-        async with self._lock:
-            for session_id, session_data in data.items():
-                session = ContextSession(session_id)
-                session.data = session_data['data']
-                session.created_at = datetime.fromisoformat(session_data['created_at'])
-                session.last_accessed = datetime.fromisoformat(session_data['last_accessed'])
-                session.access_count = session_data['access_count']
-                self.sessions[session_id] = session
-            logger.info(f"Imported {len(data)} sessions")
-    
-    def get_stats(self) -> Dict[str, Any]:
-        """Get context store statistics"""
-        total_size = sum(
-            len(json.dumps(session.data))
-            for session in self.sessions.values()
-        )
+        # Garbage collection
+        self._gc_interval = gc_interval_seconds
+        self._gc_task = None
+        self._running = False
         
-        return {
-            'session_count': len(self.sessions),
-            'total_size_bytes': total_size,
-            'ttl_minutes': self.ttl.total_seconds() / 60,
-            'oldest_session': min(
-                (s.created_at for s in self.sessions.values()),
-                default=None
-            ),
-            'most_accessed': max(
-                ((s.session_id, s.access_count) for s in self.sessions.values()),
-                key=lambda x: x[1],
-                default=(None, 0)
-            )
-        }
-    
-    async def close(self):
-        """Clean up resources"""
-        if self._cleanup_task:
-            self._cleanup_task.cancel()
+        # Weak references for memory efficiency
+        self._weak_refs: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
+        
+    async def start(self):
+        """Start the context store with background garbage collection"""
+        self._running = True
+        self._gc_task = asyncio.create_task(self._garbage_collector())
+        logger.info("SharedContextStore started")
+        
+    async def stop(self):
+        """Stop the context store"""
+        self._running = False
+        if self._gc_task:
+            self._gc_task.cancel()
             try:
-                await self._cleanup_task
+                await self._gc_task
             except asyncio.CancelledError:
                 pass
+        logger.info("SharedContextStore stopped")
+        
+    async def _garbage_collector(self):
+        """Background task to clean up expired entries"""
+        while self._running:
+            try:
+                await asyncio.sleep(self._gc_interval)
+                removed_count = self._cleanup_expired()
+                if removed_count > 0:
+                    logger.debug(f"Garbage collector removed {removed_count} expired entries")
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error(f"Error in garbage collector: {e}")
+                
+    def _cleanup_expired(self) -> int:
+        """Remove expired entries and sessions"""
+        start_time = time.time()
+        removed_count = 0
+        
+        with self._lock:
+            # Clean global context
+            expired_keys = [
+                key for key, entry in self._global_context.items()
+                if entry.is_expired()
+            ]
+            for key in expired_keys:
+                del self._global_context[key]
+                removed_count += 1
+                
+            # Clean sessions
+            expired_sessions = [
+                sid for sid, session in self._sessions.items()
+                if session.is_expired()
+            ]
+            for sid in expired_sessions:
+                # Clean session entries first
+                removed_count += len(self._sessions[sid].entries)
+                del self._sessions[sid]
+                removed_count += 1
+                
+        self._record_operation_time(time.time() - start_time)
+        return removed_count
+        
+    def _record_operation_time(self, duration: float):
+        """Record operation duration for performance tracking"""
+        self._operation_times.append(duration)
+        if len(self._operation_times) > self._max_operation_samples:
+            self._operation_times.pop(0)
+            
+    def set(self, key: str, value: Any, ttl_seconds: Optional[float] = None,
+            session_id: Optional[str] = None):
+        """Set a context value"""
+        start_time = time.time()
+        
+        with self._lock:
+            entry = ContextEntry(
+                key=key,
+                value=value,
+                created_at=time.time(),
+                updated_at=time.time(),
+                ttl_seconds=ttl_seconds,
+                session_id=session_id
+            )
+            
+            if session_id:
+                # Store in session context
+                if session_id not in self._sessions:
+                    self._sessions[session_id] = SessionContext(
+                        session_id=session_id,
+                        created_at=time.time(),
+                        last_accessed=time.time()
+                    )
+                self._sessions[session_id].entries[key] = entry
+                self._sessions[session_id].access()
+            else:
+                # Store in global context
+                self._global_context[key] = entry
+                
+        self._record_operation_time(time.time() - start_time)
+        
+    def get(self, key: str, default: Any = None, session_id: Optional[str] = None) -> Any:
+        """Get a context value"""
+        start_time = time.time()
+        
+        with self._lock:
+            entry = None
+            
+            if session_id and session_id in self._sessions:
+                # Look in session context first
+                session = self._sessions[session_id]
+                session.access()
+                entry = session.entries.get(key)
+                
+            if entry is None:
+                # Fall back to global context
+                entry = self._global_context.get(key)
+                
+            if entry is None:
+                result = default
+            elif entry.is_expired():
+                # Remove expired entry
+                if session_id and session_id in self._sessions:
+                    self._sessions[session_id].entries.pop(key, None)
+                else:
+                    self._global_context.pop(key, None)
+                result = default
+            else:
+                entry.access()
+                result = entry.value
+                
+        self._record_operation_time(time.time() - start_time)
+        return result
+        
+    def update(self, key: str, value: Any, session_id: Optional[str] = None) -> bool:
+        """Update an existing context value"""
+        start_time = time.time()
+        
+        with self._lock:
+            entry = None
+            
+            if session_id and session_id in self._sessions:
+                session = self._sessions[session_id]
+                session.access()
+                entry = session.entries.get(key)
+            else:
+                entry = self._global_context.get(key)
+                
+            if entry and not entry.is_expired():
+                entry.value = value
+                entry.updated_at = time.time()
+                entry.access()
+                success = True
+            else:
+                success = False
+                
+        self._record_operation_time(time.time() - start_time)
+        return success
+        
+    def delete(self, key: str, session_id: Optional[str] = None) -> bool:
+        """Delete a context value"""
+        start_time = time.time()
+        
+        with self._lock:
+            deleted = False
+            
+            if session_id and session_id in self._sessions:
+                session = self._sessions[session_id]
+                session.access()
+                if key in session.entries:
+                    del session.entries[key]
+                    deleted = True
+            elif key in self._global_context:
+                del self._global_context[key]
+                deleted = True
+                
+        self._record_operation_time(time.time() - start_time)
+        return deleted
+        
+    def create_session(self, session_id: str, metadata: Optional[Dict[str, Any]] = None) -> SessionContext:
+        """Create a new session"""
+        start_time = time.time()
+        
+        with self._lock:
+            session = SessionContext(
+                session_id=session_id,
+                created_at=time.time(),
+                last_accessed=time.time(),
+                metadata=metadata or {}
+            )
+            self._sessions[session_id] = session
+            
+        self._record_operation_time(time.time() - start_time)
+        return session
+        
+    def get_session(self, session_id: str) -> Optional[SessionContext]:
+        """Get a session by ID"""
+        start_time = time.time()
+        
+        with self._lock:
+            session = self._sessions.get(session_id)
+            if session and not session.is_expired():
+                session.access()
+                result = session
+            else:
+                result = None
+                
+        self._record_operation_time(time.time() - start_time)
+        return result
+        
+    def delete_session(self, session_id: str) -> bool:
+        """Delete a session and all its entries"""
+        start_time = time.time()
+        
+        with self._lock:
+            if session_id in self._sessions:
+                del self._sessions[session_id]
+                deleted = True
+            else:
+                deleted = False
+                
+        self._record_operation_time(time.time() - start_time)
+        return deleted
+        
+    def get_stats(self) -> Dict[str, Any]:
+        """Get context store statistics"""
+        with self._lock:
+            global_count = len(self._global_context)
+            session_count = len(self._sessions)
+            total_entries = global_count + sum(
+                len(s.entries) for s in self._sessions.values()
+            )
+            
+            # Calculate average operation time
+            if self._operation_times:
+                avg_op_time_ms = sum(self._operation_times) * 1000 / len(self._operation_times)
+                max_op_time_ms = max(self._operation_times) * 1000
+            else:
+                avg_op_time_ms = 0
+                max_op_time_ms = 0
+                
+        return {
+            "global_entries": global_count,
+            "sessions": session_count,
+            "total_entries": total_entries,
+            "avg_operation_ms": round(avg_op_time_ms, 3),
+            "max_operation_ms": round(max_op_time_ms, 3),
+            "operation_samples": len(self._operation_times)
+        }
+        
+    def export_context(self, session_id: Optional[str] = None) -> Dict[str, Any]:
+        """Export context for debugging or persistence"""
+        with self._lock:
+            if session_id and session_id in self._sessions:
+                session = self._sessions[session_id]
+                return {
+                    "session_id": session_id,
+                    "created_at": session.created_at,
+                    "entries": {
+                        key: {
+                            "value": entry.value,
+                            "created_at": entry.created_at,
+                            "access_count": entry.access_count
+                        }
+                        for key, entry in session.entries.items()
+                    }
+                }
+            else:
+                return {
+                    "global": True,
+                    "entries": {
+                        key: {
+                            "value": entry.value,
+                            "created_at": entry.created_at,
+                            "access_count": entry.access_count
+                        }
+                        for key, entry in self._global_context.items()
+                    }
+                }
+
+
+# Global singleton instance
+_shared_context_store: Optional[SharedContextStore] = None
+_store_lock = threading.Lock()
+
+
+def get_shared_context() -> SharedContextStore:
+    """Get the global shared context store instance"""
+    global _shared_context_store
+    
+    if _shared_context_store is None:
+        with _store_lock:
+            if _shared_context_store is None:
+                _shared_context_store = SharedContextStore()
+                
+    return _shared_context_store
