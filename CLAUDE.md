@@ -2,7 +2,9 @@
 
 ## CURRENT PRIORITY: MCP Integration (2025-06-06)
 
-**FOCUS**: Implement Model Context Protocol (MCP) integration following the detailed plan in `MCP_INTEGRATION_DETAILED_PLAN.md`. Complete each checkpoint with evidence before proceeding.
+**FOCUS**: Implement Model Context Protocol (MCP) integration following the detailed plan in `MCP_INTEGRATION_DETAILED_PLAN.md`. Complete ALL 12 checkpoints without stopping unless blocked.
+
+**MANDATE**: Continue implementing checkpoints 1.2 through 4.3 sequentially. Commit after each success. Do not stop for user input between checkpoints.
 
 ### Quick Status
 ```
@@ -140,9 +142,11 @@ corpus.PrepareFromDirectory, graph.Visualize, graph.Analyze
 2. **Create implementation file** (e.g., `Core/MCP/base_mcp_server.py`)
 3. **Run test** with full output capture
 4. **Update evidence** in this file under the checkpoint section
-5. **Commit** with message: `mcp: Complete checkpoint X.Y - description`
+5. **COMMIT IMMEDIATELY** with message: `mcp: Complete checkpoint X.Y - description`
 6. **Update tracker** (`MCP_IMPLEMENTATION_TRACKER.md`)
-7. **Move to next checkpoint** only after current passes
+7. **Continue to next checkpoint WITHOUT STOPPING**
+
+**CRITICAL**: DO NOT STOP until all 12 checkpoints are complete or a blocking error occurs. Each checkpoint builds on the previous. Commit after EVERY successful checkpoint to preserve progress.
 
 ### Evidence Format:
 ```
