@@ -18,37 +18,48 @@ Markdown
 
 > **GraphRAG** is a popular 🔥🔥🔥 and powerful 💪💪💪 RAG system! 🚀💡 Inspired by systems like Microsoft's, graph-based RAG is unlocking endless possibilities in AI.
 
-> The DIGIMON project focuses on **modularizing and decoupling** these methods 🧩 to **unveil the mystery** 🕵️‍♂️🔍✨ behind them, enable advanced analysis, and develop intelligent agent-driven RAG capable of handling complex, multi-step information processing tasks from raw data to summarized insights. Our project🔨 is included in [Awesome Graph-based RAG](https://github.com/DEEP-PolyU/Awesome-GraphRAG).
+## Project Structure
 
-![Workflow of GraphRAG](./Doc/workflow.png)
+After reorganization (2025-06-06), the project follows this clean structure:
 
----
-[![](https://img.shields.io/badge/cs.Zhou-2025.04338-B31C1C?logo=arxiv&logoColor=B31C1C)](https://www.arxiv.org/abs/2503.04338)
-[![](https://img.shields.io/badge/python-3.10+-blue)](https://pypi.org/project/agentscope/)
-[![](https://img.shields.io/badge/Contribute-Welcome-green)](https://modelscope.github.io/agentscope/tutorial/contribute.html) 
-- If you find the original work or this fork helpful, please kindly cite [the original GraphRAG paper](https://www.arxiv.org/abs/2503.04338).
-- Download the datasets referenced by the original paper: [GraphRAG-dataset](https://drive.google.com/file/d/14nYYw-3FutumQnSRwKavIbG3LRSmIzDX/view?usp=sharing)
+```
+digimon_cc/
+├── Core/                    # Core DIGIMON modules
+│   ├── AgentOrchestrator/  # Agent orchestration system
+│   ├── AgentTools/         # Tool implementations
+│   ├── Graph/              # Graph construction modules
+│   ├── MCP/                # Model Context Protocol integration
+│   └── ...                 # Other core modules
+├── Config/                  # Configuration files
+├── Data/                    # Test datasets
+│   ├── Social_Discourse_Test/
+│   ├── MySampleTexts/
+│   └── ...
+├── Option/                  # Method configurations (YAML files)
+├── docs/                    # Documentation
+│   ├── planning/           # Planning documents (*_PLAN.md)
+│   ├── reports/            # Reports and status documents
+│   └── handoffs/           # Handoff documentation
+├── scripts/                 # Utility scripts
+│   ├── demos/              # Demo scripts (demo_*.py, claude_*.py)
+│   ├── tests/              # Test scripts (test_*.py)
+│   └── analysis/           # Analysis scripts
+├── deploy/                  # Deployment files
+│   ├── Dockerfile*         # Docker configurations
+│   └── docker-compose.yml  # Multi-container setup
+├── examples/                # Example code and demos
+├── tests/                   # Pytest test suite
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   └── e2e/                # End-to-end tests
+├── digimon_cli.py          # Main CLI interface
+├── main.py                 # Main entry point
+├── api.py                  # API server
+├── CLAUDE.md               # AI assistant instructions
+└── requirements.txt        # Python dependencies
+```
 
----
-
-## About this Fork: DIGIMON
-
-This fork, **DIGIMON (Deep Analysis of Graph-Based Retrieval-Augmented Generation Systems)**, significantly refactors and extends the original [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG) project. The primary motivation is to transform the initial monolithic testing pipeline into a highly modular and flexible "usage suite." This allows for deeper analysis, more adaptable experimentation, and provides a robust foundation for advanced research into graph-based RAG, particularly through the development of an intelligent agent.
-
-**Key Goals for DIGIMON:**
-
-* Provide a robust and modular framework for building, querying, and evaluating diverse graph-based RAG systems.
-* Enable detailed analysis of individual components and operator chains within graph RAG pipelines.
-* Develop an intelligent LLM-based agent capable of:
-    * **End-to-End Data Processing:** Handling tasks from raw text files in a directory (e.g., preparing a corpus, chunking) through to KG construction and insight extraction.
-    * **Autonomous KG Structuring:** Intelligently selecting appropriate graph types (e.g., ERGraph, TreeGraph, PassageGraph), applying ontologies, and configuring build parameters based on the data and task.
-    * **Dynamic Retrieval Strategies:** Determining and executing optimal retrieval strategies by composing sequences of the system's granular operators in a ReACT-style (Reason, Act, Observe) iterative workflow.
-* Serve as a flexible platform for PhD research (e.g., on social media discourse analysis) and broader exploration of advanced RAG techniques and agentic information retrieval.
-
----
-
-## Current Features & Capabilities
-
+The reorganization moved ~200+ files from the root directory into appropriate subdirectories for better maintainability.
 ### Modular Architecture & Operational Modes
 
 The system features a modular design with distinct operational modes, manageable via `main.py`, and increasingly, through agent-callable tools:

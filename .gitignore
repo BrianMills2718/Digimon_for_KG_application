@@ -122,6 +122,10 @@ decoupling_logs/
 storage/
 MySampleTexts_Agent_Corpus/
 test_direct_retrieval/
+policy_analysis_results/
+output/
+cache/
+memory/
 
 # Config files with secrets
 Option/Config2.yaml
@@ -135,6 +139,23 @@ output.txt
 test_output/
 error_test_output/
 testing/test_output/
+test_results/
+benchmark_results.json
+*_results.json
+!discourse_analysis_results.json
+
+# Build logs
+build_log_*.txt
+stage*_output.txt
+
+# Large data files
+*.csv
+*.torrent
+hotpot_dev_distractor_v1.json
+
+# HTML files (except index.html)
+*.html
+!index.html
 
 # Temporary files
 *.tmp
