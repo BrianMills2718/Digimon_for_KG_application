@@ -1,0 +1,312 @@
+INFO [Config.default]: Loaded default config from Option/Config2.yaml
+WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.
+WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.
+WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.
+WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.
+INFO [Config.default]: Successfully created default Config instance.
+INFO [Config.default]: Loaded default config from Option/Config2.yaml
+WARNING [Config.default]: Graph config not found in default YAMLs/data, creating default GraphConfig.
+WARNING [Config.default]: Chunk config not found in default YAMLs/data, creating default ChunkConfig.
+WARNING [Config.default]: Retriever config not found or invalid in default YAMLs/data, creating default RetrieverConfig.
+WARNING [Config.default]: Query config (query_config) not found or invalid in default YAMLs/data, creating default QueryConfig.
+INFO [Config.default]: Successfully created default Config instance.
+####################################################################################################
+ _____ _____ _____ _____ __  __  ____  _   _ 
+|  __ \_   _/ ____|_   _|  \/  |/ __ \| \ | |
+| |  | || || |  __  | | | \  / | |  | |  \| |
+| |  | || || | |_ | | | | |\/| | |  | | . ` |
+| |__| || || |__| |_| |_| |  | | |__| | |\  |
+|_____/_____\_____|_____|_|  |_|\____/|_| \_|
+                                             
+                                             
+
+DIGIMON GraphRAG CLI - Natural Language Document Querying
+============================================================
+
+2025-06-05 17:35:00 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent initialized with LLM provider for api_type: LLMType.LITELLM, model: o4-mini
+2025-06-05 17:35:00 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Processing query: First build an ER graph for Social_Discourse_Test dataset. 
+    Then build an entity VDB using that graph. 
+    Finally search for entities about 'tech'. with corpus: Social_Discourse_Test
+2025-06-05 17:35:00 - Core.AgentBrain.agent_brain - [32mINFO[0m - Available resources: {'corpus_prepared': True, 'graphs': [], 'vdbs': []}
+2025-06-05 17:35:00 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Sending messages to LLM for ExecutionPlan (approx 35321 chars).
+2025-06-05 17:35:00 - Core.AgentBrain.agent_brain - [32mINFO[0m - Calling LLM for plan generation
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Successfully received and parsed ExecutionPlan from LLM.
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - Plan generation successful
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Successfully generated ExecutionPlan object directly via instructor.
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - Generated Plan (Pydantic model):
+{
+  "plan_id": "build_er_and_vdb_search_tech",
+  "plan_description": "Build ER graph for Social_Discourse_Test, create an entity VDB, and search for entities about 'tech'",
+  "target_dataset_name": "Social_Discourse_Test",
+  "ontology_setup": null,
+  "global_llm_config_patch": null,
+  "global_embedding_config_patch": null,
+  "plan_inputs": {
+    "main_query": "tech"
+  },
+  "steps": [
+    {
+      "step_id": "step_1_build_er_graph",
+      "description": "Build ER graph from existing corpus",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "graph.BuildERGraph",
+            "description": null,
+            "parameters": null,
+            "inputs": {
+              "target_dataset_name": "Social_Discourse_Test",
+              "force_rebuild": false
+            },
+            "named_outputs": {
+              "er_graph_id": "graph_id"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_2_build_entity_vdb",
+      "description": "Build entity VDB from the ER graph",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Entity.VDB.Build",
+            "description": null,
+            "parameters": null,
+            "inputs": {
+              "graph_reference_id": {
+                "from_step_id": "step_1_build_er_graph",
+                "named_output_key": "er_graph_id"
+              },
+              "vdb_collection_name": "Social_Discourse_Test_entities"
+            },
+            "named_outputs": {
+              "entity_vdb_id": "vdb_reference_id"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_3_search_entities",
+      "description": "Search for entities related to 'tech'",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Entity.VDBSearch",
+            "description": null,
+            "parameters": null,
+            "inputs": {
+              "vdb_reference_id": {
+                "from_step_id": "step_2_build_entity_vdb",
+                "named_output_key": "entity_vdb_id"
+              },
+              "query_text": "plan_inputs.main_query",
+              "top_k_results": 5
+            },
+            "named_outputs": {
+              "search_results": "similar_entities"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "step_4_get_text_for_entities",
+      "description": "Retrieve text chunks for the discovered entities",
+      "action": {
+        "chain_description": null,
+        "tools": [
+          {
+            "tool_id": "Chunk.GetTextForEntities",
+            "description": null,
+            "parameters": null,
+            "inputs": {
+              "graph_reference_id": {
+                "from_step_id": "step_1_build_er_graph",
+                "named_output_key": "er_graph_id"
+              },
+              "entity_ids": {
+                "from_step_id": "step_3_search_entities",
+                "named_output_key": "search_results"
+              }
+            },
+            "named_outputs": null
+          }
+        ]
+      }
+    }
+  ]
+}
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Executing generated plan ID: build_er_and_vdb_search_tech
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - Starting plan execution
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Plan execution finished. Retrieved context: {'step_1_build_er_graph': {'er_graph_id': 'Social_Discourse_Test_ERGraph', '_status': 'success', '_message': 'ERGraph built successfully for Social_Discourse_Test.'}, 'step_2_build_entity_vdb': {'entity_vdb_id': 'Social_Discourse_Test_entities', '_status': 'Successfully built VDB with 117 entities'}, 'step_3_search_entities': {'search_results': []}, 'step_4_get_text_for_entities': {'retrieved_chunks': [], 'status_message': 'Retrieved 0 chunks for 0 entities'}}
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - Plan execution completed
+2025-06-05 17:35:37 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Generating final natural language answer.
+2025-06-05 17:35:38 - Core.AgentBrain.agent_brain - [32mINFO[0m - PlanningAgent: Generated answer: I’m sorry, but the provided context doesn’t contain any information on “tech.”
+
+============================================================
+Answer:
+I’m sorry, but the provided context doesn’t contain any information on “tech.”
+
+Context Retrieved:
+============================================================
+
+2025-06-05 17:35:00.190 | INFO     | __main__:initialize_system:67 - Initializing DIGIMON GraphRAG system...
+2025-06-05 17:35:00.192 | INFO     | Core.Provider.LiteLLMProvider:__init__:47 - LiteLLMProvider initialized for model: o4-mini
+2025-06-05 17:35:00.192 | INFO     | Core.Chunk.ChunkFactory:__init__:76 - ChunkFactory initialized with working_dir: ./results
+2025-06-05 17:35:00.192 | INFO     | Core.AgentOrchestrator.orchestrator:_register_tools:88 - AgentOrchestrator: Registered 18 tools with Pydantic models: ['Entity.VDBSearch', 'Entity.VDB.Build', 'Entity.PPR', 'Entity.Onehop', 'Entity.RelNode', 'Relationship.OneHopNeighbors', 'Relationship.VDB.Build', 'Relationship.VDB.Search', 'Chunk.FromRelationships', 'Chunk.GetTextForEntities', 'graph.BuildERGraph', 'graph.BuildRKGraph', 'graph.BuildTreeGraph', 'graph.BuildTreeGraphBalanced', 'graph.BuildPassageGraph', 'corpus.PrepareFromDirectory', 'graph.Visualize', 'graph.Analyze']
+2025-06-05 17:35:00.192 | INFO     | Core.Provider.LiteLLMProvider:__init__:47 - LiteLLMProvider initialized for model: o4-mini
+2025-06-05 17:35:00.192 | INFO     | Core.Provider.EnhancedLiteLLMProvider:__init__:53 - EnhancedLiteLLMProvider initialized with features: cache=True, adaptive_timeout=True, performance_tracking=True
+2025-06-05 17:35:00.192 | INFO     | Core.AgentOrchestrator.orchestrator:_register_tools:88 - AgentOrchestrator: Registered 18 tools with Pydantic models: ['Entity.VDBSearch', 'Entity.VDB.Build', 'Entity.PPR', 'Entity.Onehop', 'Entity.RelNode', 'Relationship.OneHopNeighbors', 'Relationship.VDB.Build', 'Relationship.VDB.Search', 'Chunk.FromRelationships', 'Chunk.GetTextForEntities', 'graph.BuildERGraph', 'graph.BuildRKGraph', 'graph.BuildTreeGraph', 'graph.BuildTreeGraphBalanced', 'graph.BuildPassageGraph', 'corpus.PrepareFromDirectory', 'graph.Visualize', 'graph.Analyze']
+2025-06-05 17:35:00.193 | INFO     | __main__:initialize_system:104 - System initialized successfully!
+2025-06-05 17:35:00.193 | INFO     | __main__:prepare_corpus:118 - Preparing corpus from: Data/Social_Discourse_Test
+2025-06-05 17:35:00.193 | INFO     | __main__:process_query:139 - Processing query: First build an ER graph for Social_Discourse_Test dataset. 
+    Then build an entity VDB using that graph. 
+    Finally search for entities about 'tech'.
+2025-06-05 17:35:00.193 | DEBUG    | Core.AgentSchema.context:list_graphs:67 - GraphRAGContext: Listing all graph keys. Found: []
+2025-06-05 17:35:00.193 | DEBUG    | Core.AgentSchema.context:list_vdbs:72 - GraphRAGContext: Listing all VDB keys. Found: []
+2025-06-05 17:35:00.193 | DEBUG    | Core.Provider.LiteLLMProvider:async_instructor_completion:247 - LiteLLMProvider: Calling instructor_client_async.chat.completions.create with response_model: ExecutionPlan, model: o4-mini
+2025-06-05 17:35:37.076 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.003 | Max budget: $10.000 | Current cost: $0.003, prompt_tokens: 8283, completion_tokens: 2388
+2025-06-05 17:35:37.077 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:188 - Orchestrator: Starting execution of plan ID: build_er_and_vdb_search_tech - Build ER graph for Social_Discourse_Test, create an entity VDB, and search for entities about 'tech'
+2025-06-05 17:35:37.077 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:194 - Orchestrator: Executing Step 1/4: step_1_build_er_graph - Build ER graph from existing corpus
+2025-06-05 17:35:37.077 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:207 - Orchestrator: Tool 1/1 in step_1_build_er_graph: graph.BuildERGraph
+2025-06-05 17:35:37.077 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:162 - Orchestrator (input field) 'target_dataset_name': Resolved as literal value.
+2025-06-05 17:35:37.077 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:162 - Orchestrator (input field) 'force_rebuild': Resolved as literal value.
+2025-06-05 17:35:37.077 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:222 - Orchestrator: Instantiating BuildERGraphInputs with: {'target_dataset_name': 'Social_Discourse_Test', 'force_rebuild': False}
+2025-06-05 17:35:37.077 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:224 - Orchestrator: Instantiated BuildERGraphInputs for graph.BuildERGraph
+2025-06-05 17:35:37.077 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:226 - Orchestrator: Calling build_er_graph for ID: graph.BuildERGraph
+2025-06-05 17:35:37.077 | INFO     | Core.AgentTools.graph_construction_tools:apply_overrides:22 - apply_overrides: No overrides provided, skipping
+2025-06-05 17:35:37.078 | INFO     | Core.Graph.GraphFactory:get_graph:43 - GraphFactory: Creating graph of type 'er_graph' with kwargs: {'llm': <Core.Provider.EnhancedLiteLLMProvider.EnhancedLiteLLMProvider object at 0x7f2f44b50b50>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f2f44b50a30>, num_workers=None, embeddings_cache=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-05 17:35:37.078 | DEBUG    | Core.Graph.GraphFactory:_create_er_graph:50 - GraphFactory._create_er_graph: full_config type: <class 'Option.Config2.Config'>, constructor_kwargs: {'llm': <Core.Provider.EnhancedLiteLLMProvider.EnhancedLiteLLMProvider object at 0x7f2f44b50b50>, 'encoder': OpenAIEmbedding(model_name='text-embedding-3-small', embed_batch_size=128, callback_manager=<llama_index.core.callbacks.base.CallbackManager object at 0x7f2f44b50a30>, num_workers=None, embeddings_cache=None, additional_kwargs={'dimensions': 1024}, api_key='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', api_base='https://api.openai.com/v1', api_version='', max_retries=10, timeout=60.0, default_headers=None, reuse_client=True, dimensions=1024)}
+2025-06-05 17:35:37.078 | INFO     | Core.Chunk.ChunkFactory:get_namespace:121 - ChunkFactory: Created/ensured namespace for dataset 'Social_Discourse_Test', type 'er_graph' at results/Social_Discourse_Test/er_graph
+2025-06-05 17:35:37.078 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:136 - ChunkFactory: Getting chunks for dataset 'Social_Discourse_Test'
+2025-06-05 17:35:37.078 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:152 - Found corpus file at results/Social_Discourse_Test/Corpus.json
+2025-06-05 17:35:37.078 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:174 - Successfully loaded 7 documents from JSONL file: results/Social_Discourse_Test/Corpus.json
+2025-06-05 17:35:37.079 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:200 - Created 7 TextChunk objects for dataset 'Social_Discourse_Test'
+2025-06-05 17:35:37.079 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:126 - Calling er_graph_instance.build_graph for dataset: Social_Discourse_Test
+2025-06-05 17:35:37.079 | INFO     | Core.Graph.BaseGraph:build_graph:54 - Starting build graph for the given documents
+2025-06-05 17:35:37.079 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:33 - Attempting to load the graph from: results/Social_Discourse_Test/er_graph/nx_data.graphml
+2025-06-05 17:35:37.084 | INFO     | Core.Storage.NetworkXStorage:load_nx_graph:37 - Successfully loaded graph from: results/Social_Discourse_Test/er_graph/nx_data.graphml with 117 nodes and 201 edges
+2025-06-05 17:35:37.084 | INFO     | Core.Graph.BaseGraph:build_graph:69 - Graph loaded from existing artifacts, build not forced.
+2025-06-05 17:35:37.084 | INFO     | Core.Graph.BaseGraph:build_graph:73 - ✅ Finished the graph building stage successfully.
+2025-06-05 17:35:37.084 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:140 - build_er_graph tool: er_graph_instance.build_graph succeeded for Social_Discourse_Test
+2025-06-05 17:35:37.084 | INFO     | Core.AgentTools.graph_construction_tools:build_er_graph:145 - build_er_graph artifact path: results/Social_Discourse_Test/er_graph
+2025-06-05 17:35:37.084 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:244 - Orchestrator: Tool graph.BuildERGraph executed. Output type: <class 'Core.AgentSchema.graph_construction_tool_contracts.BuildERGraphOutputs'>
+2025-06-05 17:35:37.084 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:245 - Orchestrator: Raw output: graph_id='Social_Discourse_Test_ERGraph' status='success' message='ERGraph built successfully for Social_Discourse_Test.' node_count=117 edge_count=201 layer_count=None artifact_path='results/Social_Discourse_Test/er_graph' graph_instance=<Core.Graph.ERGraph.ERGraph object at 0x7f2fa7adc550>...
+2025-06-05 17:35:37.084 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:248 - Orchestrator: Checking if tool graph.BuildERGraph is a graph build tool...
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:250 - Orchestrator: Tool is graph build, checking attributes...
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:251 - Orchestrator: Has graph_id: True, Has status: True
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:253 - Orchestrator: Status=success, Graph ID=Social_Discourse_Test_ERGraph
+2025-06-05 17:35:37.085 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:259 - Orchestrator: Using graph instance returned by tool for 'Social_Discourse_Test_ERGraph'
+2025-06-05 17:35:37.085 | INFO     | Core.Chunk.ChunkFactory:get_namespace:121 - ChunkFactory: Created/ensured namespace for dataset 'Social_Discourse_Test', type 'er_graph' at results/Social_Discourse_Test/er_graph
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:271 - Orchestrator: Set graph namespace to Social_Discourse_Test
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentSchema.context:add_graph_instance:38 - GraphRAGContext: Before adding graph 'Social_Discourse_Test_ERGraph'. Current graphs: []
+2025-06-05 17:35:37.085 | INFO     | Core.AgentSchema.context:add_graph_instance:40 - GraphRAGContext: Added graph 'Social_Discourse_Test_ERGraph' (type: <class 'Core.Graph.ERGraph.ERGraph'>). Updated graphs: ['Social_Discourse_Test_ERGraph']
+2025-06-05 17:35:37.085 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:275 - Orchestrator: Successfully registered ACTUAL BUILT graph instance 'Social_Discourse_Test_ERGraph' in GraphRAGContext. Instance type: <class 'Core.Graph.ERGraph.ERGraph'>
+2025-06-05 17:35:37.085 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:356 - Orchestrator: Stored output 'er_graph_id' for step step_1_build_er_graph (tool graph.BuildERGraph).
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:361 - Orchestrator: Preserved _status='success' for step step_1_build_er_graph
+2025-06-05 17:35:37.085 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:364 - Orchestrator: Preserved _message='ERGraph built successfully for Social_Discourse_Test....' for step step_1_build_er_graph
+2025-06-05 17:35:37.086 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:194 - Orchestrator: Executing Step 2/4: step_2_build_entity_vdb - Build entity VDB from the ER graph
+2025-06-05 17:35:37.086 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:207 - Orchestrator: Tool 1/1 in step_2_build_entity_vdb: Entity.VDB.Build
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:107 - Orchestrator (input field) 'graph_reference_id': Parsed dict into ToolInputSource.
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:120 - Orchestrator (input field) 'graph_reference_id': Retrieved from step 'step_1_build_er_graph', key 'er_graph_id'. Raw type: <class 'str'>
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:148 - Orchestrator (input field) 'graph_reference_id': Using raw output from previous step.
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:162 - Orchestrator (input field) 'vdb_collection_name': Resolved as literal value.
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:222 - Orchestrator: Instantiating EntityVDBBuildInputs with: {'graph_reference_id': 'Social_Discourse_Test_ERGraph', 'vdb_collection_name': 'Social_Discourse_Test_entities'}
+2025-06-05 17:35:37.086 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:224 - Orchestrator: Instantiated EntityVDBBuildInputs for Entity.VDB.Build
+2025-06-05 17:35:37.086 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:226 - Orchestrator: Calling entity_vdb_build_tool for ID: Entity.VDB.Build
+2025-06-05 17:35:37.086 | INFO     | Core.AgentTools.entity_vdb_tools:entity_vdb_build_tool:33 - Building entity VDB: graph_id='Social_Discourse_Test_ERGraph', collection='Social_Discourse_Test_entities'
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentSchema.context:get_graph_instance:43 - GraphRAGContext: Attempting to get graph 'Social_Discourse_Test_ERGraph'. Current available graphs: ['Social_Discourse_Test_ERGraph']
+2025-06-05 17:35:37.086 | DEBUG    | Core.AgentSchema.context:get_graph_instance:46 - GraphRAGContext: Successfully retrieved graph 'Social_Discourse_Test_ERGraph'.
+2025-06-05 17:35:37.087 | DEBUG    | Core.AgentSchema.context:get_vdb_instance:57 - GraphRAGContext: Attempting to get VDB 'Social_Discourse_Test_entities'. Current available VDBs: []
+2025-06-05 17:35:37.087 | WARNING  | Core.AgentSchema.context:get_vdb_instance:62 - GraphRAGContext: VDB ID 'Social_Discourse_Test_entities' not found. Available: []
+2025-06-05 17:35:37.088 | INFO     | Core.AgentTools.entity_vdb_tools:entity_vdb_build_tool:77 - Retrieved 117 nodes from graph
+2025-06-05 17:35:37.089 | INFO     | Core.AgentTools.entity_vdb_tools:entity_vdb_build_tool:115 - Prepared 117 entities for indexing
+2025-06-05 17:35:37.089 | INFO     | Core.AgentTools.index_config_helper:create_faiss_index_config:55 - Created FAISS index config with name: Social_Discourse_Test_entities
+2025-06-05 17:35:37.089 | INFO     | Core.Index.BaseIndex:build_index:33 - Starting build_index for VDB at storage/vdb/Social_Discourse_Test_entities. Force flag is: False
+2025-06-05 17:35:37.089 | INFO     | Core.Index.BaseIndex:build_index:39 - Attempting to load existing index from: storage/vdb/Social_Discourse_Test_entities
+2025-06-05 17:35:37.089 | INFO     | Core.Index.FaissIndex:_load_index:234 - FaissIndex._load_index: Attempting to load index from persist_path: storage/vdb/Social_Discourse_Test_entities
+2025-06-05 17:35:37.089 | INFO     | Core.Index.FaissIndex:_load_index:237 - FaissIndex._load_index: Set Settings.embed_model to: <class 'llama_index.embeddings.openai.base.OpenAIEmbedding'>
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:242 - FaissIndex._load_index: Persist path storage/vdb/Social_Discourse_Test_entities confirmed to exist.
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:243 - FaissIndex._load_index: Contents of persist_path: ['index_store.json', 'docstore.json', 'default__vector_store.json', 'image__vector_store.json', 'graph_store.json']
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:247 - FaissIndex._load_index: Successfully called FaissVectorStore.from_persist_dir().
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:248 - FaissIndex._load_index: Type of loaded vector_store: <class 'llama_index.vector_stores.faiss.base.FaissVectorStore'>
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:251 - FaissIndex._load_index: Loaded vector_store has attribute _faiss_index.
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:252 - FaissIndex._load_index: vector_store._faiss_index object: <faiss.swigfaiss_avx2.IndexHNSWFlat; proxy of <Swig Object of type 'faiss::IndexHNSWFlat *' at 0x7f2f8cf2bbd0> >
+2025-06-05 17:35:37.090 | INFO     | Core.Index.FaissIndex:_load_index:253 - FaissIndex._load_index: Loaded vector_store._faiss_index.ntotal: 0
+2025-06-05 17:35:37.091 | INFO     | Core.Index.FaissIndex:_load_index:264 - FaissIndex._load_index: StorageContext created from defaults with loaded vector_store.
+2025-06-05 17:35:37.092 | INFO     | Core.Index.FaissIndex:_load_index:271 - FaissIndex._load_index: Successfully loaded index from storage. Index object: <llama_index.core.indices.vector_store.base.VectorStoreIndex object at 0x7f2f44521f30>
+2025-06-05 17:35:37.092 | INFO     | Core.Index.FaissIndex:_load_index:274 - FaissIndex._load_index: Index ID: 00f3e5dc-4d64-4b1f-975a-89a6a80f4351, Summary: None
+2025-06-05 17:35:37.092 | INFO     | Core.Index.BaseIndex:build_index:42 - Successfully loaded existing index from: storage/vdb/Social_Discourse_Test_entities
+2025-06-05 17:35:37.092 | INFO     | Core.Index.BaseIndex:build_index:59 - ✅ Finished VDB index setup process.
+2025-06-05 17:35:37.092 | DEBUG    | Core.AgentSchema.context:add_vdb_instance:52 - GraphRAGContext: Before adding VDB 'Social_Discourse_Test_entities'. Current VDBs: []
+2025-06-05 17:35:37.092 | INFO     | Core.AgentSchema.context:add_vdb_instance:54 - GraphRAGContext: Added VDB 'Social_Discourse_Test_entities' (type: <class 'Core.Index.FaissIndex.FaissIndex'>). Updated VDBs: ['Social_Discourse_Test_entities']
+2025-06-05 17:35:37.092 | INFO     | Core.AgentTools.entity_vdb_tools:entity_vdb_build_tool:142 - Entity.VDB.Build: Successfully built AND REGISTERED VDB with ID: 'Social_Discourse_Test_entities'. Available VDBs in context now: []
+2025-06-05 17:35:37.092 | INFO     | Core.AgentTools.entity_vdb_tools:entity_vdb_build_tool:147 - Successfully built entity VDB 'Social_Discourse_Test_entities' with 117 entities indexed
+2025-06-05 17:35:37.093 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:244 - Orchestrator: Tool Entity.VDB.Build executed. Output type: <class 'Core.AgentSchema.tool_contracts.EntityVDBBuildOutputs'>
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:245 - Orchestrator: Raw output: vdb_reference_id='Social_Discourse_Test_entities' num_entities_indexed=117 status='Successfully built VDB with 117 entities'...
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:248 - Orchestrator: Checking if tool Entity.VDB.Build is a graph build tool...
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:332 - Orchestrator: Not a graph build tool or no output
+2025-06-05 17:35:37.093 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:356 - Orchestrator: Stored output 'entity_vdb_id' for step step_2_build_entity_vdb (tool Entity.VDB.Build).
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:361 - Orchestrator: Preserved _status='Successfully built VDB with 117 entities' for step step_2_build_entity_vdb
+2025-06-05 17:35:37.093 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:194 - Orchestrator: Executing Step 3/4: step_3_search_entities - Search for entities related to 'tech'
+2025-06-05 17:35:37.093 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:207 - Orchestrator: Tool 1/1 in step_3_search_entities: Entity.VDBSearch
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:107 - Orchestrator (input field) 'vdb_reference_id': Parsed dict into ToolInputSource.
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:120 - Orchestrator (input field) 'vdb_reference_id': Retrieved from step 'step_2_build_entity_vdb', key 'entity_vdb_id'. Raw type: <class 'str'>
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:148 - Orchestrator (input field) 'vdb_reference_id': Using raw output from previous step.
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:156 - Orchestrator (input field) 'query_text': Resolved from plan_inputs, key 'main_query'.
+2025-06-05 17:35:37.093 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:162 - Orchestrator (input field) 'top_k_results': Resolved as literal value.
+2025-06-05 17:35:37.094 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:222 - Orchestrator: Instantiating EntityVDBSearchInputs with: {'vdb_reference_id': 'Social_Discourse_Test_entities', 'query_text': 'tech', 'top_k_results': 5}
+2025-06-05 17:35:37.094 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:224 - Orchestrator: Instantiated EntityVDBSearchInputs for Entity.VDBSearch
+2025-06-05 17:35:37.094 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:226 - Orchestrator: Calling entity_vdb_search_tool for ID: Entity.VDBSearch
+2025-06-05 17:35:37.094 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:65 - Executing tool 'Entity.VDBSearch' with parameters: vdb_reference_id='Social_Discourse_Test_entities', query_text='tech', top_k_results=5
+2025-06-05 17:35:37.094 | DEBUG    | Core.AgentSchema.context:get_vdb_instance:57 - GraphRAGContext: Attempting to get VDB 'Social_Discourse_Test_entities'. Current available VDBs: ['Social_Discourse_Test_entities']
+2025-06-05 17:35:37.094 | DEBUG    | Core.AgentSchema.context:get_vdb_instance:60 - GraphRAGContext: Successfully retrieved VDB 'Social_Discourse_Test_entities'.
+2025-06-05 17:35:37.095 | INFO     | Core.AgentTools.query_expansion:expand_query:86 - Query expansion: 'tech' -> 1 terms: ['tech']...
+2025-06-05 17:35:37.095 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:90 - Entity.VDBSearch: Original query: 'tech'
+2025-06-05 17:35:37.095 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:91 - Entity.VDBSearch: Expanded to 1 terms
+2025-06-05 17:35:37.095 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:98 - Entity.VDBSearch: Searching with original query: 'tech'
+2025-06-05 17:35:37.289 | INFO     | Core.AgentTools.entity_tools:entity_vdb_search_tool:166 - Entity.VDBSearch: Found 0 similar entities.
+2025-06-05 17:35:37.289 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:244 - Orchestrator: Tool Entity.VDBSearch executed. Output type: <class 'Core.AgentSchema.tool_contracts.EntityVDBSearchOutputs'>
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:245 - Orchestrator: Raw output: similar_entities=[]...
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:248 - Orchestrator: Checking if tool Entity.VDBSearch is a graph build tool...
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:332 - Orchestrator: Not a graph build tool or no output
+2025-06-05 17:35:37.289 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:356 - Orchestrator: Stored output 'search_results' for step step_3_search_entities (tool Entity.VDBSearch).
+2025-06-05 17:35:37.289 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:194 - Orchestrator: Executing Step 4/4: step_4_get_text_for_entities - Retrieve text chunks for the discovered entities
+2025-06-05 17:35:37.289 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:207 - Orchestrator: Tool 1/1 in step_4_get_text_for_entities: Chunk.GetTextForEntities
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:107 - Orchestrator (input field) 'graph_reference_id': Parsed dict into ToolInputSource.
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:120 - Orchestrator (input field) 'graph_reference_id': Retrieved from step 'step_1_build_er_graph', key 'er_graph_id'. Raw type: <class 'str'>
+2025-06-05 17:35:37.289 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:148 - Orchestrator (input field) 'graph_reference_id': Using raw output from previous step.
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:107 - Orchestrator (input field) 'entity_ids': Parsed dict into ToolInputSource.
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:120 - Orchestrator (input field) 'entity_ids': Retrieved from step 'step_3_search_entities', key 'search_results'. Raw type: <class 'list'>
+2025-06-05 17:35:37.290 | INFO     | Core.AgentOrchestrator.orchestrator:_resolve_single_input_source:145 - Orchestrator (input field) 'entity_ids': Transformed VDB output for. Extracted 0 IDs.
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:222 - Orchestrator: Instantiating ChunkGetTextForEntitiesInput with: {'graph_reference_id': 'Social_Discourse_Test_ERGraph', 'entity_ids': []}
+2025-06-05 17:35:37.290 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:224 - Orchestrator: Instantiated ChunkGetTextForEntitiesInput for Chunk.GetTextForEntities
+2025-06-05 17:35:37.290 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:226 - Orchestrator: Calling chunk_get_text_for_entities_tool for ID: Chunk.GetTextForEntities
+2025-06-05 17:35:37.290 | INFO     | Core.AgentTools.chunk_tools:chunk_get_text_for_entities_tool:333 - Executing Chunk.GetTextForEntities with params: graph_reference_id='Social_Discourse_Test_ERGraph' entity_ids=[] chunk_ids=None max_chunks_per_entity=5
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentSchema.context:get_graph_instance:43 - GraphRAGContext: Attempting to get graph 'Social_Discourse_Test_ERGraph'. Current available graphs: ['Social_Discourse_Test_ERGraph']
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentSchema.context:get_graph_instance:46 - GraphRAGContext: Successfully retrieved graph 'Social_Discourse_Test_ERGraph'.
+2025-06-05 17:35:37.290 | DEBUG    | Core.AgentTools.chunk_tools:chunk_get_text_for_entities_tool:359 - Accessed NetworkX graph via _graph.graph pattern
+2025-06-05 17:35:37.290 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:136 - ChunkFactory: Getting chunks for dataset 'Social_Discourse_Test'
+2025-06-05 17:35:37.291 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:152 - Found corpus file at results/Social_Discourse_Test/Corpus.json
+2025-06-05 17:35:37.291 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:174 - Successfully loaded 7 documents from JSONL file: results/Social_Discourse_Test/Corpus.json
+2025-06-05 17:35:37.291 | INFO     | Core.Chunk.ChunkFactory:get_chunks_for_dataset:200 - Created 7 TextChunk objects for dataset 'Social_Discourse_Test'
+2025-06-05 17:35:37.291 | INFO     | Core.AgentTools.chunk_tools:chunk_get_text_for_entities_tool:469 - Loaded 7 chunks for dataset 'Social_Discourse_Test' (indexed with 7 keys)
+2025-06-05 17:35:37.291 | DEBUG    | Core.AgentTools.chunk_tools:chunk_get_text_for_entities_tool:471 - Sample chunk IDs in storage: ['chunk_0', 'chunk_1', 'chunk_2', 'chunk_3', 'chunk_4', 'chunk_5', 'chunk_6']
+2025-06-05 17:35:37.291 | INFO     | Core.AgentTools.chunk_tools:chunk_get_text_for_entities_tool:555 - Retrieved 0 chunks for 0 entities
+2025-06-05 17:35:37.291 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:244 - Orchestrator: Tool Chunk.GetTextForEntities executed. Output type: <class 'dict'>
+2025-06-05 17:35:37.291 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:245 - Orchestrator: Raw output: {'retrieved_chunks': [], 'status_message': 'Retrieved 0 chunks for 0 entities'}...
+2025-06-05 17:35:37.291 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:248 - Orchestrator: Checking if tool Chunk.GetTextForEntities is a graph build tool...
+2025-06-05 17:35:37.291 | DEBUG    | Core.AgentOrchestrator.orchestrator:execute_plan:332 - Orchestrator: Not a graph build tool or no output
+2025-06-05 17:35:37.292 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:367 - Orchestrator: Tool Chunk.GetTextForEntities produced output, but no 'named_outputs' defined in plan. Storing entire output.
+2025-06-05 17:35:37.292 | INFO     | Core.AgentOrchestrator.orchestrator:execute_plan:383 - Orchestrator: Plan execution of all steps finished.
+2025-06-05 17:35:37.292 | INFO     | Core.Utils.TokenCounter:count_input_tokens:385 - Warning: model o4-mini not found in tiktoken. Using cl100k_base encoding.
+2025-06-05 17:35:37.293 | INFO     | Core.Utils.TokenCounter:count_input_tokens:385 - Warning: model o4-mini not found in tiktoken. Using cl100k_base encoding.
+2025-06-05 17:35:37.293 | DEBUG    | Core.Common.TokenBudgetManager:calculate_safe_tokens:95 - Token budget for default: input=199, available=126801, completion_limit=100000, safe=65536
+2025-06-05 17:35:37.293 | DEBUG    | Core.Provider.LiteLLMProvider:_achat_completion:104 - LiteLLMProvider: Calling litellm.acompletion with kwargs: {'model': 'o4-mini', 'stream': False, 'temperature': 0.0, 'max_tokens': 65536, 'api_key': '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', 'timeout': 300}
+2025-06-05 17:35:38.955 | INFO     | Core.Common.CostManager:update_cost:57 - Total running cost: $0.003 | Max budget: $10.000 | Current cost: $0.000, prompt_tokens: 194, completion_tokens: 99
