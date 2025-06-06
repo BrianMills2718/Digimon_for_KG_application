@@ -8,7 +8,14 @@ import asyncio
 import logging
 from typing import Dict, Any
 from Core.MCP.base_mcp_server import MCPServer
-from Core.MCP.tools.entity_vdb_search_tool import entity_vdb_search_mcp_tool
+from Core.MCP.tools import (
+    entity_vdb_search_mcp_tool,
+    build_er_graph_mcp_tool,
+    build_rk_graph_mcp_tool,
+    build_tree_graph_mcp_tool,
+    build_tree_graph_balanced_mcp_tool,
+    build_passage_graph_mcp_tool
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +29,21 @@ class DigimonMCPServer(MCPServer):
         
     def _register_digimon_tools(self):
         """Register DIGIMON-specific tools"""
-        # Register Entity VDB Search tool
-        tool_def = entity_vdb_search_mcp_tool.get_tool_definition()
-        tool_def["handler"] = entity_vdb_search_mcp_tool
-        self.register_tool(tool_def)
+        # Register all tools
+        tools_to_register = [
+            entity_vdb_search_mcp_tool,
+            build_er_graph_mcp_tool,
+            build_rk_graph_mcp_tool,
+            build_tree_graph_mcp_tool,
+            build_tree_graph_balanced_mcp_tool,
+            build_passage_graph_mcp_tool
+        ]
+        
+        for tool in tools_to_register:
+            tool_def = tool.get_tool_definition()
+            tool_def["handler"] = tool
+            self.register_tool(tool_def)
+            logger.info(f"Registered tool: {tool_def['name']}")
         
         logger.info(f"Registered {len(self.tools)} tools total")
         
