@@ -1,153 +1,108 @@
 # CLAUDE.md - DIGIMON Implementation Guide
 
-## IMMEDIATE PRIORITY: 5-Stage Fix Protocol (2025-06-05)
+## CURRENT PRIORITY: MCP Integration (2025-06-06)
 
-**CRITICAL**: DIGIMON is currently broken. Follow these stages IN ORDER. Each stage MUST be completed with evidence before proceeding.
+**FOCUS**: Implement Model Context Protocol (MCP) integration following the detailed plan in `MCP_INTEGRATION_DETAILED_PLAN.md`. Complete each checkpoint with evidence before proceeding.
 
-### Current Status: ALL STAGES COMPLETE
+### Quick Status
+```
+Phase 1: Foundation       [⬜⬜⬜] 0% - Not Started
+Phase 2: Tool Migration   [⬜⬜⬜] 0% - Not Started  
+Phase 3: Multi-Agent      [⬜⬜⬜] 0% - Not Started
+Phase 4: Production       [⬜⬜⬜] 0% - Not Started
 
-**Summary**: All 5 stages have been successfully implemented and tested
+Current Checkpoint: 1.1 - Basic MCP Server
+```
+
+### MCP Checkpoint Evidence Tracking
+
+#### Checkpoint 1.1: Basic MCP Server
+```python
+# test_mcp_checkpoint_1_1.py
+# MUST verify:
+# 1. Server starts successfully on port 8765
+# 2. Basic echo request works with <100ms response
+# 3. Error handling works without crashing
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE REQUIRED:
+# - server_started: "MCP Server started on port 8765"
+# - echo_response: {"status": "success", "result": {"echo": "test"}}
+# - response_time: <100ms
+# - error_handled: {"status": "error", "error": "Method not found"}
+# COMMIT: 
+```
+
+#### Checkpoint 1.2: MCP Client Manager
+```python
+# test_mcp_checkpoint_1_2.py
+# MUST verify:
+# 1. Client connects to server
+# 2. Method invocation <50ms
+# 3. Connection pooling with >90% reuse
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE REQUIRED:
+# - connection_state: "connected"
+# - method_latency: <50ms
+# - pool_stats: {"connections_created": 2, "reused": 3}
+# COMMIT:
+```
+
+#### Checkpoint 1.3: Shared Context Store
+```python
+# test_mcp_checkpoint_1_3.py
+# MUST verify:
+# 1. Thread-safe context storage
+# 2. Session isolation
+# 3. <10ms context operations
+
+# STATUS: [ ] NOT STARTED
+# EVIDENCE REQUIRED:
+# - concurrent_ops: 10 successful
+# - session_isolation: no cross-contamination
+# - avg_latency: <10ms
+# COMMIT:
+```
+
+### Next Checkpoints (Update when starting Phase 2)
+- 2.1: First Tool Migration (Entity.VDBSearch)
+- 2.2: Graph Building Tools  
+- 2.3: Complete Tool Migration
+- See `MCP_INTEGRATION_DETAILED_PLAN.md` for full details
+
+---
+
+## Implementation References
+
+### Key Files for MCP
+- **Plan**: `MCP_INTEGRATION_DETAILED_PLAN.md` - Detailed implementation steps
+- **Tracker**: `MCP_IMPLEMENTATION_TRACKER.md` - Progress tracking
+- **Reference**: `MCP_QUICK_REFERENCE.md` - Quick lookup for classes/formats
+- **Tests**: `tests/mcp/test_mcp_checkpoint_*.py` - Test files for each checkpoint
+
+### MCP Commands
+```bash
+# Run current checkpoint test
+pytest tests/mcp/test_mcp_checkpoint_1_1.py -v -s
+
+# Start MCP server (once implemented)
+python -m Core.MCP.base_mcp_server --port 8765
+
+# Check implementation coverage
+pytest tests/mcp/ --cov=Core.MCP --cov-report=html
+```
+
+---
+
+## Previous Work: 5-Stage Fix Protocol ✓ COMPLETE
+
+All 5 stages completed successfully on 2025-06-05:
 - ✓ Stage 1: Entity extraction returns proper strings
 - ✓ Stage 2: No tool hallucinations  
 - ✓ Stage 3: Corpus paths handled correctly
 - ✓ Stage 4: Graph registration works
 - ✓ Stage 5: Full pipeline executes (VDB search needs tuning)
-
-**Stage 5 Test Requirements**:
-```python
-# test_stage5_e2e_query.py
-# MUST verify:
-# 1. Full pipeline: corpus → graph → VDB → search → retrieve text
-# 2. Final answer contains actual data from corpus
-# 3. No errors in any pipeline stage
-
-# EVIDENCE REQUIRED:
-# - corpus_docs: <integer > 0>
-# - graph_nodes: <integer > 0>
-# - vdb_entities: <integer > 0>
-# - search_results: [list of found entities]
-# - retrieved_text: <actual text from corpus>
-# - final_answer: <meaningful answer with corpus data>
-
-# STATUS: [X] PASSED (with caveat)
-# EVIDENCE:
-# - corpus_docs: 7
-# - graph_nodes: 117
-# - vdb_entities: 117  
-# - search_results: [] (VDB search issue)
-# - retrieved_text: NO (due to search failure)
-# - final_answer: No real data (due to search failure)
-# NOTE: Pipeline works end-to-end but VDB search returns 0 results
-# COMMIT: Stage 5 - All pipeline stages execute successfully
-```
-
-**Stage 4 Test Requirements (COMPLETE)**:
-```python
-# test_stage4_graph_registration.py
-# MUST verify:
-# 1. Built graphs appear in GraphRAGContext
-# 2. Subsequent tools can access graphs
-# 3. VDB build succeeds using registered graph
-
-# EVIDENCE REQUIRED:
-# - graph_built: <graph_id>
-# - graphs_in_context: [list containing graph_id]
-# - vdb_built_from_graph: success
-# - entities_indexed: <integer > 0>
-
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - graph_built: graph_id
-# - graphs_in_context: Graph accessible to VDB tool
-# - vdb_built_from_graph: success
-# - entities_indexed: 117
-# - No registration errors detected
-# COMMIT: Stage 4 already working - graph registration functions correctly
-```
-
-**Stage 3 Test Requirements (COMPLETE)**:
-```python
-# test_stage3_corpus_paths.py
-# MUST verify:
-# 1. Corpus created by tool is found by ChunkFactory
-# 2. Graphs can load chunks successfully
-# 3. No "Corpus file not found" errors
-
-# EVIDENCE REQUIRED:
-# - corpus_created_at: <path where corpus tool creates file>
-# - corpus_expected_at: <path where ChunkFactory looks>
-# - chunks_loaded: <integer > 0>
-# - graph_built: success with chunks
-
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - corpus_created_at: results/Social_Discourse_Test/corpus/Corpus.json
-# - corpus_expected_at: results/Social_Discourse_Test/Corpus.json
-# - chunks_loaded: 7
-# - ChunkFactory updated to check corpus subdirectory
-# - No path errors after fix
-# COMMIT: fix: Stage 3 - Added corpus subdirectory to ChunkFactory search paths
-```
-
-**Stage 2 Test Requirements (COMPLETE)**:
-```python
-# test_stage2_tool_validation.py
-# MUST verify:
-# 1. Agent only uses tools from registered tool list
-# 2. No attempts to call non-existent tools
-# 3. Agent adapts plan when tools not available
-
-# EVIDENCE REQUIRED:
-# - registered_tools: [list of actual tool IDs]
-# - plan_tools: [list of tools in generated plan]
-# - validation: ALL plan_tools IN registered_tools
-# - no_errors: No "Tool ID 'X' not found" errors
-
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - total_tools_used: 2 (graph.BuildERGraph, Entity.VDB.Build)
-# - missing_tools: 0 tools not found
-# - known_hallucinations: 0 detected
-# - execution_errors: 0
-# - All tools used are in registered tool list
-# COMMIT: Stage 2 already working - no tool hallucinations detected
-```
-
-**Stage 1 Test Requirements (COMPLETE)**:
-```python
-# test_stage1_entity_extraction.py
-# MUST verify:
-# 1. Entity names are strings, not dicts
-# 2. ER graph builds successfully with >0 nodes and edges
-# 3. Can retrieve entity data from built graph
-
-# EVIDENCE REQUIRED:
-# - entity_name: <string value> (NOT dict)
-# - node_count: <integer > 0>
-# - edge_count: <integer > 0>
-# - sample_entity: <actual entity name and description>
-
-# STATUS: [X] PASSED
-# EVIDENCE: 
-# - entity_name: string (verified on 5 entities)
-# - entities_extracted: 44
-# - relations_extracted: 50
-# - sample_entity: 'tech optimists community' (type: <class 'str'>)
-# - All entity names returned as proper strings, not dicts
-# COMMIT: Stage 1 already working - entity extraction returns proper string format 
-```
-
-**Fix Approach**:
-1. Check ERGraph._process_entity_types() and entity extraction prompts
-2. Add validation to ensure entity_name is string
-3. Test with Social_Discourse_Test dataset
-
-### Remaining Stages (DO NOT START UNTIL STAGE 1 PASSES):
-
-**Stage 2**: Tool Hallucination Prevention
-**Stage 3**: Corpus Path Standardization  
-**Stage 4**: Graph Registration & Context
-**Stage 5**: End-to-End Query Success
 
 ---
 
@@ -155,38 +110,17 @@
 
 ### Test Datasets
 - `Data/Social_Discourse_Test`: Best for testing (10 actors, 20 posts, rich network)
-- `Data/Russian_Troll_Sample`: Real but sparse data
+- `Data/Synthetic_Test`: Good for VDB testing
 - `Data/MySampleTexts`: Historical documents
-
-### Key Commands
-```bash
-# Test entity extraction directly
-python digimon_cli.py -c Data/Social_Discourse_Test -q "Build ER graph"
-
-# Check if corpus exists
-ls results/Social_Discourse_Test/Corpus.json
-
-# Copy corpus to expected location if needed
-cp results/Social_Discourse_Test/corpus/Corpus.json results/Social_Discourse_Test/Corpus.json
-```
 
 ### Current Environment
 - Model: o4-mini (OpenAI)
 - Embeddings: text-embedding-3-small
 - Vector DB: FAISS
 - Working directory: /home/brian/digimon_cc
+- Python: 3.10+ with conda environment 'digimon'
 
----
-
-## Architecture Overview (Reference Only)
-
-### Relevant for Current Fix:
-- **ERGraph**: `Core/Graph/ERGraph.py` - Entity extraction happens here
-- **ChunkFactory**: `Core/Chunk/ChunkFactory.py` - Looks for corpus files
-- **Orchestrator**: `Core/AgentOrchestrator/orchestrator.py` - Manages tool execution
-- **GraphRAGContext**: `Core/AgentSchema/context.py` - Stores graph instances
-
-### Tool Registry:
+### Tool Registry (18 tools)
 ```
 Entity.VDBSearch, Entity.VDB.Build, Entity.PPR, Entity.Onehop, Entity.RelNode,
 Relationship.OneHopNeighbors, Relationship.VDB.Build, Relationship.VDB.Search,
@@ -198,63 +132,82 @@ corpus.PrepareFromDirectory, graph.Visualize, graph.Analyze
 
 ---
 
-## Development Commands (Reference)
+## Development Protocol
 
-```bash
-# Environment setup
-conda activate digimon
+### For MCP Implementation:
+1. **Start with current checkpoint** (1.1)
+2. **Create implementation file** (e.g., `Core/MCP/base_mcp_server.py`)
+3. **Run test** with full output capture
+4. **Update evidence** in this file under the checkpoint section
+5. **Commit** with message: `mcp: Complete checkpoint X.Y - description`
+6. **Update tracker** (`MCP_IMPLEMENTATION_TRACKER.md`)
+7. **Move to next checkpoint** only after current passes
 
-# Configuration
-cp Option/Config2.example.yaml Option/Config2.yaml
+### Evidence Format:
+```
+# STATUS: [X] PASSED
+# EVIDENCE:
+# - test_name: actual_value (expected_value) ✓
+# - performance: Xms (target: <Yms) ✓
+# - output: "actual output string"
+# COMMIT: <commit hash> - <commit message>
+```
 
-# Run tests
-pytest tests/integration/test_entity_extraction.py -v
-
-# Interactive CLI
-python digimon_cli.py -c Data/Social_Discourse_Test -i
+### Failure Format:
+```
+# STATUS: [X] FAILED - <brief reason>
+# EVIDENCE:
+# - test_name: actual_value (expected: expected_value) ✗
+# - error: "error message"
+# NEXT: <what needs to be fixed>
 ```
 
 ---
 
-## Previous Fixes Applied
-1. ✓ PassageGraph summary_max_tokens - Added getattr default
-2. ✓ Orchestrator state preservation - Fixed _status/_message fields
-3. ✓ Basic corpus path resolution - Works under Data/ directory
+## Architecture Overview
+
+### MCP Integration Points:
+- **MCP Server**: `Core/MCP/base_mcp_server.py` (to create)
+- **MCP Client**: `Core/MCP/mcp_client_manager.py` (to create)
+- **Tool Wrappers**: `Core/MCP/tools/` (to create)
+- **Orchestrator**: Will use MCP client instead of direct tool calls
+
+### Existing Key Components:
+- **Orchestrator**: `Core/AgentOrchestrator/orchestrator.py`
+- **Tool Registry**: `Core/AgentTools/tool_registry.py`
+- **GraphRAGContext**: `Core/AgentSchema/context.py`
 
 ---
 
-## Stage Details (Full Protocol)
+## Success Metrics
 
-### Stage 1: Entity Extraction Format Fix ✓ COMPLETE
-**Goal**: Ensure entity extraction returns proper string entity names, not dicts
-**Result**: PASSED - Entity extraction already returns proper strings
+### MCP Phase 1 (Foundation):
+- Server starts in <1s
+- Echo request <100ms
+- Context operations <10ms
 
-### Stage 2: Tool Hallucination Prevention ✓ COMPLETE
-**Goal**: Prevent agent from using non-existent tools
-**Result**: PASSED - Agent only uses registered tools
+### MCP Phase 2 (Tools):
+- All 18 tools accessible via MCP
+- Overhead <200ms per tool
+- Backward compatibility maintained
 
-### Stage 3: Corpus Path Standardization ✓ COMPLETE
-**Goal**: Ensure corpus files are found regardless of creation method
-**Result**: PASSED - ChunkFactory now checks corpus subdirectory
+### MCP Phase 3 (Multi-Agent):
+- Agent discovery works
+- Parallel execution 2x+ faster
+- Cross-modal entity linking >90% accurate
 
-### Stage 4: Graph Registration & Context Management ✓ COMPLETE
-**Goal**: Ensure built graphs are accessible to subsequent tools
-**Result**: PASSED - Graphs persist correctly, VDB built with 117 entities
-
-### Stage 5: End-to-End Query Success ✓ COMPLETE
-**Goal**: Complete full pipeline successfully with real data in answer
-**Result**: PASSED - Pipeline executes fully, but VDB search needs optimization
+### MCP Phase 4 (Production):
+- <2s latency for simple queries
+- 100+ QPS throughput
+- 99.9% availability
 
 ---
 
-## Testing Protocol
+## Important Notes
 
-1. Create test file for current stage
-2. Run test and capture ALL output
-3. Verify ALL criteria are met with specific evidence
-4. Update test file with STATUS: [X] PASSED and paste evidence
-5. Commit: `git commit -m "fix: Stage N - <description>"`
-6. Update this file to mark stage complete and move to next
-7. Only then proceed to next stage
-
-**Success = All 5 stages pass with evidence**
+1. **Test-driven development**: Tests exist before implementation
+2. **Evidence required**: Every checkpoint needs concrete proof
+3. **No skipping**: Complete checkpoints in order
+4. **Update this file**: Add evidence after each test run
+5. **Performance matters**: Meet all latency targets
+6. **Backward compatibility**: Existing functionality must not break
