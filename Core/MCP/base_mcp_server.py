@@ -31,6 +31,8 @@ class MCPServer:
         self.clients: Set[websockets.server.WebSocketServerProtocol] = set()
         self.server = None
         self.start_time = None
+        self.tools: Dict[str, Any] = {}  # Tool registry
+        self._register_default_tools()
         
     async def start(self):
         """Start the MCP server"""
@@ -97,6 +99,25 @@ class MCPServer:
                     "status": "success",
                     "result": result
                 }
+            elif method == "invoke_tool":
+                result = await self.handle_invoke_tool(params)
+                response = {
+                    "id": request_id,
+                    "status": result.get("status", "success"),
+                    "result": result.get("result"),
+                    "error": result.get("error"),
+                    "metadata": result.get("metadata")
+                }
+            elif method in self.tools:
+                # Direct tool invocation
+                result = await self.handle_invoke_tool({"tool_name": method, "params": params})
+                response = {
+                    "id": request_id,
+                    "status": result.get("status", "success"),
+                    "result": result.get("result"),
+                    "error": result.get("error"),
+                    "metadata": result.get("metadata")
+                }
             else:
                 # Method not found
                 response = {
@@ -136,29 +157,92 @@ class MCPServer:
         message = params.get("message", "")
         return {"echo": message}
         
+    def _register_default_tools(self):
+        """Register default tools"""
+        # Register echo tool for testing
+        self.register_tool({
+            "name": "echo",
+            "description": "Echo test tool",
+            "handler": self.handle_echo,
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "echo": {"type": "string"}
+                }
+            }
+        })
+        
+    def register_tool(self, tool_definition: Dict[str, Any]):
+        """Register a tool with the server"""
+        tool_name = tool_definition["name"]
+        self.tools[tool_name] = tool_definition
+        logger.info(f"Registered tool: {tool_name}")
+        
     async def handle_list_tools(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle list tools request"""
-        # For now, return test tools
-        return {
-            "tools": [
-                {
-                    "name": "echo",
-                    "description": "Echo test tool",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "message": {"type": "string"}
-                        }
-                    },
-                    "output_schema": {
-                        "type": "object",
-                        "properties": {
-                            "echo": {"type": "string"}
-                        }
-                    }
+        # Return all registered tools
+        tools_list = []
+        for tool_name, tool_def in self.tools.items():
+            tools_list.append({
+                "name": tool_name,
+                "description": tool_def.get("description", ""),
+                "input_schema": tool_def.get("input_schema", {}),
+                "output_schema": tool_def.get("output_schema", {})
+            })
+        return {"tools": tools_list}
+        
+    async def handle_invoke_tool(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle tool invocation"""
+        tool_name = params.get("tool_name")
+        tool_params = params.get("params", {})
+        session_id = params.get("session_id")
+        
+        if not tool_name:
+            return {
+                "status": "error",
+                "error": "tool_name is required"
+            }
+            
+        if tool_name not in self.tools:
+            return {
+                "status": "error",
+                "error": f"Tool '{tool_name}' not found"
+            }
+            
+        tool_def = self.tools[tool_name]
+        handler = tool_def.get("handler")
+        
+        if not handler:
+            return {
+                "status": "error",
+                "error": f"Tool '{tool_name}' has no handler"
+            }
+            
+        try:
+            # If handler is an MCP tool instance, use its execute method
+            if hasattr(handler, 'execute'):
+                result = await handler.execute(tool_params, session_id)
+                return result
+            else:
+                # Otherwise, call the handler directly
+                result = await handler(tool_params)
+                return {
+                    "status": "success",
+                    "result": result
                 }
-            ]
-        }
+        except Exception as e:
+            logger.error(f"Error invoking tool '{tool_name}': {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "error_type": type(e).__name__
+            }
         
     def get_status(self) -> Dict[str, Any]:
         """Get server status"""

@@ -9,11 +9,11 @@
 ### Quick Status
 ```
 Phase 1: Foundation       [🟩🟩🟩] 100% - COMPLETE ✓
-Phase 2: Tool Migration   [⬜⬜⬜] 0% - Not Started  
+Phase 2: Tool Migration   [🟩⬜⬜] 33% - In Progress  
 Phase 3: Multi-Agent      [⬜⬜⬜] 0% - Not Started
 Phase 4: Production       [⬜⬜⬜] 0% - Not Started
 
-Current Checkpoint: 2.1 - First Tool Migration
+Current Checkpoint: 2.2 - Graph Building Tools
 ```
 
 ### MCP Checkpoint Evidence Tracking
@@ -68,13 +68,30 @@ Current Checkpoint: 2.1 - First Tool Migration
 # - avg_latency: 0.00ms, max: 0.01ms (<10ms) ✓
 # - garbage_collection: TTL expiration working ✓
 # - All 5 tests passed
+# COMMIT: 4b36174 - mcp: Complete checkpoint 1.3 - Thread-safe shared context store
+```
+
+#### Checkpoint 2.1: First Tool Migration (Entity.VDBSearch)
+```python
+# test_mcp_checkpoint_2_1.py
+# MUST verify:
+# 1. Tool accessible via MCP with metadata
+# 2. Tool execution returns same results
+# 3. Performance overhead < 200ms
+
+# STATUS: [X] PASSED
+# EVIDENCE:
+# - tool_found: Entity.VDBSearch in MCP server ✓
+# - execution_success: 3 entities found for "George Washington" ✓
+# - performance_overhead: 2.4ms (<200ms) ✓
+# - error_handling: Invalid VDB handled gracefully ✓
+# - All 5 tests passed
 # COMMIT: PENDING
 ```
 
-### Next Checkpoints (Update when starting Phase 2)
-- 2.1: First Tool Migration (Entity.VDBSearch)
-- 2.2: Graph Building Tools  
-- 2.3: Complete Tool Migration
+### Next Checkpoints (Update when completing Phase 2)
+- 2.2: Graph Building Tools (5 tools)
+- 2.3: Complete Tool Migration (remaining tools)
 - See `MCP_INTEGRATION_DETAILED_PLAN.md` for full details
 
 ---
