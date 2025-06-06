@@ -10,11 +10,14 @@ from typing import Dict, Any
 from Core.MCP.base_mcp_server import MCPServer
 from Core.MCP.tools import (
     entity_vdb_search_mcp_tool,
+    entity_vdb_build_mcp_tool,
+    entity_ppr_mcp_tool,
     build_er_graph_mcp_tool,
     build_rk_graph_mcp_tool,
     build_tree_graph_mcp_tool,
     build_tree_graph_balanced_mcp_tool,
-    build_passage_graph_mcp_tool
+    build_passage_graph_mcp_tool,
+    corpus_prepare_mcp_tool
 )
 
 logger = logging.getLogger(__name__)
@@ -31,12 +34,18 @@ class DigimonMCPServer(MCPServer):
         """Register DIGIMON-specific tools"""
         # Register all tools
         tools_to_register = [
+            # Entity tools
             entity_vdb_search_mcp_tool,
+            entity_vdb_build_mcp_tool,
+            entity_ppr_mcp_tool,
+            # Graph building tools
             build_er_graph_mcp_tool,
             build_rk_graph_mcp_tool,
             build_tree_graph_mcp_tool,
             build_tree_graph_balanced_mcp_tool,
-            build_passage_graph_mcp_tool
+            build_passage_graph_mcp_tool,
+            # Corpus tools
+            corpus_prepare_mcp_tool
         ]
         
         for tool in tools_to_register:
