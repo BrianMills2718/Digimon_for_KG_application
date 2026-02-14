@@ -46,15 +46,25 @@ digimon_cc/
 │   │   ├── LiteLLMProvider.py     # Primary LLM interface
 │   │   ├── OpenaiApi.py           # OpenAI/compatible APIs
 │   │   └── LLMProviderRegister.py # Provider registry
-│   ├── Storage/                   # Data persistence (empty - uses networkx)
-│   ├── Retriever/                 # Retrieval implementations
-│   │   ├── BaseRetriever.py       # Abstract retriever
-│   │   ├── EntityRetriever.py     # Entity-based retrieval
-│   │   ├── ChunkRetriever.py      # Chunk-based retrieval
-│   │   ├── CommunityRetriever.py  # Community-based retrieval
-│   │   ├── RelationshipRetriever.py # Relationship retrieval
-│   │   ├── SubgraphRetriever.py   # Subgraph extraction
-│   │   └── MixRetriever.py        # Combined retrieval strategies
+│   ├── Operators/                 # Typed operator pipeline (24 operators)
+│   │   ├── _context.py            # OperatorContext (graph, VDB, LLM, config)
+│   │   ├── registry.py            # OperatorRegistry with composition helpers
+│   │   ├── entity/                # vdb, ppr, onehop, link, tfidf, agent, rel_node
+│   │   ├── relationship/          # onehop, vdb, score_agg, agent
+│   │   ├── chunk/                 # from_relation, occurrence, aggregator
+│   │   ├── subgraph/              # khop_paths, steiner_tree, agent_path
+│   │   ├── community/             # from_entity, from_level
+│   │   └── meta/                  # extract_entities, reason_step, rerank, generate_answer, pcst_optimize
+│   ├── Composition/               # Pipeline composition engine
+│   │   ├── ChainValidator.py      # Validates operator I/O connections
+│   │   ├── PipelineExecutor.py    # Executes validated ExecutionPlans
+│   │   └── Adapters.py            # Type adapters between operators
+│   ├── Methods/                   # 10 method plans as ExecutionPlan factories
+│   │   ├── basic_local.py, basic_global.py, lightrag.py, fastgraphrag.py
+│   │   ├── hipporag.py, tog.py, gr.py, dalk.py, kgp.py, med.py
+│   ├── Storage/                   # Data persistence
+│   │   ├── NetworkXStorage.py     # NetworkX graph storage
+│   │   └── PickleBlobStorage.py   # Binary storage
 │   ├── Index/                     # Vector database implementations
 │   │   ├── FaissIndex.py          # Faiss vector search
 │   │   ├── ColBertIndex.py        # ColBERT retrieval
@@ -65,16 +75,13 @@ digimon_cc/
 │   ├── Community/                 # Graph clustering
 │   │   ├── LeidenCommunity.py     # Leiden algorithm
 │   │   └── ClusterFactory.py      # Clustering factory
-│   ├── Query/                     # Query processing engines
-│   │   ├── BasicQuery.py          # Simple query processor
-│   │   ├── GRQuery.py             # GraphRAG query
-│   │   ├── ToGQuery.py            # Tree-of-Graph query
-│   │   └── QueryFactory.py        # Query engine factory
 │   ├── Schema/                    # Data schemas
+│   │   ├── SlotTypes.py           # 7 SlotKinds + typed records
+│   │   ├── OperatorDescriptor.py  # Machine-readable operator metadata
+│   │   ├── GraphCapabilities.py   # What a graph supports
 │   │   ├── EntityRelation.py      # Entity/relation definitions
-│   │   ├── ChunkSchema.py         # Document chunks
 │   │   └── RetrieverContext.py    # Retrieval context
-│   └── GraphRAG.py               # Main GraphRAG coordinator
+│   └── GraphRAG.py               # Main coordinator (uses operator pipeline)
 ├── Config/                        # Configuration files
 │   ├── ChunkConfig.py            # Chunking parameters
 │   ├── EmbConfig.py              # Embedding settings
@@ -439,55 +446,52 @@ storage/
 │   └── metadata.json      # Build metadata
 ```
 
-## 6. Operator System
+## 6. Operator Pipeline System
 
-### Retrieval Operators
+### Typed Operator Architecture
 
-**Implemented Operators:**
-1. `EntitySearch`: Keyword-based entity search
-2. `EntityPPR`: Personalized PageRank
-3. `EntityVDBSearch`: Vector similarity
-4. `ChunkSearch`: Full-text chunk search
-5. `RelationshipVDBSearch`: Relationship vectors
-6. `CommunitySearch`: Community detection
-7. `SubgraphExtract`: k-hop subgraphs
-8. `EntityOneHopNeighbor`: Direct connections
-9. `ChunkFromRelationships`: Associated chunks
+All 24 operators share a uniform async signature:
+```python
+async def op(inputs: Dict[str, SlotValue], ctx: OperatorContext, params: Dict) -> Dict[str, SlotValue]
+```
 
-**Operator-Graph Interface:**
-- Operators receive graph instance
-- Standard query interface
-- Result formatting protocols
-- Performance monitoring
+**Operator Categories (24 total):**
+- **Entity** (7): `entity.vdb`, `entity.ppr`, `entity.onehop`, `entity.link`, `entity.tfidf`, `entity.agent`, `entity.rel_node`
+- **Relationship** (4): `relationship.onehop`, `relationship.vdb`, `relationship.score_agg`, `relationship.agent`
+- **Chunk** (3): `chunk.from_relation`, `chunk.occurrence`, `chunk.aggregator`
+- **Subgraph** (3): `subgraph.khop_paths`, `subgraph.steiner_tree`, `subgraph.agent_path`
+- **Community** (2): `community.from_entity`, `community.from_level`
+- **Meta** (5): `meta.extract_entities`, `meta.reason_step`, `meta.rerank`, `meta.generate_answer`, `meta.pcst_optimize`
 
-### Transformation Operators
+**Type System** (`Core/Schema/SlotTypes.py`):
+- 7 SlotKinds: QUERY_TEXT, ENTITY_SET, RELATIONSHIP_SET, CHUNK_SET, SUBGRAPH, COMMUNITY_SET, SCORE_VECTOR
+- Typed records: EntityRecord, RelationshipRecord, ChunkRecord, SubgraphRecord, CommunityRecord
 
-**Implemented Transformations:**
-1. Graph construction (multiple types)
-2. Entity merging/resolution
-3. Relationship inference
-4. Community detection
-5. Embedding generation
+### Composition Engine
 
-**Operator Chaining:**
-- Output of one operator feeds next
-- Type conversion handled automatically
-- State management between operators
-- Pipeline optimization
+**ChainValidator** (`Core/Composition/ChainValidator.py`):
+- Validates all I/O slot connections in an ExecutionPlan before execution
+- Reports type mismatches between operator outputs and inputs
+
+**PipelineExecutor** (`Core/Composition/PipelineExecutor.py`):
+- Executes validated plans with cross-step data flow
+- Supports loops (LoopConfig) and conditionals (ConditionalBranch)
+
+**Adapters** (`Core/Composition/Adapters.py`):
+- Type adapters for slot conversions (e.g., attach_clusters, entities_to_names)
 
 ### Operator Registry
 
 **Discovery Mechanism:**
-- Tools auto-register on import
-- Metadata extracted from docstrings
-- Parameter schemas from Pydantic
-- Version tracking via git
+- Operators self-register via `REGISTRY.register(OperatorDescriptor(...))` on import
+- Machine-readable metadata: input/output slots, cost tier, requirements
+- Composition helpers: `get_compatible_successors()`, `find_chains_to_goal()`
 
-**Documentation Standards:**
-- Each operator has description
-- Input/output schemas defined
-- Example usage provided
-- Performance characteristics noted
+### Method Plans (10 pre-defined)
+
+Each method is an `ExecutionPlan` factory in `Core/Methods/`:
+- basic_local, basic_global, lightrag, fastgraphrag, hipporag
+- tog, gr, dalk, kgp, med
 
 ## 7. Configuration Management
 

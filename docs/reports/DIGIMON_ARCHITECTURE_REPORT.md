@@ -7,106 +7,60 @@ DIGIMON (Deep Analysis of Graph-Based RAG Systems) is a sophisticated, modular G
 ## Directory Structure (3-4 Levels Deep)
 
 ```
-/home/brian/digimon_cc/
-├── Core/                               # Core system components
-│   ├── AgentBrain/                    # LLM-driven planning and reasoning
-│   │   └── agent_brain.py             # Main planning agent implementation
-│   ├── AgentOrchestrator/             # Tool execution and workflow management
-│   │   └── orchestrator.py            # Executes plans, manages tool registry
-│   ├── AgentSchema/                   # Pydantic contracts for all operations
-│   │   ├── context.py                 # GraphRAG context management
-│   │   ├── corpus_tool_contracts.py   # Corpus preparation contracts
-│   │   ├── graph_construction_tool_contracts.py
-│   │   ├── plan.py                    # Execution plan schemas
-│   │   └── tool_contracts.py          # Tool input/output schemas
-│   ├── AgentTools/                    # Granular retrieval operators (16+ tools)
-│   │   ├── chunk_tools.py             # Text chunk retrieval
-│   │   ├── community_tools.py         # Community-based operations
-│   │   ├── corpus_tools.py            # Corpus preparation
-│   │   ├── entity_*.py                # Entity-based tools (VDB, PPR, etc.)
-│   │   ├── graph_*.py                 # Graph construction/analysis
-│   │   ├── relationship_tools.py      # Relationship operations
-│   │   └── subgraph_tools.py          # Subgraph extraction
-│   ├── Chunk/                         # Document chunking system
-│   │   ├── ChunkFactory.py            # Factory for chunk methods
-│   │   ├── DocChunk.py                # Main chunking implementation
-│   │   └── Separator.py               # Text separation utilities
-│   ├── Common/                        # Shared utilities
-│   │   ├── BaseFactory.py             # Base factory pattern
-│   │   ├── Context.py                 # Context management
-│   │   ├── Logger.py                  # Logging system
-│   │   ├── LLM.py                     # LLM interface
-│   │   └── Utils.py                   # General utilities
-│   ├── Community/                     # Community detection algorithms
-│   │   ├── BaseCommunity.py          # Base community interface
-│   │   ├── ClusterFactory.py          # Community algorithm factory
-│   │   └── LeidenCommunity.py        # Leiden algorithm implementation
-│   ├── Graph/                         # Graph implementations
-│   │   ├── BaseGraph.py               # Abstract graph interface
-│   │   ├── ERGraph.py                 # Entity-Relation Graph
-│   │   ├── GraphFactory.py            # Graph type factory
-│   │   ├── PassageGraph.py            # Passage-based graph
-│   │   ├── RKGraph.py                 # Relation-Knowledge Graph
-│   │   ├── TreeGraph.py               # Hierarchical tree graph
-│   │   └── TreeGraphBalanced.py      # Balanced tree variant
-│   ├── Index/                         # Vector database implementations
-│   │   ├── BaseIndex.py               # Abstract index interface
-│   │   ├── ColBertIndex.py            # ColBERT index
-│   │   ├── EmbeddingFactory.py        # Embedding provider factory
-│   │   ├── FaissIndex.py              # Faiss vector index
-│   │   └── VectorIndex.py             # General vector index
-│   ├── Provider/                      # LLM/Embedding providers
-│   │   ├── BaseLLM.py                 # Abstract LLM interface
-│   │   ├── BaseEmb.py                 # Abstract embedding interface
-│   │   ├── LiteLLMProvider.py         # LiteLLM integration
-│   │   └── LLMProviderRegister.py     # Provider registration
-│   ├── Query/                         # Query processing strategies
-│   │   ├── BaseQuery.py               # Abstract query interface
-│   │   ├── BasicQuery.py              # Basic query implementation
-│   │   ├── PPRQuery.py                # Personalized PageRank
-│   │   ├── QueryFactory.py            # Query strategy factory
-│   │   └── [Various]Query.py          # Specialized query types
-│   ├── Retriever/                     # Retrieval components
-│   │   ├── BaseRetriever.py           # Abstract retriever
-│   │   ├── ChunkRetriever.py          # Chunk-based retrieval
-│   │   ├── EntityRetriever.py         # Entity-based retrieval
-│   │   ├── RetrieverFactory.py        # Retriever factory
-│   │   └── SubgraphRetriever.py      # Subgraph retrieval
-│   ├── Schema/                        # Data schemas
-│   │   ├── ChunkSchema.py             # Chunk data structures
-│   │   ├── EntityRelation.py          # Entity/relation schemas
-│   │   ├── GraphSchema.py             # Graph data structures
-│   │   └── RetrieverContext.py        # Retrieval context
-│   ├── Storage/                       # Storage backends
-│   │   ├── BaseStorage.py             # Abstract storage
-│   │   ├── NetworkXStorage.py         # NetworkX graph storage
-│   │   └── PickleBlobStorage.py       # Pickle-based storage
-│   └── GraphRAG.py                    # Main GraphRAG orchestrator
-├── Config/                            # Configuration files
-│   ├── ChunkConfig.py                 # Chunking parameters
-│   ├── GraphConfig.py                 # Graph construction config
-│   ├── LLMConfig.py                   # LLM provider config
-│   └── custom_ontology.json           # Domain-specific schemas
-├── Option/                            # Method configurations
-│   ├── Config2.yaml                   # Base configuration
-│   ├── Config2.example.yaml           # Example config template
-│   └── Method/                        # Pre-configured methods
-│       ├── LGraphRAG.yaml             # Local GraphRAG
-│       ├── GGraphRAG.yaml             # Global GraphRAG
-│       ├── HippoRAG.yaml              # PPR-based retrieval
-│       └── [Various].yaml             # Other methods
-├── Data/                              # Dataset storage
-│   └── [dataset_name]/                # Per-dataset directories
-│       ├── Corpus.json                # Processed corpus
-│       ├── Question.json              # Evaluation questions
-│       └── *.txt                      # Raw text files
-├── Results/                           # Output storage
-│   └── [dataset_name]/                # Per-dataset results
-│       └── [graph_type]/              # Graph artifacts
-├── main.py                            # CLI entry point (build/query/evaluate)
-├── digimon_cli.py                     # Agent-based CLI interface
-├── api.py                             # Flask REST API server
-└── streamlit_agent_frontend.py        # Streamlit web UI
+Core/
+├── AgentBrain/                    # LLM-driven planning and reasoning
+│   └── agent_brain.py             # Plan generation, reasoning engine
+├── AgentOrchestrator/             # Tool execution and workflow management
+│   └── orchestrator.py            # Executes plans, manages tool registry
+├── AgentSchema/                   # Pydantic contracts for all operations
+│   ├── context.py                 # GraphRAGContext management
+│   ├── plan.py                    # ExecutionPlan, LoopConfig, ConditionalBranch
+│   └── tool_contracts.py          # Tool input/output schemas
+├── AgentTools/                    # Tool-based operators (legacy interface)
+│   ├── entity_tools.py            # Entity VDB search, PPR, Link, TF-IDF, Agent
+│   ├── chunk_tools.py             # Chunk retrieval tools
+│   ├── relationship_tools.py      # Relationship tools
+│   ├── graph_construction_tools.py # Graph building tools
+│   └── corpus_tools.py            # Corpus preparation
+├── Operators/                     # NEW: Typed operator pipeline (24 operators)
+│   ├── _context.py                # OperatorContext (graph, VDB, LLM, config)
+│   ├── registry.py                # OperatorRegistry with composition helpers
+│   ├── entity/                    # 7 entity operators (vdb, ppr, onehop, link, tfidf, agent, rel_node)
+│   ├── relationship/              # 4 relationship operators (onehop, vdb, score_agg, agent)
+│   ├── chunk/                     # 3 chunk operators (from_relation, occurrence, aggregator)
+│   ├── subgraph/                  # 3 subgraph operators (khop_paths, steiner_tree, agent_path)
+│   ├── community/                 # 2 community operators (from_entity, from_level)
+│   └── meta/                      # 5 meta operators (extract_entities, reason_step, rerank, generate_answer, pcst_optimize)
+├── Composition/                   # NEW: Pipeline composition engine
+│   ├── ChainValidator.py          # Validates operator I/O connections
+│   ├── PipelineExecutor.py        # Executes validated ExecutionPlans
+│   └── Adapters.py                # Type adapters between operators
+├── Methods/                       # NEW: 10 method plans as ExecutionPlan factories
+│   ├── basic_local.py             # entity.vdb → rel.onehop → chunk.occurrence → answer
+│   ├── basic_global.py            # community.from_level → answer
+│   ├── lightrag.py, fastgraphrag.py, hipporag.py, tog.py, gr.py, dalk.py, kgp.py, med.py
+├── Schema/                        # Data schemas
+│   ├── SlotTypes.py               # NEW: 7 SlotKinds + typed records (EntityRecord, etc.)
+│   ├── OperatorDescriptor.py      # NEW: Machine-readable operator metadata
+│   ├── GraphCapabilities.py       # NEW: What a graph supports
+│   ├── EntityRelation.py          # Entity/relation schemas
+│   └── RetrieverContext.py        # Retrieval context
+├── Graph/                         # Graph implementations (5 types)
+│   ├── BaseGraph.py               # Abstract graph interface + capabilities
+│   ├── ERGraph.py, RKGraph.py, TreeGraph.py, TreeGraphBalanced.py, PassageGraph.py
+│   └── GraphFactory.py            # Graph type factory
+├── Index/                         # Vector database implementations
+│   ├── FaissIndex.py              # Faiss vector index
+│   ├── ColBertIndex.py, EmbeddingFactory.py
+├── Provider/                      # LLM/Embedding providers
+│   ├── LiteLLMProvider.py         # LiteLLM integration
+│   └── BaseEmb.py, BaseLLM.py
+├── Storage/                       # Storage backends
+│   ├── NetworkXStorage.py         # NetworkX graph storage
+│   └── PickleBlobStorage.py       # Pickle-based storage
+├── Chunk/, Common/, Community/    # Chunking, utilities, community detection
+├── MCP/                           # MCP server integration
+└── GraphRAG.py                    # Main orchestrator (uses _OperatorPipelineQuerier)
 ```
 
 ## Core Components and Responsibilities
@@ -158,24 +112,38 @@ Each graph type inherits from `BaseGraph` and implements:
 - `node_metadata()` / `edge_metadata()`: Provide indexing data
 - Graph-specific algorithms (e.g., entity extraction, clustering)
 
-### 3. Retrieval System
+### 3. Retrieval System: Operator Pipeline
 
-The retrieval system provides granular access to graph data through multiple paradigms:
+The retrieval system uses a typed, composable operator pipeline (`Core/Operators/`). All 24 operators share a uniform async signature:
 
-#### **Retriever Components**
-- **ChunkRetriever**: Direct text chunk access
-- **EntityRetriever**: Entity-based search
-- **RelationshipRetriever**: Edge-based retrieval
-- **SubgraphRetriever**: Multi-hop graph traversal
-- **CommunityRetriever**: Cluster-based retrieval
+```python
+async def op(inputs: Dict[str, SlotValue], ctx: OperatorContext, params: Dict) -> Dict[str, SlotValue]
+```
 
-#### **Query Strategies** (`Core/Query/`)
-Pre-configured retrieval pipelines:
-- **BasicQuery**: Simple vector search
-- **PPRQuery**: Personalized PageRank (HippoRAG)
-- **KGPQuery**: Knowledge graph pathfinding
-- **ToGQuery**: Agent-based graph traversal
-- **GRQuery**: Global retrieval with subgraph discovery
+#### **Operator Categories** (24 total)
+- **Entity** (7): vdb, ppr, onehop, link, tfidf, agent, rel_node
+- **Relationship** (4): onehop, vdb, score_agg, agent
+- **Chunk** (3): from_relation, occurrence, aggregator
+- **Subgraph** (3): khop_paths, steiner_tree, agent_path
+- **Community** (2): from_entity, from_level
+- **Meta** (5): extract_entities, reason_step, rerank, generate_answer, pcst_optimize
+
+#### **Method Plans** (`Core/Methods/`)
+10 pre-defined operator chains expressed as `ExecutionPlan` factories:
+- **basic_local**: entity.vdb → relationship.onehop → chunk.occurrence → generate_answer
+- **fastgraphrag**: entity.vdb → entity.ppr → relationship.score_agg → chunk.aggregator
+- **hipporag**: extract_entities → entity.link → entity.ppr → chunk.aggregator
+- **tog**: extract_entities → entity.link → Loop(relationship.agent → entity.agent) → chunk.from_relation → answer
+- **dalk**: extract_entities → entity.link → subgraph.khop_paths → subgraph.agent_path → chunk.from_relation → answer
+- Plus: basic_global, lightrag, gr, kgp, med
+
+#### **Composition Engine** (`Core/Composition/`)
+- **ChainValidator**: Validates all I/O slot connections in an ExecutionPlan
+- **PipelineExecutor**: Executes validated plans with cross-step data flow
+- **Adapters**: Type adapters for slot conversions
+
+#### **Type System** (`Core/Schema/SlotTypes.py`)
+7 SlotKinds: QUERY_TEXT, ENTITY_SET, RELATIONSHIP_SET, CHUNK_SET, SUBGRAPH, COMMUNITY_SET, SCORE_VECTOR
 
 ### 4. Tool System and Operators
 
@@ -300,11 +268,10 @@ The final stage combines retrieved context:
 ## Key Design Patterns
 
 ### 1. **Factory Pattern**
-Used extensively for component creation:
+Used for component creation:
 - GraphFactory for graph types
 - ChunkFactory for chunking methods
-- RetrieverFactory for retrieval strategies
-- QueryFactory for query processors
+- OperatorRegistry for retrieval operators (replaces old RetrieverFactory/QueryFactory)
 
 ### 2. **Tool-Based Architecture**
 - All operations exposed as tools
@@ -336,10 +303,10 @@ The system is designed for extensibility:
 
 1. **New Graph Types**: Implement BaseGraph interface
 2. **Custom Tools**: Add to AgentTools with contracts
-3. **Query Strategies**: Extend BaseQuery
-4. **Storage Backends**: Implement BaseStorage
-5. **LLM Providers**: Register with LiteLLM
-6. **Retrieval Methods**: Add to RetrieverFactory
+3. **New Operators**: Add to Core/Operators/ with OperatorDescriptor and register in registry
+4. **New Method Plans**: Compose operators into ExecutionPlans in Core/Methods/
+5. **Storage Backends**: Implement BaseStorage
+6. **LLM Providers**: Register with LiteLLM
 
 ## Performance Optimizations
 
