@@ -66,21 +66,34 @@ class DynamicToolChainConfig(BaseModel):
 class PredefinedMethodConfig(BaseModel):
     """Defines a step that executes a full, pre-defined RAG method via its YAML configuration."""
     method_yaml_name: str # Name of the YAML file in Option/Method/, e.g., "HippoRAG.yaml", "RAPTOR.yaml".
-    
+
     # Patch to apply to the loaded method YAML.
     # This allows overriding specific configurations within the chosen method YAML.
     # Could be a generic Dict, or refined later into specific Pydantic "Patch" models.
-    yaml_patch: Optional[Dict[str, Any]] = None 
+    yaml_patch: Optional[Dict[str, Any]] = None
+
+# --- Loop and Conditional constructs for iterative pipelines ---
+class LoopConfig(BaseModel):
+    """Defines a loop over a set of steps with a termination condition."""
+    body_step_ids: List[str]  # step_ids to execute each iteration
+    max_iterations: int = 5
+    termination_condition: str  # evaluated against step outputs (e.g., "entities.data == []")
+    carry_forward_outputs: List[str] = Field(default_factory=list)  # outputs that accumulate across iterations
+
+class ConditionalBranch(BaseModel):
+    """Defines a conditional branch based on step outputs."""
+    condition: str  # evaluated against step outputs (e.g., "len(entities.data) > 0")
+    if_true_steps: List[str]  # step_ids to execute if condition is true
+    if_false_steps: List[str]  # step_ids to execute if condition is false
 
 # --- A Single Step in the Execution Plan ---
 class ExecutionStep(BaseModel):
     """A single, discrete step in the overall execution plan."""
     step_id: str = Field(default_factory=lambda: f"step_{uuid.uuid4().hex[:8]}") # Auto-generated unique ID for referencing.
     description: Optional[str] = None # What this step aims to achieve.
-    
+
     # The core action of this step. The LLM agent chooses one type of action.
-    # Other action types like "kg_build_config" (for graph building steps) or "conditional_branch" could be added later.
-    action: Union[DynamicToolChainConfig, PredefinedMethodConfig]
+    action: Union[DynamicToolChainConfig, PredefinedMethodConfig, LoopConfig, ConditionalBranch]
 
 # --- The Main Execution Plan ---
 class ExecutionPlan(BaseModel):

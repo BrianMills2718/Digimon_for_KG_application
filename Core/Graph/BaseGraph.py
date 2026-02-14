@@ -20,6 +20,33 @@ from Core.Utils.MergeER import MergeEntity, MergeRelationship
 
 class BaseGraph(ABC):
 
+    @property
+    def capabilities(self):
+        """Return set of GraphCapability flags derived from config."""
+        from Core.Schema.GraphCapabilities import GraphCapability
+        caps = set()
+        # All graphs support basic subgraph operations
+        caps.add(GraphCapability.SUPPORTS_SUBGRAPH)
+        # Check config flags for capabilities
+        cfg = self.config if self.config else None
+        if cfg:
+            if getattr(cfg, "enable_entity_types", False) or getattr(cfg, "extract_two_step", True) is False:
+                caps.add(GraphCapability.HAS_ENTITY_TYPES)
+            if getattr(cfg, "enable_edge_keywords", False):
+                caps.add(GraphCapability.HAS_EDGE_KEYWORDS)
+        # All non-tree graphs have descriptions and support PPR
+        if not getattr(self, "_is_tree_graph", False):
+            caps.add(GraphCapability.HAS_DESCRIPTIONS)
+            caps.add(GraphCapability.HAS_EDGE_DESCRIPTIONS)
+            caps.add(GraphCapability.SUPPORTS_PPR)
+        else:
+            caps.add(GraphCapability.HAS_TREE_LAYERS)
+        if getattr(self, "_has_communities", False):
+            caps.add(GraphCapability.HAS_COMMUNITIES)
+        if getattr(self, "_is_passage_graph", False):
+            caps.add(GraphCapability.HAS_PASSAGES)
+        return caps
+
     async def load_persisted_graph(self, force: bool = False) -> bool:
         """
         Public method to explicitly load the graph from persisted storage.
