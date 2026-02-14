@@ -9,7 +9,6 @@ from Core.Schema.RetrieverContext import RetrieverContext
 from Core.Common.TimeStatistic import TimeStatistic
 from Core.Graph import get_graph
 from Core.Index import get_index, get_index_config
-from Core.Query import get_query
 from Core.Storage.NameSpace import Workspace
 from Core.Community.ClusterFactory import get_community
 from Core.Storage.PickleBlobStorage import PickleBlobStorage
@@ -20,6 +19,72 @@ from pathlib import Path
 import networkx as nx
 
 init(autoreset=True)
+
+
+class _OperatorPipelineQuerier:
+    """Lightweight querier that uses the new operator pipeline for QA.
+
+    Replaces the old get_query() / BaseQuery system. Provides the same
+    ``async query(query_text)`` interface that GraphRAG.query() expects.
+    """
+
+    def __init__(self, retriever_context, llm, config):
+        self.retriever_context = retriever_context
+        self.llm = llm
+        self.config = config
+
+    async def query(self, query_text: str) -> str:
+        from Core.Operators._context import OperatorContext
+        from Core.Schema.SlotTypes import SlotKind, SlotValue
+        from Core.Operators.entity.vdb import entity_vdb
+        from Core.Operators.relationship.onehop import relationship_onehop
+        from Core.Operators.chunk.occurrence import chunk_occurrence
+        from Core.Operators.meta.generate_answer import meta_generate_answer
+
+        ctx_dict = self.retriever_context.as_dict
+        graph = ctx_dict.get("graph")
+        entities_vdb = ctx_dict.get("entities_vdb")
+        doc_chunks = ctx_dict.get("doc_chunk")
+        retriever_config = ctx_dict.get("config")
+
+        op_ctx = OperatorContext(
+            graph=graph,
+            entities_vdb=entities_vdb,
+            doc_chunks=doc_chunks,
+            llm=self.llm,
+            config=retriever_config,
+        )
+
+        query_slot = SlotValue(kind=SlotKind.QUERY_TEXT, data=query_text, producer="input")
+
+        try:
+            ent_result = await entity_vdb({"query": query_slot}, op_ctx, {"top_k": 10})
+            entities = ent_result.get("entities")
+            if not entities or not entities.data:
+                return "Insufficient information to answer the question."
+
+            chunk_result = await chunk_occurrence({"entities": entities}, op_ctx)
+            chunks = chunk_result.get("chunks")
+
+            if not chunks or not chunks.data:
+                # Fallback: use entity descriptions
+                from Core.Schema.SlotTypes import ChunkRecord
+                descs = [f"{e.entity_name}: {e.description}" for e in entities.data[:10] if e.description]
+                if descs:
+                    chunks = SlotValue(kind=SlotKind.CHUNK_SET,
+                                       data=[ChunkRecord(chunk_id="fallback", text="\n".join(descs))],
+                                       producer="fallback")
+
+            if not chunks or not chunks.data:
+                return "Insufficient information to answer the question."
+
+            answer_result = await meta_generate_answer(
+                {"query": query_slot, "chunks": chunks}, op_ctx
+            )
+            return answer_result["answer"].data
+        except Exception as e:
+            logger.error(f"Operator pipeline query failed: {e}", exc_info=True)
+            return f"Error during query: {e}"
 
 
 class GraphRAG(ContextMixin, BaseModel):
@@ -151,6 +216,12 @@ class GraphRAG(ContextMixin, BaseModel):
         }
 
     async def _build_retriever_context(self):
+        """Build retriever context for querying.
+
+        Note: The old Query/Retriever system has been replaced by the operator pipeline
+        (Core/Operators/ + Core/Composition/). This method now builds a lightweight
+        context for the operator-based pipeline.
+        """
         logger.info("Building retriever context for the current execution")
         try:
             for context_name, use_context in self.retriever_context_internal_config.items():
@@ -166,12 +237,14 @@ class GraphRAG(ContextMixin, BaseModel):
                         self.retriever_context.register_context(context_name, config_value)
                     else:
                         logger.warning(f"Retriever context component '{context_name}' configured to be used but not found on GraphRAG instance.")
-            
-            if self.retriever_context: 
-                 self.querier_internal = get_query(self.config.retriever.query_type, self.config.query, self.retriever_context)
-            else:
-                logger.error("Retriever context is empty. Querier cannot be initialized.")
-                self.querier_internal = None
+
+            # The old get_query() system has been replaced by the operator pipeline.
+            # For backward compatibility, set querier_internal to a simple wrapper.
+            self.querier_internal = _OperatorPipelineQuerier(
+                retriever_context=self.retriever_context,
+                llm=self.llm,
+                config=self.config,
+            )
 
         except Exception as e:
             logger.error(f"Failed to build retriever context: {e}", exc_info=True)

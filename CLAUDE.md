@@ -3,7 +3,7 @@
 ## CURRENT STATE: Modular Operator Pipeline (2026-02-14)
 
 Branch `modular-operator-pipeline` implements a typed, composable operator system.
-Old Retriever/Query classes still present — delete after QA eval confirms parity.
+Old Retriever/Query classes have been deleted. The operator pipeline is the canonical system.
 
 ### Operator Pipeline Status
 ```
@@ -14,7 +14,7 @@ Phase 4: Composition Engine [DONE] ChainValidator, PipelineExecutor, Adapters
 Phase 5: Method Plans (10)  [DONE] All 10 methods expressed as ExecutionPlans, all validate
 Phase 6: Graph Capabilities [DONE] BaseGraph.capabilities property
 Phase 7: QA Evaluation      [DONE] New pipeline 50% vs old 30% on HotPotQA (10 questions)
-Phase 8: Delete Old System  [TODO] Remove Retriever/, Query/ classes
+Phase 8: Delete Old System  [DONE] Core/Retriever/ and Core/Query/ deleted, references cleaned up
 ```
 
 ### Key Architecture: Operator Pipeline
@@ -55,17 +55,6 @@ Phase 3 (multi-agent) not started. See `MCP_INTEGRATION_DETAILED_PLAN.md`.
 
 ---
 
-## Previous Work: 5-Stage Fix Protocol ✓ COMPLETE
-
-All 5 stages completed successfully on 2025-06-05:
-- ✓ Stage 1: Entity extraction returns proper strings
-- ✓ Stage 2: No tool hallucinations  
-- ✓ Stage 3: Corpus paths handled correctly
-- ✓ Stage 4: Graph registration works
-- ✓ Stage 5: Full pipeline executes (VDB search needs tuning)
-
----
-
 ## Quick Reference
 
 ### Test Datasets
@@ -95,7 +84,7 @@ med:           entity.vdb → subgraph.khop_paths → subgraph.steiner_tree → 
 ```
 
 ### Known Limitations
-- Entity.PPR has pre-existing `string indices must be integers` error in EntityRetriever
+- Entity.PPR: The operator implementation uses direct graph PPR (not the old EntityRetriever path)
 - Entity.Link needs an entity VDB built first (graceful degradation without one)
 - Community operators require Leiden clustering on graph (not run by default in ER build)
 - SteinerTree extracts connected component before running (NetworkX 3.3 workaround)
@@ -139,7 +128,7 @@ med:           entity.vdb → subgraph.khop_paths → subgraph.steiner_tree → 
 
 ## Architecture Overview
 
-### Operator Pipeline (new):
+### Operator Pipeline (canonical system):
 - **Type System**: `Core/Schema/SlotTypes.py`, `OperatorDescriptor.py`, `GraphCapabilities.py`
 - **24 Operators**: `Core/Operators/{entity,relationship,chunk,subgraph,community,meta}/`
 - **Registry**: `Core/Operators/registry.py` — OperatorRegistry with composition helpers
@@ -147,23 +136,19 @@ med:           entity.vdb → subgraph.khop_paths → subgraph.steiner_tree → 
 - **Method Plans**: `Core/Methods/` — 10 method plans as ExecutionPlan factories
 - **Plan Extensions**: `Core/AgentSchema/plan.py` — LoopConfig, ConditionalBranch
 
-### Existing Key Components (still used):
+### Key Components:
 - **Orchestrator**: `Core/AgentOrchestrator/orchestrator.py`
 - **Tool Registry**: `Core/AgentTools/tool_registry.py`
 - **GraphRAGContext**: `Core/AgentSchema/context.py`
 - **Graph Classes**: ERGraph, RKGraph, TreeGraph, PassageGraph (unchanged)
 - **Storage**: NetworkXStorage, TreeGraphStorage (unchanged)
 - **VDB**: FaissIndex (unchanged)
-
-### Old System (delete after QA passes):
-- `Core/Retriever/` — EntityRetriever, RelationshipRetriever, etc.
-- `Core/Query/` — PPRQuery, ToGQuery, GRQuery, etc.
-- `Core/Retriever/MixRetriever.py` — facade dispatcher
+- **GraphRAG**: `Core/GraphRAG.py` — uses `_OperatorPipelineQuerier` for query()
 
 ---
 
 ## Next Steps
 
-1. **QA Evaluation** (Phase 7): Run new pipeline on HotPotQA, verify accuracy >= old system
-2. **Delete Old System** (Phase 8): Remove Retriever/ and Query/ classes after QA passes
-3. **MCP Integration** (deferred): See `MCP_INTEGRATION_DETAILED_PLAN.md`
+1. **MCP Integration** (deferred): See `MCP_INTEGRATION_DETAILED_PLAN.md`
+2. **Improve QA accuracy**: Tune retrieval parameters, test more method plans
+3. **Agent composition**: Let LLM agent select and compose operator chains dynamically

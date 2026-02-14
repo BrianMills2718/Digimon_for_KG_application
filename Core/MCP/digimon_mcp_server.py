@@ -33,7 +33,6 @@ from Option.Config2 import Config
 from Core.Provider.LiteLLMProvider import LiteLLMProvider
 # from Core.Index.EmbeddingFactory import EmbeddingFactory  # Removed for simplicity
 from Core.Chunk.ChunkFactory import ChunkFactory
-from Core.Query.BaseQuery import BaseQuery
 from Core.Common.Logger import logger
 
 # Configure logging
@@ -208,32 +207,37 @@ class DigimonToolServer:
     
     # Tool wrapper: Answer.Generate
     async def answer_generate_wrapper(self, **params):
-        """Wrapper for Answer.Generate tool"""
+        """Wrapper for Answer.Generate tool using the operator pipeline."""
         try:
-            # Extract parameters
+            from Core.Schema.SlotTypes import SlotKind, SlotValue, ChunkRecord
+            from Core.Operators._context import OperatorContext
+            from Core.Operators.meta.generate_answer import meta_generate_answer
+
             query = params.get('query', '')
             context_data = params.get('context', '')
-            response_type = params.get('response_type', 'default')
-            use_tree_search = params.get('use_tree_search', False)
-            
-            # Create a basic query instance for answer generation
-            query_config = self.config.query.model_copy()
-            query_config.response_type = response_type
-            query_config.tree_search = use_tree_search
-            
-            # Create query instance
-            basic_query = BaseQuery(config=query_config, retriever_context=None)
-            basic_query.llm = self.llm_provider
-            
-            # Generate answer
-            answer = await basic_query.generation_qa(query, context_data)
-            
+
+            op_ctx = OperatorContext(
+                graph=None,
+                llm=self.llm_provider,
+            )
+
+            query_slot = SlotValue(kind=SlotKind.QUERY_TEXT, data=query, producer="input")
+            chunks_slot = SlotValue(
+                kind=SlotKind.CHUNK_SET,
+                data=[ChunkRecord(chunk_id="provided", text=context_data)],
+                producer="input",
+            )
+
+            result = await meta_generate_answer(
+                {"query": query_slot, "chunks": chunks_slot}, op_ctx
+            )
+
             return {
-                "answer": answer,
+                "answer": result["answer"].data,
                 "query": query,
                 "status": "success"
             }
-            
+
         except Exception as e:
             logger.error(f"Error in answer_generate_wrapper: {e}", exc_info=True)
             return {

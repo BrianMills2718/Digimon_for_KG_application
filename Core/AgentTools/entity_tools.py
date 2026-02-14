@@ -1,8 +1,12 @@
 # Core/AgentTools/entity_tools.py
 
+import os
 import logging
-from typing import List, Tuple, Dict, Any, Optional # Ensure Optional is imported if not already
-import numpy as np # Ensure numpy is imported if not already
+import json as _json
+from typing import List, Tuple, Dict, Any, Optional
+
+import numpy as np
+from pydantic import BaseModel
 
 from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentSchema.tool_contracts import (
@@ -10,51 +14,23 @@ from Core.AgentSchema.tool_contracts import (
     EntityPPROutputs,
     EntityVDBSearchInputs,
     EntityVDBSearchOutputs,
-    VDBSearchResultItem,  
+    VDBSearchResultItem,
     EntityOneHopInput,
     EntityOneHopOutput,
     EntityRelNodeInput,
-    EntityRelNodeOutputs
+    EntityRelNodeOutputs,
+    EntityAgentInputs, EntityAgentOutputs, ExtractedEntityData,
+    EntityLinkInputs, EntityLinkOutputs, LinkedEntityPair,
+    EntityTFIDFInputs, EntityTFIDFOutputs,
 )
-from Core.Retriever.EntityRetriever import EntityRetriever
-from Core.Retriever.BaseRetriever import BaseRetriever # If direct instantiation or type hinting needed
-from Config.RetrieverConfig import RetrieverConfig # For default retriever config
-
-from Core.Schema.EntityRelation import Entity as CoreEntity # For constructing output if needed
-
-# Placeholder for actual GraphRAG core components & context
-# The Agent Orchestrator will need to provide access to these,
-# e.g., through a shared context object or by direct imports if feasible.
-# For now, we'll assume these are accessible or passed in.
-# from Core.Index.VectorIndex import VectorIndex # Example
-# from Core.Config.EmbConfig import EmbeddingConfig # Example
-# from Core.Provider.EmbeddingProvider import EmbeddingProvider # Example
-
-# --- Tool Implementation for: Entity Vector Database Search ---
-# tool_id: "Entity.VDBSearch"
-
-import os
-from typing import List, Tuple, Optional, Any
-from Core.AgentSchema.context import GraphRAGContext
-from Core.AgentSchema.tool_contracts import EntityVDBSearchInputs, EntityVDBSearchOutputs
-import os
-from typing import List, Tuple, Optional, Any, Dict
-from pydantic import BaseModel
-from Core.AgentSchema.context import GraphRAGContext
-from Core.AgentSchema.tool_contracts import EntityVDBSearchInputs, EntityVDBSearchOutputs
+from Core.Schema.EntityRelation import Entity as CoreEntity
+from Core.Graph.BaseGraph import BaseGraph
 from Core.Index.FaissIndex import FaissIndex
-from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
 from Core.Index.BaseIndex import BaseIndex
-
-# Import proper index configuration
 from Core.Index.Schema import FAISSIndexConfig
 from Core.AgentTools.index_config_helper import create_faiss_index_config
-
-#from Core.Provider.EmbeddingProvider import EmbeddingProvider
 from Core.Provider.BaseEmb import BaseEmb
-# from Core.Storage.NameSpace import NameSpace
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -272,150 +248,6 @@ async def entity_ppr_tool(
     
     logger.info(f"Entity.PPR: Tool execution finished. Returning {len(final_ranked_entities)} ranked entities.")
     return EntityPPROutputs(ranked_entities=final_ranked_entities)
-from Core.Graph.BaseGraph import BaseGraph  # For type hinting graph_instance
-
-from Core.Retriever.EntityRetriever import EntityRetriever
-from Config.RetrieverConfig import RetrieverConfig
-from Core.Common.Logger import logger
-import numpy as np
-from typing import List, Tuple, Optional, Any, Dict
-from Core.AgentSchema.tool_contracts import EntityPPRInputs, EntityPPROutputs
-from Core.AgentSchema.context import GraphRAGContext
-
-from Core.Retriever.EntityRetriever import EntityRetriever
-from Config.RetrieverConfig import RetrieverConfig
-from Core.Common.Logger import logger
-import numpy as np
-
-async def entity_ppr_tool(
-    params: EntityPPRInputs,
-    graphrag_context: GraphRAGContext
-) -> EntityPPROutputs:
-    """
-    Computes Personalized PageRank for entities in a graph using EntityRetriever.
-    """
-    logger.info(f"Executing tool 'Entity.PPR' with parameters: {params}")
-
-    # --- 1. Get necessary components from GraphRAGContext ---
-    graph_instance = graphrag_context.get_graph_instance(params.graph_reference_id)
-
-    if not graph_instance:
-        logger.error("Entity.PPR: Graph instance not found in GraphRAGContext.")
-        raise ValueError("Graph instance not found in GraphRAGContext.")
-
-    # --- 2. Prepare RetrieverConfig ---
-    method_retriever_config_dict = graphrag_context.resolved_configs.get("retriever_config_dict", {})
-    
-    internal_top_k = params.top_k_results if params.top_k_results is not None else 10
-    if "top_k" in method_retriever_config_dict: # Use top_k from provided config if greater
-        internal_top_k = max(internal_top_k, method_retriever_config_dict.get("top_k", internal_top_k))
-    
-    # Set defaults carefully, allowing method_retriever_config_dict to override
-    # These are typical settings that would come from a method's YAML retriever config.
-    final_retriever_config_values = {
-        "retriever_type": "unknown", # Placeholder, actual type might be in method_retriever_config_dict
-        "llm_config": graphrag_context.resolved_configs.get("main_config_dict", {}).get("llm"),
-        "embedding_config": graphrag_context.resolved_configs.get("main_config_dict", {}).get("embedding"),
-        "top_k": internal_top_k,
-        "use_entity_similarity_for_ppr": method_retriever_config_dict.get("use_entity_similarity_for_ppr", False),
-        "node_specificity": method_retriever_config_dict.get("node_specificity", True),
-        "top_k_entity_for_ppr": method_retriever_config_dict.get("top_k_entity_for_ppr", 5)
-    }
-    # Overlay any other values from the passed method_retriever_config_dict
-    final_retriever_config_values.update(method_retriever_config_dict)
-
-    try:
-        retriever_config = RetrieverConfig(**final_retriever_config_values)
-        logger.info(f"Entity.PPR: Using RetrieverConfig: {retriever_config.model_dump(exclude_none=True, exclude_defaults=True)}")
-    except Exception as e:
-        logger.error(f"Entity.PPR: Failed to create RetrieverConfig. Error: {e}", exc_info=True)
-        logger.error(f"Entity.PPR: Provided final_retriever_config_values was: {final_retriever_config_values}")
-        raise ValueError(f"Failed to create RetrieverConfig for Entity.PPR: {e}")
-
-    # --- 3. Instantiate EntityRetriever ---
-    entity_retriever = EntityRetriever(
-        config=retriever_config,
-        graph=graph_instance
-    )
-    # Ensure internal top_k for retriever processing is sufficient
-    entity_retriever.config.top_k = internal_top_k 
-
-    # --- 4. Call _find_relevant_entities_by_ppr from EntityRetriever ---
-    if not params.seed_entity_ids:
-        logger.warning("Entity.PPR: No seed_entity_ids provided. Returning empty results.")
-        return EntityPPROutputs(ranked_entities=[])
-
-    placeholder_query_for_vdb = params.seed_entity_ids[0] 
-    attempt_linking = False
-    
-    seed_entities_arg = params.seed_entity_ids
-    logger.info(f"Entity.PPR: Calling _find_relevant_entities_by_ppr with {len(params.seed_entity_ids)} seeds. Linking: {attempt_linking}. Args: {seed_entities_arg}")
-
-    try:
-        top_k_nodes_data, full_ppr_scores = await entity_retriever._find_relevant_entities_by_ppr(
-            query=placeholder_query_for_vdb,
-            seed_entities=seed_entities_arg,
-            link_entity=attempt_linking
-        )
-    except Exception as e:
-        logger.error(f"Entity.PPR: Error during entity_retriever._find_relevant_entities_by_ppr: {e}", exc_info=True)
-        return EntityPPROutputs(ranked_entities=[])
-
-    if top_k_nodes_data is None or full_ppr_scores is None:
-        logger.warning("Entity.PPR: PPR execution in EntityRetriever returned None or empty scores. Returning empty results.")
-        return EntityPPROutputs(ranked_entities=[])
-
-    # --- 5. Format results into EntityPPROutputs ---
-    ranked_entities: List[Tuple[str, float]] = []
-    entity_meta_key = graph_instance.entity_metakey
-
-    logger.info(f"Entity.PPR: Processing {len(top_k_nodes_data)} nodes returned by retriever's PPR.")
-    for node_data in top_k_nodes_data:
-        if node_data is None:
-            logger.warning("Entity.PPR: Encountered None in top_k_nodes_data. Skipping.")
-            continue
-        
-        entity_id = node_data.get(entity_meta_key)
-        if not entity_id:
-            logger.warning(f"Entity.PPR: Node data missing '{entity_meta_key}'. Data: {node_data}. Skipping.")
-            continue
-        
-        try:
-            node_idx = await graph_instance.get_node_index(entity_id)
-            if node_idx is not None and 0 <= node_idx < len(full_ppr_scores):
-                score = full_ppr_scores[node_idx]
-                ranked_entities.append((str(entity_id), float(score)))
-            else:
-                logger.warning(f"Entity.PPR: Node index {node_idx} for entity '{entity_id}' is out of bounds or None for full_ppr_scores (len: {len(full_ppr_scores)}). Skipping.")
-        except Exception as e:
-            logger.error(f"Entity.PPR: Error processing node '{entity_id}' for PPR score: {e}", exc_info=True)
-            
-    ranked_entities.sort(key=lambda x: x[1], reverse=True)
-
-    if params.top_k_results is not None:
-        ranked_entities = ranked_entities[:params.top_k_results]
-            
-    logger.info(f"Entity.PPR tool returning {len(ranked_entities)} ranked entities.")
-    return EntityPPROutputs(ranked_entities=ranked_entities)
-    num_to_add = (params.top_k_results if params.top_k_results is not None else 3) - len(dummy_ppr_results)
-    for i in range(num_to_add):
-        dummy_ppr_results.append((f"dummy_ppr_entity_{i}", 0.5 - (i * 0.05)))
-
-    # 3. Transform the results into the 'EntityPPROutputs' Pydantic model
-    #    The 'dummy_ppr_results' above is already in List[Tuple[str, float]] format.
-    
-    return EntityPPROutputs(ranked_entities=dummy_ppr_results[:params.top_k_results])
-
-
-# --- Tool Implementation for: Entity Operator - Agent ---
-# tool_id: "Entity.Agent"
-
-from Core.AgentSchema.tool_contracts import (
-    EntityAgentInputs, EntityAgentOutputs, ExtractedEntityData,
-    EntityLinkInputs, EntityLinkOutputs, LinkedEntityPair,
-    EntityTFIDFInputs, EntityTFIDFOutputs,
-)
-import json as _json
 
 
 async def entity_agent_tool(

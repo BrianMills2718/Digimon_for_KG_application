@@ -20,7 +20,6 @@ from Core.Storage.NetworkXStorage import NetworkXStorage
 from Core.Storage.ChunkKVStorage import ChunkKVStorage
 from Core.Index.IndexFactory import RAGIndexFactory
 from Core.AgentSchema.context import GraphRAGContext
-from Core.Retriever.BaseRetriever import BaseRetriever
 
 # Import orchestrator and planning
 from Core.AgentOrchestrator.orchestrator import AgentOrchestrator
