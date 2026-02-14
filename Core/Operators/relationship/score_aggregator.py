@@ -11,7 +11,6 @@ from typing import Any, Dict, Optional
 import numpy as np
 
 from Core.Common.Logger import logger
-from Core.Common.Utils import truncate_list_by_token_size
 from Core.Schema.SlotTypes import RelationshipRecord, SlotKind, SlotValue
 
 

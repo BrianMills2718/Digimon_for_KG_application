@@ -56,13 +56,24 @@ def gr_plan(query: str, **kwargs) -> ExecutionPlan:
             ),
             ExecutionStep(
                 step_id="s4",
-                description="Generate answer from optimized subgraph",
+                description="Get chunks from relationships",
+                action=DynamicToolChainConfig(tools=[
+                    ToolCall(
+                        tool_id="chunk.from_relation",
+                        inputs={"relationships": ToolInputSource(from_step_id="s2", named_output_key="relationships")},
+                        named_outputs={"chunks": "chunk_set"},
+                    ),
+                ]),
+            ),
+            ExecutionStep(
+                step_id="s5",
+                description="Generate answer from retrieved chunks",
                 action=DynamicToolChainConfig(tools=[
                     ToolCall(
                         tool_id="meta.generate_answer",
                         inputs={
                             "query": "plan_inputs.query",
-                            "chunks": ToolInputSource(from_step_id="s3", named_output_key="subgraph"),
+                            "chunks": ToolInputSource(from_step_id="s4", named_output_key="chunks"),
                         },
                         named_outputs={"answer": "text"},
                     ),

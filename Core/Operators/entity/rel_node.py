@@ -8,7 +8,6 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, Optional
 
-from Core.Common.Logger import logger
 from Core.Common.Utils import truncate_list_by_token_size
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 

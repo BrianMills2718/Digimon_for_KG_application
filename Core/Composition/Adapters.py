@@ -11,7 +11,6 @@ from typing import Any, Dict, Optional
 from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import (
     ChunkRecord,
-    EntityRecord,
     SlotKind,
     SlotValue,
 )
