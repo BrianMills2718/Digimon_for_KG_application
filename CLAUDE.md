@@ -13,8 +13,8 @@ Phase 3: Registry           [DONE] OperatorRegistry with composition helpers
 Phase 4: Composition Engine [DONE] ChainValidator, PipelineExecutor, Adapters
 Phase 5: Method Plans (10)  [DONE] All 10 methods expressed as ExecutionPlans, all validate
 Phase 6: Graph Capabilities [DONE] BaseGraph.capabilities property
-Phase 7: QA Evaluation      [TODO] Verify new pipeline matches old accuracy on HotPotQA
-Phase 8: Delete Old System  [TODO] Remove Retriever/, Query/ classes after QA passes
+Phase 7: QA Evaluation      [DONE] New pipeline 50% vs old 30% on HotPotQA (10 questions)
+Phase 8: Delete Old System  [TODO] Remove Retriever/, Query/ classes
 ```
 
 ### Key Architecture: Operator Pipeline
