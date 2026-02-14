@@ -33,8 +33,11 @@ class VectorIndexNodeResult(EntityResult):
         self.results = results
 
     async def get_node_data(self, graph, score = False):
-
-        nodes = await asyncio.gather( *[ graph.get_node(r.metadata["entity_name"]) for r in self.results])
+        metakey = getattr(graph, 'entity_metakey', 'entity_name')
+        def _get_name(r):
+            m = r.metadata
+            return m.get(metakey) or m.get("entity_name") or m.get("name") or m.get("id", "")
+        nodes = await asyncio.gather( *[ graph.get_node(_get_name(r)) for r in self.results])
         if score:
 
             return nodes, [r.score for r in self.results]
