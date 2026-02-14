@@ -16,7 +16,7 @@ from Core.AgentSchema.tool_contracts import (
     EntityRelNodeInput,
     EntityRelNodeOutputs
 )
-from Core.Retriever.EntitiyRetriever import EntityRetriever # Typo "EntitiyRetriever" is as per user's files
+from Core.Retriever.EntityRetriever import EntityRetriever
 from Core.Retriever.BaseRetriever import BaseRetriever # If direct instantiation or type hinting needed
 from Config.RetrieverConfig import RetrieverConfig # For default retriever config
 
@@ -274,7 +274,7 @@ async def entity_ppr_tool(
     return EntityPPROutputs(ranked_entities=final_ranked_entities)
 from Core.Graph.BaseGraph import BaseGraph  # For type hinting graph_instance
 
-from Core.Retriever.EntitiyRetriever import EntityRetriever  # Note: typo in filename is intentional
+from Core.Retriever.EntityRetriever import EntityRetriever
 from Config.RetrieverConfig import RetrieverConfig
 from Core.Common.Logger import logger
 import numpy as np
@@ -282,7 +282,7 @@ from typing import List, Tuple, Optional, Any, Dict
 from Core.AgentSchema.tool_contracts import EntityPPRInputs, EntityPPROutputs
 from Core.AgentSchema.context import GraphRAGContext
 
-from Core.Retriever.EntitiyRetriever import EntityRetriever
+from Core.Retriever.EntityRetriever import EntityRetriever
 from Config.RetrieverConfig import RetrieverConfig
 from Core.Common.Logger import logger
 import numpy as np
