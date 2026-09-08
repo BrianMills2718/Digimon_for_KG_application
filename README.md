@@ -1,3 +1,13 @@
+# Historical public DIGIMON snapshot — superseded
+
+> **Status (September 2026):** this repository is preserved as a public historical snapshot and provenance record. It is **not the canonical current DIGIMON implementation or architecture**.
+>
+> Current DIGIMON work has moved to a maintained private canonical repository. The current system is centered on **question-dependent composition of typed text, vector, graph, community, and structured retrieval operations**, with explicit applicability/eligibility and evidence/provenance boundaries. It should not be read as one fixed GraphRAG pipeline.
+>
+> For the current public hiring-level description, use [Brian Mills' portfolio](https://brianmills.dev/portfolio/). The material below is retained to show project lineage and should be interpreted in its original historical context.
+
+---
+
 # 👾 DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems
 
 <div style="text-align: center;">
@@ -63,12 +73,10 @@ The system features a modular design with distinct operational modes, manageable
     ```
 2.  **Query Mode (via `main.py` or Agent Tools):** Loads pre-built artifacts to answer questions.
     ```bash
-    # Example CLI usage
     python main.py query -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset -question "Your question here?"
     ```
 3.  **Evaluate Mode (via `main.py`):** Assesses performance against benchmark datasets.
     ```bash
-    # Example CLI usage
     python main.py evaluate -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
     ```
 
@@ -168,4 +176,3 @@ In-depth Analysis of Graph-based RAG in a Unified Framework
   journal={arXiv preprint arXiv:2503.04338},
   year={2025}
 }
-
