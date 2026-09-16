@@ -1,160 +1,94 @@
-# DIGIMON Planning Documentation Summary
-**Last Updated:** January 2025  
-**Status:** Active Development
+# DIGIMON Planning Summary
 
-## 📋 Overview of Planning Documents
+**Updated:** 2026-09-16  
+**Status:** current planning summary
 
-This document summarizes all planning documentation for the DIGIMON GraphRAG system and its evolution into the Universal Knowledge Reasoning Framework (UKRF).
+The current priority is **architecture completion and consolidation**, not benchmark optimization, novelty positioning, a new UI, or a larger internal cognitive architecture.
 
-## 🗂️ Document Hierarchy
+## Current direction
 
-### Strategic Planning (Long → Near Term)
-1. **MASTER_INTEGRATION_PLAN.md** - Universal Knowledge Reasoning Framework vision
-2. **LONG_TERM_PLAN.md** - 3-year roadmap (2025-2028)
-3. **MID_TERM_PLAN.md** - 12-month implementation (2025)
-4. **NEAR_TERM_IMPLEMENTATION_PLAN.md** - 8-week checkpoint plan (Q1 2025)
+DIGIMON is being organized around a **harness-first capability architecture**:
 
-### Technical Planning
-5. **AGENT_INTELLIGENCE_PLANNING.MD** - Agent architecture analysis and recommendations
-6. **STRATEGIC_UPDATE_AI_AGENTS.md** - Critical gaps and cognitive architecture requirements
-7. **MCP_INTEGRATION_PLAN.md** - Model Context Protocol implementation for tool/agent coordination (NEW)
-8. **DIGIMON_ARCHITECTURE_REPORT.md** - Current system architecture
-9. **improvements_*.md** files - Specific component improvements
+- the external intelligent harness owns adaptive reasoning, decomposition, tool selection, sequencing, retries/fallbacks and stopping;
+- DIGIMON owns typed capabilities, retrieval/build operations, resource/prerequisite facts, evidence/provenance and bounded model-assisted transformations;
+- AoT/GoT/ReAct and method-routing prompts are optional heuristics, not mandatory runtime state machines;
+- reference GraphRAG methods remain useful compositions, shortcuts and later evaluation baselines rather than the system's architectural identity.
 
-### Progress Tracking
-8. **CHECKPOINT_PROGRESS.md** - Implementation status tracking
-9. **BACKEND_STATUS_REPORT.md** - Current backend operational status
-10. **Doc/system_status_report.md** - Tool implementation status (18/40 operators)
+The strongest modern implementation center is the typed 26-operator registry/composition layer plus the FastMCP stdio server.
 
-## 🎯 Current Status Summary
+## Active plan
 
-### ✅ Completed (Checkpoints 1-3)
-- **Async Streaming Architecture**: Real-time updates via async generators
-- **Dynamic Tool Registry**: 18 tools with categorization and discovery
-- **Memory System Foundation**: Multi-level memory for pattern learning
+The authoritative implementation sequence is in `docs/ROADMAP.md`:
 
-### 🔄 In Progress (Checkpoints 4-5)
-- **Performance Optimization**: Caching, query optimization, AOT integration
-- **Evaluation Framework**: Quality assessment and improvement loops
+1. stabilize the canonical capability contract and MCP parity;
+2. unify resource identities, lifecycle and prerequisites;
+3. make provenance/evidence an end-to-end contract;
+4. make the harness-first execution boundary operationally clean;
+5. consolidate legacy internal planners/orchestrators/AoT code;
+6. normalize cross-modal graph/table/vector capabilities;
+7. standardize machine-actionable failure/recovery semantics;
+8. make architectural contract tests blocking and trustworthy in CI;
+9. add incremental-update and temporal/conflict semantics once the resource/evidence foundation exists;
+10. perform broad benchmarking, ablation and research validation later.
 
-### ⏳ Upcoming (Checkpoints 6-8)
-- **Multi-Agent Teams**: Specialized agents for different tasks
-- **Streaming API**: WebSocket real-time updates
-- **Production Readiness**: Error handling, monitoring, deployment
+## Largest current gaps
 
-## 🚀 Key Strategic Directions
+The architectural bottlenecks are not lack of retrieval algorithms. They are consistency and contracts:
 
-### 1. **UKRF Integration** (Highest Priority)
-DIGIMON is evolving from a GraphRAG system to the orchestration layer of the Universal Knowledge Reasoning Framework:
-- **Role**: Primary orchestrator for StructGPT, DIGIMON native tools, and Autocoder
-- **Requirements**: <2s latency, 100+ concurrent queries, cross-modal reasoning
-- **Timeline**: Q1-Q2 2025 for basic integration
+- capability discovery spans the 26-operator registry plus additional MCP build/analysis/conversion tools;
+- resource state is not yet represented by one typed catalog with dependencies/fingerprints/invalidation;
+- prerequisite behavior is useful but distributed across descriptors/server helpers;
+- source identifiers exist, but lineage is not yet a universal end-to-end evidence contract;
+- CLI/internal planner paths still coexist with the newer harness-first MCP architecture;
+- graph/table/vector conversion is substantive but not fully normalized into the same capability/resource/provenance model;
+- error/recovery semantics vary between tool families;
+- old planners, orchestrators, AoT code and historical plan documents remain in the repository and require explicit classification/consolidation.
 
-### 2. **Agent Intelligence Evolution**
-Based on analysis of 15+ agent frameworks:
-- **Streaming-First**: Async generators throughout (Claude Code pattern)
-- **Multi-Agent Teams**: Specialized agents (Agno/CrewAI patterns)
-- **Memory & Learning**: Continuous improvement (mem0/Voyager patterns)
-- **Dynamic Planning**: Plan rectification (XAgent pattern)
+See `docs/GAP_ANALYSIS.md` for the complete gap matrix.
 
-### 3. **Performance Transformation**
-Meeting enterprise requirements:
-- **Current**: 15-30s query latency, single-threaded
-- **Target**: <2s p50 latency, 100+ concurrent queries
-- **Strategy**: Parallelization, caching, AOT query simplification
+## What is deliberately deferred
 
-### 4. **New: AOT Integration** 
-Recent addition based on "Atom of Thoughts" paper analysis:
-- **Markov Process**: Transform queries into atomic, memoryless states
-- **Benefits**: Eliminates historical information accumulation
-- **Implementation**: Phase into Checkpoint 4 as query preprocessor
+The following remain useful future work but should not distort the current architecture:
 
-### 5. **New: MCP (Model Context Protocol) Integration**
-Critical infrastructure for multi-agent coordination:
-- **Standardized Communication**: Unified protocol for all tool interactions
-- **Agent Coordination**: Enables formal multi-agent collaboration
-- **Performance**: Concurrent tool execution with shared context
-- **Dynamic Discovery**: Runtime tool/agent discovery and negotiation
-- **Cross-Modal Bridge**: Facilitates UKRF integration requirements
+- KG versus BM25/vector/hybrid ablations;
+- router/method-selection calibration;
+- novelty/research-positioning claims;
+- benchmark-score optimization;
+- production-scale latency/token tuning;
+- generalized multi-agent coordination;
+- additional dashboards/UI shells.
 
-## 📊 Planning Alignment Matrix
+The important future validation questions are preserved in `docs/FUTURE_EVALUATION_QUESTIONS.md`.
 
-| Component | Near Term (8w) | Mid Term (2025) | Long Term (2028) | UKRF Required |
-|-----------|----------------|-----------------|------------------|---------------|
-| Streaming | ✅ Week 1 | Enhanced | Advanced | ✅ Critical |
-| Tool Registry | ✅ Week 2 | Dynamic | Self-organizing | ✅ Critical |
-| Memory | ✅ Week 3 | Pattern learning | Continuous learning | 🟡 Important |
-| Performance | 🔄 Week 4 | <2s latency | <500ms latency | ✅ Critical |
-| Multi-Agent | ⏳ Week 6 | Teams | Swarms | 🟡 Important |
-| Cross-Modal | ⏳ Week 8 | Basic | Advanced | ✅ Critical |
-| AOT/Markov | 🆕 Week 4 | Full integration | Adaptive | 🟡 Important |
+## Historical planning material
 
-## 🛠️ Implementation Priorities
+Earlier planning in this repository explored:
 
-### Immediate (This Week)
-1. Complete performance optimization with AOT integration
-2. Begin evaluation framework implementation
-3. Fix backend dependencies (pydantic conflicts)
+- UKRF/general agent frameworks;
+- multi-agent coordination;
+- programmed AoT/Markov decomposition;
+- WebSocket MCP migration checkpoints;
+- confidence/meta-cognition subsystems;
+- production/performance phases.
 
-### Short Term (Q1 2025)
-1. Complete all 8 checkpoints
-2. UKRF basic integration
-3. Staging deployment
+Those documents are valuable project lineage, but they are **historical unless a current canonical document restates the requirement**.
 
-### Medium Term (2025)
-1. Full UKRF production deployment
-2. Advanced multi-agent capabilities
-3. Cross-modal mastery
+The current source-of-truth set is:
 
-## 📈 Success Metrics
+- `docs/CURRENT_STATE.md`
+- `docs/ARCHITECTURE.md`
+- `docs/GAP_ANALYSIS.md`
+- `docs/ROADMAP.md`
+- `docs/adr/002-harness-first-capability-architecture.md`
 
-### Technical Metrics
-- Query latency: <2s (p50), <10s (p99)
-- Concurrent queries: 100+
-- Success rate: >95%
-- Tool execution: <1s
+## Immediate next code work
 
-### Business Metrics
-- 30% reduction in research query time
-- 10+ custom tools created by users
-- 3+ production deployments
+When implementation resumes, start at the top of the roadmap rather than adding another orchestration abstraction:
 
-### Research Metrics
-- Competitive benchmarks with SOTA
-- Novel cross-modal capabilities
-- Open-source release
+1. inventory/map all harness-facing capabilities against the canonical descriptor model;
+2. design the typed resource descriptor/catalog;
+3. connect prerequisites/builders to that resource model;
+4. define and propagate the evidence/provenance record;
+5. then clean entry points and legacy orchestration around those stable contracts.
 
-## 🚨 Critical Decisions Needed
-
-1. **Architecture Scope**: Should DIGIMON remain GraphRAG-focused or become truly universal orchestrator?
-2. **Performance vs Intelligence**: How to balance <2s latency requirement with sophisticated reasoning?
-3. **Integration Approach**: Gradual enhancement or architectural redesign for UKRF?
-4. **Cognitive Architecture**: Which proven patterns (Soar, ACT-R, BDI) to adopt?
-5. **Coordination Mechanism**: Blackboard vs ACL vs natural language for agents?
-6. **Security Model**: How to prevent collusion and ensure explainability in MAS?
-
-## 📝 Recommendations
-
-### Based on Current Analysis:
-1. **Adopt UKRF-First Architecture**: Redesign as universal orchestrator (Option A from AGENT_INTELLIGENCE_PLANNING)
-2. **Implement AOT Enhancement**: Add as preprocessor for complex queries
-3. **Prioritize Streaming**: Foundation for all other improvements
-4. **Focus on Production**: Move from research prototype to enterprise system
-
-### Next Planning Actions:
-1. Update CHECKPOINT_PROGRESS.md weekly
-2. Create Q2 2025 detailed plan by March
-3. Reassess long-term vision after UKRF integration
-4. Document lessons learned from each checkpoint
-
-## 🔗 Quick Links to Plans
-
-- [Near Term Plan](NEAR_TERM_IMPLEMENTATION_PLAN.md) - Current focus
-- [Mid Term Plan](MID_TERM_PLAN.md) - 2025 roadmap
-- [Long Term Plan](LONG_TERM_PLAN.md) - 3-year vision
-- [Master Integration](MASTER_INTEGRATION_PLAN.md) - UKRF blueprint
-- [Progress Tracking](CHECKPOINT_PROGRESS.md) - Current status
-
----
-
-*This summary is maintained as the central reference for all DIGIMON planning activities. Update monthly or after major milestone completion.*
+That sequence turns the existing breadth of DIGIMON into a coherent architecture without attempting to program the harness's intelligence directly.
