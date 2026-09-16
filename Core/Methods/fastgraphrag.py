@@ -1,7 +1,4 @@
-"""FastGraphRAG: Entity VDB -> PPR -> Relationship score aggregation -> Chunk aggregation.
-
-Uses entity similarity for PPR reset probabilities and sparse matrix propagation.
-"""
+"""FastGraphRAG reference plan: VDB seeds -> PPR -> sparse propagation -> answer."""
 
 from Core.AgentSchema.plan import (
     DynamicToolChainConfig,
@@ -14,61 +11,84 @@ from Core.AgentSchema.plan import (
 
 def fastgraphrag_plan(query: str, **kwargs) -> ExecutionPlan:
     return ExecutionPlan(
-        plan_description="FastGraphRAG: VDB seeds -> PPR -> score propagation through sparse matrices to chunks",
+        plan_description=(
+            "FastGraphRAG: VDB seeds -> PPR -> entity/relationship/chunk score "
+            "propagation -> answer"
+        ),
         target_dataset_name=kwargs.get("dataset", ""),
         plan_inputs={"query": query},
         steps=[
             ExecutionStep(
-                step_id="s1",
-                description="Find seed entities via VDB",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="entity.vdb",
-                        inputs={"query": "plan_inputs.query"},
-                        named_outputs={"entities": "entity_set"},
-                    ),
-                ]),
+                step_id="seed_entities",
+                description="Find seed entities by vector similarity",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="entity.vdb",
+                            inputs={"query": "plan_inputs.query"},
+                            named_outputs={"entities": "entity_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s2",
-                description="Run PPR from seed entities",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="entity.ppr",
-                        inputs={
-                            "query": "plan_inputs.query",
-                            "entities": ToolInputSource(from_step_id="s1", named_output_key="entities"),
-                        },
-                        named_outputs={"entities": "entity_set", "score_vector": "score_vector"},
-                    ),
-                ]),
+                step_id="ppr",
+                description="Diffuse relevance through graph topology",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="entity.ppr",
+                            inputs={
+                                "query": "plan_inputs.query",
+                                "entities": ToolInputSource(
+                                    from_step_id="seed_entities",
+                                    named_output_key="entities",
+                                ),
+                            },
+                            named_outputs={
+                                "entities": "entity_set",
+                                "score_vector": "score_vector",
+                            },
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s3",
-                description="Propagate PPR scores to relationships",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="relationship.score_agg",
-                        inputs={
-                            "entities": ToolInputSource(from_step_id="s2", named_output_key="entities"),
-                            "score_vector": ToolInputSource(from_step_id="s2", named_output_key="score_vector"),
-                        },
-                        named_outputs={"relationships": "relationship_set"},
-                    ),
-                ]),
+                step_id="evidence",
+                description="Propagate graph scores through relationships to source chunks",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="chunk.aggregator",
+                            inputs={
+                                "score_vector": ToolInputSource(
+                                    from_step_id="ppr",
+                                    named_output_key="score_vector",
+                                )
+                            },
+                            named_outputs={"chunks": "chunk_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s4",
-                description="Propagate scores to text chunks",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="chunk.aggregator",
-                        inputs={
-                            "score_vector": ToolInputSource(from_step_id="s2", named_output_key="score_vector"),
-                        },
-                        named_outputs={"chunks": "chunk_set"},
-                    ),
-                ]),
+                step_id="answer",
+                description="Generate answer from propagated source evidence",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="meta.generate_answer",
+                            inputs={
+                                "query": "plan_inputs.query",
+                                "chunks": ToolInputSource(
+                                    from_step_id="evidence",
+                                    named_output_key="chunks",
+                                ),
+                            },
+                            named_outputs={"answer": "text"},
+                        )
+                    ]
+                ),
             ),
         ],
     )
