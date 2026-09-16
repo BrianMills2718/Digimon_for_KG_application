@@ -1,5 +1,6 @@
 # Minimal requirements for DIGIMON core functionality
-# This includes only essential dependencies for basic GraphRAG operations
+# This set is intended to start the stdio MCP server and run the core ER-graph
+# retrieval path without installing the full research/UI environment.
 
 # Core Python utilities
 pydantic>=2.11.0
@@ -7,11 +8,17 @@ pyyaml>=6.0
 loguru>=0.7.0
 typing-extensions>=4.12.0
 python-dotenv>=1.0.0
+lazy-object-proxy>=1.10.0
 
-# Data processing
+# MCP harness surface
+# DIGIMON currently imports FastMCP from the official MCP Python SDK 1.x.
+mcp>=1.27,<2
+
+# Data and graph processing
 numpy>=1.26.0
 pandas>=2.2.0
 networkx>=3.3
+igraph>=0.11.0
 scipy>=1.12.0
 scikit-learn>=1.6.0
 
@@ -36,11 +43,12 @@ aiohttp>=3.11.0
 nest-asyncio>=1.6.0
 asyncpg>=0.30.0  # For async database operations
 
-# Progress bars and CLI
+# Progress bars and transitional CLI
 tqdm>=4.67.0
 pyfiglet>=1.0.0
+colorama>=0.4.6
 
-# Web framework (for API)
+# Web framework (secondary API surface)
 flask>=3.1.0
 
 # Testing (optional but recommended)
