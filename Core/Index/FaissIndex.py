@@ -9,7 +9,7 @@ from typing import Any
 import faiss
 import numpy as np
 from llama_index.core import Settings, StorageContext, VectorStoreIndex, load_index_from_storage
-from llama_index.core.schema import QueryBundle, TextNode
+from llama_index.core.schema import NodeWithScore, QueryBundle, TextNode
 from llama_index.vector_stores.faiss import FaissVectorStore
 
 from Core.Common.Logger import logger
@@ -19,11 +19,35 @@ from Core.Schema.VdbResult import VectorIndexEdgeResult, VectorIndexNodeResult
 
 
 class FaissIndex(BaseIndex):
-    """Small FAISS adapter with runtime embedding-dimension discovery."""
+    """FAISS adapter with normalized higher-is-better retrieval scores."""
 
     def __init__(self, config):
         super().__init__(config)
         self.embedding_model = config.embed_model
+
+    def _metric_type(self):
+        if self._index is None:
+            return faiss.METRIC_L2
+        storage_context = getattr(self._index, "storage_context", None)
+        vector_store = getattr(storage_context, "vector_store", None)
+        client = getattr(vector_store, "client", None)
+        return getattr(client, "metric_type", faiss.METRIC_L2)
+
+    @staticmethod
+    def normalize_backend_score(raw_score, metric_type):
+        """Convert backend scores to DIGIMON's higher-is-better convention.
+
+        LlamaIndex's FAISS integration returns raw FAISS values as the result
+        similarities. For L2 indexes those are squared distances, so smaller is
+        better. DIGIMON operators consistently consume scores as similarities,
+        therefore L2 is mapped monotonically to ``1 / (1 + distance)``.
+        """
+        if raw_score is None:
+            return None
+        score = float(raw_score)
+        if metric_type == faiss.METRIC_L2:
+            return 1.0 / (1.0 + max(score, 0.0))
+        return score
 
     async def retrieval(self, query, top_k):
         if self._index is None:
@@ -37,7 +61,15 @@ class FaissIndex(BaseIndex):
         )
         query_embedding = await self._embed_text(query)
         query_bundle = QueryBundle(query_str=query, embedding=query_embedding)
-        return await retriever.aretrieve(query_bundle)
+        results = await retriever.aretrieve(query_bundle)
+        metric_type = self._metric_type()
+        return [
+            NodeWithScore(
+                node=result.node,
+                score=self.normalize_backend_score(result.score, metric_type),
+            )
+            for result in results
+        ]
 
     async def retrieval_nodes(
         self, query, top_k, graph, need_score=False, tree_node=False
@@ -65,10 +97,7 @@ class FaissIndex(BaseIndex):
         aggregated_scores: dict[int, float] = {}
 
         for item in queries:
-            if isinstance(item, dict):
-                target_query = item.get("entity_name")
-            else:
-                target_query = str(item)
+            target_query = item.get("entity_name") if isinstance(item, dict) else str(item)
             if not target_query:
                 continue
 
