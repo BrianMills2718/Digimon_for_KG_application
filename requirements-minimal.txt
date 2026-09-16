@@ -9,6 +9,7 @@ loguru>=0.7.0
 typing-extensions>=4.12.0
 python-dotenv>=1.0.0
 lazy-object-proxy>=1.10.0
+tenacity>=8.5.0
 
 # MCP harness surface
 # DIGIMON currently imports FastMCP from the official MCP Python SDK 1.x.
@@ -21,6 +22,7 @@ networkx>=3.3
 igraph>=0.11.0
 scipy>=1.12.0
 scikit-learn>=1.6.0
+pypdf>=5.4.0  # corpus_prepare PDF support
 
 # LLM and embeddings
 openai>=1.70.0  # For OpenAI embeddings and API
