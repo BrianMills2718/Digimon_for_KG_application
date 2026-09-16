@@ -1,6 +1,6 @@
 # Failure-Driven Core Fixes Plan
 
-**Status:** Active — implementation underway; first fresh run pending  
+**Status:** Active — major source-level defects fixed; first fresh run pending  
 **Priority:** P0/P1  
 **Planning level:** Execution stub  
 **Updated:** 2026-09-16  
@@ -12,74 +12,69 @@ Fix fundamental defects exposed by the canary, CI history, and direct source tra
 
 ## Operating rule
 
-For each failure, record only:
+Record concrete failure → smallest fix → regression check → rerun. Generalize only when the same missing boundary breaks multiple real paths.
 
-| Failure | Evidence | Smallest fix | Regression check | Status |
-|---|---|---|---|---|
-| Full requirements cannot resolve `umap==0.1.1` | Existing GitHub Actions install log | Remove invalid `umap` pin; keep `umap-learn` | Full dependency install reaches tests | **Implemented; rerun pending** |
-| CI fails on style/research bootstrap before product signal | Existing workflow run | Blocking job installs minimal core, imports MCP server, runs core tests; style advisory | CI core job | **Implemented; rerun pending** |
-| Clean checkout has no `Option/Config2.yaml`, while MCP loads it directly | Repository contents + startup code | Fall back to checked-in/default config resolution | MCP initialization without local YAML | **Implemented; canary pending** |
-| Example config API-key placeholders can override normal env credentials | Example config + validators | Normalize placeholder keys to unset for LLM/embedding providers | `test_config_credentials.py` | **Implemented** |
-| Preferred MCP path dependencies missing from minimal install | Direct import trace | Declare MCP SDK 1.x and direct core dependencies | Minimal install + MCP import | **Implemented; install pending** |
-| Optional graph/embedding implementations load unrelated dependencies eagerly | `GraphFactory.py`, `EmbeddingFactory.py` | Lazy-load selected graph/embedding backends | ER/OpenAI path does not require tree/Ollama/HF dependencies | **Implemented; import pending** |
-| Generic entity search contains Fictional-Test-specific synonyms | `query_expansion.py` | Replace fixture knowledge with corpus-agnostic variants | `test_query_expansion.py` | **Implemented** |
-| Entity VDB logs inspect nonexistent `_vdbs` | `GraphRAGContext` API | Use `list_vdbs()` | VDB registration log reports actual ID | **Implemented** |
-| Entity VDB build can report success when index setup failed | `BaseIndex` + VDB build source | Make index build return real bool; refuse registration/success on failure | `test_index_build_contract.py` | **Implemented; canary pending** |
-| Index persistence can create a directory yet leave unusable index | Base build/storage contract | Require live index after persistence as well as persisted path | `test_index_build_contract.py` | **Implemented** |
-| FAISS fresh build assumes 1024/configured dimensions | `FaissIndex.py` | Infer dimension from actual returned embeddings | `test_faiss_dimension_contract.py` | **Implemented; canary pending** |
-| Base graph uses embedding provider as tokenizer | `BaseGraph._handle_entity_relation_summary` | Use DIGIMON tiktoken helpers | `test_graph_summary_tokenization.py` | **Implemented** |
-| Expanded entity search mutates third-party score objects with `_replace()` | Entity search source | Carry adjusted score as scalar | Query-expansion/core tests | **Implemented; canary pending** |
-| Relationship VDB build ignores index failure and mutates requested VDB ID | `relationship_tools.py` | Honor build result and exact requested collection ID | Relationship VDB contract tests | **Implemented** |
-| Relationship VDB search calls nonexistent FAISS `search*` methods | `relationship_tools.py` vs `BaseIndex` API | Use `retrieval()`; report embedding-only mode unsupported | `test_relationship_vdb_contract.py` | **Implemented** |
-| Relationship operator treats `(edges, scores)` as edge list | `relationship.vdb` + VDB result contract | Unpack tuple, preserve scores; accept old/new endpoint metadata | `test_relationship_operator_contract.py` | **Implemented** |
-| Invalid composed plans execute implicitly | `OperatorComposer.execute()` | Reject failed static validation by default; explicit debug opt-in only | `test_composition_contract.py` | **Implemented** |
-| Canary could pass with fabricated fallback evidence or empty method envelope | Previous canary logic | Require retrieved chunks; no invented fallback; named method must return evidence | `tests/e2e/test_mcp_smoke.py` | **Implemented; canary pending** |
-| MCP method context can select another dataset's first matching VDB in a multi-dataset process | `_build_operator_context_for_dataset` source | Scope VDB selection by requested dataset ID | Add multi-dataset context test | **Observed; deferred until safe patch/run** |
+## Implemented fixes
 
-## Priority order
-
-1. clean installation / import failures;
-2. canonical MCP initialization failures;
-3. corpus/ER graph build or load failures;
-4. entity VDB build/search failures;
-5. relationship/chunk/source retrieval failures;
-6. answer-generation/grounding failures;
-7. incorrect failure swallowing or misleading success results;
-8. only then broader cleanup required by observed behavior.
+| Failure | Smallest fix | Regression signal |
+|---|---|---|
+| Full requirements cannot resolve `umap==0.1.1` | Remove invalid pin; keep `umap-learn` | dependency install reaches tests |
+| CI/style/research bootstrap hides product signal | Minimal-core blocking job; style advisory | CI core job |
+| Fresh checkout lacks private `Config2.yaml` | Fallback to checked-in/default config | MCP bootstrap test/canary |
+| Example API-key placeholders override env credentials | Normalize placeholders; omit empty embedding key | credential/factory tests |
+| Minimal MCP path imports undeclared dependencies | Declare MCP/core direct dependencies | minimal install + MCP import |
+| Optional graph/embedding backends import eagerly | Lazy-load selected implementations | ER/OpenAI startup path |
+| Fixture-specific query expansion contaminates generic retrieval | Replace Fictional-Test synonyms with generic expansion | query-expansion tests |
+| Graph builds can report success after internal failure | Honor `build_graph()` result for all graph types; return graph instance on success | graph-build contract tests |
+| Passage graph skips fresh/small datasets and loads global checkpoints | Remove cold-start/checkpoint shortcuts; bounded dataset-local async build | graph-build contract + canary pending |
+| VDB build/persistence can look successful while unusable | Boolean index build contract; refuse registration on failure | index-build tests |
+| FAISS assumes 1024/provider-declared dimensions | Infer from actual vectors | FAISS dimension tests |
+| FAISS L2 distance treated as higher-is-better similarity | Normalize L2 distance to monotonic higher-is-better score | FAISS score-direction tests |
+| Entity/relationship VDB wrappers drift from backend API | Use real retrieval API, exact IDs, truthful build result | relationship VDB/operator tests |
+| Multi-dataset method context can choose another dataset's VDB | Dataset-aware resource priority in `GraphRAGContext` | context-resource selection tests |
+| Base graph assumes embedding model is a tokenizer | Use tiktoken helpers for graph summarization | graph-tokenization tests |
+| PPR reset/damping semantics inverted | 0.15 teleport → 0.85 damping; align typed/MCP paths and config default | PPR tests |
+| PPR/relationship/chunk propagation returns wrong order or loses provenance | Sort descending, finite normalization, preserve real chunk IDs | score-propagation tests |
+| ToG loop rereads stale seed entities and runs `depth + 1` times | Explicit dependency-aware hop unrolling; typed relation→entity adapter | ToG tests + method-plan validation |
+| KGP loop rereads stale state; TF-IDF score is candidate index | Evidence-guided hop unrolling; direct sklearn cosine scores | KGP/TF-IDF tests |
+| k-hop path operator treats edge dicts as node IDs | Normalize storage edge records into node paths/edges | subgraph tests |
+| `steiner_tree` is an un-awaited induced subgraph, not a Steiner tree | Use NetworkX Steiner approximation | subgraph tests |
+| GR/DALK/Med compute structural subgraphs but ignore them for evidence | Add one `subgraph.materialize` bridge to entities/source chunks and rewire methods | subgraph + method-plan tests |
+| Basic Global stops at community reports | Add `community.materialize` and answer synthesis | community contract tests |
+| Named methods inconsistently stop at chunks | All 10 reference methods terminate in `meta.generate_answer`; context-only strips it | method-plan contract tests |
+| Answer generation can hallucinate after empty retrieval | Do not call LLM without evidence; explicit insufficient-evidence result | grounded-answer tests |
+| Invalid composed plans execute implicitly | Fail static validation by default; explicit best-effort opt-in only | composition contract tests |
+| Canary accepts fabricated/empty success signals | No fallback evidence; require real retrieval and real named-method answer | MCP canary |
 
 ## Current execution state
 
 The repository now has:
 
-- a portable cached MCP canary;
-- a separate clean-rebuild canary mode;
-- deterministic core tests for composition, credentials, query expansion, index build semantics, FAISS dimensions, graph tokenization, and relationship VDB/operator contracts;
-- a blocking CI job that installs `requirements-minimal.txt`, imports the MCP server, compiles the maintained core, and runs `pytest tests/core -q`;
-- advisory style checking rather than style blocking product signal.
+- cached and clean-rebuild MCP canary modes;
+- a minimal-install/import CI gate plus deterministic `tests/core` contract suite;
+- contract coverage for composition, credentials, resource scoping, graph builds, FAISS dimensions/scores, PPR, TF-IDF, score propagation, subgraphs, community/subgraph evidence bridges, grounded answers, and all ten reference method plans;
+- all maintained reference methods wired so each structural/retrieval step changes downstream evidence rather than being decorative.
 
-GitHub Actions has not created runs for connector-generated commits, the GitHub connector does not expose workflow dispatch, and the connected development machine is temporarily unavailable through its execution quota. The local sandbox also cannot materialize the GitHub archive through the allowed project connector path. Therefore implementation status and runtime verification are intentionally distinct: **the patches exist; the first fresh run is still pending**.
+Runtime verification is still distinct from implementation status. GitHub reports **zero Actions runs** for the current fork/branch, connector commits have no attached status checks, workflow dispatch is not exposed through the connected GitHub tool, and this execution environment cannot reach GitHub for a fresh clone. This now looks like a one-time GitHub Actions enablement/execution problem, not a reason to add more CI architecture.
+
+## Priority order from here
+
+1. run `pytest tests/core -q` in a clean minimal environment;
+2. run the cached MCP canary;
+3. run `DIGIMON_CANARY_REBUILD=1` with provider credentials;
+4. fix the first observed red failure with the smallest patch;
+5. only after those are green, broaden to optional graph/method surfaces.
 
 ## Non-goals
 
 - No speculative framework rewrites.
-- No universal resource/provenance ontology unless a concrete failure demands it.
-- No cleanup of every legacy module before the core works.
+- No universal resource/provenance ontology unless repeated observed failures require it.
+- No cleanup of every legacy module before the maintained core works.
 - No benchmark or novelty work in this plan.
-
-## Checkpoint loop
-
-For every newly observed red failure:
-
-1. reproduce it;
-2. identify the narrowest cause;
-3. patch that cause;
-4. add or tighten one regression check;
-5. rerun;
-6. continue only if still red.
 
 ## Escalation rule
 
-Generalize an abstraction only when multiple observed failures share the same underlying cause and the abstraction removes real duplication or inconsistency.
+Generalize an abstraction only when multiple observed failures share the same underlying cause and the abstraction removes real duplication or inconsistency. `subgraph.materialize` is the current example: one small bridge fixed the same concrete evidence-boundary failure in GR, DALK, and Med.
 
 ## Done when
 
