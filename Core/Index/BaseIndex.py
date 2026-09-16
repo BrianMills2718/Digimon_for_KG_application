@@ -33,22 +33,18 @@ class BaseIndex(ABC):
     async def build_index(self, elements, meta_data, force=False) -> bool:
         """Load or build the index and return whether it is actually usable.
 
-        Historically this method always fell through after logging, so callers
-        could report success even when embedding/index creation failed. A
-        boolean result gives build tools an explicit signal without changing
-        existing callers that ignore the return value.
+        Subclasses own index initialization inside ``_update_index``. This is
+        important for backends such as FAISS where the correct structure
+        depends on the embedding dimension discovered at runtime.
         """
         logger.info(
             f"Starting build_index for VDB at {self.config.persist_path}. Force flag is: {force}"
         )
 
         should_load_existing = self.exist_index() and not force
-        index_loaded_successfully = False
-
         if should_load_existing:
             logger.info(f"Attempting to load existing index from: {self.config.persist_path}")
-            index_loaded_successfully = bool(await self._load_index())
-            if index_loaded_successfully:
+            if await self._load_index():
                 logger.info(f"Successfully loaded existing index from: {self.config.persist_path}")
                 return self._index is not None
             logger.warning(
@@ -63,12 +59,9 @@ class BaseIndex(ABC):
             )
             await self.clean_index()
 
-        logger.info(f"Initializing new index structure for VDB at {self.config.persist_path}.")
-        self._index = self._get_index()
-        if self._index is None:
-            logger.error("Index initialization returned None; aborting build.")
-            return False
-
+        # Do not call _get_index() here. Vector/FAISS/ColBERT implementations
+        # initialize the concrete structure while processing the actual data.
+        self._index = None
         logger.info(
             f"Building and persisting new index with {len(elements)} elements "
             f"using metadata keys: {meta_data}."
@@ -97,6 +90,7 @@ class BaseIndex(ABC):
 
     @abstractmethod
     def _get_index(self):
+        """Legacy factory hook retained for compatibility; build_index no longer calls it."""
         pass
 
     @abstractmethod
