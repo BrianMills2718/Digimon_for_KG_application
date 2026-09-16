@@ -1,6 +1,8 @@
-"""Entity from relationships operator.
+"""Entity-from-relationships adapter.
 
-Extract entity nodes from a set of relationships (their src/tgt endpoints).
+For ordinary relationship sets this resolves unique endpoint entities from the
+graph. For ToG relationship-agent output it also preserves the relation scoring
+metadata needed by ``entity.agent`` for the next-hop candidate selection.
 """
 
 from __future__ import annotations
@@ -17,45 +19,83 @@ async def entity_rel_node(
     ctx: Any,
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
-    """
-    Inputs:  {"relationships": SlotValue(RELATIONSHIP_SET)}
-    Outputs: {"entities": SlotValue(ENTITY_SET)}
-    """
-    rels = inputs["relationships"].data  # List[RelationshipRecord]
+    rels = inputs["relationships"].data
     if not rels:
-        return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=[], producer="entity.rel_node")}
-
-    entity_names = set()
-    for r in rels:
-        entity_names.add(r.src_id)
-        entity_names.add(r.tgt_id)
-
-    entity_names = list(entity_names)
-    node_data_list = await asyncio.gather(
-        *[ctx.graph.get_node(n) for n in entity_names]
-    )
-    degrees = await asyncio.gather(
-        *[ctx.graph.node_degree(n) for n in entity_names]
-    )
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[],
+                producer="entity.rel_node",
+            )
+        }
 
     records = []
-    for name, nd, deg in zip(entity_names, node_data_list, degrees):
-        if nd is None:
-            continue
-        records.append(EntityRecord(
-            entity_name=name,
-            source_id=nd.get("source_id", ""),
-            entity_type=nd.get("entity_type", ""),
-            description=nd.get("description", ""),
-            rank=deg or 0,
-        ))
+    ordinary_names = set()
 
-    # Truncate by token size if config available
+    for relationship in rels:
+        relations_dict = relationship.extra.get("relations_dict")
+        if relations_dict:
+            head = bool(
+                relationship.extra.get("head", bool(relationship.src_id))
+            )
+            topic_entity = (
+                relationship.src_id if head else relationship.tgt_id
+            )
+            if not topic_entity:
+                continue
+            records.append(
+                EntityRecord(
+                    entity_name=str(topic_entity),
+                    score=relationship.score,
+                    extra={
+                        "relation": relationship.relation_name,
+                        "head": head,
+                        "relations_dict": relations_dict,
+                    },
+                )
+            )
+            continue
+
+        if relationship.src_id:
+            ordinary_names.add(relationship.src_id)
+        if relationship.tgt_id:
+            ordinary_names.add(relationship.tgt_id)
+
+    if ordinary_names:
+        entity_names = list(ordinary_names)
+        node_data_list = await asyncio.gather(
+            *[ctx.graph.get_node(name) for name in entity_names]
+        )
+        degrees = await asyncio.gather(
+            *[ctx.graph.node_degree(name) for name in entity_names]
+        )
+
+        for name, node_data, degree in zip(
+            entity_names, node_data_list, degrees
+        ):
+            if node_data is None:
+                continue
+            records.append(
+                EntityRecord(
+                    entity_name=name,
+                    source_id=node_data.get("source_id", ""),
+                    entity_type=node_data.get("entity_type", ""),
+                    description=node_data.get("description", ""),
+                    rank=degree or 0,
+                )
+            )
+
     if ctx.config and hasattr(ctx.config, "max_token_for_local_context"):
         records = truncate_list_by_token_size(
             records,
-            key=lambda x: x.description,
+            key=lambda item: item.description,
             max_token_size=ctx.config.max_token_for_local_context,
         )
 
-    return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=records, producer="entity.rel_node")}
+    return {
+        "entities": SlotValue(
+            kind=SlotKind.ENTITY_SET,
+            data=records,
+            producer="entity.rel_node",
+        )
+    }
