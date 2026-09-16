@@ -1,7 +1,4 @@
-"""LightRAG: Entity VDB + Relationship VDB -> Chunks from relations.
-
-Keywords-based global retrieval with entity and relationship VDB search.
-"""
+"""LightRAG reference plan: relationship VDB -> source chunks -> answer."""
 
 from Core.AgentSchema.plan import (
     DynamicToolChainConfig,
@@ -14,42 +11,59 @@ from Core.AgentSchema.plan import (
 
 def lightrag_plan(query: str, **kwargs) -> ExecutionPlan:
     return ExecutionPlan(
-        plan_description="LightRAG: Entity VDB + Relationship VDB -> entity extraction -> chunk retrieval",
+        plan_description="LightRAG: relationship VDB retrieval -> source evidence -> answer",
         target_dataset_name=kwargs.get("dataset", ""),
         plan_inputs={"query": query},
         steps=[
             ExecutionStep(
-                step_id="s1",
-                description="Search relationships by semantic similarity",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="relationship.vdb",
-                        inputs={"query": "plan_inputs.query"},
-                        named_outputs={"relationships": "relationship_set"},
-                    ),
-                ]),
+                step_id="relationships",
+                description="Search relationship descriptions/keywords by semantic similarity",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="relationship.vdb",
+                            inputs={"query": "plan_inputs.query"},
+                            named_outputs={"relationships": "relationship_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s2",
-                description="Extract entities from found relationships",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="entity.rel_node",
-                        inputs={"relationships": ToolInputSource(from_step_id="s1", named_output_key="relationships")},
-                        named_outputs={"entities": "entity_set"},
-                    ),
-                ]),
+                step_id="evidence",
+                description="Retrieve original chunks supporting the selected relationships",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="chunk.from_relation",
+                            inputs={
+                                "relationships": ToolInputSource(
+                                    from_step_id="relationships",
+                                    named_output_key="relationships",
+                                )
+                            },
+                            named_outputs={"chunks": "chunk_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s3",
-                description="Get text chunks from relationships",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="chunk.from_relation",
-                        inputs={"relationships": ToolInputSource(from_step_id="s1", named_output_key="relationships")},
-                        named_outputs={"chunks": "chunk_set"},
-                    ),
-                ]),
+                step_id="answer",
+                description="Generate answer from relationship-grounded evidence",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="meta.generate_answer",
+                            inputs={
+                                "query": "plan_inputs.query",
+                                "chunks": ToolInputSource(
+                                    from_step_id="evidence",
+                                    named_output_key="chunks",
+                                ),
+                            },
+                            named_outputs={"answer": "text"},
+                        )
+                    ]
+                ),
             ),
         ],
     )
