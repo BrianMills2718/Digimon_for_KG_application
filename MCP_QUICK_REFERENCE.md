@@ -1,178 +1,41 @@
-# MCP Implementation Quick Reference
+# MCP Quick Reference — Historical
 
-## File Structure to Create
+**Status:** Superseded  
+**Original planning era:** 2025  
+**Superseded:** 2026-09-16
 
-```
-Core/MCP/
-├── __init__.py
-├── base_mcp_server.py          # Checkpoint 1.1
-├── mcp_client_manager.py       # Checkpoint 1.2  
-├── shared_context.py           # Checkpoint 1.3
-├── tools/
-│   ├── __init__.py
-│   ├── entity_vdb_search.py   # Checkpoint 2.1
-│   ├── graph_builders.py       # Checkpoint 2.2
-│   └── tool_registry.py        # Checkpoint 2.3
-├── agents/
-│   ├── __init__.py
-│   ├── mcp_agent_interface.py  # Checkpoint 3.1
-│   ├── coordination.py         # Checkpoint 3.2
-│   └── cross_modal_bridge.py   # Checkpoint 3.3
-└── monitoring/
-    ├── __init__.py
-    ├── metrics.py              # Checkpoint 4.1
-    └── security.py             # Checkpoint 4.2
-```
+This file originally served as a quick reference for a planned WebSocket MCP migration, including files to create and checkpoint-oriented implementation steps.
 
-## Key Classes to Implement
+That is no longer the active MCP architecture.
 
-### Phase 1: Foundation
-```python
-# base_mcp_server.py
-class MCPServer:
-    async def start(self, port: int)
-    async def handle_request(self, websocket, path)
-    async def process_message(self, message: dict)
-    
-# mcp_client_manager.py
-class MCPClientManager:
-    async def connect(self, host: str, port: int)
-    async def invoke_method(self, method: str, params: dict)
-    def get_pool_statistics(self) -> dict
+## Current MCP surface
 
-# shared_context.py
-class SharedContextStore:
-    async def get(self, session_id: str, key: str)
-    async def set(self, session_id: str, key: str, value: Any)
-    async def clear_session(self, session_id: str)
-```
+The public snapshot's current external harness surface is:
 
-### Phase 2: Tool Migration
-```python
-# tools/tool_registry.py
-class MCPToolRegistry:
-    def register_tool(self, tool_id: str, handler: Callable)
-    def get_tool(self, tool_id: str) -> MCPTool
-    def list_tools(self) -> List[dict]
-```
+- `digimon_mcp_stdio_server.py`
 
-### Phase 3: Multi-Agent
-```python
-# agents/mcp_agent_interface.py
-class MCPAgent:
-    async def register(self, capabilities: List[str])
-    async def discover_peers(self) -> List[AgentInfo]
-    async def send_task(self, agent_id: str, task: dict)
-```
+It uses `FastMCP` over stdio and exposes three useful levels of execution:
 
-## MCP Message Format
+1. **individual capabilities/operators** — preferred conceptual mode for capable external harnesses;
+2. **reference method execution** — execute one of the known operator compositions;
+3. **optional auto selection** — a prompt/model selects a reference method when desired.
 
-### Request
-```json
-{
-    "id": "unique-request-id",
-    "method": "Entity.VDBSearch",
-    "params": {
-        "query": "example"
-    },
-    "session_id": "session-123"
-}
-```
+The same server also exposes corpus/graph construction, resource/config inspection, community/prerequisite helpers, graph analysis, and cross-modal tools.
 
-### Success Response
-```json
-{
-    "id": "unique-request-id",
-    "status": "success",
-    "result": {
-        // Method-specific results
-    }
-}
-```
+## Current architecture references
 
-### Error Response
-```json
-{
-    "id": "unique-request-id", 
-    "status": "error",
-    "error": "Error message",
-    "code": "ERROR_CODE"
-}
-```
+Use these instead of the old MCP migration checklist:
 
-## Testing Commands
+- `docs/CURRENT_STATE.md`
+- `docs/ARCHITECTURE.md`
+- `docs/GAP_ANALYSIS.md`
+- `docs/ROADMAP.md`
+- `docs/adr/002-harness-first-capability-architecture.md`
+- `AGENTS.md`
+- `CLAUDE.md`
 
-```bash
-# Start MCP server for testing
-python -m Core.MCP.base_mcp_server --port 8765
+## Current design rule
 
-# Run specific checkpoint test
-pytest tests/mcp/test_mcp_checkpoint_1_1.py -v -s
+The external intelligent harness owns adaptive orchestration. DIGIMON owns composable capabilities, typed contracts, resource/prerequisite facts, bounded model-assisted operations, and evidence/provenance.
 
-# Run with debugging
-pytest tests/mcp/test_mcp_checkpoint_1_1.py -v -s --pdb
-
-# Check coverage
-pytest tests/mcp/ --cov=Core.MCP --cov-report=term-missing
-```
-
-## Common Issues & Solutions
-
-### WebSocket Connection Errors
-```python
-# Ensure server is running before client tests
-await asyncio.sleep(1)  # Give server time to start
-```
-
-### Import Errors
-```python
-# Add to PYTHONPATH if needed
-import sys
-sys.path.append('/home/brian/digimon_cc')
-```
-
-### Async Test Issues
-```python
-# Use pytest-asyncio
-@pytest.mark.asyncio
-async def test_async_function():
-    result = await async_operation()
-```
-
-## Performance Targets
-
-- Server startup: < 1s
-- Echo request: < 100ms  
-- Tool invocation overhead: < 200ms
-- Connection pool reuse: > 90%
-- Context operations: < 10ms
-- End-to-end simple query: < 2s
-- Complex cross-modal query: < 5s
-
-## Dependencies to Add
-
-```txt
-# Add to requirements.txt
-websockets>=10.0
-aiohttp>=3.8.0
-prometheus-client>=0.15.0
-pyjwt>=2.6.0
-```
-
-## Useful Debugging
-
-```python
-# Enable debug logging
-import logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Time operations
-import time
-start = time.time()
-# ... operation ...
-elapsed = time.time() - start
-print(f"Operation took {elapsed*1000:.1f}ms")
-
-# Check WebSocket state
-print(f"WebSocket state: {websocket.state}")
-```
+The original quick-reference checklist remains available in Git history for project provenance.
