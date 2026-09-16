@@ -15,6 +15,7 @@ from Core.AgentSchema.plan import (
     ToolInputSource,
 )
 from Core.Composition.ChainValidator import ChainValidator
+from Core.Composition.OperatorComposer import OperatorComposer
 from Core.Composition.PipelineExecutor import PipelineExecutionError, PipelineExecutor
 from Core.Schema.OperatorDescriptor import CostTier, OperatorDescriptor, SlotSpec
 from Core.Schema.SlotTypes import (
@@ -126,15 +127,8 @@ def make_valid_plan():
     )
 
 
-def test_chain_validator_accepts_explicit_typed_wiring():
-    result = ChainValidator(make_registry()).validate(
-        make_valid_plan(), plan_input_kinds={SlotKind.QUERY_TEXT}
-    )
-    assert result.valid, result.errors
-
-
-def test_chain_validator_rejects_missing_required_input():
-    plan = ExecutionPlan(
+def make_invalid_plan():
+    return ExecutionPlan(
         plan_description="invalid missing input",
         target_dataset_name="test",
         plan_inputs={"query": "unused"},
@@ -153,8 +147,27 @@ def test_chain_validator_rejects_missing_required_input():
             )
         ],
     )
+
+
+def make_composer():
+    # Bypass method profiling: these tests target execute/validation behavior
+    # using the tiny deterministic registry above.
+    composer = object.__new__(OperatorComposer)
+    composer.registry = make_registry()
+    composer.profiles = {}
+    return composer
+
+
+def test_chain_validator_accepts_explicit_typed_wiring():
     result = ChainValidator(make_registry()).validate(
-        plan, plan_input_kinds={SlotKind.QUERY_TEXT}
+        make_valid_plan(), plan_input_kinds={SlotKind.QUERY_TEXT}
+    )
+    assert result.valid, result.errors
+
+
+def test_chain_validator_rejects_missing_required_input():
+    result = ChainValidator(make_registry()).validate(
+        make_invalid_plan(), plan_input_kinds={SlotKind.QUERY_TEXT}
     )
     assert not result.valid
     assert any(error.slot_name == "entities" for error in result.errors)
@@ -195,3 +208,21 @@ async def test_pipeline_executor_rejects_wrong_plan_input_kind():
     executor = PipelineExecutor(make_registry(), ctx=object())
     with pytest.raises(PipelineExecutionError, match="Type mismatch"):
         await executor.execute(plan)
+
+
+@pytest.mark.asyncio
+async def test_operator_composer_rejects_invalid_plan_by_default():
+    with pytest.raises(PipelineExecutionError, match="failed static validation"):
+        await make_composer().execute(make_invalid_plan(), ctx=object())
+
+
+@pytest.mark.asyncio
+async def test_operator_composer_best_effort_is_explicit():
+    result = await make_composer().execute(
+        make_invalid_plan(),
+        ctx=object(),
+        allow_invalid_plan=True,
+    )
+
+    # PipelineExecutor still protects required inputs at dispatch time.
+    assert "relationships" in result["all_step_outputs"]
