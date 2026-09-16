@@ -19,6 +19,37 @@ def _edge_record_endpoints(edge):
     return None
 
 
+def _split_connected_edge_sequence(raw_edges) -> list[list[str]]:
+    """Turn an edge sequence into real contiguous node paths.
+
+    NetworkXStorage may concatenate several paths found from the same seed into
+    one list of edge records. A discontinuity therefore starts a new path; it
+    must never be represented as an artificial edge between the two segments.
+    """
+    paths: list[list[str]] = []
+    current: list[str] = []
+
+    for raw_edge in raw_edges or []:
+        endpoints = _edge_record_endpoints(raw_edge)
+        if endpoints is None:
+            continue
+        src, tgt = endpoints
+
+        if not current:
+            current = [src, tgt]
+        elif current[-1] == src:
+            current.append(tgt)
+        elif current[-1] == tgt:
+            current.append(src)
+        else:
+            paths.append(current)
+            current = [src, tgt]
+
+    if current:
+        paths.append(current)
+    return paths
+
+
 async def subgraph_khop_paths(
     inputs: Dict[str, SlotValue],
     ctx: Any,
@@ -56,26 +87,13 @@ async def subgraph_khop_paths(
             normalized_paths = []
 
             for raw_path in raw_paths or []:
-                path_nodes = []
-                for raw_edge in raw_path:
-                    endpoints = _edge_record_endpoints(raw_edge)
-                    if endpoints is None:
-                        continue
-                    src, tgt = endpoints
-                    all_nodes.update((src, tgt))
-                    all_edges.append((src, tgt))
-                    if not path_nodes:
-                        path_nodes.extend((src, tgt))
-                    elif path_nodes[-1] == src:
-                        path_nodes.append(tgt)
-                    elif path_nodes[-1] == tgt:
-                        path_nodes.append(src)
-                    else:
-                        # The storage can return concatenated path segments.
-                        # Preserve both endpoints rather than fabricating adjacency.
-                        path_nodes.extend((src, tgt))
-                if path_nodes:
+                for path_nodes in _split_connected_edge_sequence(raw_path):
                     normalized_paths.append(path_nodes)
+                    all_nodes.update(path_nodes)
+                    all_edges.extend(
+                        (path_nodes[index], path_nodes[index + 1])
+                        for index in range(len(path_nodes) - 1)
+                    )
 
             record = SubgraphRecord(
                 nodes=all_nodes,
@@ -91,7 +109,6 @@ async def subgraph_khop_paths(
                 )
                 all_nodes.update(neighbors or set())
 
-            # Preserve actual graph edges inside the discovered neighborhood.
             edge_set = set()
             for node in all_nodes:
                 for edge in await ctx.graph.get_node_edges(node) or []:
@@ -120,5 +137,6 @@ async def subgraph_khop_paths(
                 kind=SlotKind.SUBGRAPH,
                 data=SubgraphRecord(nodes=set(), edges=[]),
                 producer="subgraph.khop_paths",
+                metadata={"error": str(exc)},
             )
         }
