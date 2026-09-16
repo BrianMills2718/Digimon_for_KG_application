@@ -358,20 +358,20 @@ async def main():
             detail = method_result["error"]
         else:
             final_output = method_result.get("final_output", {})
-            method_chunks = final_output.get("chunks", [])
-            method_ok = len(method_chunks) > 0
+            method_answer = str(final_output.get("answer", ""))
+            method_ok = len(method_answer.strip()) > 10
             detail = (
-                f"final_chunks={len(method_chunks)}, "
+                f"answer_len={len(method_answer)}, "
                 f"steps={list(method_result.get('all_step_outputs', {}).keys())}"
             )
         record(
-            "F1: execute_method('basic_local') returns evidence",
+            "F1: execute_method('basic_local') returns an answer",
             method_ok,
             detail,
         )
     except Exception as exc:
         record(
-            "F1: execute_method('basic_local') returns evidence",
+            "F1: execute_method('basic_local') returns an answer",
             False,
             f"ERROR: {exc}",
         )
