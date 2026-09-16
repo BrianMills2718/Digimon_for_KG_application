@@ -1,6 +1,7 @@
-"""Community from level operator.
+"""Community-from-level operator.
 
-Retrieve community reports by hierarchy level, sorted by occurrence and rating.
+Retrieve persisted community reports while preserving the authoritative
+community identity/level/occurrence from the graph-derived Leiden schema.
 """
 
 from __future__ import annotations
@@ -10,62 +11,105 @@ from typing import Any, Dict, Optional
 from Core.Schema.SlotTypes import CommunityRecord, SlotKind, SlotValue
 
 
+def _community_level(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
 async def community_from_level(
     inputs: Dict[str, SlotValue],
     ctx: Any,
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  (none required — uses config)
-    Outputs: {"communities": SlotValue(COMMUNITY_SET)}
+    Inputs:  none required (uses community/config in context)
+    Outputs: {"communities": COMMUNITY_SET}
     Params:  {"level": int, "max_consider": int, "min_rating": float}
     """
     p = params or {}
-    level = p.get("level", getattr(ctx.config, "level", 2))
-    max_consider = p.get("max_consider", getattr(ctx.config, "global_max_consider_community", 50))
-    min_rating = p.get("min_rating", getattr(ctx.config, "global_min_community_rating", 0))
-
-    community_schema = ctx.community.community_schema
-    filtered = {
-        k: v for k, v in community_schema.items()
-        if v.level <= level
-    }
-    if not filtered:
-        return {"communities": SlotValue(kind=SlotKind.COMMUNITY_SET, data=[], producer="community.from_level")}
-
-    sorted_schemas = sorted(
-        filtered.items(),
-        key=lambda x: x[1].occurrence,
-        reverse=True,
-    )[:max_consider]
-
-    community_datas = await ctx.community.community_reports.get_by_ids(
-        [k[0] for k in sorted_schemas]
+    level = int(p.get("level", getattr(ctx.config, "level", 2)))
+    max_consider = int(
+        p.get(
+            "max_consider",
+            getattr(ctx.config, "global_max_consider_community", 50),
+        )
     )
-    community_datas = [c for c in community_datas if c is not None]
-    community_datas = [
-        c for c in community_datas
-        if c.get("report_json", {}).get("rating", 0) >= min_rating
+    min_rating = float(
+        p.get(
+            "min_rating",
+            getattr(ctx.config, "global_min_community_rating", 0),
+        )
+    )
+
+    if ctx.community is None:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_level",
+                metadata={"error": "community resource unavailable"},
+            )
+        }
+
+    community_schema = ctx.community.community_schema or {}
+    selected = [
+        (community_id, schema)
+        for community_id, schema in community_schema.items()
+        if _community_level(schema.level) <= level
     ]
-    community_datas.sort(
-        key=lambda x: (
-            x.get("community_info", {}).get("occurrence", 0),
-            x.get("report_json", {}).get("rating", 0),
-        ),
-        reverse=True,
+    selected.sort(key=lambda item: float(item[1].occurrence or 0.0), reverse=True)
+    selected = selected[: max(0, max_consider)]
+
+    if not selected:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_level",
+            )
+        }
+
+    report_values = await ctx.community.community_reports.get_by_ids(
+        [community_id for community_id, _schema in selected]
     )
 
     records = []
-    for cd in community_datas:
-        rj = cd.get("report_json", {})
-        records.append(CommunityRecord(
-            community_id=str(rj.get("id", "")),
-            level=rj.get("level", 0),
-            title=rj.get("title", ""),
-            report=cd.get("report_string", ""),
-            occurrence=cd.get("community_info", {}).get("occurrence", 0.0),
-            rating=rj.get("rating", 0.0),
-            extra={"report_json": rj},
-        ))
+    for (community_id, schema), report_data in zip(selected, report_values):
+        if report_data is None:
+            continue
 
-    return {"communities": SlotValue(kind=SlotKind.COMMUNITY_SET, data=records, producer="community.from_level")}
+        report_json = report_data.get("report_json", {}) or {}
+        rating = float(report_json.get("rating", 0.0) or 0.0)
+        if rating < min_rating:
+            continue
+
+        records.append(
+            CommunityRecord(
+                community_id=str(community_id),
+                level=_community_level(schema.level),
+                title=str(
+                    report_json.get("title")
+                    or getattr(schema, "title", "")
+                    or community_id
+                ),
+                report=str(report_data.get("report_string", "") or ""),
+                occurrence=float(getattr(schema, "occurrence", 0.0) or 0.0),
+                rating=rating,
+                nodes=set(getattr(schema, "nodes", set()) or set()),
+                extra={"report_json": report_json},
+            )
+        )
+
+    records.sort(
+        key=lambda record: (record.occurrence, record.rating),
+        reverse=True,
+    )
+    return {
+        "communities": SlotValue(
+            kind=SlotKind.COMMUNITY_SET,
+            data=records,
+            producer="community.from_level",
+        )
+    }
