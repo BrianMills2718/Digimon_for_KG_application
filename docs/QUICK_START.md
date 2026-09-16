@@ -1,139 +1,126 @@
-# DIGIMON Quick Start Guide
+# DIGIMON Quick Start
 
-## Installation Options
+This guide is intentionally narrow: get the public snapshot configured and exercise the current CLI/API surfaces without relying on older experimental setup instructions.
 
-### Option 1: Minimal Installation (Recommended)
+## 1. Install dependencies
 
-For basic GraphRAG functionality with OpenAI:
+For the smallest supported dependency set:
 
 ```bash
 pip install -r requirements-minimal.txt
 ```
 
-This gives you:
-- ✅ Core GraphRAG pipeline
-- ✅ OpenAI LLM/embeddings
-- ✅ FAISS vector search
-- ✅ REST API
-- ✅ Basic graph operations
-
-### Option 2: Full Installation
-
-For all features (may have dependency conflicts):
+For the broader research environment:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Option 3: Docker (Easiest)
+The full dependency set includes more optional research/retrieval components and may require additional system or GPU-specific setup.
 
-```bash
-# Minimal version
-docker-compose up api-minimal
+## 2. Create the runtime configuration
 
-# Full version
-docker-compose up digimon-full
+Copy the example configuration:
 
-# Development environment
-docker-compose up dev
-```
-
-## Configuration
-
-1. Copy the example config:
 ```bash
 cp Option/Config2.example.yaml Option/Config2.yaml
 ```
 
-2. Edit `Option/Config2.yaml` and add your API keys:
-```yaml
-llm:
-  api_key: "your-openai-api-key"
-  model: "gpt-3.5-turbo"
+Then edit `Option/Config2.yaml` with the LLM and embedding providers you want to use. The included example contains OpenAI-style fields for `llm` and `embedding` plus the dataset/results locations.
 
-embedding:
-  api_key: "your-openai-api-key"  # Can be same as LLM key
-  model: "text-embedding-3-small"
+Do not commit real API keys.
 
-# If you have ColBERT issues:
-disable_colbert: true
+## 3. Choose a corpus directory
+
+The CLI requires a corpus path. Use an existing directory under `Data/` or a directory containing the documents you want the harness to work with.
+
+Example:
+
+```text
+Data/MySampleTexts/
 ```
 
-## Verify Installation
+## 4. Run the CLI
+
+Interactive mode:
 
 ```bash
-python test_minimal_setup.py
+python digimon_cli.py -c Data/MySampleTexts -i
 ```
 
-## Basic Usage
+Single question:
 
-### 1. Start the API Server
+```bash
+python digimon_cli.py -c Data/MySampleTexts -q "What are the main entities and how are they connected?"
+```
+
+Experimental ReAct-style iterative planning:
+
+```bash
+python digimon_cli.py -c Data/MySampleTexts -q "How are the major entities connected?" --react
+```
+
+Batch questions:
+
+```bash
+python digimon_cli.py -c Data/MySampleTexts -b queries.txt -o results.json
+```
+
+A custom configuration can be supplied with:
+
+```bash
+python digimon_cli.py -c Data/MySampleTexts -i --config path/to/config.yaml
+```
+
+## 5. API surface
+
+The repository also contains `api.py` as an HTTP/API entry point:
 
 ```bash
 python api.py
 ```
 
-The API will be available at `http://localhost:5000`
+See `docs/API_REFERENCE.md` for the API-oriented documentation in this snapshot.
 
-### 2. Use the CLI
+## 6. MCP / intelligent-harness surface
 
-```bash
-# Interactive mode
-python digimon_cli.py -i
+`digimon_mcp_stdio_server.py` exposes DIGIMON capabilities for an MCP-capable harness. The intended architecture is harness-first: the harness decides how to compose the available graph, vector, text, community, and structured operations rather than relying on one fixed pipeline.
 
-# Process a corpus
-python digimon_cli.py -c /path/to/documents
+See:
 
-# Ask a question
-python digimon_cli.py -q "What is machine learning?"
-```
+- `../FUNCTIONALITY.md` for the capability overview;
+- `AGENT_INTELLIGENCE_ENHANCEMENTS.md` for the current reasoning architecture;
+- `../MCP_QUICK_REFERENCE.md` for MCP-specific material in this snapshot.
 
-### 3. Build a Knowledge Graph
+## Configuration notes
 
-```python
-# Using the Python API
-from Core.GraphRAG import GraphRAG
+The example `Option/Config2.example.yaml` includes:
 
-# Initialize
-graphrag = GraphRAG()
+- `llm` provider/model configuration;
+- `embedding` provider/model configuration;
+- `data_root`;
+- `working_dir`;
+- an optional `disable_colbert` switch.
 
-# Build from documents
-graphrag.build(dataset_name="my_docs", corpus_path="./Data/my_docs")
+Provider support is mediated through the repository's provider layer; model availability and provider-specific credentials depend on the environment in which you run DIGIMON.
 
-# Query
-result = graphrag.query("Tell me about the main topics")
-```
+## Troubleshooting
 
-## Common Issues
+### Missing API key or provider credentials
 
-### 1. ColBERT Dependency Conflict
+Check `Option/Config2.yaml` and the provider configuration used by your selected LLM/embedding backend.
 
-If you see transformer/tokenizer errors:
+### Optional retrieval dependency conflicts
 
-```yaml
-# In Option/Config2.yaml
-disable_colbert: true
-```
+Start with `requirements-minimal.txt` and enable additional research components only when needed.
 
-Or use minimal requirements which exclude ColBERT.
+### Corpus path errors
 
-### 2. Missing API Key
+The current CLI declares `--corpus/-c` as required. Make sure the directory exists before launching the CLI.
 
-```
-ValueError: Please set your API key in Option/Config2.yaml
-```
+## Next reading
 
-Make sure to add your OpenAI API key to the config file.
-
-### 3. CUDA/GPU Errors
-
-Use the CPU-only version:
-```bash
-pip install -r requirements-minimal.txt
-```
-
-## Next Steps
-
-- Check out the [examples](./examples/) directory
-- Read the [API documentation](./docs/API_REFERENCE.md)
-- See [DEPENDENCIES.md](./DEPENDENCIES.md) for feature-specific requirements
+1. `../README.md` — project and architecture overview.
+2. `../FUNCTIONALITY.md` — what the tool layer exposes.
+3. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
+4. `FUTURE_EVALUATION_QUESTIONS.md` — deferred benchmarking and research questions.
