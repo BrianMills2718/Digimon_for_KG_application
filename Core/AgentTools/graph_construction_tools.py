@@ -1,363 +1,369 @@
 """
-Agent tool functions for building ERGraph, RKGraph, TreeGraph, TreeGraphBalanced, and PassageGraph.
-Each function takes its Pydantic input model and core dependencies, applies config overrides, builds the graph, and returns a Pydantic output.
+Agent tool functions for building DIGIMON graph variants.
+
+Each builder applies graph-specific overrides, loads dataset chunks, delegates to
+the graph implementation, and returns a truthful build result containing the
+populated graph instance on success.
 """
 import asyncio
+from pathlib import Path
 from typing import Any, Optional
+
 from Core.AgentSchema.graph_construction_tool_contracts import (
-    BuildERGraphInputs, BuildERGraphOutputs, ERGraphConfigOverrides,
-    BuildRKGraphInputs, BuildRKGraphOutputs, RKGraphConfigOverrides,
-    BuildTreeGraphInputs, BuildTreeGraphOutputs, TreeGraphConfigOverrides,
-    BuildTreeGraphBalancedInputs, BuildTreeGraphBalancedOutputs, TreeGraphBalancedConfigOverrides,
-    BuildPassageGraphInputs, BuildPassageGraphOutputs, PassageGraphConfigOverrides,
+    BuildERGraphInputs,
+    BuildERGraphOutputs,
+    BuildPassageGraphInputs,
+    BuildPassageGraphOutputs,
+    BuildRKGraphInputs,
+    BuildRKGraphOutputs,
+    BuildTreeGraphBalancedInputs,
+    BuildTreeGraphBalancedOutputs,
+    BuildTreeGraphInputs,
+    BuildTreeGraphOutputs,
 )
+from Core.Common.Logger import logger
 from Core.Graph.GraphFactory import get_graph
 from Option.Config2 import Config
-from Core.Common.Logger import logger
-# Helper: Apply config overrides to a config object
-# This mutates the config_copy in-place
+
 
 def apply_overrides(config_copy, overrides: Optional[Any]):
     if not overrides:
-        logger.info("apply_overrides: No overrides provided, skipping")
         return
-    
-    # Try .model_dump() for Pydantic v2+, fallback to .dict() for Pydantic v1
+
     try:
-        if hasattr(overrides, 'model_dump'):
-            override_dict = overrides.model_dump(exclude_unset=True)
-        else:
-            override_dict = overrides.dict(exclude_unset=True)
-            
-        logger.debug(f"apply_overrides: Applying overrides {override_dict}")
-        
+        override_dict = (
+            overrides.model_dump(exclude_unset=True)
+            if hasattr(overrides, "model_dump")
+            else overrides.dict(exclude_unset=True)
+        )
         for field_name, value in override_dict.items():
             if hasattr(config_copy, field_name):
                 setattr(config_copy, field_name, value)
-                logger.debug(f"apply_overrides: Set {field_name}={value} on config")
             else:
-                logger.warning(f"apply_overrides: Field '{field_name}' not found in target config object. Skipping override for this field.")
-    except Exception as e:
-        logger.error(f"apply_overrides: Error applying overrides: {e}")
-        # Continue execution despite override errors
+                logger.warning(
+                    f"apply_overrides: Field '{field_name}' not found in target config; skipping."
+                )
+    except Exception as exc:
+        logger.error(f"apply_overrides: Error applying overrides: {exc}")
 
-# Helper: Get artifact path from graph instance
 
 def get_artifact_path(graph_instance):
-    from pathlib import Path
-    
-    # Try to get the namespace path directly
-    if hasattr(graph_instance._graph, 'namespace') and hasattr(graph_instance._graph.namespace, 'path'):
-        return str(graph_instance._graph.namespace.path)
-    
-    # For NetworkXStorage - return the directory containing the file
-    if hasattr(graph_instance._graph, 'file_path'):
-        return str(Path(graph_instance._graph.file_path).parent)
-    
-    # For TreeGraphStorage - return the directory containing the tree pkl file
-    if hasattr(graph_instance._graph, 'tree_pkl_file'):
-        return str(Path(graph_instance._graph.tree_pkl_file).parent)
-    
+    storage = graph_instance._graph
+    if hasattr(storage, "namespace") and getattr(storage.namespace, "path", None):
+        return str(storage.namespace.path)
+    if hasattr(storage, "file_path"):
+        return str(Path(storage.file_path).parent)
+    if hasattr(storage, "tree_pkl_file"):
+        return str(Path(storage.tree_pkl_file).parent)
     return None
 
-# Helper: Get node, edge, and layer counts
+
 async def get_graph_counts(graph_instance) -> dict:
     node_count = None
     edge_count = None
     layer_count = None
-    # Try property, then method, then storage
-    if hasattr(graph_instance, 'node_num'):
-        node_count = graph_instance.node_num
-        if asyncio.iscoroutinefunction(graph_instance.node_num):
-            node_count = await graph_instance.node_num()
-        elif callable(graph_instance.node_num):
-            node_count = graph_instance.node_num()
-    elif hasattr(graph_instance._graph, 'get_node_num'):
-        node_count = graph_instance._graph.get_node_num()
-    if hasattr(graph_instance, 'edge_num'):
-        edge_count = graph_instance.edge_num
-        if asyncio.iscoroutinefunction(graph_instance.edge_num):
-            edge_count = await graph_instance.edge_num()
-        elif callable(graph_instance.edge_num):
-            edge_count = graph_instance.edge_num()
-    elif hasattr(graph_instance._graph, 'get_edge_num'):
-        edge_count = graph_instance._graph.get_edge_num()
-    if hasattr(graph_instance, 'num_layers'):
-        layer_count = graph_instance.num_layers
-        if asyncio.iscoroutinefunction(graph_instance.num_layers):
-            layer_count = await graph_instance.num_layers()
-        elif callable(graph_instance.num_layers):
-            layer_count = graph_instance.num_layers()
-    elif hasattr(graph_instance._graph, 'get_layer_num'):
-        layer_count = graph_instance._graph.get_layer_num()
-    return dict(node_count=node_count, edge_count=edge_count, layer_count=layer_count)
 
-# =========================
-# ERGraph
-# =========================
+    if hasattr(graph_instance, "node_num"):
+        node_count = graph_instance.node_num
+        if callable(node_count):
+            node_count = node_count()
+            if asyncio.iscoroutine(node_count):
+                node_count = await node_count
+    elif hasattr(graph_instance._graph, "get_node_num"):
+        node_count = graph_instance._graph.get_node_num()
+
+    if hasattr(graph_instance, "edge_num"):
+        edge_count = graph_instance.edge_num
+        if callable(edge_count):
+            edge_count = edge_count()
+            if asyncio.iscoroutine(edge_count):
+                edge_count = await edge_count
+    elif hasattr(graph_instance._graph, "get_edge_num"):
+        edge_count = graph_instance._graph.get_edge_num()
+
+    if hasattr(graph_instance, "num_layers"):
+        layer_count = graph_instance.num_layers
+        if callable(layer_count):
+            layer_count = layer_count()
+            if asyncio.iscoroutine(layer_count):
+                layer_count = await layer_count
+    elif hasattr(graph_instance._graph, "get_layer_num"):
+        layer_count = graph_instance._graph.get_layer_num()
+
+    return {
+        "node_count": node_count,
+        "edge_count": edge_count,
+        "layer_count": layer_count,
+    }
+
+
 async def build_er_graph(
     tool_input: BuildERGraphInputs,
     main_config: Config,
     llm_instance: Any,
     encoder_instance: Any,
-    chunk_factory: Any
+    chunk_factory: Any,
 ) -> BuildERGraphOutputs:
     try:
-        current_graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(current_graph_config, tool_input.config_overrides)
-        temp_full_config = main_config.model_copy(deep=True)
-        temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "er_graph"
-        er_graph_instance = get_graph(
-            config=temp_full_config,
-            llm=llm_instance,
-            encoder=encoder_instance,
-        )
-        if hasattr(er_graph_instance._graph, 'namespace'):
-            er_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="er_graph")
-        input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not input_chunks:
-            return BuildERGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-                artifact_path=None
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = "er_graph"
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                tool_input.target_dataset_name, graph_type="er_graph"
             )
-        
-        logger.info(f"Calling er_graph_instance.build_graph for dataset: {tool_input.target_dataset_name}")
-        success = await er_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
-        
+
+        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
+        if not chunks:
+            return BuildERGraphOutputs(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
+            )
+
+        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
         if not success:
-            logger.error(f"build_er_graph tool: er_graph_instance.build_graph failed for {tool_input.target_dataset_name}")
             return BuildERGraphOutputs(
                 graph_id=f"{tool_input.target_dataset_name}_ERGraph",
                 status="failure",
                 message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
-                node_count=None,
-                edge_count=None,
-                artifact_path=None
             )
-        
-        logger.info(f"build_er_graph tool: er_graph_instance.build_graph succeeded for {tool_input.target_dataset_name}")
-        counts = await get_graph_counts(er_graph_instance)
-        artifact_p = get_artifact_path(er_graph_instance)
-        
-        # Log the artifact path for debugging
-        logger.info(f"build_er_graph artifact path: {artifact_p}")
-        
+
+        counts = await get_graph_counts(graph)
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
             status="success",
             message=f"ERGraph built successfully for {tool_input.target_dataset_name}.",
-            node_count=counts['node_count'],
-            edge_count=counts['edge_count'],
-            layer_count=counts['layer_count'],
-            artifact_path=artifact_p,
-            graph_instance=er_graph_instance
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.exception(f"ERGraph build failed for {tool_input.target_dataset_name}: {exc}")
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
             status="failure",
-            message=str(e),
-            artifact_path=None
+            message=str(exc),
         )
 
-# =========================
-# RKGraph
-# =========================
+
 async def build_rk_graph(
     tool_input: BuildRKGraphInputs,
     main_config: Config,
     llm_instance: Any,
     encoder_instance: Any,
-    chunk_factory: Any
+    chunk_factory: Any,
 ) -> BuildRKGraphOutputs:
     try:
-        current_graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(current_graph_config, tool_input.config_overrides)
-        temp_full_config = main_config.model_copy(deep=True)
-        temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "rkg_graph"
-        rk_graph_instance = get_graph(
-            config=temp_full_config,
-            llm=llm_instance,
-            encoder=encoder_instance,
-        )
-        if hasattr(rk_graph_instance._graph, 'namespace'):
-            rk_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="rkg_graph")
-        input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not input_chunks:
-            return BuildRKGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-                artifact_path=None
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = "rkg_graph"
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                tool_input.target_dataset_name, graph_type="rkg_graph"
             )
-        await rk_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
-        counts = await get_graph_counts(rk_graph_instance)
-        artifact_p = get_artifact_path(rk_graph_instance)
+
+        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
+        if not chunks:
+            return BuildRKGraphOutputs(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
+            )
+
+        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
+        if not success:
+            return BuildRKGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_RKGraph",
+                status="failure",
+                message=f"RKGraph building failed internally for {tool_input.target_dataset_name}.",
+            )
+
+        counts = await get_graph_counts(graph)
         return BuildRKGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_RKGraph",
             status="success",
             message=f"RKGraph built successfully for {tool_input.target_dataset_name}.",
-            node_count=counts['node_count'],
-            edge_count=counts['edge_count'],
-            layer_count=counts['layer_count'],
-            artifact_path=artifact_p
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.exception(f"RKGraph build failed for {tool_input.target_dataset_name}: {exc}")
         return BuildRKGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_RKGraph",
             status="failure",
-            message=str(e),
-            artifact_path=None
+            message=str(exc),
         )
 
-# =========================
-# TreeGraph
-# =========================
+
 async def build_tree_graph(
     tool_input: BuildTreeGraphInputs,
     main_config: Config,
     llm_instance: Any,
     encoder_instance: Any,
-    chunk_factory: Any
+    chunk_factory: Any,
 ) -> BuildTreeGraphOutputs:
     try:
-        current_graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(current_graph_config, tool_input.config_overrides)
-        temp_full_config = main_config.model_copy(deep=True)
-        temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "tree_graph"
-        tree_graph_instance = get_graph(
-            config=temp_full_config,
-            llm=llm_instance,
-            encoder=encoder_instance,
-        )
-        if hasattr(tree_graph_instance._graph, 'namespace'):
-            tree_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="tree_graph")
-        input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not input_chunks:
-            return BuildTreeGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-                artifact_path=None
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = "tree_graph"
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                tool_input.target_dataset_name, graph_type="tree_graph"
             )
-        await tree_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
-        counts = await get_graph_counts(tree_graph_instance)
-        artifact_p = get_artifact_path(tree_graph_instance)
+
+        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
+        if not chunks:
+            return BuildTreeGraphOutputs(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
+            )
+
+        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
+        if not success:
+            return BuildTreeGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
+                status="failure",
+                message=f"TreeGraph building failed internally for {tool_input.target_dataset_name}.",
+            )
+
+        counts = await get_graph_counts(graph)
         return BuildTreeGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
             status="success",
             message=f"TreeGraph built successfully for {tool_input.target_dataset_name}.",
-            node_count=counts['node_count'],
-            edge_count=counts['edge_count'],
-            layer_count=counts['layer_count'],
-            artifact_path=artifact_p
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.exception(f"TreeGraph build failed for {tool_input.target_dataset_name}: {exc}")
         return BuildTreeGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
             status="failure",
-            message=str(e),
-            artifact_path=None
+            message=str(exc),
         )
 
-# =========================
-# TreeGraphBalanced
-# =========================
+
 async def build_tree_graph_balanced(
     tool_input: BuildTreeGraphBalancedInputs,
     main_config: Config,
     llm_instance: Any,
     encoder_instance: Any,
-    chunk_factory: Any
+    chunk_factory: Any,
 ) -> BuildTreeGraphBalancedOutputs:
     try:
-        current_graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(current_graph_config, tool_input.config_overrides)
-        temp_full_config = main_config.model_copy(deep=True)
-        temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "tree_graph_balanced"
-        tree_graph_balanced_instance = get_graph(
-            config=temp_full_config,
-            llm=llm_instance,
-            encoder=encoder_instance,
-        )
-        if hasattr(tree_graph_balanced_instance._graph, 'namespace'):
-            tree_graph_balanced_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="tree_graph_balanced")
-        input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not input_chunks:
-            return BuildTreeGraphBalancedOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-                artifact_path=None
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = "tree_graph_balanced"
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                tool_input.target_dataset_name, graph_type="tree_graph_balanced"
             )
-        await tree_graph_balanced_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
-        counts = await get_graph_counts(tree_graph_balanced_instance)
-        artifact_p = get_artifact_path(tree_graph_balanced_instance)
+
+        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
+        if not chunks:
+            return BuildTreeGraphBalancedOutputs(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
+            )
+
+        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
+        if not success:
+            return BuildTreeGraphBalancedOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
+                status="failure",
+                message=f"TreeGraphBalanced building failed internally for {tool_input.target_dataset_name}.",
+            )
+
+        counts = await get_graph_counts(graph)
         return BuildTreeGraphBalancedOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
             status="success",
             message=f"TreeGraphBalanced built successfully for {tool_input.target_dataset_name}.",
-            node_count=counts['node_count'],
-            edge_count=counts['edge_count'],
-            layer_count=counts['layer_count'],
-            artifact_path=artifact_p
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.exception(
+            f"TreeGraphBalanced build failed for {tool_input.target_dataset_name}: {exc}"
+        )
         return BuildTreeGraphBalancedOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
             status="failure",
-            message=str(e),
-            artifact_path=None
+            message=str(exc),
         )
 
-# =========================
-# PassageGraph
-# =========================
+
 async def build_passage_graph(
     tool_input: BuildPassageGraphInputs,
     main_config: Config,
     llm_instance: Any,
     encoder_instance: Any,
-    chunk_factory: Any
+    chunk_factory: Any,
 ) -> BuildPassageGraphOutputs:
     try:
-        current_graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(current_graph_config, tool_input.config_overrides)
-        temp_full_config = main_config.model_copy(deep=True)
-        temp_full_config.graph = current_graph_config
-        temp_full_config.graph.type = "passage_graph"
-        passage_graph_instance = get_graph(
-            config=temp_full_config,
-            llm=llm_instance,
-            encoder=encoder_instance,
-        )
-        if hasattr(passage_graph_instance._graph, 'namespace'):
-            passage_graph_instance._graph.namespace = chunk_factory.get_namespace(tool_input.target_dataset_name, graph_type="passage_of_graph")
-        input_chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not input_chunks:
-            return BuildPassageGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-                artifact_path=None
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = "passage_graph"
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                tool_input.target_dataset_name, graph_type="passage_graph"
             )
-        await passage_graph_instance.build_graph(chunks=input_chunks, force=tool_input.force_rebuild)
-        counts = await get_graph_counts(passage_graph_instance)
-        artifact_p = get_artifact_path(passage_graph_instance)
+
+        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
+        if not chunks:
+            return BuildPassageGraphOutputs(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
+            )
+
+        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
+        if not success:
+            return BuildPassageGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
+                status="failure",
+                message=f"PassageGraph building failed internally for {tool_input.target_dataset_name}.",
+            )
+
+        counts = await get_graph_counts(graph)
         return BuildPassageGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
             status="success",
             message=f"PassageGraph built successfully for {tool_input.target_dataset_name}.",
-            node_count=counts['node_count'],
-            edge_count=counts['edge_count'],
-            layer_count=counts['layer_count'],
-            artifact_path=artifact_p
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.exception(f"PassageGraph build failed for {tool_input.target_dataset_name}: {exc}")
         return BuildPassageGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
             status="failure",
-            message=str(e),
-            artifact_path=None
+            message=str(exc),
         )
