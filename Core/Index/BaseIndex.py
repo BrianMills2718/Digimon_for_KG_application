@@ -21,9 +21,10 @@ class BaseIndex(ABC):
                 logger.info(f"Successfully loaded existing index from: {self.config.persist_path}")
             else:
                 logger.warning(f"Failed to load existing index from: {self.config.persist_path}")
-            return bool(loaded_successfully)
+            return bool(loaded_successfully and self._index is not None)
         except Exception as e:
             logger.error(f"Exception during index load from {self.config.persist_path}: {e}")
+            self._index = None
             return False
 
     def __init__(self, config):
@@ -44,9 +45,9 @@ class BaseIndex(ABC):
         should_load_existing = self.exist_index() and not force
         if should_load_existing:
             logger.info(f"Attempting to load existing index from: {self.config.persist_path}")
-            if await self._load_index():
+            if await self._load_index() and self._index is not None:
                 logger.info(f"Successfully loaded existing index from: {self.config.persist_path}")
-                return self._index is not None
+                return True
             logger.warning(
                 f"Failed to load existing index from: {self.config.persist_path}. "
                 "Will proceed to build a new one."
@@ -59,8 +60,6 @@ class BaseIndex(ABC):
             )
             await self.clean_index()
 
-        # Do not call _get_index() here. Vector/FAISS/ColBERT implementations
-        # initialize the concrete structure while processing the actual data.
         self._index = None
         logger.info(
             f"Building and persisting new index with {len(elements)} elements "
@@ -72,6 +71,9 @@ class BaseIndex(ABC):
             return False
 
         self._storage_index()
+        if self._index is None:
+            logger.error("Index persistence failed and invalidated the index.")
+            return False
         if not self.exist_index():
             logger.error(
                 f"Index persistence did not create {self.config.persist_path}; treating build as failed."
