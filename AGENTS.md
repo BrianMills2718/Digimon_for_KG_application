@@ -1,277 +1,172 @@
-# CLAUDE.md - DIGIMON Implementation Guide
+# AGENTS.md — DIGIMON Contributor and Coding-Agent Guide
 
-## CURRENT PRIORITY: MCP Integration (2025-06-06)
+**Updated:** 2026-09-16
 
-**FOCUS**: Implement Model Context Protocol (MCP) integration following the detailed plan in `MCP_INTEGRATION_DETAILED_PLAN.md`. Complete ALL 12 checkpoints without stopping unless blocked.
+This file gives implementation guidance to coding agents working in this repository. It intentionally points to the canonical documentation rather than duplicating a dated checkpoint plan.
 
-**MANDATE**: Continue implementing checkpoints 1.2 through 4.3 sequentially. Commit after each success. Do not stop for user input between checkpoints.
+## Read these first
 
-### Quick Status
-```
-Phase 1: Foundation       [🟩🟩🟩] 100% - COMPLETE ✓
-Phase 2: Tool Migration   [🟩🟩🟩] 100% - COMPLETE ✓  
-Phase 3: Multi-Agent      [⬜⬜⬜] 0% - Starting Next
-Phase 4: Production       [⬜⬜⬜] 0% - Not Started
+The source-of-truth documentation is:
 
-Current Checkpoint: 3.1 - Agent Communication Protocol
-```
+1. `docs/CURRENT_STATE.md` — what is actually implemented now.
+2. `docs/ARCHITECTURE.md` — target architecture.
+3. `docs/GAP_ANALYSIS.md` — concrete current→target gaps.
+4. `docs/ROADMAP.md` — ordered architecture-completion plan and exit criteria.
+5. `docs/adr/002-harness-first-capability-architecture.md` — accepted orchestration decision.
 
-### MCP Checkpoint Evidence Tracking
+`README.md` and `FUNCTIONALITY.md` are concise public views. Older status trackers, UKRF plans, MCP checkpoint plans and implementation reports are historical unless the canonical docs explicitly restate them.
 
-#### Checkpoint 1.1: Basic MCP Server
-```python
-# test_mcp_checkpoint_1_1.py
-# MUST verify:
-# 1. Server starts successfully on port 8765
-# 2. Basic echo request works with <100ms response
-# 3. Error handling works without crashing
+## Current architectural direction
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - server_started: "MCP Server started on port 8765" ✓
-# - echo_response: {"status": "success", "result": {"echo": "test"}} ✓
-# - response_time: 2.1ms (target: <100ms) ✓
-# - error_handled: {"status": "error", "error": "Method not found: nonexistent_method"} ✓
-# - All 4 tests passed
-# COMMIT: 71a26b7 - docs: Add comprehensive MCP integration plan with checkpoints 
-```
+DIGIMON is **harness-first**.
 
-#### Checkpoint 1.2: MCP Client Manager
-```python
-# test_mcp_checkpoint_1_2.py
-# MUST verify:
-# 1. Client connects to server
-# 2. Method invocation <50ms
-# 3. Connection pooling with >90% reuse
+### External intelligent harness owns
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - connection_state: "connected" ✓
-# - method_latency: 4.8ms (<50ms) ✓
-# - pool_stats: {"connections_created": 2, "reused": 3, "reuse_rate": 0.6} ✓
-# - All 4 tests passed
-# COMMIT: 2117068 - mcp: Complete checkpoint 1.2 - MCP Client Manager with connection pooling
-```
+- goal interpretation;
+- whether/how to decompose a problem;
+- tool/capability selection and sequencing;
+- retries, fallbacks, branching and parallel work;
+- adapting after observations;
+- stopping criteria.
 
-#### Checkpoint 1.3: Shared Context Store
-```python
-# test_mcp_checkpoint_1_3.py
-# MUST verify:
-# 1. Thread-safe context storage
-# 2. Session isolation
-# 3. <10ms context operations
+### DIGIMON owns
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - concurrent_ops: 500 increments = 500 (thread-safe) ✓
-# - session_isolation: no cross-contamination ✓
-# - avg_latency: 0.00ms, max: 0.01ms (<10ms) ✓
-# - garbage_collection: TTL expiration working ✓
-# - All 5 tests passed
-# COMMIT: 4b36174 - mcp: Complete checkpoint 1.3 - Thread-safe shared context store
-```
+- corpus/graph/index/resource construction;
+- typed retrieval and analysis capabilities;
+- capability metadata and compatibility;
+- resource/prerequisite facts and lifecycle;
+- source/evidence lineage;
+- bounded model-assisted operations where an individual capability requires semantic judgment;
+- reference method plans as optional conveniences.
 
-#### Checkpoint 2.1: First Tool Migration (Entity.VDBSearch)
-```python
-# test_mcp_checkpoint_2_1.py
-# MUST verify:
-# 1. Tool accessible via MCP with metadata
-# 2. Tool execution returns same results
-# 3. Performance overhead < 200ms
+Do **not** add another general-purpose planner/orchestrator or mandatory cognitive state machine unless a new ADR explicitly changes this decision.
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - tool_found: Entity.VDBSearch in MCP server ✓
-# - execution_success: 3 entities found for "George Washington" ✓
-# - performance_overhead: 2.4ms (<200ms) ✓
-# - error_handling: Invalid VDB handled gracefully ✓
-# - All 5 tests passed
-# COMMIT: ac211c1 - feat: MCP Checkpoint 2.1 - Entity.VDBSearch tool migration complete
-```
+## Canonical code center
 
-#### Checkpoint 2.2: Graph Building Tools Migration
-```python
-# test_mcp_checkpoint_2_2.py
-# MUST verify:
-# 1. All 5 graph building tools accessible via MCP
-# 2. Progress reporting works correctly
-# 3. Each tool returns correct schema
-# 4. Performance < 30s for small dataset
+The strongest current core is:
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - tools_found: All 5 graph tools (ERGraph, RKGraph, TreeGraph, etc.) ✓
-# - progress_support: All tools have progress_callback handling ✓
-# - schema_validation: Invalid params caught correctly ✓
-# - performance_ready: Infrastructure in place for <30s benchmarking ✓
-# - All 5 tests passed
-# COMMIT: 7e74163 - feat: MCP Checkpoint 2.2 - Graph building tools migration complete
-```
+- `Core/Schema/SlotTypes.py` — typed slot/dataflow records;
+- `Core/Schema/OperatorDescriptor.py` — operator metadata;
+- `Core/Operators/registry.py` — 26-operator registry;
+- `Core/Operators/` — operator implementations;
+- `Core/Composition/` — validation/execution/composition;
+- `Core/Methods/` — 10 reference plans;
+- `digimon_mcp_stdio_server.py` — current external-harness MCP facade.
 
-#### Checkpoint 2.3: Complete Tool Migration
-```python
-# test_mcp_checkpoint_2_3.py
-# MUST verify:
-# 1. Remaining 14 tools migrated to MCP
-# 2. All tools show correct metadata
-# 3. Tool discovery/listing works
-# 4. Total MCP overhead < 500ms for all tools
+When adding functionality, prefer extending or mapping into this capability model rather than creating a parallel registry/execution abstraction.
 
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - tools_migrated: 9 critical tools (Entity.VDB.Build, Entity.PPR, corpus.PrepareFromDirectory, etc.) ✓
-# - metadata_valid: All tools have proper input/output schemas ✓
-# - discovery_performance: 0.9ms average (< 50ms target) ✓
-# - total_overhead: 5.4ms for 10 operations (< 500ms) ✓
-# - All 5 tests passed
-# COMMIT: PENDING
-```
+## Current implementation priorities
 
-### Phase 3: Multi-Agent Coordination (Starting Next)
-- 3.1: Agent Communication Protocol
-- 3.2: Task Distribution Engine
-- 3.3: Result Aggregation
-- See `MCP_INTEGRATION_DETAILED_PLAN.md` for full details
+Follow `docs/ROADMAP.md`. The active sequence is:
 
----
+1. stabilize the capability contract and MCP parity;
+2. unify resource identities/lifecycle/prerequisites;
+3. make evidence/provenance an end-to-end contract;
+4. clean the harness-first execution boundary;
+5. consolidate legacy internal planning/AoT layers;
+6. normalize cross-modal capabilities;
+7. standardize machine-actionable errors/recovery;
+8. harden architectural contract tests and CI.
 
-## Implementation References
+Benchmark optimization, novelty claims, router calibration and new UI surfaces are not the current priority.
 
-### Key Files for MCP
-- **Plan**: `MCP_INTEGRATION_DETAILED_PLAN.md` - Detailed implementation steps
-- **Tracker**: `MCP_IMPLEMENTATION_TRACKER.md` - Progress tracking
-- **Reference**: `MCP_QUICK_REFERENCE.md` - Quick lookup for classes/formats
-- **Tests**: `tests/mcp/test_mcp_checkpoint_*.py` - Test files for each checkpoint
+## Status vocabulary
 
-### MCP Commands
-```bash
-# Run current checkpoint test
-pytest tests/mcp/test_mcp_checkpoint_1_1.py -v -s
+Use these terms consistently in docs/issues/code comments:
 
-# Start MCP server (once implemented)
-python -m Core.MCP.base_mcp_server --port 8765
+- **Implemented** — substantive code exists and is wired into a current surface.
+- **Partial** — code exists but lifecycle/integration/contracts/reliability are incomplete.
+- **Legacy** — retained for compatibility/history, not target architecture.
+- **Planned** — not materially complete yet.
 
-# Check implementation coverage
-pytest tests/mcp/ --cov=Core.MCP --cov-report=html
-```
+Do not call something “complete” merely because a module/file exists.
 
----
+## Legacy/transitional areas
 
-## Previous Work: 5-Stage Fix Protocol ✓ COMPLETE
+Treat the following carefully:
 
-All 5 stages completed successfully on 2025-06-05:
-- ✓ Stage 1: Entity extraction returns proper strings
-- ✓ Stage 2: No tool hallucinations  
-- ✓ Stage 3: Corpus paths handled correctly
-- ✓ Stage 4: Graph registration works
-- ✓ Stage 5: Full pipeline executes (VDB search needs tuning)
+- `Core/AOT/` — legacy programmed atomic-state/transition approach;
+- `Core/AgentBrain/` — older broad internal planning layer;
+- `Core/AgentOrchestrator/` — multiple older/transitional orchestrators;
+- `digimon_cli.py` — still calls internal `PlanningAgent`/`AgentOrchestrator`;
+- root MCP checkpoint/tracker documents — historical 2025 planning lineage;
+- older UKRF/multi-agent planning documents — research history, not current mandate.
 
----
+Before deleting legacy code, identify live callers and tests. Before extending it, verify that the target capability architecture cannot serve the same need more cleanly.
 
-## Quick Reference
+## AoT / GoT / ReAct guidance
 
-### Test Datasets
-- `Data/Social_Discourse_Test`: Best for testing (10 actors, 20 posts, rich network)
-- `Data/Synthetic_Test`: Good for VDB testing
-- `Data/MySampleTexts`: Historical documents
+These are **reasoning heuristics**, not mandatory DIGIMON runtimes.
 
-### Current Environment
-- Model: o4-mini (OpenAI)
-- Embeddings: text-embedding-3-small
-- Vector DB: FAISS
-- Working directory: /home/brian/digimon_cc
-- Python: 3.10+ with conda environment 'digimon'
+`prompts/decompose_question.yaml` may suggest dependency-aware subgoals. The harness may merge, skip, reorder, branch or revise them.
 
-### Tool Registry (18 tools)
-```
-Entity.VDBSearch, Entity.VDB.Build, Entity.PPR, Entity.Onehop, Entity.RelNode,
-Relationship.OneHopNeighbors, Relationship.VDB.Build, Relationship.VDB.Search,
-Chunk.FromRelationships, Chunk.GetTextForEntities,
-graph.BuildERGraph, graph.BuildRKGraph, graph.BuildTreeGraph,
-graph.BuildTreeGraphBalanced, graph.BuildPassageGraph,
-corpus.PrepareFromDirectory, graph.Visualize, graph.Analyze
-```
+Only formalize a reasoning DAG/state object when it enables a concrete system function such as scheduling, resumability, caching, provenance or auditing.
 
----
+## Capability design guidance
 
-## Development Protocol
+For a new canonical capability, prefer:
 
-### For MCP Implementation:
-1. **Start with current checkpoint** (1.1)
-2. **Create implementation file** (e.g., `Core/MCP/base_mcp_server.py`)
-3. **Run test** with full output capture
-4. **Update evidence** in this file under the checkpoint section
-5. **COMMIT IMMEDIATELY** with message: `mcp: Complete checkpoint X.Y - description`
-6. **Update tracker** (`MCP_IMPLEMENTATION_TRACKER.md`)
-7. **Continue to next checkpoint WITHOUT STOPPING**
+1. explicit typed inputs/outputs;
+2. machine-readable descriptor/metadata;
+3. explicit resource prerequisites;
+4. stable resource identifiers;
+5. structured error/failure semantics;
+6. source/evidence lineage preservation;
+7. deterministic behavior where possible;
+8. bounded/documented LLM use where semantic judgment is intrinsic;
+9. MCP exposure/discovery that stays synchronized with the capability definition;
+10. contract tests.
 
-**CRITICAL**: DO NOT STOP until all 12 checkpoints are complete or a blocking error occurs. Each checkpoint builds on the previous. Commit after EVERY successful checkpoint to preserve progress.
+Avoid hiding prerequisites or resource-building side effects from the caller.
 
-### Evidence Format:
-```
-# STATUS: [X] PASSED
-# EVIDENCE:
-# - test_name: actual_value (expected_value) ✓
-# - performance: Xms (target: <Yms) ✓
-# - output: "actual output string"
-# COMMIT: <commit hash> - <commit message>
-```
+## Evidence rules
 
-### Failure Format:
-```
-# STATUS: [X] FAILED - <brief reason>
-# EVIDENCE:
-# - test_name: actual_value (expected: expected_value) ✗
-# - error: "error message"
-# NEXT: <what needs to be fixed>
-```
+Current `EntityRecord`/`RelationshipRecord` include `source_id`; `ChunkRecord` includes `chunk_id`. Preserve these identifiers whenever possible.
 
----
+Do not:
 
-## Architecture Overview
+- treat missing graph evidence as proof a claim is false;
+- strip evidence identifiers unnecessarily;
+- silently select one source when sources conflict;
+- invent confidence values as a substitute for evidence;
+- convert retrieved evidence into unsupported inference during synthesis.
 
-### MCP Integration Points:
-- **MCP Server**: `Core/MCP/base_mcp_server.py` (to create)
-- **MCP Client**: `Core/MCP/mcp_client_manager.py` (to create)
-- **Tool Wrappers**: `Core/MCP/tools/` (to create)
-- **Orchestrator**: Will use MCP client instead of direct tool calls
+The target evidence contract is documented in `docs/ARCHITECTURE.md` and `docs/ROADMAP.md`.
 
-### Existing Key Components:
-- **Orchestrator**: `Core/AgentOrchestrator/orchestrator.py`
-- **Tool Registry**: `Core/AgentTools/tool_registry.py`
-- **GraphRAGContext**: `Core/AgentSchema/context.py`
+## Testing guidance
 
----
+Prefer deterministic contract tests for:
 
-## Success Metrics
+- slot/descriptor compatibility;
+- operator execution boundaries;
+- MCP discovery/execution parity;
+- resource registration/prerequisite behavior;
+- provenance propagation;
+- standardized errors;
+- graph-build → retrieve → evidence flows.
 
-### MCP Phase 1 (Foundation):
-- Server starts in <1s
-- Echo request <100ms
-- Context operations <10ms
+Keep live-LLM/provider tests clearly separated because they have cost, network and model-variance concerns.
 
-### MCP Phase 2 (Tools):
-- All 18 tools accessible via MCP
-- Overhead <200ms per tool
-- Backward compatibility maintained
+Do not cite an old test result in documentation as current runtime truth unless it has been rerun or the text explicitly labels it historical.
 
-### MCP Phase 3 (Multi-Agent):
-- Agent discovery works
-- Parallel execution 2x+ faster
-- Cross-modal entity linking >90% accurate
+## Documentation maintenance
 
-### MCP Phase 4 (Production):
-- <2s latency for simple queries
-- 100+ QPS throughput
-- 99.9% availability
+When implementation changes architectural status:
 
----
+1. update `docs/CURRENT_STATE.md`;
+2. update `docs/GAP_ANALYSIS.md` if a gap closes/changes;
+3. update `docs/ROADMAP.md` if exit criteria/priorities change;
+4. update `docs/ARCHITECTURE.md` only if the target design changes;
+5. create/update an ADR for a real architectural decision;
+6. reconcile `README.md`, `FUNCTIONALITY.md`, `AGENTS.md`, and `CLAUDE.md` when user/agent guidance changes.
 
-## Important Notes
+Do not create another competing “current status” document.
 
-1. **Test-driven development**: Tests exist before implementation
-2. **Evidence required**: Every checkpoint needs concrete proof
-3. **No skipping**: Complete checkpoints in order
-4. **Update this file**: Add evidence after each test run
-5. **Performance matters**: Meet all latency targets
-6. **Backward compatibility**: Existing functionality must not break
+## Default decision rule
+
+When choosing between:
+
+- making the internal agent brain more elaborate, or
+- making a capability/resource/evidence contract clearer,
+
+prefer the **capability/resource/evidence contract** unless the task explicitly requires otherwise.
