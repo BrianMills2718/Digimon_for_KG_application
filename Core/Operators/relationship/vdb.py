@@ -28,44 +28,98 @@ async def relationship_vdb(
     top_k = p.get("top_k", ctx.config.top_k)
 
     try:
-        edge_datas = await ctx.relations_vdb.retrieval_edges(
-            query=query, top_k=top_k, graph=ctx.graph, need_score=True,
+        raw = await ctx.relations_vdb.retrieval_edges(
+            query=query,
+            top_k=top_k,
+            graph=ctx.graph,
+            need_score=True,
         )
-        if not edge_datas:
-            return {"relationships": SlotValue(kind=SlotKind.RELATIONSHIP_SET, data=[], producer="relationship.vdb")}
+        if not raw:
+            return {
+                "relationships": SlotValue(
+                    kind=SlotKind.RELATIONSHIP_SET,
+                    data=[],
+                    producer="relationship.vdb",
+                )
+            }
 
-        # Build relationship context with degree ranking
-        if not all(e is not None for e in edge_datas):
-            logger.warning("Some edges are missing from VDB results")
+        if isinstance(raw, tuple) and len(raw) == 2:
+            edge_datas, scores = raw
+        else:
+            edge_datas, scores = raw, None
+
+        valid_edges = [edge for edge in edge_datas if edge is not None]
+        if not valid_edges:
+            return {
+                "relationships": SlotValue(
+                    kind=SlotKind.RELATIONSHIP_SET,
+                    data=[],
+                    producer="relationship.vdb",
+                )
+            }
+        if len(valid_edges) != len(edge_datas):
+            logger.warning("Some edges are missing from relationship VDB results")
 
         edge_degrees = await asyncio.gather(
-            *[ctx.graph.edge_degree(r["src_id"], r["tgt_id"]) for r in edge_datas if r]
+            *[ctx.graph.edge_degree(edge["src_id"], edge["tgt_id"]) for edge in valid_edges]
         )
 
         records = []
-        for ed, deg in zip([e for e in edge_datas if e], edge_degrees):
-            records.append(RelationshipRecord(
-                src_id=ed["src_id"],
-                tgt_id=ed["tgt_id"],
-                relation_name=ed.get("relation_name", ""),
-                description=ed.get("description", ""),
-                weight=ed.get("weight", 0.0),
-                keywords=ed.get("keywords", ""),
-                source_id=ed.get("source_id", ""),
-                extra={"rank": deg or 0},
-            ))
+        valid_index = 0
+        for result_index, edge in enumerate(edge_datas):
+            if edge is None:
+                continue
+            score = None
+            if scores and result_index < len(scores) and scores[result_index] is not None:
+                score = float(scores[result_index])
+            degree = edge_degrees[valid_index]
+            valid_index += 1
 
-        records.sort(key=lambda x: (x.extra.get("rank", 0), x.weight), reverse=True)
+            records.append(
+                RelationshipRecord(
+                    src_id=edge["src_id"],
+                    tgt_id=edge["tgt_id"],
+                    relation_name=edge.get("relation_name", ""),
+                    description=edge.get("description", ""),
+                    weight=edge.get("weight", 0.0),
+                    keywords=edge.get("keywords", ""),
+                    source_id=edge.get("source_id", ""),
+                    score=score,
+                    extra={"rank": degree or 0},
+                )
+            )
+
+        records.sort(
+            key=lambda record: (
+                record.score if record.score is not None else float("-inf"),
+                record.extra.get("rank", 0),
+                record.weight,
+            ),
+            reverse=True,
+        )
 
         if ctx.config and hasattr(ctx.config, "max_token_for_global_context"):
             records = truncate_list_by_token_size(
                 records,
-                key=lambda x: x.description,
+                key=lambda record: record.description,
                 max_token_size=ctx.config.max_token_for_global_context,
             )
 
-        return {"relationships": SlotValue(kind=SlotKind.RELATIONSHIP_SET, data=records, producer="relationship.vdb")}
+        return {
+            "relationships": SlotValue(
+                kind=SlotKind.RELATIONSHIP_SET,
+                data=records,
+                producer="relationship.vdb",
+            )
+        }
 
     except Exception as e:
         logger.exception(f"relationship_vdb failed: {e}")
-        return {"relationships": SlotValue(kind=SlotKind.RELATIONSHIP_SET, data=[], producer="relationship.vdb")}
+        return {
+            "relationships": SlotValue(
+                kind=SlotKind.RELATIONSHIP_SET,
+                data=[],
+                producer="relationship.vdb",
+                metadata={"error": str(e)},
+            )
+        }
