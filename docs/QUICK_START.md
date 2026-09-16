@@ -1,10 +1,19 @@
 # DIGIMON Quick Start
 
-This guide is intentionally narrow: get the public snapshot configured and exercise the current CLI/API surfaces without relying on older experimental setup instructions.
+**Snapshot:** 2026-09-16
+
+This guide is intentionally narrow: configure the public snapshot and choose an entry point without relying on older experimental setup instructions.
+
+For architecture/status before running the project, see:
+
+- `CURRENT_STATE.md`
+- `ARCHITECTURE.md`
+- `GAP_ANALYSIS.md`
+- `ROADMAP.md`
 
 ## 1. Install dependencies
 
-For the smallest supported dependency set:
+For the smallest dependency set:
 
 ```bash
 pip install -r requirements-minimal.txt
@@ -16,7 +25,7 @@ For the broader research environment:
 pip install -r requirements.txt
 ```
 
-The full dependency set includes more optional research/retrieval components and may require additional system or GPU-specific setup.
+The broader environment includes optional research/retrieval components and may require additional system or GPU-specific setup.
 
 ## 2. Create the runtime configuration
 
@@ -26,13 +35,35 @@ Copy the example configuration:
 cp Option/Config2.example.yaml Option/Config2.yaml
 ```
 
-Then edit `Option/Config2.yaml` with the LLM and embedding providers you want to use. The included example contains OpenAI-style fields for `llm` and `embedding` plus the dataset/results locations.
+Then edit `Option/Config2.yaml` with the LLM and embedding providers you want to use. The included example contains OpenAI-style `llm` and `embedding` fields plus data/results locations.
 
 Do not commit real API keys.
 
-## 3. Choose a corpus directory
+## 3. Preferred architecture: MCP / external intelligent harness
 
-The CLI requires a corpus path. Use an existing directory under `Data/` or a directory containing the documents you want the harness to work with.
+The preferred architectural surface is:
+
+```text
+digimon_mcp_stdio_server.py
+```
+
+It exposes DIGIMON through `FastMCP` over stdio. Configure your MCP-capable harness/client to launch that server using the client-specific stdio-server configuration mechanism.
+
+The harness can then work at three levels:
+
+1. call individual DIGIMON capabilities/operators and compose them itself;
+2. execute a named reference method when a known composition is convenient;
+3. optionally use DIGIMON's auto-selection helper to choose a reference method.
+
+For a capable harness, **individual capability composition is the conceptual default**. Reference/auto modes are conveniences, not mandatory orchestration.
+
+The same MCP surface also provides corpus/graph construction, resource/config inspection, graph/community helpers, analysis, and cross-modal tools.
+
+See `../FUNCTIONALITY.md` for the current capability inventory.
+
+## 4. Choose a corpus directory
+
+For CLI/API experimentation, use an existing directory under `Data/` or a directory containing the documents you want DIGIMON to work with.
 
 Example:
 
@@ -40,7 +71,9 @@ Example:
 Data/MySampleTexts/
 ```
 
-## 4. Run the CLI
+## 5. Transitional CLI
+
+`digimon_cli.py` is implemented, but it still instantiates the older internal `PlanningAgent` / `AgentOrchestrator`. Treat it as a **transitional/compatibility entry point**, not the target orchestration boundary.
 
 Interactive mode:
 
@@ -54,7 +87,7 @@ Single question:
 python digimon_cli.py -c Data/MySampleTexts -q "What are the main entities and how are they connected?"
 ```
 
-Experimental ReAct-style iterative planning:
+Experimental ReAct-style mode:
 
 ```bash
 python digimon_cli.py -c Data/MySampleTexts -q "How are the major entities connected?" --react
@@ -66,61 +99,60 @@ Batch questions:
 python digimon_cli.py -c Data/MySampleTexts -b queries.txt -o results.json
 ```
 
-A custom configuration can be supplied with:
+Custom configuration:
 
 ```bash
 python digimon_cli.py -c Data/MySampleTexts -i --config path/to/config.yaml
 ```
 
-## 5. API surface
+## 6. Secondary HTTP/API surface
 
-The repository also contains `api.py` as an HTTP/API entry point:
+The repository also contains `api.py` as a secondary HTTP/API entry point:
 
 ```bash
 python api.py
 ```
 
-See `docs/API_REFERENCE.md` for the API-oriented documentation in this snapshot.
-
-## 6. MCP / intelligent-harness surface
-
-`digimon_mcp_stdio_server.py` exposes DIGIMON capabilities for an MCP-capable harness. The intended architecture is harness-first: the harness decides how to compose the available graph, vector, text, community, and structured operations rather than relying on one fixed pipeline.
-
-See:
-
-- `../FUNCTIONALITY.md` for the capability overview;
-- `AGENT_INTELLIGENCE_ENHANCEMENTS.md` for the current reasoning architecture;
-- `../MCP_QUICK_REFERENCE.md` for MCP-specific material in this snapshot.
+See `API_REFERENCE.md` for API-oriented documentation in this snapshot. The API/UI surfaces are not currently the architectural center of the reconciliation.
 
 ## Configuration notes
 
-The example `Option/Config2.example.yaml` includes:
+`Option/Config2.example.yaml` includes:
 
-- `llm` provider/model configuration;
-- `embedding` provider/model configuration;
+- LLM provider/model configuration;
+- embedding provider/model configuration;
 - `data_root`;
 - `working_dir`;
-- an optional `disable_colbert` switch.
+- optional `disable_colbert` behavior.
 
-Provider support is mediated through the repository's provider layer; model availability and provider-specific credentials depend on the environment in which you run DIGIMON.
+Provider support is mediated through the repository's provider layer; model availability and provider-specific credentials depend on the runtime environment.
 
 ## Troubleshooting
 
 ### Missing API key or provider credentials
 
-Check `Option/Config2.yaml` and the provider configuration used by your selected LLM/embedding backend.
+Check `Option/Config2.yaml` and the provider configuration used by the selected LLM/embedding backend.
 
-### Optional retrieval dependency conflicts
+### Optional dependency conflicts
 
 Start with `requirements-minimal.txt` and enable additional research components only when needed.
 
-### Corpus path errors
+### CLI corpus-path errors
 
-The current CLI declares `--corpus/-c` as required. Make sure the directory exists before launching the CLI.
+The current CLI declares `--corpus/-c` as required. Verify that the directory exists before launching it.
+
+### Missing MCP prerequisite/resource
+
+The MCP layer exposes resource inspection and several prerequisite-building helpers. The current architecture still classifies resource lifecycle/prerequisite handling as **Partial** because those semantics are not yet unified under one typed resource catalog. See `GAP_ANALYSIS.md` rather than assuming every missing resource is auto-built uniformly.
 
 ## Next reading
 
-1. `../README.md` — project and architecture overview.
-2. `../FUNCTIONALITY.md` — what the tool layer exposes.
-3. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
-4. `FUTURE_EVALUATION_QUESTIONS.md` — deferred benchmarking and research questions.
+1. `../README.md` — concise project/architecture overview.
+2. `CURRENT_STATE.md` — code-truth status map.
+3. `ARCHITECTURE.md` — target design.
+4. `GAP_ANALYSIS.md` — what remains incomplete.
+5. `ROADMAP.md` — architecture-completion sequence.
+6. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
+7. `FUTURE_EVALUATION_QUESTIONS.md` — deliberately deferred benchmarking/research questions.
+
+`../MCP_IMPLEMENTATION_TRACKER.md`, `../MCP_INTEGRATION_DETAILED_PLAN.md`, and `../MCP_QUICK_REFERENCE.md` are retained only as historical pointers; their original checkpoint plans are available in Git history.
