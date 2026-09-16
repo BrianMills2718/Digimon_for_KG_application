@@ -7,7 +7,7 @@ The current priority is **architecture completion and consolidation**, not bench
 
 ## Current direction
 
-DIGIMON is being organized around a **harness-first capability architecture**:
+DIGIMON is being organized around a **harness-first capability/resource/evidence architecture**:
 
 - the external intelligent harness owns adaptive reasoning, decomposition, tool selection, sequencing, retries/fallbacks and stopping;
 - DIGIMON owns typed capabilities, retrieval/build operations, resource/prerequisite facts, evidence/provenance and bounded model-assisted transformations;
@@ -16,35 +16,69 @@ DIGIMON is being organized around a **harness-first capability architecture**:
 
 The strongest modern implementation center is the typed 26-operator registry/composition layer plus the FastMCP stdio server.
 
+For the exact module map and code-level caveats, see `docs/IMPLEMENTATION_MAP.md`.
+
+## Important finding from the current reconciliation
+
+The capability core is real, but **typed does not yet mean architecturally closed**.
+
+Current implementation facts that shape the next work:
+
+- slot-kind chain discovery does not prove that resources/prerequisites are available;
+- static `ChainValidator` behavior is permissive in places;
+- `OperatorComposer` can currently log validation failure and proceed best-effort;
+- `PipelineExecutor` performs stricter dispatch-time checks;
+- descriptor semantics still need a full implementation audit;
+- dependency-aware decomposition currently carries sub-question text through the generic `ENTITY_SET` slot;
+- decomposition/synthesis prompt policy exists in both YAML and operator-local prompt text, so source-of-truth/parity must be made explicit;
+- resource state is broader than the graphs/VDBs directly modeled by `GraphRAGContext`;
+- evidence identifiers exist, but universal lineage propagation is incomplete;
+- error/failure representation varies across composition, individual operators and MCP/build tools.
+
+These are the near-term architecture gaps. They are not reasons to add another planner.
+
 ## Active plan
 
-The authoritative implementation sequence is in `docs/ROADMAP.md`:
+The authoritative sequence is in `docs/ROADMAP.md`:
 
-1. stabilize the canonical capability contract and MCP parity;
-2. unify resource identities, lifecycle and prerequisites;
-3. make provenance/evidence an end-to-end contract;
-4. make the harness-first execution boundary operationally clean;
-5. consolidate legacy internal planners/orchestrators/AoT code;
-6. normalize cross-modal graph/table/vector capabilities;
-7. standardize machine-actionable failure/recovery semantics;
-8. make architectural contract tests blocking and trustworthy in CI;
-9. add incremental-update and temporal/conflict semantics once the resource/evidence foundation exists;
-10. perform broad benchmarking, ablation and research validation later.
+1. **capability/descriptor/MCP inventory and parity**;
+2. **validation semantics** — make strict versus explicit best-effort behavior unambiguous;
+3. **prompt ownership/parity** — prevent YAML/operator-local prompt drift;
+4. **resource catalog/lifecycle/prerequisites**;
+5. **end-to-end evidence/provenance**;
+6. **clean harness-first entry points**;
+7. **legacy planner/orchestrator/AoT/MCP consolidation**;
+8. **cross-modal normalization**;
+9. **machine-actionable error/recovery semantics**;
+10. **blocking architectural contract tests/CI**;
+11. incremental/temporal/conflict semantics once the foundation exists;
+12. broader benchmarking/research validation later.
 
 ## Largest current gaps
 
-The architectural bottlenecks are not lack of retrieval algorithms. They are consistency and contracts:
+### Capability discovery and descriptor precision
 
-- capability discovery spans the 26-operator registry plus additional MCP build/analysis/conversion tools;
-- resource state is not yet represented by one typed catalog with dependencies/fingerprints/invalidation;
-- prerequisite behavior is useful but distributed across descriptors/server helpers;
-- source identifiers exist, but lineage is not yet a universal end-to-end evidence contract;
-- CLI/internal planner paths still coexist with the newer harness-first MCP architecture;
-- graph/table/vector conversion is substantive but not fully normalized into the same capability/resource/provenance model;
-- error/recovery semantics vary between tool families;
-- old planners, orchestrators, AoT code and historical plan documents remain in the repository and require explicit classification/consolidation.
+The 26-operator registry is the strongest machine-readable core, but MCP also exposes builders, configuration/resource inspection, graph analysis and cross-modal tools outside that descriptor model. Existing descriptors also need an implementation-level parity audit.
 
-See `docs/GAP_ANALYSIS.md` for the complete gap matrix.
+### Composition validation policy
+
+Validation currently happens at multiple levels with different strictness. The architecture needs a deliberate contract: strict execution should fail before running an invalid plan; best-effort execution should be an explicit caller choice with structured warnings.
+
+### Resource lifecycle
+
+There is no one typed catalog covering corpus, graphs, VDBs, communities, sparse matrices, converted artifacts, build fingerprints, staleness and dependency/invalidation links.
+
+### Evidence/provenance
+
+`source_id`, `chunk_id`, producer metadata and evidence-aware synthesis are useful foundations. The missing piece is guaranteed lineage propagation through every relevant transformation.
+
+### Error semantics
+
+Missing prerequisite, empty retrieval, invalid plan, extraction incompleteness and provider failure still use different conventions. A harness needs structured failure facts in order to recover intelligently.
+
+### Legacy architecture coexistence
+
+CLI/internal planner paths, multiple orchestrators, programmed AOT, older MCP modules and historical planning material remain in the repository. They must be maintained as clearly classified compatibility/history rather than equal architectural authorities.
 
 ## What is deliberately deferred
 
@@ -60,22 +94,32 @@ The following remain useful future work but should not distort the current archi
 
 The important future validation questions are preserved in `docs/FUTURE_EVALUATION_QUESTIONS.md`.
 
+## Reasoning-policy decision
+
+Do not program the harness's full reasoning graph into DIGIMON.
+
+Dependency-aware decomposition is useful as an advisory heuristic, for example:
+
+```text
+q1: identify an intermediate entity
+q2: retrieve facts about <q1.entity>
+q3: resolve the answer against source evidence
+```
+
+The harness may merge, reorder, branch, parallelize, revise or ignore the suggestion.
+
+A formal dependency DAG is justified only if a concrete system capability—scheduling, resumability, caching, provenance or auditing—needs it.
+
 ## Historical planning material
 
-Earlier planning in this repository explored:
+Earlier planning explored UKRF/general-agent frameworks, multi-agent coordination, programmed AoT/Markov decomposition, WebSocket MCP migration checkpoints, memory/meta-cognition systems, and production/performance phases.
 
-- UKRF/general agent frameworks;
-- multi-agent coordination;
-- programmed AoT/Markov decomposition;
-- WebSocket MCP migration checkpoints;
-- confidence/meta-cognition subsystems;
-- production/performance phases.
+Those documents are project lineage, not current implementation mandates. `docs/CHECKPOINT_PROGRESS.md` and the root MCP plans are explicitly marked historical; the original details remain in Git history.
 
-Those documents are valuable project lineage, but they are **historical unless a current canonical document restates the requirement**.
-
-The current source-of-truth set is:
+## Current source-of-truth set
 
 - `docs/CURRENT_STATE.md`
+- `docs/IMPLEMENTATION_MAP.md`
 - `docs/ARCHITECTURE.md`
 - `docs/GAP_ANALYSIS.md`
 - `docs/ROADMAP.md`
@@ -83,12 +127,13 @@ The current source-of-truth set is:
 
 ## Immediate next code work
 
-When implementation resumes, start at the top of the roadmap rather than adding another orchestration abstraction:
+When implementation resumes, do not begin with a new agent abstraction. Begin with the contracts the harness needs:
 
-1. inventory/map all harness-facing capabilities against the canonical descriptor model;
-2. design the typed resource descriptor/catalog;
-3. connect prerequisites/builders to that resource model;
-4. define and propagate the evidence/provenance record;
-5. then clean entry points and legacy orchestration around those stable contracts.
+1. enumerate every harness-facing capability and compare descriptor/MCP/implementation semantics;
+2. make plan validation policy explicit and test it;
+3. establish prompt source-of-truth/parity for meta operators;
+4. design the typed resource catalog and prerequisite links;
+5. define and propagate the evidence/provenance record;
+6. then clean entry points and legacy orchestration around those stable contracts.
 
-That sequence turns the existing breadth of DIGIMON into a coherent architecture without attempting to program the harness's intelligence directly.
+That sequence turns DIGIMON's existing breadth into a coherent architecture without attempting to reproduce the harness's intelligence inside the library.
