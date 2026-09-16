@@ -11,9 +11,15 @@ class FakeConfig:
 
 
 class FakeIndex(BaseIndex):
-    def __init__(self, persist_path: Path, fail_update: bool = False):
+    def __init__(
+        self,
+        persist_path: Path,
+        fail_update: bool = False,
+        fail_storage: bool = False,
+    ):
         super().__init__(FakeConfig(persist_path))
         self.fail_update = fail_update
+        self.fail_storage = fail_storage
 
     async def retrieval(self, query, top_k):
         return []
@@ -31,8 +37,9 @@ class FakeIndex(BaseIndex):
         return 5
 
     def _storage_index(self):
-        if self._index is not None:
-            Path(self.config.persist_path).mkdir(parents=True, exist_ok=True)
+        Path(self.config.persist_path).mkdir(parents=True, exist_ok=True)
+        if self.fail_storage:
+            self._index = None
 
     async def _load_index(self) -> bool:
         if not self.exist_index():
@@ -51,6 +58,17 @@ async def test_build_index_reports_false_when_update_loses_index(tmp_path):
     ok = await index.build_index([{"content": "x"}], ["content"])
 
     assert ok is False
+    assert index._index is None
+
+
+@pytest.mark.asyncio
+async def test_build_index_reports_false_when_persistence_invalidates_index(tmp_path):
+    index = FakeIndex(tmp_path / "persist-failed", fail_storage=True)
+
+    ok = await index.build_index([{"content": "x"}], ["content"])
+
+    assert ok is False
+    assert index.exist_index()  # directory existence alone must not count as success
     assert index._index is None
 
 
