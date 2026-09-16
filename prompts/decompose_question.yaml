@@ -24,7 +24,7 @@ messages:
 
       Example dependency shape:
         q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
-        q2: find government positions held by {{q1.entity}}
+        q2: find government positions held by <q1.entity>
         q3: determine which position is supported by the retrieved source evidence
 
       This example illustrates dependencies only. The harness may choose a different route.
@@ -36,5 +36,5 @@ messages:
       Return a JSON array of strings.
 
       Prefix suggested items q1:, q2:, etc. When a later item depends on an earlier discovery,
-      make that dependency explicit with a semantic placeholder such as {{q1.entity}} or
-      {{q2.result}}. Keep the output heuristic and concise; do not prescribe tool calls.
+      make that dependency explicit with a semantic placeholder such as <q1.entity> or
+      <q2.result>. Keep the output heuristic and concise; do not prescribe tool calls.
