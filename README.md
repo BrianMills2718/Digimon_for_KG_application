@@ -1,178 +1,184 @@
-# Historical public DIGIMON snapshot — superseded
+# DIGIMON: Composable Knowledge-Graph RAG
 
-> **Status (September 2026):** this repository is preserved as a public historical snapshot and provenance record. It is **not the canonical current DIGIMON implementation or architecture**.
->
-> Current DIGIMON work has moved to a maintained private canonical repository. The current system is centered on **question-dependent composition of typed text, vector, graph, community, and structured retrieval operations**, with explicit applicability/eligibility and evidence/provenance boundaries. It should not be read as one fixed GraphRAG pipeline.
->
-> For the current public hiring-level description, use [Brian Mills' portfolio](https://brianmills.dev/portfolio/). The material below is retained to show project lineage and should be interpreted in its original historical context.
+DIGIMON is a research and application architecture for turning document collections into reusable **text, vector, graph, community, and structured retrieval resources** that an intelligent agent harness can compose to answer complex questions.
 
----
+The central idea is simple:
 
-# 👾 DIGIMON: Deep Analysis of Graph-Based Retrieval-Augmented Generation (RAG) Systems
+> **Program the capabilities, contracts, and evidence boundaries. Give the harness useful reasoning heuristics. Let the harness remain intelligent.**
 
-<div style="text-align: center;">
-  <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/badge/Original_Graph_RAG-red"/></a>
-  <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/github/stars/JayLZhou/GraphRAG"/></a>
-  <a href="https://github.com/JayLZhou/GraphRAG"><img src="https://img.shields.io/github/forks/JayLZhou/GraphRAG"/></a>
-</div>
+Rather than forcing every question through one fixed GraphRAG pipeline—or encoding a complete agent brain as a hand-built state machine—DIGIMON exposes typed operations that a capable harness can select, sequence, revise, and combine as the question requires.
 
-> **GraphRAG** is a popular 🔥🔥🔥 and powerful 💪💪💪 RAG system! 🚀💡 Inspired by systems like Microsoft's, graph-based RAG is unlocking endless possibilities in AI.
+## What the system does
 
-## Project Structure
+A typical workflow is:
 
-After reorganization (2025-06-06), the project follows this clean structure:
-
-```
-digimon_cc/
-├── Core/                    # Core DIGIMON modules
-│   ├── AgentOrchestrator/  # Agent orchestration system
-│   ├── AgentTools/         # Tool implementations
-│   ├── Graph/              # Graph construction modules
-│   ├── MCP/                # Model Context Protocol integration
-│   └── ...                 # Other core modules
-├── Config/                  # Configuration files
-├── Data/                    # Test datasets
-│   ├── Social_Discourse_Test/
-│   ├── MySampleTexts/
-│   └── ...
-├── Option/                  # Method configurations (YAML files)
-├── docs/                    # Documentation
-│   ├── planning/           # Planning documents (*_PLAN.md)
-│   ├── reports/            # Reports and status documents
-│   └── handoffs/           # Handoff documentation
-├── scripts/                 # Utility scripts
-│   ├── demos/              # Demo scripts (demo_*.py, claude_*.py)
-│   ├── tests/              # Test scripts (test_*.py)
-│   └── analysis/           # Analysis scripts
-├── deploy/                  # Deployment files
-│   ├── Dockerfile*         # Docker configurations
-│   └── docker-compose.yml  # Multi-container setup
-├── examples/                # Example code and demos
-├── tests/                   # Pytest test suite
-│   ├── unit/               # Unit tests
-│   ├── integration/        # Integration tests
-│   └── e2e/                # End-to-end tests
-├── digimon_cli.py          # Main CLI interface
-├── main.py                 # Main entry point
-├── api.py                  # API server
-├── CLAUDE.md               # AI assistant instructions
-└── requirements.txt        # Python dependencies
+```text
+Documents
+   ↓
+Corpus preparation
+   ↓
+Graph / vector / text / community / structured resources
+   ↓
+Intelligent harness chooses and composes retrieval operations
+   ↓
+Source evidence + graph structure
+   ↓
+Evidence-aware answer synthesis
 ```
 
-The reorganization moved ~200+ files from the root directory into appropriate subdirectories for better maintainability.
-### Modular Architecture & Operational Modes
+Depending on the question, the harness may use semantic entity discovery, direct text retrieval, one-hop relationships, multi-hop paths, Personalized PageRank, community structure, table-style aggregation, or a cross-modal combination. It can also decide that graph reasoning is unnecessary.
 
-The system features a modular design with distinct operational modes, manageable via `main.py`, and increasingly, through agent-callable tools:
+See **[FUNCTIONALITY.md](FUNCTIONALITY.md)** for the capability-level overview.
 
-1.  **Build Mode (via `main.py` or Agent Tools):** Constructs knowledge graphs and generates all necessary artifacts (e.g., graph structure, vector databases).
-    * Agent Tools available for building all 5 core graph types: `ERGraph`, `RKGraph`, `TreeGraph`, `TreeGraphBalanced`, `PassageGraph`.
-    * Agent Tool available for `PrepareCorpusFromDirectory` (processes `.txt` files into `Corpus.json`).
-    ```bash
-    # Example CLI usage
-    python main.py build -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
-    ```
-2.  **Query Mode (via `main.py` or Agent Tools):** Loads pre-built artifacts to answer questions.
-    ```bash
-    python main.py query -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset -question "Your question here?"
-    ```
-3.  **Evaluate Mode (via `main.py`):** Assesses performance against benchmark datasets.
-    ```bash
-    python main.py evaluate -opt Option/Method/RAPTOR.yaml -dataset_name your_dataset
-    ```
+## Harness-first agent architecture
 
-### Web Interface (API & UI)
+DIGIMON deliberately separates **reasoning policy** from **retrieval capability**.
 
-A Flask API server (`api.py`) and an initial React UI provide user-friendly interaction, though current development is heavily focused on backend agent capabilities.
-* **API Endpoints:** `/api/query`, `/api/build`, `/api/evaluate`.
-* **UI:** Allows selection of datasets, methods, and initiation of operations.
+### DIGIMON owns
 
-### Available RAG Methods & Graph Types
+- corpus ingestion and normalization;
+- graph construction and graph resources;
+- vector indexes and semantic search;
+- entity, relationship, subgraph, path, and community operations;
+- structured/table and cross-modal operations where available;
+- resource discovery and prerequisite handling;
+- typed tool contracts;
+- links from retrieved graph evidence back to source text;
+- evidence-aware synthesis constraints.
 
-* **Pre-defined Configurations:** `Dalk`, `GR`, `LGraphRAG`, `GGraphRAG`, `HippoRAG`, `KGP`, `LightRAG`, `RAPTOR`, `ToG`. These methods are compositions of underlying granular operators.
-* **Supported Graph Types (for agent construction and analysis):**
-    * **ChunkTree:** Hierarchical summary trees (`TreeGraph`, `TreeGraphBalanced`).
-    * **PassageGraph:** Nodes are passages, edges link passages with shared (WAT-linked) entities.
-    * **KG/TKG/RKG:** Graphs with explicit entities and relationships (`ERGraph`, `RKGraph`).
+### The intelligent harness owns
 
-### Intelligent Agent Framework (Core Development Focus)
+- interpreting the user's goal;
+- deciding whether decomposition is useful;
+- selecting and sequencing tools;
+- pursuing independent branches in parallel when useful;
+- revising the approach after observations;
+- stopping when enough evidence has been gathered;
+- deciding how much reasoning structure is actually necessary.
 
-The central aim is an intelligent agent that dynamically plans and executes RAG strategies:
-* **Granular Operator Tools:** The agent leverages ~16 conceptual retrieval and graph manipulation operators as its building blocks.
-* **Structured Agent Tools:**
-    * **Graph Construction Tools:** Defined with Pydantic contracts (`Core/AgentSchema/graph_construction_tool_contracts.py`) and implemented (`Core/AgentTools/graph_construction_tools.py`) for all five graph types. The `build_er_graph` tool has been successfully tested with live LLM calls.
-    * **Corpus Preparation Tool:** `PrepareCorpusFromDirectoryTool` implemented and tested, allowing the agent to process raw `.txt` files.
-* **Pydantic-based Execution Plans:** The agent's reasoning (planned or ReACT-driven) aims to produce structured sequences of tool calls.
-* **Agent Orchestrator:** (`Core/AgentOrchestrator/orchestrator.py`) Executes tool calls based on the agent's decisions.
-* **Agent Brain:** (`Core/AgentBrain/agent_brain.py`) Houses the core agent logic, including LLM-driven plan generation and answer synthesis from retrieved context (VDB search results, graph relationships, text chunks). Future work will enhance this for ReACT-style reasoning and more sophisticated strategy selection.
-    * **End-to-End Pipeline Orchestration (Iterative Improvement):** The agent can currently orchestrate a multi-step RAG pipeline, including corpus preparation, ER graph construction, vector database building, entity search, one-hop neighbor retrieval, and text chunk fetching, culminating in an LLM-generated answer. Ongoing work focuses on improving plan robustness and answer grounding.
+This keeps DIGIMON useful across different capable agent harnesses instead of coupling the architecture to one programmed planner.
 
----
+## AoT / GoT as a soft reasoning heuristic
 
-## Quick Start 🚀
+Complex questions often contain dependencies that should not be flattened into falsely independent searches.
 
-### From Source
-```bash
-Clone this repository
+For example:
 
-cd Digimon_KG
-Install Dependencies
-The primary Conda environment is defined in experiment.yml.
+```text
+q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
+q2: find government positions held by {{q1.entity}}
+q3: determine which position is supported by the retrieved source evidence
+```
 
-Bash
+That dependency structure is useful, but it is **not a mandatory execution graph**. A capable harness can merge steps, branch into candidates, run independent work concurrently, reorder the plan, or bypass the decomposition if a more direct retrieval route appears.
 
-conda env create -f experiment.yml -n digimon
-conda activate digimon
-(Note: environment.yml may also exist; experiment.yml is often referenced for the core setup).
+The prompt in [`prompts/decompose_question.yaml`](prompts/decompose_question.yaml) implements this as a lightweight Atom-of-Thought / Graph-of-Thought heuristic while retaining a simple interface. The architectural rationale is documented in **[docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md](docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md)**.
 
-API Keys and Configuration
-Copy Option/Config2.example.yaml to Option/Config2.yaml.
-Edit Option/Config2.yaml to include your API keys (e.g., OpenAI api_key for llm and embedding sections) and set desired default models (e.g., llm.model: "openai/o4-mini-2025-04-16").
-Method-specific configurations (used by main.py) are in Option/Method/.
-Custom ontology can be defined in Config/custom_ontology.json and referenced in GraphConfig or overridden by agent tools.
-Supported LLM Backends
-DIGIMON uses LiteLLMProvider for broad LLM compatibility, configured via Option/Config2.yaml:
+The repository also contains an earlier `Core/AOT` implementation that encodes atomic states and transitions directly in code. It is retained as project history and an experimental implementation, but it is not the required reasoning architecture for the current harness-first direction.
 
-Cloud-based models: OpenAI (e.g., "openai/gpt-4o", "openai/o4-mini-2025-04-16"), Anthropic, Gemini, etc.
-Locally deployed models: Any LiteLLM-supported endpoint (Ollama, LlamaFactory-compatible).
-Set llm.model to the appropriate LiteLLM string (e.g., "ollama/llama3").
-Set llm.base_url if needed (e.g., "http://localhost:11434" for Ollama, though often LiteLLM handles this).
-llm.api_key can often be set to "None" or a placeholder for local models.
-Representative Graph RAG Methods & Operators
-(This section can largely retain the excellent tables from your current README, as they provide valuable context on the original GraphRAG methods and the derived operators. I'm keeping it concise here for the handoff structure but you should integrate your full tables back.)
+## Core capabilities
 
-Graph Types Overview
-(Integrate your existing "Graph Types" table here, comparing Chunk Tree, Passage Graph, KG, TKG, RKG across attributes like Original Content, Entity Name, etc.)
+### Corpus preparation
 
-Retrieval Operators (Agent's Building Blocks)
-(Integrate your existing tables for Entity Operators, Relationship Operators, Chunk Operators, Subgraph Operators, and Community Operators, including their Name, Description, and Example Methods.)
+Convert `.txt`, `.md`, `.json`, `.jsonl`, `.csv`, and `.pdf` document collections into DIGIMON corpus resources.
 
-The DIGIMON agent's intelligence will stem from its ability to dynamically select, configure, and chain these operators to address complex queries.
+### Graph construction
 
-🎯 Future Plans for DIGIMON (Agent-Centric)
-This section outlines the specific future development goals for the DIGIMON agent and framework:
+The project supports multiple retrieval structures, including:
 
-Agent Planning & Execution Enhancement:
-[ ] ReACT-style Agent Core: Evolve AgentBrain to support a ReACT (Reason, Act, Observe) paradigm for more robust and adaptive multi-step task execution.
-[ ] Advanced Planning Prompts: Refine prompt engineering for the PlanningAgent to effectively utilize all available tools (corpus prep, graph build, retrieval, summarization) and manage data flow between tool calls for complex queries.
-Tool Development & Refinement:
-[ ] Retrieval Tools: Define Pydantic contracts and implement robust agent tools for the remaining ~13 granular retrieval operators (e.g., for relationship retrieval, community analysis, advanced subgraph extraction).
-[ ] Summarization Tool: Implement a flexible SummarizeTextTool for final answer synthesis.
-[ ] Integrated Testing: Create integrated tests for all graph construction tools (similar to the one for build_er_graph) using real components with strategic LLM mocking/use.
-Agent Intelligence & Strategy:
-[ ] KG Structuring Strategy: Develop logic/heuristics/LLM-prompts to enable the agent to intelligently select the optimal graph type(s) and construction parameters based on the input data and user query.
-[ ] Dynamic Retrieval Strategy: Enable the agent to dynamically choose and sequence retrieval operators to best answer a query given a constructed graph.
-[ ] Ontology Management: Enhance agent capabilities for more dynamic interaction with custom_ontology.json, potentially including ontology selection or refinement suggestions.
-Framework & Usability:
-[ ] Evaluation Framework for Agent Strategies: Develop methods to evaluate the end-to-end effectiveness of agent-composed RAG strategies.
-[ ] Comprehensive Documentation: Document the agent framework, all tool contracts, and provide example workflows.
-[ ] Dockerization: Create a Docker image for easier deployment and reproducibility.
-🧭 Cite The Original GraphRAG Paper
-If you find this work useful, please consider citing the original paper that inspired this project:
+- **Entity-Relationship graphs** for named entities and explicit relationships;
+- **Relationship-Keyword graphs** for richer relationship retrieval;
+- **Passage graphs** connecting source passages through shared entities;
+- **hierarchical summary trees** for multilevel retrieval;
+- associated vector indexes and community structures.
 
-In-depth Analysis of Graph-based RAG in a Unified Framework
-@article{zhou2025depth,
-  title={In-depth Analysis of Graph-based RAG in a Unified Framework},
-  author={Zhou, Yingli and Su, Yaodong and Sun, Youran and Wang, Shu and Wang, Taotao and He, Runyuan and Zhang, Yongwei and Liang, Sicong and Liu, Xilin and Ma, Yuchi and others},
-  journal={arXiv preprint arXiv:2503.04338},
-  year={2025}
-}
+### Retrieval and analysis
+
+Representative operations include:
+
+- semantic entity search;
+- direct graph-neighbor and relationship lookup;
+- Personalized PageRank;
+- K-hop path and connected-subgraph retrieval;
+- community detection/access;
+- source chunk retrieval;
+- graph statistics and visualization/export;
+- resource discovery;
+- graph/vector/table cross-modal workflows.
+
+The repository includes method configurations and operator compositions inspired by or implementing ideas from GraphRAG-family systems such as ToG, HippoRAG, LightRAG, RAPTOR, DALK, KGP, and related approaches.
+
+## Evidence-aware synthesis
+
+Retrieval is only useful if the final response preserves what the system actually knows.
+
+[`prompts/synthesize_answers.yaml`](prompts/synthesize_answers.yaml) instructs synthesis to:
+
+- only make claims supported by supplied evidence/sub-results;
+- preserve citation/provenance markers when present;
+- distinguish retrieved evidence from inference;
+- surface material conflicts;
+- expose unresolved information dependencies;
+- avoid treating missing evidence as proof that a claim is false;
+- avoid inventing certainty or unsupported bridges between facts.
+
+## Example question shape
+
+Multi-hop questions such as the following are useful architectural tests:
+
+> What government position was held by the woman who portrayed Corliss Archer in the film *Kiss and Tell*?
+
+A harness might discover the performer, use that entity as the input to another retrieval step, retrieve source evidence for government roles, and then synthesize only the position supported by the corpus. Another capable harness may solve the same question with a different sequence. DIGIMON's responsibility is to make the necessary capabilities and evidence available without dictating one universal route.
+
+## Repository map
+
+```text
+Core/                       Core graph, retrieval, agent-tool, and provider modules
+Config/                     Configuration models and ontology material
+Option/                     Runtime and method configuration
+prompts/                    Harness-facing reasoning/routing/synthesis heuristics
+Data/                       Example and evaluation datasets
+eval/                       Benchmark/evaluation infrastructure
+tests/ + test_*.py          Unit/integration/end-to-end and experimental tests
+docs/                       Architecture, integration, planning, and usage documentation
+examples/                   Example workflows
+api.py                      API surface
+digimon_cli.py              CLI surface
+digimon_mcp_stdio_server.py MCP/tool surface
+```
+
+This repository reflects an active research lineage and contains experimental and historical material in addition to the current architectural direction.
+
+## Current development priority
+
+The immediate priority is **finishing and clarifying the architecture**, especially:
+
+- stable typed tool contracts;
+- resource discovery and prerequisite handling;
+- clean data flow among graph, text, vector, table, and community representations;
+- provenance from graph evidence to original source text;
+- robust harness/tool interaction;
+- useful reasoning prompts that guide without replacing harness intelligence;
+- predictable behavior when evidence or required resources are missing.
+
+Benchmarking, ablations, novelty comparisons, router calibration, and broader question-class evaluation are intentionally deferred until the architecture is stable. The questions worth revisiting later are preserved in **[docs/FUTURE_EVALUATION_QUESTIONS.md](docs/FUTURE_EVALUATION_QUESTIONS.md)**.
+
+## Getting started
+
+The repository includes minimal and full dependency sets plus API, CLI, and MCP-style access surfaces. Start with **[docs/QUICK_START.md](docs/QUICK_START.md)** and **[FUNCTIONALITY.md](FUNCTIONALITY.md)**.
+
+Representative configuration lives under `Option/`, and method-specific configurations live under `Option/Method/`.
+
+## Repository status
+
+**Public snapshot status (September 2026):** this repository is retained as a public application/architecture snapshot and provenance record. Canonical ongoing DIGIMON development has moved to a maintained private repository. The public snapshot remains useful for inspecting the project's architecture, implementation lineage, experiments, and agent-tool design, but it should not be assumed to contain every current private implementation detail.
+
+For the public portfolio-level project description, see [Brian Mills' portfolio](https://brianmills.dev/portfolio/).
+
+## Lineage and acknowledgement
+
+DIGIMON's development includes work derived from and inspired by the GraphRAG research ecosystem. The original repository lineage referenced by this project includes [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG) and the paper:
+
+> *In-depth Analysis of Graph-based RAG in a Unified Framework* — Zhou et al., arXiv:2503.04338 (2025).
+
+The current DIGIMON direction focuses on exposing graph and retrieval capabilities as composable tools for intelligent harnesses rather than treating one fixed GraphRAG method as the system itself.
