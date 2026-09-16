@@ -1,7 +1,4 @@
-"""Basic Local query: Entity VDB -> Relationship onehop -> Chunk occurrence.
-
-Corresponds to BasicQuery._retrieve_relevant_contexts_local.
-"""
+"""Basic Local reference plan: entity VDB -> local chunk evidence -> answer."""
 
 from Core.AgentSchema.plan import (
     DynamicToolChainConfig,
@@ -14,42 +11,59 @@ from Core.AgentSchema.plan import (
 
 def basic_local_plan(query: str, **kwargs) -> ExecutionPlan:
     return ExecutionPlan(
-        plan_description="Basic Local: VDB entities -> one-hop relationships -> chunk co-occurrence",
+        plan_description="Basic Local: VDB entities -> local co-occurrence evidence -> answer",
         target_dataset_name=kwargs.get("dataset", ""),
         plan_inputs={"query": query},
         steps=[
             ExecutionStep(
-                step_id="s1",
-                description="Find entities similar to query via VDB",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="entity.vdb",
-                        inputs={"query": "plan_inputs.query"},
-                        named_outputs={"entities": "entity_set"},
-                    ),
-                ]),
+                step_id="entities",
+                description="Find entities similar to the query",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="entity.vdb",
+                            inputs={"query": "plan_inputs.query"},
+                            named_outputs={"entities": "entity_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s2",
-                description="Find relationships connected to retrieved entities",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="relationship.onehop",
-                        inputs={"entities": ToolInputSource(from_step_id="s1", named_output_key="entities")},
-                        named_outputs={"relationships": "relationship_set"},
-                    ),
-                ]),
+                step_id="evidence",
+                description="Retrieve source chunks associated with local entity relations",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="chunk.occurrence",
+                            inputs={
+                                "entities": ToolInputSource(
+                                    from_step_id="entities",
+                                    named_output_key="entities",
+                                )
+                            },
+                            named_outputs={"chunks": "chunk_set"},
+                        )
+                    ]
+                ),
             ),
             ExecutionStep(
-                step_id="s3",
-                description="Find text chunks where entities co-occur",
-                action=DynamicToolChainConfig(tools=[
-                    ToolCall(
-                        tool_id="chunk.occurrence",
-                        inputs={"entities": ToolInputSource(from_step_id="s1", named_output_key="entities")},
-                        named_outputs={"chunks": "chunk_set"},
-                    ),
-                ]),
+                step_id="answer",
+                description="Generate an answer from local source evidence",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="meta.generate_answer",
+                            inputs={
+                                "query": "plan_inputs.query",
+                                "chunks": ToolInputSource(
+                                    from_step_id="evidence",
+                                    named_output_key="chunks",
+                                ),
+                            },
+                            named_outputs={"answer": "text"},
+                        )
+                    ]
+                ),
             ),
         ],
     )
