@@ -150,8 +150,6 @@ def make_invalid_plan():
 
 
 def make_composer():
-    # Bypass method profiling: these tests target execute/validation behavior
-    # using the tiny deterministic registry above.
     composer = object.__new__(OperatorComposer)
     composer.registry = make_registry()
     composer.profiles = {}
@@ -217,12 +215,10 @@ async def test_operator_composer_rejects_invalid_plan_by_default():
 
 
 @pytest.mark.asyncio
-async def test_operator_composer_best_effort_is_explicit():
-    result = await make_composer().execute(
-        make_invalid_plan(),
-        ctx=object(),
-        allow_invalid_plan=True,
-    )
-
-    # PipelineExecutor still protects required inputs at dispatch time.
-    assert "relationships" in result["all_step_outputs"]
+async def test_operator_composer_best_effort_does_not_disable_runtime_contracts():
+    with pytest.raises(PipelineExecutionError, match="Missing required input"):
+        await make_composer().execute(
+            make_invalid_plan(),
+            ctx=object(),
+            allow_invalid_plan=True,
+        )
