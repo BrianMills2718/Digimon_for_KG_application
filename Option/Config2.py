@@ -97,10 +97,25 @@ class Config(WorkingParams, YamlModel):
 
     @classmethod
     def from_yaml_file(cls, path: str):
-        """Load config from YAML file"""
+        """Load config from YAML, falling back to checked-in defaults when absent.
+
+        ``Option/Config2.yaml`` is intentionally not committed because it may
+        contain local credentials. Fresh checkouts should still be able to
+        initialize the application and inspect/use non-network functionality,
+        so missing local config resolves through ``Config.default()`` (which
+        prefers Config2.yaml when present and otherwise reads
+        Config2.example.yaml/programmatic defaults).
+        """
         path = Path(path).resolve()
+        if not path.exists():
+            _config_log(
+                f"WARNING [Config.from_yaml_file]: {path} not found; "
+                "falling back to Config.default()."
+            )
+            return cls.default()
+
         with open(path, 'r') as f:
-            options = yaml.safe_load(f)
+            options = yaml.safe_load(f) or {}
         return cls(**options)
 
     @classmethod
