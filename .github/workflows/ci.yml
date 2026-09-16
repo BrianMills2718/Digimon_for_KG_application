@@ -9,7 +9,7 @@ on:
 
 jobs:
   core:
-    name: Core contracts
+    name: Core MCP path
     runs-on: ubuntu-latest
 
     steps:
@@ -19,11 +19,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements-minimal.txt
 
-      - name: Install deterministic test dependencies
+      - name: Install minimal core
         run: |
           python -m pip install --upgrade pip
-          pip install "pydantic>=2.11" "pyyaml>=6" "loguru>=0.7" "pytest>=7" "pytest-asyncio>=0.21"
+          pip install -r requirements-minimal.txt
+
+      - name: Import MCP server
+        run: python -c "import digimon_mcp_stdio_server; print('DIGIMON MCP import OK')"
 
       - name: Compile canonical core
         run: |
@@ -32,6 +37,8 @@ jobs:
             Core/Composition \
             Core/Operators \
             Core/Methods \
+            Core/Graph/GraphFactory.py \
+            Core/AgentTools/query_expansion.py \
             digimon_mcp_stdio_server.py
 
       - name: Run deterministic core contracts
@@ -58,5 +65,7 @@ jobs:
             Core/Schema \
             Core/Composition \
             Core/Operators/meta \
+            Core/Graph/GraphFactory.py \
+            Core/AgentTools/query_expansion.py \
             tests/core \
             digimon_mcp_stdio_server.py
