@@ -1,114 +1,105 @@
-"""
-Graph Factory.
-"""
-from typing import Any, Dict # Ensure Any and Dict are imported
-from Core.Graph.BaseGraph import BaseGraph # Assuming GraphType is also in BaseGraph or imported elsewhere
-from Core.Graph.ERGraph import ERGraph
-from Core.Graph.PassageGraph import PassageGraph
-from Core.Graph.TreeGraph import TreeGraph
-from Core.Graph.TreeGraphBalanced import TreeGraphBalanced
-from Core.Graph.RKGraph import RKGraph
-from Config.GraphConfig import GraphConfig # For type hinting of the config passed to graph constructors
-from Core.Common.Logger import logger # For logging potential issues
+"""Graph factory with lazy graph implementation imports.
 
-# If GraphType enum is used by main_config.graph.type, ensure it's accessible.
-# It's often defined in BaseGraph.py or GraphSchema.py. For now, assuming string keys.
-# from Core.Schema.GraphSchema import GraphType # Example if GraphType is an Enum
+The canonical ER path should not require optional dependencies used only by
+Tree/RK/Passage graph implementations. Implementations are imported only when
+the corresponding graph type is requested.
+"""
+from typing import Any, Callable, Dict
 
-class GraphFactory():
+from Config.GraphConfig import GraphConfig
+from Core.Common.Logger import logger
+from Core.Graph.BaseGraph import BaseGraph
+
+
+class GraphFactory:
     def __init__(self):
-        # Using string keys as derived from config.graph.type
-        self.creators: Dict[str, callable] = {
+        self.creators: Dict[str, Callable[..., BaseGraph]] = {
             "er_graph": self._create_er_graph,
             "rkg_graph": self._create_rkg_graph,
             "tree_graph": self._create_tree_graph,
             "tree_graph_balanced": self._create_tree_graph_balanced,
-            "passage_graph": self._create_passage_graph # Corrected typo here
+            "passage_graph": self._create_passage_graph,
         }
 
-    def get_graph(self, config: Any, **kwargs) -> BaseGraph: # config is the full Config object
-        """
-        Creates a graph instance based on the type specified in config.graph.type.
-        'config' is the full application Config object.
-        'kwargs' should contain data_path, storage_type, storage_instance.
-        """
-        graph_type_str = config.graph.type # This should work as GraphConfig now has 'type'
-        
-        creator_method = self.creators.get(graph_type_str)
-        
-        if not creator_method:
-            logger.error(f"GraphFactory: Unknown graph type specified in config: '{graph_type_str}'. Available types: {list(self.creators.keys())}")
-            raise ValueError(f"Unknown graph type specified in config: {graph_type_str}")
-        
-        logger.info(f"GraphFactory: Creating graph of type '{graph_type_str}' with kwargs: {kwargs}")
-        # The 'config' passed to creator methods is the full main_config.
-        # **kwargs will contain data_path, storage_type, storage_instance.
-        return creator_method(config, **kwargs)
+    def get_graph(self, config: Any, **kwargs: Any) -> BaseGraph:
+        """Create the graph implementation selected by ``config.graph.type``."""
+        graph_type = config.graph.type
+        creator = self.creators.get(graph_type)
+        if creator is None:
+            logger.error(
+                "GraphFactory: unknown graph type '%s'. Available types: %s",
+                graph_type,
+                list(self.creators.keys()),
+            )
+            raise ValueError(f"Unknown graph type specified in config: {graph_type}")
+
+        logger.info("GraphFactory: creating graph type '%s'", graph_type)
+        return creator(config, **kwargs)
 
     @staticmethod
-    def _create_er_graph(full_config: Any, **constructor_kwargs: Any) -> ERGraph:
-        logger.debug(f"GraphFactory._create_er_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
+    def _validate_graph_config(full_config: Any, graph_type: str) -> None:
         if not isinstance(full_config.graph, GraphConfig):
-             logger.error(f"_create_er_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-             # Potentially raise error or return None
-        # ERGraph expects (config, llm, encoder) as its constructor signature
-        # Unlike other graph types, do not pass data_path or storage_type, but pass storage_instance if provided
+            logger.warning(
+                "GraphFactory: %s requested with unexpected graph config type %s",
+                graph_type,
+                type(full_config.graph),
+            )
+
+    @staticmethod
+    def _create_er_graph(full_config: Any, **kwargs: Any) -> BaseGraph:
+        from Core.Graph.ERGraph import ERGraph
+
+        GraphFactory._validate_graph_config(full_config, "er_graph")
         return ERGraph(
-            config=full_config.graph,  # Only the GraphConfig part
-            llm=constructor_kwargs.get("llm"),
-            encoder=constructor_kwargs.get("encoder"),
-            storage_instance=constructor_kwargs.get("storage_instance")
+            config=full_config.graph,
+            llm=kwargs.get("llm"),
+            encoder=kwargs.get("encoder"),
+            storage_instance=kwargs.get("storage_instance"),
         )
 
     @staticmethod
-    def _create_rkg_graph(full_config: Any, **constructor_kwargs: Any) -> RKGraph:
-        logger.debug(f"GraphFactory._create_rkg_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
-        if not isinstance(full_config.graph, GraphConfig):
-             logger.error(f"_create_rkg_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # RKGraph expects (config, llm, encoder)
+    def _create_rkg_graph(full_config: Any, **kwargs: Any) -> BaseGraph:
+        from Core.Graph.RKGraph import RKGraph
+
+        GraphFactory._validate_graph_config(full_config, "rkg_graph")
         return RKGraph(
-            config=full_config,  # Pass the full config
-            llm=constructor_kwargs.get("llm"),
-            encoder=constructor_kwargs.get("encoder")
+            config=full_config,
+            llm=kwargs.get("llm"),
+            encoder=kwargs.get("encoder"),
         )
 
     @staticmethod
-    def _create_tree_graph(full_config: Any, **constructor_kwargs: Any) -> TreeGraph:
-        logger.debug(f"GraphFactory._create_tree_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
-        if not isinstance(full_config.graph, GraphConfig):
-             logger.error(f"_create_tree_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # TreeGraph expects (config, llm, encoder)
+    def _create_tree_graph(full_config: Any, **kwargs: Any) -> BaseGraph:
+        from Core.Graph.TreeGraph import TreeGraph
+
+        GraphFactory._validate_graph_config(full_config, "tree_graph")
         return TreeGraph(
-            config=full_config,  # Pass the full config
-            llm=constructor_kwargs.get("llm"),
-            encoder=constructor_kwargs.get("encoder")
+            config=full_config,
+            llm=kwargs.get("llm"),
+            encoder=kwargs.get("encoder"),
         )
 
     @staticmethod
-    def _create_tree_graph_balanced(full_config: Any, **constructor_kwargs: Any) -> TreeGraphBalanced:
-        logger.debug(f"GraphFactory._create_tree_graph_balanced: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
-        if not isinstance(full_config.graph, GraphConfig):
-             logger.error(f"_create_tree_graph_balanced: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # TreeGraphBalanced expects (config, llm, encoder)
+    def _create_tree_graph_balanced(full_config: Any, **kwargs: Any) -> BaseGraph:
+        from Core.Graph.TreeGraphBalanced import TreeGraphBalanced
+
+        GraphFactory._validate_graph_config(full_config, "tree_graph_balanced")
         return TreeGraphBalanced(
-            config=full_config,  # Pass the full config
-            llm=constructor_kwargs.get("llm"),
-            encoder=constructor_kwargs.get("encoder")
+            config=full_config,
+            llm=kwargs.get("llm"),
+            encoder=kwargs.get("encoder"),
         )
 
     @staticmethod
-    def _create_passage_graph(full_config: Any, **constructor_kwargs: Any) -> PassageGraph: # Corrected typo here
-        logger.debug(f"GraphFactory._create_passage_graph: full_config type: {type(full_config)}, constructor_kwargs: {constructor_kwargs}")
-        if not isinstance(full_config.graph, GraphConfig):
-             logger.error(f"_create_passage_graph: full_config.graph is not a GraphConfig object. Type: {type(full_config.graph)}")
-        # PassageGraph expects (config, llm, encoder)
+    def _create_passage_graph(full_config: Any, **kwargs: Any) -> BaseGraph:
+        from Core.Graph.PassageGraph import PassageGraph
+
+        GraphFactory._validate_graph_config(full_config, "passage_graph")
         return PassageGraph(
-            config=full_config,  # Pass the full config
-            llm=constructor_kwargs.get("llm"),
-            encoder=constructor_kwargs.get("encoder")
+            config=full_config,
+            llm=kwargs.get("llm"),
+            encoder=kwargs.get("encoder"),
         )
 
-# Make the get_graph method available at the module level, bound to a GraphFactory instance
-get_graph = GraphFactory().get_graph
 
 get_graph = GraphFactory().get_graph
