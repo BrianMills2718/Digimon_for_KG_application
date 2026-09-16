@@ -1,6 +1,6 @@
 # Failure-Driven Core Fixes Plan
 
-**Status:** Active  
+**Status:** Active — implementation underway; first fresh run pending  
 **Priority:** P0/P1  
 **Planning level:** Execution stub  
 **Updated:** 2026-09-16  
@@ -14,11 +14,15 @@ Fix fundamental defects exposed by the canary and CI before adding architecture 
 
 For each failure, record only:
 
-| Failure | Evidence | Smallest fix | Regression test | Status |
+| Failure | Evidence | Smallest fix | Regression check | Status |
 |---|---|---|---|---|
-| _populate as failures appear_ |  |  |  |  |
-
-Then implement the smallest fix and rerun the failing check.
+| Full requirements cannot resolve `umap==0.1.1` | Existing GitHub Actions install log | Remove invalid `umap` pin; keep `umap-learn` | Full dependency install reaches tests | **Implemented; rerun pending** |
+| CI fails on style/research bootstrap before product signal | Existing workflow run | Replace first gate with deterministic maintained-core contracts; make style advisory | `pytest tests/core -q` in CI | **Implemented; rerun pending** |
+| Clean checkout has no `Option/Config2.yaml`, while MCP loads it directly | Repository contents + startup code | `Config.from_yaml_file()` falls back to checked-in/default config resolution | MCP initialization from checkout without local YAML | **Implemented; canary run pending** |
+| Preferred MCP path dependencies missing from minimal install | Import trace vs `requirements-minimal.txt` | Add MCP SDK 1.x, `igraph`, `lazy-object-proxy`, CLI color dependency | Minimal install can import/start core MCP path | **Implemented; install run pending** |
+| Optional embedding backends imported eagerly | `EmbeddingFactory.py` | Lazy-load Ollama/HF providers only when selected | OpenAI/default startup does not require optional embedding packages | **Implemented; run pending** |
+| VDB registration log checks nonexistent `_vdbs` | `GraphRAGContext` uses public `vdbs` / `list_vdbs()` | Log through `list_vdbs()` | VDB build log reflects registered ID | **Implemented** |
+| Expanded entity search uses `_replace()` on third-party score object | `entity_vdb_search_tool` source | Carry adjusted score as a plain scalar | Expansion branch returns ranked results without object mutation | **Implemented; canary run pending** |
 
 ## Priority order
 
@@ -31,23 +35,18 @@ Then implement the smallest fix and rerun the failing check.
 7. incorrect failure swallowing or misleading success results;
 8. only then broader composition/resource/provenance cleanup required by observed behavior.
 
-## Current known fixes
+## Current execution state
 
-### F1 — invalid full requirements pin
+The repository now has:
 
-**Evidence:** CI cannot resolve `umap==0.1.1`; `umap-learn` is already present.
+- a portable cached MCP canary;
+- a separate clean-rebuild canary mode;
+- a small deterministic composition contract suite;
+- a lean blocking CI core job plus advisory style job;
+- `workflow_dispatch` declared in CI;
+- bootstrap/dependency fixes above.
 
-**Fix:** remove the invalid `umap` pin and retain `umap-learn`.
-
-**Regression check:** dependency installation reaches tests.
-
-### F2 — CI gates style/bootstrap before product signal
-
-**Evidence:** Black and full research-environment installation prevent meaningful core execution checks.
-
-**Fix:** narrow the first blocking CI gate to maintained core bootstrap + deterministic checks; keep broad/style checks advisory until useful.
-
-**Regression check:** CI reaches and runs maintained-core tests.
+GitHub Actions has not created a run for the connector-generated commits, and the available connector does not expose workflow dispatch. The connected development machine is also temporarily unavailable through its automation tool quota. Therefore the next meaningful evidence is the **first actual run**, not more planning.
 
 ## Non-goals
 
