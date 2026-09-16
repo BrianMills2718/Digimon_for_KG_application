@@ -27,20 +27,20 @@ class GraphFactory:
         creator = self.creators.get(graph_type)
         if creator is None:
             logger.error(
-                "GraphFactory: unknown graph type '%s'. Available types: %s",
+                "GraphFactory: unknown graph type '{}'. Available types: {}",
                 graph_type,
                 list(self.creators.keys()),
             )
             raise ValueError(f"Unknown graph type specified in config: {graph_type}")
 
-        logger.info("GraphFactory: creating graph type '%s'", graph_type)
+        logger.info("GraphFactory: creating graph type '{}'", graph_type)
         return creator(config, **kwargs)
 
     @staticmethod
     def _validate_graph_config(full_config: Any, graph_type: str) -> None:
         if not isinstance(full_config.graph, GraphConfig):
             logger.warning(
-                "GraphFactory: %s requested with unexpected graph config type %s",
+                "GraphFactory: {} requested with unexpected graph config type {}",
                 graph_type,
                 type(full_config.graph),
             )
