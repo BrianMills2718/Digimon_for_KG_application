@@ -1,128 +1,226 @@
-# DIGIMON KG-RAG: What It Does
+# DIGIMON Functionality
+
+**Snapshot:** 2026-09-16  
+**Purpose:** concise capability inventory. For architectural status and gaps, see `docs/CURRENT_STATE.md` and `docs/GAP_ANALYSIS.md`.
+
+## Status vocabulary
+
+- **Implemented** — substantive code exists and is wired into a current surface.
+- **Partial** — substantive code exists but lifecycle/integration/contracts/reliability are incomplete.
+- **Legacy** — present for compatibility/history, not the target architecture.
+- **Planned** — target behavior is not materially complete.
+
+This page describes code presence and wiring; it is not a fresh certification of every provider-dependent runtime path.
 
 ## One-liner
 
-DIGIMON gives an intelligent agent harness typed tools for turning documents into graph, vector, text, community, and structured retrieval resources, then using those resources to answer questions with source-grounded evidence.
+DIGIMON exposes composable document, graph, vector, text, community and structured-analysis capabilities to an intelligent harness. The harness decides how to reason; DIGIMON provides the retrieval/analysis machinery and should preserve the evidence needed to justify answers.
 
-## Architectural Principle
+## Implemented capability core
 
-DIGIMON does **not** need to hard-code a complete agent brain.
+### Typed operator system — **Implemented**
 
-The system is split deliberately:
+The canonical retrieval core contains **26 registered operators** with typed slot I/O, cost tiers, prerequisite flags and compatibility metadata.
 
-- **DIGIMON provides capabilities and contracts**: ingestion, graph construction, indexing, retrieval, analysis, resource discovery, provenance, and typed tool interfaces.
-- **The harness provides adaptive reasoning**: it interprets the user goal, decides whether decomposition is useful, chooses tools, observes results, revises its approach, and stops when it has enough evidence.
-- **Prompts provide soft heuristics**: AoT/GoT-style decomposition, modality selection, and retrieval-method profiles can help the harness reason without becoming a mandatory execution graph.
+Categories:
 
-A harness may follow a suggested dependency chain, pursue independent branches in parallel, skip unnecessary steps, or discover a better route after seeing intermediate evidence.
+- entity — 7;
+- relationship — 4;
+- chunk — 3;
+- subgraph — 3;
+- community — 2;
+- meta — 7.
 
-See `docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md` for the current reasoning architecture.
+Key files:
 
-## Core Flow
+- `Core/Schema/SlotTypes.py`
+- `Core/Schema/OperatorDescriptor.py`
+- `Core/Operators/registry.py`
+- `Core/Composition/`
 
-Given a goal and a folder of documents (`.txt`, `.md`, `.json`, `.jsonl`, `.csv`, `.pdf`), an MCP-capable or tool-capable harness can use DIGIMON to:
+### Reference retrieval methods — **Implemented**
 
-1. **Ingest** documents into a structured corpus.
-2. **Build one or more retrieval structures** — entity/relationship graphs, passage graphs, hierarchical trees, vector indexes, or community structures.
-3. **Inspect available resources** and choose an appropriate retrieval strategy.
-4. **Retrieve evidence** through semantic search, graph traversal, relationship retrieval, source-chunk lookup, or cross-modal operations.
-5. **Adapt** after intermediate observations rather than committing to a fixed pipeline in advance.
-6. **Synthesize** a final answer while preserving evidence/provenance boundaries.
+Ten named methods are represented as operator plans and profiled/executed through `OperatorComposer`. They are convenience/reference compositions rather than the core abstraction.
 
-The user states what they want to know; the harness determines how to use the available DIGIMON capabilities.
+Current method profiles include:
 
-## Dependency-Aware Reasoning Heuristic
+- `basic_local`
+- `basic_global`
+- `lightrag`
+- `fastgraphrag`
+- `hipporag`
+- `tog`
+- `gr`
+- `dalk`
+- `kgp`
+- `med`
 
-For complex questions, the harness may use a lightweight Atom-of-Thought / Graph-of-Thought decomposition heuristic. The heuristic exposes dependencies without programming a fixed reasoning runtime.
+### Corpus preparation — **Implemented**
 
-Example:
+`corpus_prepare` supports document directories containing:
+
+- `.txt`
+- `.md`
+- `.json`
+- `.jsonl`
+- `.csv`
+- `.pdf`
+
+Structured parsers include field-detection logic for text/title-like columns/fields.
+
+### Graph construction — **Implemented**
+
+Current MCP graph-build surfaces:
+
+- `graph_build_er`
+- `graph_build_rk`
+- `graph_build_tree`
+- `graph_build_tree_balanced`
+- `graph_build_passage`
+
+Graph-build calls can accept an `input_directory`; the MCP server can prepare a missing corpus before building.
+
+### Entity retrieval — **Implemented**
+
+The current operator/tool layers include:
+
+- entity VDB build/search;
+- one-hop expansion;
+- Personalized PageRank;
+- entity linking;
+- TF-IDF ranking;
+- model-assisted entity scoring/extraction paths.
+
+### Relationship retrieval — **Implemented**
+
+The current operator/tool layers include:
+
+- one-hop relationship retrieval;
+- relationship VDB build/search;
+- score aggregation;
+- model-assisted relation selection.
+
+### Chunk/source retrieval — **Implemented**
+
+Capabilities include:
+
+- chunks from relationships;
+- entity-occurrence chunk retrieval;
+- score-to-chunk aggregation;
+- direct source-text/chunk lookup tools on the MCP surface.
+
+### Subgraph/path retrieval — **Implemented**
+
+Capabilities include:
+
+- K-hop path/neighborhood extraction;
+- Steiner-tree extraction;
+- model-assisted path relevance filtering.
+
+### Community operations — **Implemented / Partial lifecycle**
+
+Community retrieval/build/access capabilities exist. Their usability depends on community artifacts being available or built as prerequisites.
+
+### Graph analysis/visualization — **Implemented**
+
+The MCP/tool surface includes graph structural analysis and graph export/visualization-oriented capabilities.
+
+### Resource inspection — **Partial**
+
+`list_available_resources` exposes graphs, VDBs, communities, sparse matrices and datasets through the current MCP server.
+
+The gap is architectural rather than absence of functionality: resource identity, dependencies, fingerprints, invalidation and lifecycle are not yet represented by one uniform typed resource catalog.
+
+### Prerequisite auto-build — **Partial**
+
+Reference-method execution can build several missing prerequisites automatically, including VDB/community/sparse resources where supported.
+
+The current behavior is useful, but prerequisite semantics are distributed across descriptors/server helpers rather than one canonical resource contract.
+
+## Harness-facing execution
+
+### Stdio MCP server — **Implemented in code / preferred external surface**
+
+`digimon_mcp_stdio_server.py` uses `FastMCP` and exposes three levels of execution:
+
+1. **individual capability/operator calls** — preferred conceptual mode for a capable harness;
+2. **reference method execution** — run one named composition;
+3. **auto selection** — optional LLM/prompt chooses a reference method.
+
+It also exposes resource/config inspection, graph construction, analysis and cross-modal tools.
+
+### CLI — **Implemented / transitional**
+
+`digimon_cli.py` is a working project entry point, but it still instantiates the older internal `PlanningAgent` and `AgentOrchestrator`, including an experimental ReAct mode.
+
+It should be treated as a compatibility/transitional surface rather than the target definition of orchestration.
+
+### API/UI surfaces — **Partial / secondary**
+
+HTTP API, dashboard, Streamlit and React-era surfaces remain in the repository. They are not the architectural center of the current reconciliation.
+
+## Cross-modal analysis — **Implemented / experimental integration**
+
+`Core/AgentTools/cross_modal_tools.py` contains graph/table/vector conversions, embedding-provider adapters and conversion validation/selection support.
+
+The current gap is normalization: these conversions are not yet fully represented through the same typed operator/resource/provenance model as the 26-operator retrieval core.
+
+## Reasoning heuristics
+
+### Dependency-aware decomposition — **Implemented as heuristic**
+
+`prompts/decompose_question.yaml` can suggest a dependency-aware structure such as:
 
 ```text
-q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
-q2: find government positions held by {{q1.entity}}
-q3: determine which position is supported by the retrieved source evidence
+q1: identify an intermediate entity
+q2: retrieve facts about <q1.entity>
+q3: resolve the answer against retrieved source evidence
 ```
 
-This is guidance, not an execution contract. A capable harness can merge steps, branch, parallelize, revise, or bypass the decomposition entirely.
+The harness may ignore, merge, reorder, branch or revise this structure. It is not a mandatory executor.
 
-The corresponding prompt is `prompts/decompose_question.yaml`.
+### Evidence-aware synthesis — **Implemented as heuristic**
 
-## What's in the Toolbox
+`prompts/synthesize_answers.yaml` instructs synthesis to preserve supplied source/provenance markers, distinguish evidence from inference, expose material conflicts/unresolved dependencies, and avoid treating missing evidence as proof of falsity.
 
-### Corpus Preparation
+### Legacy programmed AoT — **Legacy**
 
-- **corpus_prepare** — Turns a directory of documents into a structured corpus. Supports `.txt`, `.md`, `.json`, `.jsonl`, `.csv`, and `.pdf`, with text/title field detection for structured formats.
+`Core/AOT/` contains an older programmed atomic-state/transition approach. It is historical/experimental code, not the target reasoning architecture.
 
-### Graph Construction
+## Evidence/provenance — **Partial**
 
-Graph-building tools can accept an `input_directory`; when appropriate, corpus preparation can happen before graph construction.
+Current typed records already carry useful identifiers:
 
-- **graph_build_er** — Entity-Relationship graph for named entities and explicit relationships.
-- **graph_build_rk** — Relationship-Keyword graph with richer edge descriptions/keywords.
-- **graph_build_tree** — Hierarchical summary tree (RAPTOR-style).
-- **graph_build_tree_balanced** — Balanced hierarchical tree using K-Means-style partitioning.
-- **graph_build_passage** — Passage graph linking text passages through shared entities.
+- entities: `source_id`;
+- relationships: `source_id`;
+- chunks: `chunk_id`.
 
-### Search and Retrieval
+Retrieval can move from graph evidence back to chunks/source text, and synthesis can preserve supplied provenance.
 
-- **entity_vdb_build** — Build a vector index over graph entities.
-- **entity_vdb_search** — Find entities relevant to a natural-language query.
-- **entity_onehop** — Retrieve direct graph neighbors.
-- **entity_ppr** — Personalized PageRank over seed entities.
-- **relationship_onehop** — Retrieve relationships attached to entities.
-- **chunk_get_text** — Retrieve original source text associated with graph evidence.
-- **subgraph/path operators** — Explore multi-hop paths or compact connected subgraphs when relational structure matters.
-- **community operators** — Work with graph communities and higher-level structure.
+What is **not yet complete** is a universal end-to-end evidence contract that guarantees lineage propagation across every operator, aggregation, subgraph/community operation and cross-modal conversion.
 
-### Analysis and Resource Discovery
+## Evaluation — **Implemented infrastructure / deferred priority**
 
-- **graph_analyze** — Graph statistics and structural analysis.
-- **graph_visualize** — Export graph structure for inspection or visualization.
-- **list_available_resources** — Inspect graphs, indexes, and other artifacts currently available to the harness.
+The repository includes an evaluation runner capable of tracking exact match, token-level F1/precision/recall, latency, LLM calls and token usage, plus benchmark/test datasets including HotpotQA material.
 
-### Cross-Modal Analysis
+Evaluation is not the current architecture priority. Deferred questions are documented in `docs/FUTURE_EVALUATION_QUESTIONS.md`.
 
-DIGIMON can treat graph, table, vector, and text representations as complementary tools rather than mutually exclusive modes. A harness can move between them when a question calls for aggregation, similarity, relationship traversal, or source verification.
+## Current architecture priorities
 
-## Typical Session
+The active implementation sequence is documented in `docs/ROADMAP.md`. In short:
 
-```text
-User: "I have a folder of articles about defense contracting.
-       Who are the key players and how are they connected?"
+1. canonical capability contract;
+2. resource catalog/lifecycle/prerequisites;
+3. end-to-end evidence/provenance;
+4. clean harness-first boundary;
+5. legacy orchestration/AoT consolidation;
+6. cross-modal normalization;
+7. error/recovery semantics;
+8. contract tests/CI hardening.
 
-Harness:
-  1. Inspects available DIGIMON resources.
-  2. Builds or reuses an entity/relationship graph.
-  3. Builds or reuses an entity vector index if semantic discovery is useful.
-  4. Searches for relevant entities.
-  5. Traverses relationships / graph neighborhoods for connection structure.
-  6. Retrieves source chunks supporting the important entities and edges.
-  7. Revises or expands retrieval if evidence is incomplete.
-  8. Produces an answer grounded in the retrieved source material.
-```
+For the full code-vs-goal reconciliation, use:
 
-The exact sequence is intentionally not fixed. The harness chooses the path that fits the question and the resources already available.
-
-## Evidence-Aware Synthesis
-
-The final synthesis step should preserve rather than erase evidence boundaries. The synthesis heuristic in `prompts/synthesize_answers.yaml` is designed to:
-
-- retain provenance/citation markers when supplied;
-- distinguish retrieved evidence from inferred conclusions;
-- surface material conflicts;
-- identify unresolved information dependencies;
-- avoid converting missing evidence into a false negative claim;
-- avoid invented certainty or unsupported bridges between facts.
-
-## Current Priority
-
-The current goal is to finish and clarify the architecture:
-
-- typed tool contracts;
-- reliable resource discovery and prerequisite handling;
-- clean data flow among graph, text, vector, table, and community representations;
-- provenance from graph evidence back to original text;
-- robust harness interaction;
-- useful but non-prescriptive reasoning prompts.
-
-Benchmarking, method ablations, novelty comparisons, router calibration, and question-class evaluation are intentionally deferred. The questions to revisit later are preserved in `docs/FUTURE_EVALUATION_QUESTIONS.md`.
+- `docs/CURRENT_STATE.md`
+- `docs/ARCHITECTURE.md`
+- `docs/GAP_ANALYSIS.md`
+- `docs/ROADMAP.md`
