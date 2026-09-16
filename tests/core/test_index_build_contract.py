@@ -25,8 +25,7 @@ class FakeIndex(BaseIndex):
         return []
 
     async def _update_index(self, elements, meta_data):
-        if self.fail_update:
-            self._index = None
+        self._index = None if self.fail_update else object()
 
     def _get_retrieve_top_k(self):
         return 5
@@ -63,3 +62,14 @@ async def test_build_index_reports_true_only_after_persistence(tmp_path):
 
     assert ok is True
     assert index.exist_index()
+
+
+@pytest.mark.asyncio
+async def test_build_index_does_not_use_legacy_get_index_hook(tmp_path):
+    class ExplodingGetIndex(FakeIndex):
+        def _get_index(self):
+            raise AssertionError("build_index should let _update_index initialize the backend")
+
+    index = ExplodingGetIndex(tmp_path / "dynamic")
+
+    assert await index.build_index([{"content": "x"}], ["content"]) is True
