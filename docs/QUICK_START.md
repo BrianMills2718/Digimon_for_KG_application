@@ -6,10 +6,11 @@ This guide is intentionally narrow: configure the public snapshot and choose an 
 
 For architecture/status before running the project, see:
 
-- `CURRENT_STATE.md`
-- `ARCHITECTURE.md`
-- `GAP_ANALYSIS.md`
-- `ROADMAP.md`
+- `CURRENT_STATE.md` — what is materially implemented now;
+- `IMPLEMENTATION_MAP.md` — module classification and concrete code caveats;
+- `ARCHITECTURE.md` — target design;
+- `GAP_ANALYSIS.md` — current→target gaps;
+- `ROADMAP.md` — ordered architecture-completion plan.
 
 ## 1. Install dependencies
 
@@ -59,7 +60,12 @@ For a capable harness, **individual capability composition is the conceptual def
 
 The same MCP surface also provides corpus/graph construction, resource/config inspection, graph/community helpers, analysis, and cross-modal tools.
 
-See `../FUNCTIONALITY.md` for the current capability inventory.
+Two current implementation caveats are worth knowing before treating the operator catalog as a complete planner:
+
+- slot-kind compatibility/chain discovery does not prove that all resources/prerequisites are available;
+- static plan validation and runtime dispatch currently have different strictness, and explicit strict-vs-best-effort execution is still a roadmap item.
+
+See `IMPLEMENTATION_MAP.md` for the exact current behavior and `../FUNCTIONALITY.md` for the capability inventory.
 
 ## 4. Choose a corpus directory
 
@@ -143,16 +149,21 @@ The current CLI declares `--corpus/-c` as required. Verify that the directory ex
 
 ### Missing MCP prerequisite/resource
 
-The MCP layer exposes resource inspection and several prerequisite-building helpers. The current architecture still classifies resource lifecycle/prerequisite handling as **Partial** because those semantics are not yet unified under one typed resource catalog. See `GAP_ANALYSIS.md` rather than assuming every missing resource is auto-built uniformly.
+The MCP layer exposes resource inspection and several prerequisite-building helpers. Resource lifecycle/prerequisite handling is still **Partial** because those semantics are not yet unified under one typed resource catalog. See `GAP_ANALYSIS.md` rather than assuming every missing resource is auto-built uniformly.
+
+### A decomposition prompt changed but behavior did not
+
+DIGIMON currently has both YAML decomposition/synthesis prompts and equivalent typed meta-operator prompt text. They are aligned in this snapshot, but they are not yet loaded from one source. Check the execution path you are actually using; prompt ownership/parity is an explicit roadmap item.
 
 ## Next reading
 
 1. `../README.md` — concise project/architecture overview.
 2. `CURRENT_STATE.md` — code-truth status map.
-3. `ARCHITECTURE.md` — target design.
-4. `GAP_ANALYSIS.md` — what remains incomplete.
-5. `ROADMAP.md` — architecture-completion sequence.
-6. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
-7. `FUTURE_EVALUATION_QUESTIONS.md` — deliberately deferred benchmarking/research questions.
+3. `IMPLEMENTATION_MAP.md` — exact module/capability classification and implementation caveats.
+4. `ARCHITECTURE.md` — target design.
+5. `GAP_ANALYSIS.md` — what remains incomplete.
+6. `ROADMAP.md` — architecture-completion sequence.
+7. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
+8. `FUTURE_EVALUATION_QUESTIONS.md` — deliberately deferred benchmarking/research questions.
 
 `../MCP_IMPLEMENTATION_TRACKER.md`, `../MCP_INTEGRATION_DETAILED_PLAN.md`, and `../MCP_QUICK_REFERENCE.md` are retained only as historical pointers; their original checkpoint plans are available in Git history.
