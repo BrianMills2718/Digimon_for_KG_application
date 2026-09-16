@@ -1,184 +1,171 @@
 # DIGIMON: Composable Knowledge-Graph RAG
 
-DIGIMON is a research and application architecture for turning document collections into reusable **text, vector, graph, community, and structured retrieval resources** that an intelligent agent harness can compose to answer complex questions.
+DIGIMON is a research/application codebase for turning document collections into reusable **graph, vector, text, community, and structured retrieval capabilities** that an intelligent agent harness can compose to answer questions.
 
-The central idea is simple:
+> **Program the capabilities, contracts, resources, and evidence boundaries. Prompt useful reasoning heuristics. Let the harness remain intelligent.**
 
-> **Program the capabilities, contracts, and evidence boundaries. Give the harness useful reasoning heuristics. Let the harness remain intelligent.**
+## Current status
 
-Rather than forcing every question through one fixed GraphRAG pipeline—or encoding a complete agent brain as a hand-built state machine—DIGIMON exposes typed operations that a capable harness can select, sequence, revise, and combine as the question requires.
+As of **2026-09-16**, this public snapshot is a **hybrid/transitional architecture**.
 
-## What the system does
+Its strongest modern core is already implemented in code:
 
-A typical workflow is:
+- a typed slot/record system;
+- a machine-readable registry of **26 composable operators**;
+- chain validation and pipeline execution;
+- **10 reference retrieval methods** represented as operator plans;
+- corpus and five graph-build surfaces;
+- entity, relationship, chunk, subgraph, community and meta operations;
+- a stdio MCP server that exposes individual capabilities plus reference/auto execution modes;
+- graph/table/vector cross-modal conversion code;
+- evaluation and end-to-end testing infrastructure.
+
+The remaining architecture work is not “invent an agent brain.” It is to make the existing capability system more coherent: **uniform resource lifecycle, prerequisites, provenance/evidence propagation, capability/MCP parity, errors/recovery, and cleanup of legacy internal planning layers**.
+
+For the authoritative status, target design, gaps and plan, start here:
+
+1. **[docs/CURRENT_STATE.md](docs/CURRENT_STATE.md)** — what the code materially contains now.
+2. **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the target harness-first architecture.
+3. **[docs/GAP_ANALYSIS.md](docs/GAP_ANALYSIS.md)** — current → target gaps.
+4. **[docs/ROADMAP.md](docs/ROADMAP.md)** — architecture-completion sequence and exit criteria.
+5. **[docs/README.md](docs/README.md)** — canonical documentation index and status vocabulary.
+
+## Architecture in one diagram
 
 ```text
-Documents
+User goal
    ↓
-Corpus preparation
+Intelligent external harness
    ↓
-Graph / vector / text / community / structured resources
+DIGIMON MCP / capability facade
    ↓
-Intelligent harness chooses and composes retrieval operations
+Typed operators + build/analysis/conversion capabilities
    ↓
-Source evidence + graph structure
+Resource/prerequisite/evidence layer
    ↓
-Evidence-aware answer synthesis
+Graphs | VDBs | chunks | communities | matrices | tables/vectors
+   ↓
+Original source material
 ```
 
-Depending on the question, the harness may use semantic entity discovery, direct text retrieval, one-hop relationships, multi-hop paths, Personalized PageRank, community structure, table-style aggregation, or a cross-modal combination. It can also decide that graph reasoning is unnecessary.
+The **harness owns adaptive reasoning**: interpreting the goal, deciding whether to decompose it, choosing/ordering tools, observing results, retrying/falling back, and deciding when to stop.
 
-See **[FUNCTIONALITY.md](FUNCTIONALITY.md)** for the capability-level overview.
+DIGIMON owns the **capability/data/evidence plane**: ingestion, graph construction, typed retrieval/analysis operations, resource/prerequisite facts, source identifiers, and bounded model-assisted transformations when an individual capability requires semantic judgment.
 
-## Harness-first agent architecture
+## The operator core
 
-DIGIMON deliberately separates **reasoning policy** from **retrieval capability**.
+`Core/Operators/registry.py` describes 26 current operators across six categories:
 
-### DIGIMON owns
+```text
+entity        7
+relationship  4
+chunk         3
+subgraph      3
+community     2
+meta          7
+```
 
-- corpus ingestion and normalization;
-- graph construction and graph resources;
-- vector indexes and semantic search;
-- entity, relationship, subgraph, path, and community operations;
-- structured/table and cross-modal operations where available;
-- resource discovery and prerequisite handling;
-- typed tool contracts;
-- links from retrieved graph evidence back to source text;
-- evidence-aware synthesis constraints.
+`Core/Schema/SlotTypes.py` supplies typed query/entity/relationship/chunk/subgraph/community/score-vector dataflow. `Core/Composition/` validates and executes compositions.
 
-### The intelligent harness owns
+The 10 named retrieval methods are **reference compositions**, not DIGIMON's identity. A capable harness can compose operators directly or use a named method when useful.
 
-- interpreting the user's goal;
-- deciding whether decomposition is useful;
-- selecting and sequencing tools;
-- pursuing independent branches in parallel when useful;
-- revising the approach after observations;
-- stopping when enough evidence has been gathered;
-- deciding how much reasoning structure is actually necessary.
+## MCP execution modes
 
-This keeps DIGIMON useful across different capable agent harnesses instead of coupling the architecture to one programmed planner.
+`digimon_mcp_stdio_server.py` currently supports three useful levels:
 
-## AoT / GoT as a soft reasoning heuristic
+1. **Individual capabilities/operators** — preferred conceptual mode for capable harnesses.
+2. **Reference methods** — execute a known operator composition.
+3. **Auto selection** — let a prompt/model choose a reference method as an optional convenience.
 
-Complex questions often contain dependencies that should not be flattened into falsely independent searches.
+Mode 1 defines the target architectural boundary. Modes 2 and 3 remain useful shortcuts, compatibility paths, and later evaluation baselines.
 
-For example:
+## AoT / GoT is a heuristic, not an executor
+
+Complex questions can benefit from dependency-aware decomposition:
 
 ```text
 q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
-q2: find government positions held by {{q1.entity}}
-q3: determine which position is supported by the retrieved source evidence
+q2: find government positions held by <q1.entity>
+q3: determine which position is supported by retrieved source evidence
 ```
 
-That dependency structure is useful, but it is **not a mandatory execution graph**. A capable harness can merge steps, branch into candidates, run independent work concurrently, reorder the plan, or bypass the decomposition if a more direct retrieval route appears.
+This is guidance, not a mandatory reasoning graph. The harness may merge, reorder, branch, parallelize, revise, or skip the decomposition.
 
-The prompt in [`prompts/decompose_question.yaml`](prompts/decompose_question.yaml) implements this as a lightweight Atom-of-Thought / Graph-of-Thought heuristic while retaining a simple interface. The architectural rationale is documented in **[docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md](docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md)**.
+The current prompts live in:
 
-The repository also contains an earlier `Core/AOT` implementation that encodes atomic states and transitions directly in code. It is retained as project history and an experimental implementation, but it is not the required reasoning architecture for the current harness-first direction.
+- [`prompts/decompose_question.yaml`](prompts/decompose_question.yaml)
+- [`prompts/synthesize_answers.yaml`](prompts/synthesize_answers.yaml)
 
-## Core capabilities
+The older `Core/AOT` implementation that programs atomic states and transitions is **legacy project lineage**, not the target reasoning architecture.
 
-### Corpus preparation
+## Evidence and provenance
 
-Convert `.txt`, `.md`, `.json`, `.jsonl`, `.csv`, and `.pdf` document collections into DIGIMON corpus resources.
+The current typed records already carry useful source identifiers (`source_id` for entities/relationships and `chunk_id` for chunks), and retrieval paths can return source text. The synthesis prompt is designed to preserve supplied provenance and expose conflicts/unresolved dependencies.
 
-### Graph construction
+However, **end-to-end provenance is still Partial**, not finished: the roadmap calls for a universal evidence contract that propagates lineage consistently through retrieval, aggregation, paths, communities and modality conversions.
 
-The project supports multiple retrieval structures, including:
+## Core retrieval structures
 
-- **Entity-Relationship graphs** for named entities and explicit relationships;
-- **Relationship-Keyword graphs** for richer relationship retrieval;
-- **Passage graphs** connecting source passages through shared entities;
-- **hierarchical summary trees** for multilevel retrieval;
-- associated vector indexes and community structures.
+The repository supports multiple structures rather than one fixed GraphRAG pipeline:
 
-### Retrieval and analysis
+- Entity-Relationship graphs;
+- Relationship-Keyword graphs;
+- hierarchical tree representations;
+- balanced hierarchical trees;
+- passage graphs;
+- vector indexes;
+- graph communities and sparse structures;
+- graph/table/vector conversion and analysis.
 
-Representative operations include:
-
-- semantic entity search;
-- direct graph-neighbor and relationship lookup;
-- Personalized PageRank;
-- K-hop path and connected-subgraph retrieval;
-- community detection/access;
-- source chunk retrieval;
-- graph statistics and visualization/export;
-- resource discovery;
-- graph/vector/table cross-modal workflows.
-
-The repository includes method configurations and operator compositions inspired by or implementing ideas from GraphRAG-family systems such as ToG, HippoRAG, LightRAG, RAPTOR, DALK, KGP, and related approaches.
-
-## Evidence-aware synthesis
-
-Retrieval is only useful if the final response preserves what the system actually knows.
-
-[`prompts/synthesize_answers.yaml`](prompts/synthesize_answers.yaml) instructs synthesis to:
-
-- only make claims supported by supplied evidence/sub-results;
-- preserve citation/provenance markers when present;
-- distinguish retrieved evidence from inference;
-- surface material conflicts;
-- expose unresolved information dependencies;
-- avoid treating missing evidence as proof that a claim is false;
-- avoid inventing certainty or unsupported bridges between facts.
-
-## Example question shape
-
-Multi-hop questions such as the following are useful architectural tests:
-
-> What government position was held by the woman who portrayed Corliss Archer in the film *Kiss and Tell*?
-
-A harness might discover the performer, use that entity as the input to another retrieval step, retrieve source evidence for government roles, and then synthesize only the position supported by the corpus. Another capable harness may solve the same question with a different sequence. DIGIMON's responsibility is to make the necessary capabilities and evidence available without dictating one universal route.
+A harness can choose graph reasoning when structure matters and use simpler text/vector paths when it does not.
 
 ## Repository map
 
 ```text
-Core/                       Core graph, retrieval, agent-tool, and provider modules
+Core/                       Typed operators, composition, graph/index/provider and legacy agent layers
 Config/                     Configuration models and ontology material
-Option/                     Runtime and method configuration
-prompts/                    Harness-facing reasoning/routing/synthesis heuristics
-Data/                       Example and evaluation datasets
+Option/                     Runtime/method configuration
+prompts/                    Decomposition, synthesis, routing and modality heuristics
+Data/                       Example/evaluation datasets
 eval/                       Benchmark/evaluation infrastructure
-tests/ + test_*.py          Unit/integration/end-to-end and experimental tests
-docs/                       Architecture, integration, planning, and usage documentation
+tests/ + test_*.py          Unit/integration/E2E/experimental tests
+docs/                       Canonical architecture plus historical/supporting material
 examples/                   Example workflows
-api.py                      API surface
-digimon_cli.py              CLI surface
-digimon_mcp_stdio_server.py MCP/tool surface
+api.py                      Secondary HTTP/API surface
+digimon_cli.py              Transitional CLI using internal planner/orchestrator
+digimon_mcp_stdio_server.py Preferred external harness/tool surface
 ```
 
-This repository reflects an active research lineage and contains experimental and historical material in addition to the current architectural direction.
+The repository intentionally retains historical/experimental code and documents. **File existence does not imply canonical architecture.** See `docs/CURRENT_STATE.md` for classifications.
 
 ## Current development priority
 
-The immediate priority is **finishing and clarifying the architecture**, especially:
+The current order of work is:
 
-- stable typed tool contracts;
-- resource discovery and prerequisite handling;
-- clean data flow among graph, text, vector, table, and community representations;
-- provenance from graph evidence to original source text;
-- robust harness/tool interaction;
-- useful reasoning prompts that guide without replacing harness intelligence;
-- predictable behavior when evidence or required resources are missing.
+1. stabilize the canonical capability contract;
+2. unify resource identities/lifecycle/prerequisites;
+3. make provenance/evidence an end-to-end contract;
+4. make the harness-first boundary operationally clean;
+5. consolidate legacy planners/orchestrators/AoT code;
+6. normalize cross-modal capabilities;
+7. standardize errors/recovery semantics;
+8. harden architectural contract tests and CI.
 
-Benchmarking, ablations, novelty comparisons, router calibration, and broader question-class evaluation are intentionally deferred until the architecture is stable. The questions worth revisiting later are preserved in **[docs/FUTURE_EVALUATION_QUESTIONS.md](docs/FUTURE_EVALUATION_QUESTIONS.md)**.
+Benchmarking, ablations, router calibration and novelty comparisons are intentionally deferred until those architecture boundaries are stable. Future evaluation questions are preserved in **[docs/FUTURE_EVALUATION_QUESTIONS.md](docs/FUTURE_EVALUATION_QUESTIONS.md)**.
 
 ## Getting started
 
-The repository includes minimal and full dependency sets plus API, CLI, and MCP-style access surfaces. Start with **[docs/QUICK_START.md](docs/QUICK_START.md)** and **[FUNCTIONALITY.md](FUNCTIONALITY.md)**.
+- **[FUNCTIONALITY.md](FUNCTIONALITY.md)** — concise implemented-capability view.
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** — current setup/entry points.
+- **[docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md](docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md)** — reasoning-policy detail.
+- **[docs/adr/002-harness-first-capability-architecture.md](docs/adr/002-harness-first-capability-architecture.md)** — current orchestration decision.
 
-Representative configuration lives under `Option/`, and method-specific configurations live under `Option/Method/`.
+## Public snapshot note
 
-## Repository status
-
-**Public snapshot status (September 2026):** this repository is retained as a public application/architecture snapshot and provenance record. Canonical ongoing DIGIMON development has moved to a maintained private repository. The public snapshot remains useful for inspecting the project's architecture, implementation lineage, experiments, and agent-tool design, but it should not be assumed to contain every current private implementation detail.
+This repository is retained as a public application/architecture snapshot and provenance record. Ongoing private DIGIMON development may contain changes not represented here. The public snapshot remains useful for inspecting the architecture, implementation lineage, experiments and tool design.
 
 For the public portfolio-level project description, see [Brian Mills' portfolio](https://brianmills.dev/portfolio/).
 
-## Lineage and acknowledgement
+## Lineage
 
-DIGIMON's development includes work derived from and inspired by the GraphRAG research ecosystem. The original repository lineage referenced by this project includes [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG) and the paper:
-
-> *In-depth Analysis of Graph-based RAG in a Unified Framework* — Zhou et al., arXiv:2503.04338 (2025).
-
-The current DIGIMON direction focuses on exposing graph and retrieval capabilities as composable tools for intelligent harnesses rather than treating one fixed GraphRAG method as the system itself.
+DIGIMON's development includes work derived from and inspired by the GraphRAG research ecosystem, including [JayLZhou/GraphRAG](https://github.com/JayLZhou/GraphRAG) and *In-depth Analysis of Graph-based RAG in a Unified Framework* (Zhou et al., arXiv:2503.04338, 2025).
