@@ -24,6 +24,20 @@ class FakePathGraph:
         ]
 
 
+class FakeConcatenatedPathGraph:
+    async def get_paths_from_sources(self, start_nodes, cutoff=5):
+        # Mirrors storage behavior that can concatenate multiple paths found
+        # from the same seed into one edge-record list.
+        return [
+            [
+                {"src_id": "alpha", "tgt_id": "x"},
+                {"src_id": "x", "tgt_id": "beta"},
+                {"src_id": "alpha", "tgt_id": "y"},
+                {"src_id": "y", "tgt_id": "gamma"},
+            ]
+        ]
+
+
 @pytest.mark.asyncio
 async def test_khop_path_mode_parses_storage_edge_records_into_node_paths():
     result = await subgraph_khop_paths(
@@ -42,6 +56,34 @@ async def test_khop_path_mode_parses_storage_edge_records_into_node_paths():
     assert subgraph.paths == [["alpha", "middle", "beta"]]
     assert set(subgraph.edges) == {("alpha", "middle"), ("middle", "beta")}
     assert subgraph.nodes == {"alpha", "middle", "beta"}
+
+
+@pytest.mark.asyncio
+async def test_khop_path_mode_splits_disconnected_concatenated_paths():
+    result = await subgraph_khop_paths(
+        inputs={
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[EntityRecord(entity_name="alpha")],
+                producer="test",
+            )
+        },
+        ctx=SimpleNamespace(graph=FakeConcatenatedPathGraph()),
+        params={"mode": "paths", "cutoff": 3},
+    )
+
+    subgraph = result["subgraph"].data
+    assert subgraph.paths == [
+        ["alpha", "x", "beta"],
+        ["alpha", "y", "gamma"],
+    ]
+    assert set(subgraph.edges) == {
+        ("alpha", "x"),
+        ("x", "beta"),
+        ("alpha", "y"),
+        ("y", "gamma"),
+    }
+    assert ("beta", "alpha") not in subgraph.edges
 
 
 @pytest.mark.asyncio
