@@ -1,8 +1,4 @@
-"""
-RAG Embedding Factory.
-@Reference: https://github.com/geekan/MetaGPT/blob/main/metagpt/rag/factories/embedding.py
-@Provide: OllamaEmbedding, OpenAIEmbedding
-"""
+"""Embedding provider factory for DIGIMON."""
 
 from __future__ import annotations
 
@@ -18,7 +14,7 @@ from Option.Config2 import Config
 
 
 class RAGEmbeddingFactory(GenericFactory):
-    """Create the configured embedding provider without importing optional backends eagerly."""
+    """Create the configured embedding provider without eager optional imports."""
 
     def __init__(self):
         creators = {
@@ -31,7 +27,6 @@ class RAGEmbeddingFactory(GenericFactory):
     def get_rag_embedding(
         self, key: EmbeddingType = None, config: Config = None
     ) -> BaseEmbedding:
-        """Return the configured embedding provider."""
         return super().get_instance(
             key or self._resolve_embedding_type(config), config=config
         )
@@ -43,10 +38,17 @@ class RAGEmbeddingFactory(GenericFactory):
         raise TypeError("To use RAG, please configure an embedding provider.")
 
     def _create_openai(self, config) -> OpenAIEmbedding:
-        params = dict(
-            api_key=config.embedding.api_key or config.llm.api_key,
-            api_base=config.embedding.base_url or config.llm.base_url,
-        )
+        params = {}
+        api_key = config.embedding.api_key or config.llm.api_key
+        api_base = config.embedding.base_url or config.llm.base_url
+
+        # Omit empty credentials so the OpenAI/LlamaIndex SDK can use the
+        # standard OPENAI_API_KEY environment variable on clean checkouts.
+        if api_key:
+            params["api_key"] = api_key
+        if api_base:
+            params["api_base"] = api_base
+
         self._try_set_model_and_batch_size(params, config)
         return OpenAIEmbedding(**params)
 
@@ -59,7 +61,9 @@ class RAGEmbeddingFactory(GenericFactory):
                 "'llama-index-embeddings-ollama'."
             ) from exc
 
-        params = dict(base_url=config.embedding.base_url)
+        params = {}
+        if config.embedding.base_url:
+            params["base_url"] = config.embedding.base_url
         self._try_set_model_and_batch_size(params, config)
         return OllamaEmbedding(**params)
 
@@ -72,15 +76,14 @@ class RAGEmbeddingFactory(GenericFactory):
                 "'llama-index-embeddings-huggingface'."
             ) from exc
 
-        params = dict(
-            model_name=config.embedding.model,
-            cache_folder=config.embedding.cache_folder,
-            device="cuda",
-            target_devices=["cuda:7"],
-            embed_batch_size=128,
-        )
-        if config.embedding.cache_folder == "":
-            del params["cache_folder"]
+        params = {
+            "model_name": config.embedding.model,
+            "device": "cuda",
+            "target_devices": ["cuda:7"],
+            "embed_batch_size": 128,
+        }
+        if config.embedding.cache_folder:
+            params["cache_folder"] = config.embedding.cache_folder
         return HuggingFaceEmbedding(**params)
 
     @staticmethod
