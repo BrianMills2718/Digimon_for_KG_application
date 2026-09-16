@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from Core.Common.Logger import logger
 
 
@@ -10,50 +11,24 @@ class BaseCommunity(ABC):
         self.enforce_sub_communities = enforce_sub_communities
         self.namespace = namespace
 
-        
     async def generate_community_report(self, graph, force=False):
-        """
-            Generates a community report based on the provided graph.
-
-            This function first attempts to load an existing community report. If the report does not exist or if the `force` flag is set to True, it will generate a new community report from the provided graph. After generating the report, it persists the report to a file.
-
-            Args:
-                graph: The graph data structure used to generate the community report.
-                force (bool): If True, forces the generation of a new community report even if one already exists. Defaults to False.
-
-        """
-        # Try to load the community report
+        """Load or generate community reports for ``graph``."""
         logger.info("Generating community report...")
-
-        is_exist = await self._load_community_report(graph,force)
+        is_exist = await self._load_community_report(graph, force)
         if force or not is_exist:
-            # Generate the community report
             await self._generate_community_report(graph)
-            # Persist the community report
             await self._persist_community()
-        logger.info("✅ [Community Report]  Finished")
+        logger.info("✅ [Community Report] Finished")
 
     async def cluster(self, **kwargs):
-        """
-          Clusters the input graph .
-
-          This function first attempts to load an existing cluster map. If the cluster map does not exist or if the `force` flag is set to True, it will perform clustering on the data. After clustering, it persists the cluster map to a file.
-
-          Args:
-              **kwargs: Additional keyword arguments that may include parameters for clustering.
-                  - force (bool): If True, forces the clustering process even if a cluster map already exists. Defaults to False.
-          """
-        logger.info("Starting build community of the given graph")
-        logger.start("Clustering nodes")
-        force = kwargs.pop('force', False)
-        # Try to load the community <-> node map
+        """Load or generate the community-to-node clustering map."""
+        logger.info("Starting community clustering")
+        force = kwargs.pop("force", False)
         is_exist = await self._load_cluster_map(force)
         if force or not is_exist:
-           
-            # Clustering the graph and generate the community <-> node map
             await self.clustering(**kwargs)
-            # Persist the community <-> node map
             await self._persist_cluster_map()
+        logger.info("✅ Community clustering finished")
 
     @abstractmethod
     async def _generate_community_report(self, graph):
@@ -64,7 +39,7 @@ class BaseCommunity(ABC):
         pass
 
     @abstractmethod
-    async def _load_community_report(self, force):
+    async def _load_community_report(self, graph, force):
         pass
 
     @abstractmethod
