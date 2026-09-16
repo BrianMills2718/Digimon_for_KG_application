@@ -1,7 +1,7 @@
 """Entity agent operator used by Think-on-Graph exploration.
 
-Consumes the scored relationship choices produced by ``relationship.agent`` and
-selects the next entity candidates for the following graph hop.
+Consumes candidate EntityRecords produced from scored relationships by
+``entity.rel_node`` and selects the next graph entities for the following hop.
 """
 
 from __future__ import annotations
@@ -19,17 +19,20 @@ async def entity_agent(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"query": QUERY_TEXT, "relationships": RELATIONSHIP_SET}
+    Inputs:  {"query": QUERY_TEXT, "entity_relation_list": ENTITY_SET}
     Outputs: {"entities": ENTITY_SET}
     Params:  {"width": int}
+
+    Each candidate record carries these ToG fields in ``extra``:
+    ``relation``, ``head``, and ``relations_dict``.
     """
     from Core.Prompt.TogPrompt import score_entity_candidates_prompt
 
     query = inputs["query"].data
-    relationships = inputs["relationships"].data
+    candidates = inputs["entity_relation_list"].data
     width = (params or {}).get("width", 3)
 
-    if not relationships:
+    if not candidates:
         return {
             "entities": SlotValue(
                 kind=SlotKind.ENTITY_SET,
@@ -40,30 +43,30 @@ async def entity_agent(
 
     ranked_candidates = []
 
-    for relationship in relationships:
-        relation = relationship.relation_name
-        relation_score = float(relationship.score or 0.0)
-        head = bool(relationship.extra.get("head", bool(relationship.src_id)))
-        topic_entity = relationship.src_id if head else relationship.tgt_id
-        relations_dict = relationship.extra.get("relations_dict", {}) or {}
-        candidate_list = list(relations_dict.get((topic_entity, relation), []))
+    for candidate_record in candidates:
+        topic_entity = candidate_record.entity_name
+        relation = candidate_record.extra.get("relation", "")
+        relation_score = float(candidate_record.score or 0.0)
+        head = bool(candidate_record.extra.get("head", True))
+        relations_dict = candidate_record.extra.get("relations_dict", {}) or {}
+        entity_candidates = list(relations_dict.get((topic_entity, relation), []))
 
-        if not candidate_list:
+        if not entity_candidates:
             continue
 
-        if len(candidate_list) == 1:
-            candidate_scores = [relation_score]
+        if len(entity_candidates) == 1:
+            scores = [relation_score]
         else:
             prompt = (
                 score_entity_candidates_prompt.format(query, relation)
-                + "; ".join(candidate_list)
+                + "; ".join(entity_candidates)
                 + ";\nScore: "
             )
             try:
                 result = await ctx.llm.aask(
                     msg=[{"role": "user", "content": prompt}]
                 )
-                candidate_scores = [
+                scores = [
                     float(value)
                     for value in re.findall(r"\d+(?:\.\d+)?", result)
                 ]
@@ -71,22 +74,20 @@ async def entity_agent(
                 logger.warning(
                     f"entity.agent scoring failed for relation '{relation}': {exc}"
                 )
-                candidate_scores = []
+                scores = []
 
-            if len(candidate_scores) != len(candidate_list):
-                # Keep relation relevance as the fallback signal rather than
-                # inventing a second arbitrary ranking.
-                candidate_scores = [relation_score] * len(candidate_list)
+            if len(scores) != len(entity_candidates):
+                scores = [relation_score] * len(entity_candidates)
 
-        for candidate, candidate_score in zip(candidate_list, candidate_scores):
-            score = float(candidate_score)
+        for entity_name, score in zip(entity_candidates, scores):
+            score = float(score)
             if score <= 0.0:
                 continue
             ranked_candidates.append(
                 (
                     score,
                     EntityRecord(
-                        entity_name=str(candidate),
+                        entity_name=str(entity_name),
                         score=score,
                         extra={
                             "relation": relation,
@@ -99,7 +100,6 @@ async def entity_agent(
 
     ranked_candidates.sort(key=lambda item: item[0], reverse=True)
 
-    # Deduplicate candidates while preserving highest score.
     records = []
     seen = set()
     for _score, record in ranked_candidates:
