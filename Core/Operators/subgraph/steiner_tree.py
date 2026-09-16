@@ -1,14 +1,20 @@
-"""Subgraph Steiner tree operator.
-
-Compute minimum Steiner tree connecting seed entities.
-"""
+"""Subgraph Steiner-tree operator."""
 
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+import networkx as nx
+from networkx.algorithms.approximation.steinertree import steiner_tree
+
 from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import SlotKind, SlotValue, SubgraphRecord
+
+
+def _networkx_graph(graph):
+    storage = getattr(graph, "_graph", graph)
+    candidate = getattr(storage, "graph", storage)
+    return candidate if isinstance(candidate, nx.Graph) else None
 
 
 async def subgraph_steiner_tree(
@@ -17,36 +23,61 @@ async def subgraph_steiner_tree(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"entities": SlotValue(ENTITY_SET)}
-    Outputs: {"subgraph": SlotValue(SUBGRAPH)}
+    Inputs:  {"entities": ENTITY_SET}
+    Outputs: {"subgraph": SUBGRAPH}
+    Params:  {"weight_attribute": str | None}
     """
     entities = inputs["entities"].data
     if not entities:
-        return {"subgraph": SlotValue(kind=SlotKind.SUBGRAPH, data=SubgraphRecord(nodes=set(), edges=[]), producer="subgraph.steiner_tree")}
+        return {
+            "subgraph": SlotValue(
+                kind=SlotKind.SUBGRAPH,
+                data=SubgraphRecord(nodes=set(), edges=[]),
+                producer="subgraph.steiner_tree",
+            )
+        }
 
-    names = [e.entity_name for e in entities]
+    names = [record.entity_name for record in entities]
 
     try:
-        nx_subgraph = ctx.graph.get_induced_subgraph(nodes=names)
-        if nx_subgraph is None:
-            return {"subgraph": SlotValue(
+        graph = _networkx_graph(ctx.graph)
+        if graph is None:
+            raise TypeError("Steiner-tree operator requires a NetworkX-backed graph")
+
+        terminals = [name for name in names if name in graph]
+        if not terminals:
+            result_graph = graph.subgraph([]).copy()
+        elif len(terminals) == 1:
+            result_graph = graph.subgraph(terminals).copy()
+        else:
+            # DIGIMON edge weights are relevance-like rather than guaranteed
+            # path costs. Default to minimum-hop Steiner structure unless a
+            # caller explicitly supplies a cost attribute.
+            weight_attribute = (params or {}).get("weight_attribute") or "__unit_cost__"
+            result_graph = steiner_tree(
+                graph,
+                terminal_nodes=terminals,
+                weight=weight_attribute,
+            )
+
+        record = SubgraphRecord(
+            nodes=set(result_graph.nodes()),
+            edges=[(str(src), str(tgt)) for src, tgt in result_graph.edges()],
+            nx_graph=result_graph,
+        )
+        return {
+            "subgraph": SlotValue(
                 kind=SlotKind.SUBGRAPH,
-                data=SubgraphRecord(nodes=set(names), edges=[]),
+                data=record,
                 producer="subgraph.steiner_tree",
-            )}
-
-        nodes = set(nx_subgraph.nodes())
-        edges = list(nx_subgraph.edges())
-        return {"subgraph": SlotValue(
-            kind=SlotKind.SUBGRAPH,
-            data=SubgraphRecord(nodes=nodes, edges=edges, nx_graph=nx_subgraph),
-            producer="subgraph.steiner_tree",
-        )}
-
-    except Exception as e:
-        logger.exception(f"subgraph_steiner_tree failed: {e}")
-        return {"subgraph": SlotValue(
-            kind=SlotKind.SUBGRAPH,
-            data=SubgraphRecord(nodes=set(), edges=[]),
-            producer="subgraph.steiner_tree",
-        )}
+            )
+        }
+    except Exception as exc:
+        logger.exception(f"subgraph_steiner_tree failed: {exc}")
+        return {
+            "subgraph": SlotValue(
+                kind=SlotKind.SUBGRAPH,
+                data=SubgraphRecord(nodes=set(), edges=[]),
+                producer="subgraph.steiner_tree",
+            )
+        }
