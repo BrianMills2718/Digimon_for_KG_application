@@ -45,7 +45,8 @@ For module-by-module classification and implementation caveats, see [IMPLEMENTAT
 | HTTP/API and UI surfaces | **Partial / Secondary** | API, dashboard, Streamlit and React-era surfaces remain, but are not the canonical orchestration boundary. | `api.py`, UI files |
 | Cross-modal graph/table/vector conversion | **Implemented / Experimental integration** | Conversion code uses NetworkX/pandas/NumPy plus embedding adapters and validation helpers. | `Core/AgentTools/cross_modal_tools.py` |
 | Dependency-aware decomposition heuristic | **Implemented / Transitional representation** | YAML and typed meta-operator prompts now use advisory dependency-aware AoT/GoT guidance; sub-questions are still carried as `EntityRecord` values in `ENTITY_SET`. | `prompts/decompose_question.yaml`, `Core/Operators/meta/decompose_question.py` |
-| Evidence-aware synthesis heuristic | **Implemented / Partial provenance inputs** | YAML and typed meta-operator prompts now preserve available evidence markers, surface conflicts/unresolved dependencies, and avoid unsupported bridges. | `prompts/synthesize_answers.yaml`, `Core/Operators/meta/synthesize_answers.py` |
+| Evidence-aware synthesis heuristic | **Implemented / Partial provenance inputs** | YAML and typed meta-operator prompts preserve available evidence markers, surface conflicts/unresolved dependencies, and avoid unsupported bridges. | `prompts/synthesize_answers.yaml`, `Core/Operators/meta/synthesize_answers.py` |
+| Prompt source-of-truth | **Partial** | YAML and operator-local decomposition/synthesis prompts are aligned in this snapshot. | `prompts/`, `Core/Operators/meta/` |
 | Legacy programmed AoT runtime | **Legacy** | `Core/AOT` encodes atomic states, heuristic extraction and transition probabilities directly in code. | `Core/AOT/` |
 | Internal agent brain / multiple orchestrators | **Legacy / Transitional** | Substantial internal planner/orchestrator code remains and is used by some entry points. | `Core/AgentBrain/`, `Core/AgentOrchestrator/` |
 | Provenance/evidence representation | **Partial** | Entity/relationship records carry `source_id`; chunks carry `chunk_id`; `SlotValue` can carry producer/metadata; retrieval can return source text. | `Core/Schema/SlotTypes.py`, chunk operators |
@@ -81,7 +82,7 @@ The stdio MCP server exposes three useful levels:
 2. **reference methods** — known operator compositions;
 3. **auto selection** — optional prompt/model selection of a reference method.
 
-Modes 2 and 3 are useful conveniences and future baselines. Mode 1 defines the target architectural boundary.
+Modes 2 and 3 are conveniences and future baselines. Mode 1 defines the target architectural boundary.
 
 ### 3. Multiple retrieval structures
 
@@ -91,32 +92,30 @@ The codebase contains ER/RK graphs, hierarchical trees, passage graphs, vector i
 
 ### Composition is typed, but not yet a closed safety contract
 
-The current composition code is substantive, but several details matter:
+- Registry successor/chain helpers reason mainly over `SlotKind`; they do not prove resource prerequisites, field requirements, semantic applicability or cost constraints.
+- `ChainValidator` may accept an unwired input when another prior output of the same kind exists, emitting a warning.
+- `OperatorComposer.execute()` currently logs static validation failures and proceeds best-effort.
+- `PipelineExecutor` then performs stricter input-name/type checks before dispatch and defaults to fail-fast operator execution.
+- Loop accumulation currently wraps carried outputs as `ENTITY_SET`, which is not a fully general typed-loop model.
+- Some descriptors represent semantically broader behavior than their declared slot type, such as the current rerank descriptor.
 
-- registry successor/chain helpers reason mainly over `SlotKind`; they do not prove resource prerequisites, field requirements, semantic applicability or cost constraints;
-- `ChainValidator` may accept an unwired input when another prior output of the same kind exists, emitting a warning;
-- `OperatorComposer.execute()` currently logs static validation failures and proceeds best-effort;
-- `PipelineExecutor` then performs stricter input-name/type checks before dispatch and defaults to fail-fast operator execution;
-- loop accumulation currently wraps carried outputs as `ENTITY_SET`, which is not a fully general typed-loop model;
-- some descriptors represent semantically broader inputs than their declared slot type, such as the current rerank descriptor.
-
-The composition layer should therefore be described as **implemented with contract-hardening gaps**, not as a fully solved planner/type system.
+The composition layer is therefore **implemented with contract-hardening gaps**, not a fully solved planner/type/resource system.
 
 ### Prompt policy is aligned, but prompt ownership is duplicated
 
-The decomposition and synthesis YAML prompts now match the operator-local prompts conceptually. However, the typed meta operators do not automatically load those YAML files. Equivalent instructions therefore live in more than one place and can drift again.
+The decomposition and synthesis YAML prompts match the operator-local prompts conceptually. However, the typed meta operators do not automatically load those YAML files. Equivalent instructions live in more than one place and can drift again.
 
-This is a documentation/architecture gap to solve through centralized prompt loading or explicit parity tests—not by building a new reasoning executor.
+The architecture should solve this through centralized prompt loading or explicit ownership/parity tests—not by building a new reasoning executor.
 
 ### Sub-questions use a generic carrier type
 
-`meta.decompose_question` currently stores suggested sub-question text in `EntityRecord.entity_name` values under an `ENTITY_SET` slot. This is compatible with the current seven-slot system but semantically awkward.
+`meta.decompose_question` stores suggested sub-question text in `EntityRecord.entity_name` under an `ENTITY_SET` slot. This is compatible with the current seven-slot system but semantically awkward.
 
-A more general text/task-list slot may eventually be useful. A formal dependency DAG should still only be introduced when a concrete runtime function—scheduling, resumability, caching, provenance, auditing—requires it.
+A more general text/task-list slot may eventually be useful. A formal dependency DAG should still only be introduced when a concrete runtime function—scheduling, resumability, caching, provenance or auditing—requires it.
 
 ### Resource state is split across abstractions
 
-`GraphRAGContext` directly stores graphs and VDBs. Other resources are discovered or built through additional MCP/server logic and filesystem conventions. There is no one typed resource catalog with stable IDs, build fingerprints, dependencies, staleness and invalidation semantics.
+`GraphRAGContext` directly stores graphs and VDBs. Other resources are discovered or built through MCP/server logic and filesystem conventions. There is no one typed resource catalog with stable IDs, build fingerprints, dependencies, staleness and invalidation semantics.
 
 ### MCP state is process-level
 
@@ -128,11 +127,11 @@ Current records preserve useful IDs and the synthesis operator can pass availabl
 
 ### Errors are not uniform
 
-`PipelineExecutor` can raise actionable `PipelineExecutionError`, while some operators catch failures and return empty/failure-valued slots and MCP/build tools may return structured status objects or raise exceptions. Empty retrieval, missing prerequisite and actual execution failure therefore remain too easy to conflate.
+`PipelineExecutor` can raise actionable `PipelineExecutionError`, while some operators catch failures and return empty/failure-valued slots and MCP/build tools may return structured status objects or raise exceptions. Empty retrieval, missing prerequisite and actual execution failure remain too easy to conflate.
 
 ## Historical material that is not current truth
 
-Several older implementations/documents describe priorities that no longer match the target architecture, including:
+Older implementations/documents describe priorities that no longer match the target architecture, including:
 
 - internal general-purpose planner/orchestrator expansion;
 - mandatory programmed AoT/Markov preprocessing;
@@ -144,18 +143,20 @@ Several older implementations/documents describe priorities that no longer match
 
 ## Current development priority
 
-The active order is:
+The canonical order, matching `IMPLEMENTATION_MAP.md`, `PLANNING_SUMMARY.md`, and `ROADMAP.md`, is:
 
-1. stabilize the canonical capability contract and MCP parity;
-2. unify resource identities/lifecycle/prerequisites;
-3. make provenance/evidence an end-to-end contract;
-4. make the harness-first boundary operationally clean;
-5. consolidate legacy planners/orchestrators/AoT code;
-6. normalize cross-modal capabilities;
-7. standardize machine-actionable errors/recovery;
-8. harden architectural contract tests and CI;
-9. add incremental/temporal/conflict semantics after the foundations exist;
-10. perform benchmarking/research validation later.
+1. capability/descriptor/MCP inventory and parity;
+2. explicit strict-vs-best-effort validation semantics;
+3. prompt source-of-truth/parity;
+4. typed resource catalog and prerequisite/lifecycle semantics;
+5. end-to-end provenance/evidence propagation;
+6. clean harness-first entry points;
+7. legacy planner/orchestrator/AoT/MCP consolidation;
+8. cross-modal normalization;
+9. standardized machine-actionable errors/recovery;
+10. blocking architecture contract tests and CI hardening;
+11. incremental/temporal/conflict semantics after the foundations exist;
+12. benchmarking/research validation after the architecture is coherent.
 
 ## Verification boundary
 
