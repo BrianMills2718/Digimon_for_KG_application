@@ -22,7 +22,6 @@ import sys
 import traceback
 from pathlib import Path
 
-# Ensure project root on path and cwd.
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 os.chdir(PROJECT_ROOT)
@@ -42,7 +41,6 @@ DATASET = os.getenv(
 GRAPH_ID = f"{DATASET}_ERGraph"
 VDB_ID = f"{DATASET}_entities"
 
-# Track results.
 results: list[tuple[str, bool, str]] = []
 
 
@@ -104,9 +102,7 @@ async def main():
             return print_summary()
 
         try:
-            prepare_json = await mcp_srv.corpus_prepare(
-                str(SOURCE_DIRECTORY), DATASET
-            )
+            prepare_json = await mcp_srv.corpus_prepare(str(SOURCE_DIRECTORY), DATASET)
             prepare_result = json.loads(prepare_json)
             prepare_ok = (
                 prepare_result.get("status") == "success"
@@ -128,10 +124,7 @@ async def main():
             return print_summary()
 
     try:
-        graph_json = await mcp_srv.graph_build_er(
-            DATASET,
-            force_rebuild=REBUILD,
-        )
+        graph_json = await mcp_srv.graph_build_er(DATASET, force_rebuild=REBUILD)
         graph_result = json.loads(graph_json)
         context = mcp_srv._state["context"]
         graph_ok = (
@@ -161,7 +154,10 @@ async def main():
             force_rebuild=REBUILD,
         )
         vdb_result = json.loads(vdb_json)
-        vdb_ok = vdb_result.get("num_entities_indexed", 0) > 0
+        vdb_ok = (
+            vdb_result.get("num_entities_indexed", 0) > 0
+            and not str(vdb_result.get("status", "")).lower().startswith("error")
+        )
         record(
             "A4: entity_vdb_build()",
             vdb_ok,
@@ -182,8 +178,7 @@ async def main():
     # ================================================================
     print("\n--- B. Discovery Tools ---")
 
-    resources_json = await mcp_srv.list_available_resources()
-    resources = json.loads(resources_json)
+    resources = json.loads(await mcp_srv.list_available_resources())
     has_graphs = GRAPH_ID in resources.get("graphs", [])
     has_vdbs = VDB_ID in resources.get("vdbs", [])
     record(
@@ -192,16 +187,14 @@ async def main():
         f"graphs={resources.get('graphs')}, vdbs={resources.get('vdbs')}",
     )
 
-    methods_json = await mcp_srv.list_methods()
-    methods = json.loads(methods_json)
+    methods = json.loads(await mcp_srv.list_methods())
     record(
         "B2: list_methods()",
         len(methods) == 10,
         f"count={len(methods)}, names={[m['name'] for m in methods]}",
     )
 
-    types_json = await mcp_srv.list_graph_types()
-    types_list = json.loads(types_json)
+    types_list = json.loads(await mcp_srv.list_graph_types())
     record(
         "B3: list_graph_types()",
         len(types_list) == 5,
@@ -209,16 +202,15 @@ async def main():
     )
 
     # ================================================================
-    # C. OPERATOR COMPOSITION CHAIN 1 -- basic local pattern
+    # C. INDIVIDUAL MCP CAPABILITY PATH
     # ================================================================
-    print("\n--- C. Operator Composition Chain 1 (basic local) ---")
+    print("\n--- C. Individual MCP capability path ---")
 
-    search_json = await mcp_srv.entity_vdb_search(
-        VDB_ID, "Zorathian Empire", top_k=5
+    search_result = json.loads(
+        await mcp_srv.entity_vdb_search(VDB_ID, "Zorathian Empire", top_k=5)
     )
-    search_result = json.loads(search_json)
     similar = search_result.get("similar_entities", [])
-    entity_names = [e["entity_name"] for e in similar]
+    entity_names = [entity["entity_name"] for entity in similar]
     record(
         "C1: entity_vdb_search('Zorathian Empire')",
         len(entity_names) > 0,
@@ -227,8 +219,9 @@ async def main():
 
     chunks = []
     if entity_names:
-        onehop_json = await mcp_srv.entity_onehop(entity_names[:3], GRAPH_ID)
-        onehop_result = json.loads(onehop_json)
+        onehop_result = json.loads(
+            await mcp_srv.entity_onehop(entity_names[:3], GRAPH_ID)
+        )
         total_neighbors = onehop_result.get("total_neighbors_found", 0)
         record(
             "C2: entity_onehop()",
@@ -236,8 +229,9 @@ async def main():
             f"total_neighbors={total_neighbors}",
         )
 
-        rel_json = await mcp_srv.relationship_onehop(entity_names[:3], GRAPH_ID)
-        rel_result = json.loads(rel_json)
+        rel_result = json.loads(
+            await mcp_srv.relationship_onehop(entity_names[:3], GRAPH_ID)
+        )
         rels = rel_result.get("one_hop_relationships", [])
         record(
             "C3: relationship_onehop()",
@@ -245,8 +239,9 @@ async def main():
             f"relationships={len(rels)}",
         )
 
-        chunk_json = await mcp_srv.chunk_get_text(GRAPH_ID, entity_names[:3])
-        chunk_result = json.loads(chunk_json)
+        chunk_result = json.loads(
+            await mcp_srv.chunk_get_text(GRAPH_ID, entity_names[:3])
+        )
         chunks = chunk_result.get("retrieved_chunks", [])
         record(
             "C4: chunk_get_text()",
@@ -266,12 +261,13 @@ async def main():
     # ================================================================
     print("\n--- D. Model-assisted operator path ---")
 
-    extract_json = await mcp_srv.meta_extract_entities(
-        "What is the connection between crystal technology and the Zorathian Empire?"
+    extract_result = json.loads(
+        await mcp_srv.meta_extract_entities(
+            "What is the connection between crystal technology and the Zorathian Empire?"
+        )
     )
-    extract_result = json.loads(extract_json)
     extracted = extract_result.get("entities", [])
-    extracted_names = [e["entity_name"] for e in extracted] if extracted else []
+    extracted_names = [entity["entity_name"] for entity in extracted] if extracted else []
     record(
         "D1: meta_extract_entities()",
         len(extracted_names) > 0,
@@ -279,10 +275,13 @@ async def main():
     )
 
     if extracted_names:
-        link_json = await mcp_srv.entity_link(
-            extracted_names, VDB_ID, similarity_threshold=0.1
+        link_result = json.loads(
+            await mcp_srv.entity_link(
+                extracted_names,
+                VDB_ID,
+                similarity_threshold=0.1,
+            )
         )
-        link_result = json.loads(link_json)
         linked_pairs = link_result.get("linked_entities_results", [])
         linked_ids = [
             pair["linked_entity_id"]
@@ -297,8 +296,9 @@ async def main():
 
         ppr_seeds = linked_ids[:3] if linked_ids else entity_names[:3]
         if ppr_seeds:
-            ppr_json = await mcp_srv.entity_ppr(GRAPH_ID, ppr_seeds, top_k=10)
-            ppr_result = json.loads(ppr_json)
+            ppr_result = json.loads(
+                await mcp_srv.entity_ppr(GRAPH_ID, ppr_seeds, top_k=10)
+            )
             ranked = ppr_result.get("ranked_entities", [])
             record(
                 "D3: entity_ppr()",
@@ -312,54 +312,66 @@ async def main():
         record("D3: entity_ppr()", False, "SKIPPED -- no entities extracted")
 
     # ================================================================
-    # E. ANSWER GENERATION
+    # E. GROUNDED ANSWER GENERATION
     # ================================================================
-    print("\n--- E. Answer Generation ---")
+    print("\n--- E. Grounded answer generation ---")
 
     test_chunks = []
-    if entity_names and chunks:
-        for chunk in chunks[:3]:
-            text = chunk.get("text_content", chunk.get("text", ""))
-            if text:
-                test_chunks.append(text[:500])
+    for chunk in chunks[:3]:
+        text = chunk.get("text_content", chunk.get("text", ""))
+        if text:
+            test_chunks.append(text[:500])
 
     if not test_chunks:
-        test_chunks = [
-            "The Zorathian Empire was known for its crystal technology, "
-            "which powered their floating cities and advanced weapons."
-        ]
-
-    answer = await mcp_srv.meta_generate_answer(
-        "What is crystal technology?", test_chunks
-    )
-    answer_ok = len(answer) > 10 and answer != "Failed to generate answer."
-    record(
-        "E1: meta_generate_answer()",
-        answer_ok,
-        f"answer_len={len(answer)}, preview={answer[:100]}...",
-    )
+        record(
+            "E1: meta_generate_answer()",
+            False,
+            "SKIPPED -- no retrieved source evidence; no fabricated fallback allowed",
+        )
+    else:
+        answer = await mcp_srv.meta_generate_answer(
+            "What is crystal technology?",
+            test_chunks,
+        )
+        answer_ok = len(answer) > 10 and answer != "Failed to generate answer."
+        record(
+            "E1: meta_generate_answer()",
+            answer_ok,
+            f"answer_len={len(answer)}, preview={answer[:100]}...",
+        )
 
     # ================================================================
-    # F. NAMED METHOD (convenience shortcut)
+    # F. NAMED METHOD
     # ================================================================
     print("\n--- F. Named Method ---")
 
     try:
-        method_json = await mcp_srv.execute_method(
-            "basic_local", "What is crystal technology?", DATASET
+        method_result = json.loads(
+            await mcp_srv.execute_method(
+                "basic_local",
+                "What is crystal technology?",
+                DATASET,
+            )
         )
-        method_result = json.loads(method_json)
-        method_ok = (
-            "final_output" in method_result or "all_step_outputs" in method_result
-        )
+        if "error" in method_result:
+            method_ok = False
+            detail = method_result["error"]
+        else:
+            final_output = method_result.get("final_output", {})
+            method_chunks = final_output.get("chunks", [])
+            method_ok = len(method_chunks) > 0
+            detail = (
+                f"final_chunks={len(method_chunks)}, "
+                f"steps={list(method_result.get('all_step_outputs', {}).keys())}"
+            )
         record(
-            "F1: execute_method('basic_local')",
+            "F1: execute_method('basic_local') returns evidence",
             method_ok,
-            f"keys={list(method_result.keys())}",
+            detail,
         )
     except Exception as exc:
         record(
-            "F1: execute_method('basic_local')",
+            "F1: execute_method('basic_local') returns evidence",
             False,
             f"ERROR: {exc}",
         )
