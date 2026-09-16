@@ -8,7 +8,6 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, Optional
 
-from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
@@ -18,30 +17,87 @@ async def entity_link(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"entities": SlotValue(ENTITY_SET)}  -- entities with names to link
-    Outputs: {"entities": SlotValue(ENTITY_SET)}   -- linked entities from graph
-    """
-    seed = inputs["entities"].data  # List[EntityRecord]
-    if not seed:
-        return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=[], producer="entity.link")}
+    Inputs:  {"entities": ENTITY_SET} -- entity mentions to canonicalize
+    Outputs: {"entities": ENTITY_SET} -- linked graph entities
+    Params:  {"similarity_threshold": float, "top_k": int}
 
-    queries = [r.entity_name for r in seed]
+    The VDB adapter exposes higher-is-better normalized similarity. Preserve
+    that score on the linked EntityRecord so downstream reasoning can use it.
+    Default threshold is 0.0 to preserve the previous top-1 linking behavior;
+    callers can opt into stricter grounding explicitly.
+    """
+    seed = inputs["entities"].data
+    if not seed:
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[],
+                producer="entity.link",
+            )
+        }
+
+    p = params or {}
+    threshold = float(p.get("similarity_threshold", 0.0))
+    top_k = max(1, int(p.get("top_k", 1)))
+
+    queries = [record.entity_name for record in seed]
     results = await asyncio.gather(
-        *[ctx.entities_vdb.retrieval_nodes(q, top_k=1, graph=ctx.graph) for q in queries]
+        *[
+            ctx.entities_vdb.retrieval_nodes(
+                query,
+                top_k=top_k,
+                graph=ctx.graph,
+                need_score=True,
+            )
+            for query in queries
+        ]
     )
 
     records = []
-    for q, res in zip(queries, results):
-        if not res or not res[0]:
+    for query, result in zip(queries, results):
+        if not result:
             continue
-        nd = res[0]
-        name = nd.get(ctx.graph.entity_metakey, nd.get("entity_name", q))
-        records.append(EntityRecord(
-            entity_name=str(name),
-            source_id=nd.get("source_id", ""),
-            entity_type=nd.get("entity_type", ""),
-            description=nd.get("description", ""),
-            extra={"linked_from": q},
-        ))
 
-    return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=records, producer="entity.link")}
+        if isinstance(result, tuple) and len(result) == 2:
+            nodes, scores = result
+        else:
+            nodes, scores = result, None
+
+        if not nodes:
+            continue
+
+        linked_node = nodes[0]
+        if linked_node is None:
+            continue
+
+        score = None
+        if scores and scores[0] is not None:
+            score = float(scores[0])
+            if score < threshold:
+                continue
+        elif threshold > 0:
+            # A requested threshold cannot be enforced without a score.
+            continue
+
+        name = linked_node.get(
+            ctx.graph.entity_metakey,
+            linked_node.get("entity_name", query),
+        )
+        records.append(
+            EntityRecord(
+                entity_name=str(name),
+                source_id=linked_node.get("source_id", ""),
+                entity_type=linked_node.get("entity_type", ""),
+                description=linked_node.get("description", ""),
+                score=score,
+                extra={"linked_from": query},
+            )
+        )
+
+    return {
+        "entities": SlotValue(
+            kind=SlotKind.ENTITY_SET,
+            data=records,
+            producer="entity.link",
+        )
+    }
