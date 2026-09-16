@@ -1,14 +1,17 @@
 """Entity TF-IDF ranking operator.
 
-Rank entities by TF-IDF similarity of their descriptions to the query.
+Uses scikit-learn directly so the maintained operator does not depend on the
+legacy LlamaIndex TFIDFStore implementation.
 """
 
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 from Core.Common.Logger import logger
-from Core.Index.TFIDFStore import TFIDFIndex
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
@@ -18,44 +21,90 @@ async def entity_tfidf(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"query": SlotValue(QUERY_TEXT), "entities": SlotValue(ENTITY_SET)}
-    Outputs: {"entities": SlotValue(ENTITY_SET)}
+    Inputs:  {"query": QUERY_TEXT, "entities"?: ENTITY_SET}
+    Outputs: {"entities": ENTITY_SET}
     Params:  {"top_k": int}
     """
     query = inputs["query"].data
     seed = inputs.get("entities")
-    p = params or {}
-    top_k = p.get("top_k", ctx.config.top_k)
+    top_k = (params or {}).get("top_k", ctx.config.top_k)
 
     try:
-        # Build corpus from graph nodes (or from seed entity set)
         if seed and seed.data:
             candidates = seed.data
-            names = [r.entity_name for r in candidates]
-            descriptions = [r.description for r in candidates]
+            names = [record.entity_name for record in candidates]
+            descriptions = [
+                " ".join(
+                    part
+                    for part in (
+                        record.entity_name,
+                        record.entity_type,
+                        record.description,
+                    )
+                    if part
+                )
+                for record in candidates
+            ]
+            source_ids = [record.source_id for record in candidates]
+            entity_types = [record.entity_type for record in candidates]
         else:
-            graph_nodes = list(await ctx.graph.get_nodes())
-            names = graph_nodes
-            node_data = [await ctx.graph.get_node(n) for n in names]
-            descriptions = [nd.get("description", "") if nd else "" for nd in node_data]
+            names = list(await ctx.graph.get_nodes())
+            node_data = [await ctx.graph.get_node(name) for name in names]
+            descriptions = []
+            source_ids = []
+            entity_types = []
+            for name, data in zip(names, node_data):
+                data = data or {}
+                entity_type = data.get("entity_type", "")
+                description = data.get("description", "")
+                descriptions.append(
+                    " ".join(
+                        part for part in (str(name), entity_type, description) if part
+                    )
+                )
+                source_ids.append(data.get("source_id", ""))
+                entity_types.append(entity_type)
 
-        index = TFIDFIndex()
-        index._build_index_from_list(descriptions)
-        idxs = index.query(query_str=query, top_k=top_k)
+        if not names:
+            return {
+                "entities": SlotValue(
+                    kind=SlotKind.ENTITY_SET,
+                    data=[],
+                    producer="entity.tfidf",
+                )
+            }
 
-        records = []
-        for idx in idxs:
-            name = names[idx]
-            desc = descriptions[idx]
-            records.append(EntityRecord(
-                entity_name=str(name),
-                description=desc,
-                score=float(idx),  # rank position
-                extra={"tfidf_rank": idx},
-            ))
+        vectorizer = TfidfVectorizer(stop_words="english")
+        matrix = vectorizer.fit_transform(descriptions)
+        query_vector = vectorizer.transform([query])
+        similarities = cosine_similarity(query_vector, matrix).reshape(-1)
 
-        return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=records, producer="entity.tfidf")}
+        ranked_indices = similarities.argsort()[::-1][: min(top_k, len(names))]
+        records = [
+            EntityRecord(
+                entity_name=str(names[index]),
+                source_id=source_ids[index],
+                entity_type=entity_types[index],
+                description=descriptions[index],
+                score=float(similarities[index]),
+                extra={"tfidf_rank": rank, "candidate_index": int(index)},
+            )
+            for rank, index in enumerate(ranked_indices)
+        ]
 
-    except Exception as e:
-        logger.exception(f"entity_tfidf failed: {e}")
-        return {"entities": SlotValue(kind=SlotKind.ENTITY_SET, data=[], producer="entity.tfidf")}
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=records,
+                producer="entity.tfidf",
+            )
+        }
+    except Exception as exc:
+        logger.exception(f"entity_tfidf failed: {exc}")
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[],
+                producer="entity.tfidf",
+            )
+        }
