@@ -13,11 +13,7 @@ class EmbeddingType(Enum):
 
 
 class EmbeddingConfig(YamlModel):
-    """Option for Embedding.
-
-    Examples:
-    ---------
-    """
+    """Embedding provider configuration."""
 
     api_type: Optional[EmbeddingType] = None
     api_key: Optional[str] = None
@@ -27,11 +23,26 @@ class EmbeddingConfig(YamlModel):
     model: Optional[str] = None
     cache_folder: Optional[str] = None
     embed_batch_size: Optional[int] = None
-    dimensions: Optional[int] = None  # output dimension of embedding model
+    dimensions: Optional[int] = None
 
     @field_validator("api_type", mode="before")
     @classmethod
-    def check_api_type(cls, v):
-        if v == "":
+    def check_api_type(cls, value):
+        if value == "":
             return None
-        return v
+        return value
+
+    @field_validator("api_key", mode="before")
+    @classmethod
+    def check_api_key(cls, value):
+        if value is None:
+            return None
+        text = str(value).strip()
+        normalized = text.upper()
+        if not text or normalized.startswith("YOUR_API_KEY") or normalized in {
+            "CHANGEME",
+            "REPLACE_ME",
+            "PLACEHOLDER",
+        }:
+            return None
+        return text
