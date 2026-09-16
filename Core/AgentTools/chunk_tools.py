@@ -1,9 +1,8 @@
 """Chunk-oriented agent tools.
 
-The direct/MCP-facing chunk tools follow the same grounding rule as the typed
-operators: returned evidence must resolve to an exact stored source chunk (or an
-exact graph chunk node). They never fabricate placeholder text and never guess a
-missing chunk by fuzzy content matching.
+Returned evidence must resolve to an exact stored source chunk (or an exact
+chunk node in the graph). These helpers never fabricate placeholder text and
+never guess a missing chunk by fuzzy content matching.
 """
 
 from __future__ import annotations
@@ -16,11 +15,11 @@ from Core.AgentSchema.context import GraphRAGContext
 from Core.AgentSchema.tool_contracts import (
     ChunkData,
     ChunkFromRelationshipsInputs,
+    ChunkGetTextForEntitiesInput,
     ChunkOccurrenceInputs,
     ChunkOccurrenceOutputs,
     ChunkRelationshipScoreAggregatorInputs,
     ChunkRelationshipScoreAggregatorOutputs,
-    ChunkGetTextForEntitiesInput,
 )
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
@@ -51,10 +50,12 @@ def _extract_networkx_graph(graph_instance) -> nx.Graph | None:
     storage = getattr(graph_instance, "_graph", None)
     if isinstance(storage, nx.Graph):
         return storage
-    if storage is not None and isinstance(getattr(storage, "graph", None), nx.Graph):
-        return storage.graph
-    if isinstance(getattr(graph_instance, "graph", None), nx.Graph):
-        return graph_instance.graph
+    storage_graph = getattr(storage, "graph", None)
+    if isinstance(storage_graph, nx.Graph):
+        return storage_graph
+    direct_graph = getattr(graph_instance, "graph", None)
+    if isinstance(direct_graph, nx.Graph):
+        return direct_graph
     return None
 
 
@@ -73,12 +74,7 @@ async def _load_dataset_chunks(
     context: GraphRAGContext,
     graph_reference_id: str,
 ) -> tuple[dict[str, Any], dict[str, str]]:
-    """Return exact chunk lookup plus deterministic legacy aliases.
-
-    aliases map a legacy key such as ``chunk_<doc_id>`` to the real stored
-    ``chunk_id``. This is deterministic provenance compatibility, not fuzzy
-    matching.
-    """
+    """Return exact chunk lookup plus deterministic legacy aliases."""
     storage = context.chunk_storage_manager
     if storage is None:
         return {}, {}
@@ -102,15 +98,18 @@ async def _load_dataset_chunks(
 
 
 def _chunk_data(actual_id: str, chunk: Any, metadata: dict | None = None) -> ChunkData:
-    return ChunkData(
+    """Construct ChunkData using its real TextChunk-compatible runtime init."""
+    result = ChunkData(
+        tokens=int(getattr(chunk, "tokens", 0) or 0),
         chunk_id=actual_id,
         content=str(getattr(chunk, "content", "") or ""),
         doc_id=str(getattr(chunk, "doc_id", "") or ""),
         index=int(getattr(chunk, "index", 0) or 0),
-        tokens=int(getattr(chunk, "tokens", 0) or 0),
         title=getattr(chunk, "title", None),
-        metadata=metadata or {},
     )
+    result.metadata = metadata or {}
+    result.relevance_score = None
+    return result
 
 
 def _relationship_matches(graph: nx.Graph, u: Any, v: Any, data: dict, spec: Any) -> bool:
@@ -151,7 +150,6 @@ def _edge_source_chunk_ids(edge_data: dict) -> list[str]:
                 chunk_id = raw.get("chunk_id") or raw.get("id")
                 if chunk_id:
                     ids.append(str(chunk_id))
-    # stable de-duplication
     return list(dict.fromkeys(str(chunk_id) for chunk_id in ids if chunk_id))
 
 
@@ -163,12 +161,10 @@ def chunk_from_relationships(
     input_data: Dict[str, Any],
     context: GraphRAGContext,
 ) -> Dict[str, Any]:
-    """Legacy synchronous resolver.
+    """Legacy synchronous resolver for already-materialized graph chunk data.
 
-    It can only return chunk objects whose full content is already embedded in
-    graph metadata. String chunk references are intentionally not converted to
-    placeholder text; use ``chunk_from_relationships_tool`` for storage-backed
-    source resolution.
+    String chunk references are intentionally not converted to placeholder text;
+    use the async wrapper for storage-backed source resolution.
     """
     try:
         params = ChunkFromRelationshipsInputs(**input_data)
@@ -187,7 +183,10 @@ def chunk_from_relationships(
         for u, v, edge_data in graph.edges(data=True):
             if not _relationship_matches(graph, u, v, edge_data, spec):
                 continue
-            for raw in edge_data.get("chunks", []) if isinstance(edge_data.get("chunks"), list) else []:
+            raw_chunks = edge_data.get("chunks")
+            if not isinstance(raw_chunks, list):
+                continue
+            for raw in raw_chunks:
                 if not isinstance(raw, dict):
                     continue
                 chunk_id = str(raw.get("chunk_id") or raw.get("id") or "")
@@ -195,19 +194,22 @@ def chunk_from_relationships(
                 if not chunk_id or not content or chunk_id in seen:
                     continue
                 seen.add(chunk_id)
-                output.append(
-                    ChunkData(
-                        chunk_id=chunk_id,
-                        content=str(content),
-                        doc_id=str(raw.get("doc_id", "") or ""),
-                        index=int(raw.get("index", 0) or 0),
-                        tokens=int(raw.get("tokens", 0) or 0),
-                        title=raw.get("title"),
-                        metadata={"relationship": str(spec)},
-                    )
+                chunk = ChunkData(
+                    tokens=int(raw.get("tokens", 0) or 0),
+                    chunk_id=chunk_id,
+                    content=str(content),
+                    doc_id=str(raw.get("doc_id", "") or ""),
+                    index=int(raw.get("index", 0) or 0),
+                    title=raw.get("title"),
                 )
+                chunk.metadata = {"relationship": str(spec)}
+                chunk.relevance_score = None
+                output.append(chunk)
                 per_relationship += 1
-                if params.max_chunks_per_relationship and per_relationship >= params.max_chunks_per_relationship:
+                if (
+                    params.max_chunks_per_relationship
+                    and per_relationship >= params.max_chunks_per_relationship
+                ):
                     break
         if params.top_k_total and len(output) >= params.top_k_total:
             break
@@ -345,7 +347,7 @@ async def chunk_aggregator_tool(
 
     scored = []
     for chunk in params.chunk_candidates:
-        metadata = chunk.metadata or {}
+        metadata = getattr(chunk, "metadata", None) or {}
         matched_score = 0.0
         for relationship_id, score in params.relationship_scores.items():
             if metadata.get("relationship_id") == relationship_id:
@@ -358,14 +360,14 @@ async def chunk_aggregator_tool(
     output = []
     for original, score in scored[: params.top_k_chunks]:
         chunk = ChunkData(
+            tokens=original.tokens,
             chunk_id=original.chunk_id,
             content=original.content,
             doc_id=original.doc_id,
             index=original.index,
-            tokens=original.tokens,
             title=original.title,
-            metadata=original.metadata or {},
         )
+        chunk.metadata = getattr(original, "metadata", None) or {}
         chunk.relevance_score = float(score)
         output.append(chunk)
 
@@ -386,10 +388,7 @@ async def chunk_get_text_for_entities_tool(
             ChunkGetTextForEntitiesInput(**params) if isinstance(params, dict) else params
         )
     except Exception as exc:
-        return {
-            "retrieved_chunks": [],
-            "status_message": f"Invalid input: {exc}",
-        }
+        return {"retrieved_chunks": [], "status_message": f"Invalid input: {exc}"}
 
     graph = _extract_networkx_graph(
         context.get_graph_instance(validated.graph_reference_id)
@@ -410,13 +409,21 @@ async def chunk_get_text_for_entities_tool(
 
         node_data = graph.nodes[entity_id]
         chunk_ids = []
-        for field in ("chunk_id", "source_chunk_id", "source_id", "chunk_ids", "source_chunks"):
+        for field in (
+            "chunk_id",
+            "source_chunk_id",
+            "source_id",
+            "chunk_ids",
+            "source_chunks",
+        ):
             chunk_ids.extend(_split_source_ids(node_data.get(field)))
 
-        # Some passage-style graphs use explicit neighboring chunk nodes.
         for neighbor in graph.neighbors(entity_id):
             neighbor_data = graph.nodes[neighbor]
-            if neighbor_data.get("node_type") == "chunk" or neighbor_data.get("type") == "chunk":
+            if (
+                neighbor_data.get("node_type") == "chunk"
+                or neighbor_data.get("type") == "chunk"
+            ):
                 chunk_ids.append(str(neighbor))
 
         chunk_ids = list(dict.fromkeys(chunk_ids))
@@ -427,13 +434,15 @@ async def chunk_get_text_for_entities_tool(
             chunk_to_entities.setdefault(chunk_id, []).append(str(entity_id))
 
     requested_ids = (
-        list(validated.chunk_ids)
+        [str(chunk_id) for chunk_id in validated.chunk_ids]
         if validated.chunk_ids
-        else list(dict.fromkeys(
-            chunk_id
-            for entity_chunk_ids in chunks_per_entity.values()
-            for chunk_id in entity_chunk_ids
-        ))
+        else list(
+            dict.fromkeys(
+                chunk_id
+                for entity_chunk_ids in chunks_per_entity.values()
+                for chunk_id in entity_chunk_ids
+            )
+        )
     )
 
     exact_chunks, aliases = await _load_dataset_chunks(
@@ -443,7 +452,6 @@ async def chunk_get_text_for_entities_tool(
     seen_actual_ids = set()
 
     for requested_id in requested_ids:
-        requested_id = str(requested_id)
         actual_id = requested_id if requested_id in exact_chunks else aliases.get(requested_id)
 
         if actual_id and actual_id not in seen_actual_ids:
@@ -468,8 +476,6 @@ async def chunk_get_text_for_entities_tool(
             )
             continue
 
-        # Exact graph-node fallback is permitted because it preserves the same ID
-        # rather than guessing a semantically similar source chunk.
         if requested_id in graph:
             chunk_node = graph.nodes[requested_id]
             content = chunk_node.get("content", chunk_node.get("text", ""))
@@ -484,7 +490,8 @@ async def chunk_get_text_for_entities_tool(
                         "metadata": {
                             key: value
                             for key, value in chunk_node.items()
-                            if key not in {"content", "text"} and not str(key).startswith("_")
+                            if key not in {"content", "text"}
+                            and not str(key).startswith("_")
                         },
                     }
                 )
