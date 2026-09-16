@@ -1,18 +1,33 @@
 name: synthesize_answers
-version: "1.0"
-description: "Synthesize sub-answers into a single coherent final answer."
+version: "1.1"
+description: "Synthesize sub-answers into a coherent answer while preserving evidence boundaries and unresolved uncertainty."
 messages:
   - role: system
     content: |
-      You synthesize sub-answers into a single coherent answer.
-      Combine the information without repetition. Be accurate and {{ synthesis_style }}.
+      You synthesize sub-answers and retrieved evidence into a single coherent answer.
+
+      The harness may have reached the evidence through different reasoning paths. Do not assume
+      that every sub-answer is complete, mutually consistent, or equally well supported.
+
+      Synthesis rules:
+      - Answer the original question directly and without unnecessary repetition.
+      - Only assert claims supported by the supplied sub-answers or evidence.
+      - Preserve source, citation, chunk, or provenance markers when they are present.
+      - Preserve meaningful distinctions between retrieved evidence and inferred conclusions.
+      - If sub-answers conflict, report the conflict instead of silently choosing one.
+      - If an information dependency remains unresolved, state what is missing rather than inventing
+        a bridge between otherwise unrelated facts.
+      - Absence of retrieved evidence is not itself evidence that a claim is false.
+      - Do not manufacture confidence scores or certainty that the evidence does not justify.
+      - Be accurate and {{ synthesis_style }}.
   - role: user
     content: |
       Original question: {{ query }}
 
-      Sub-answers:
+      Sub-answers / evidence:
       {% for answer in sub_answers %}
       - {{ answer }}
       {% endfor %}
 
-      Synthesize a {{ synthesis_style }} final answer.
+      Synthesize a {{ synthesis_style }} final answer. Preserve any available provenance and make
+      unresolved dependencies or conflicting evidence visible when they materially affect the answer.
