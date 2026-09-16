@@ -15,7 +15,7 @@ class FakeLLM:
 
     async def aask(self, msg, **kwargs):
         self.calls.append((msg, kwargs))
-        return "Crystal technology uses levitite crystals."
+        return "Crystal technology uses levitite crystals [chunk-a]."
 
 
 @pytest.mark.asyncio
@@ -41,11 +41,12 @@ async def test_answer_generation_does_not_call_llm_without_evidence():
     answer = result["answer"]
     assert answer.data == INSUFFICIENT_EVIDENCE_ANSWER
     assert answer.metadata["status"] == "insufficient_evidence"
+    assert answer.metadata["evidence_chunk_ids"] == []
     assert llm.calls == []
 
 
 @pytest.mark.asyncio
-async def test_answer_prompt_is_grounded_in_retrieved_chunk_text():
+async def test_answer_prompt_and_metadata_preserve_exact_evidence_ids():
     llm = FakeLLM()
     result = await meta_generate_answer(
         inputs={
@@ -69,8 +70,13 @@ async def test_answer_prompt_is_grounded_in_retrieved_chunk_text():
         params={},
     )
 
-    assert result["answer"].metadata["status"] == "grounded_answer"
+    answer = result["answer"]
+    assert answer.metadata["status"] == "grounded_answer"
+    assert answer.metadata["evidence_chunk_ids"] == ["chunk-a"]
     assert len(llm.calls) == 1
+
     prompt = llm.calls[0][0][0]["content"]
+    assert "[chunk-a]" in prompt
     assert "Levitite crystals power Zorathian floating cities." in prompt
-    assert "Do not add facts" in prompt
+    assert "Do not invent unsupported facts" in prompt
+    assert "cite the supporting evidence ID" in prompt
