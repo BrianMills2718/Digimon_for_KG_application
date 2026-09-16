@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 from enum import Enum
 from typing import Optional
 
@@ -15,46 +14,39 @@ class LLMType(Enum):
     OPENAI = "openai"
     FIREWORKS = "fireworks"
     OPEN_LLM = "open_llm"
-    OLLAMA = "ollama"  # /chat at ollama api
-    OLLAMA_GENERATE = "ollama.generate"  # /generate at ollama api
-    OLLAMA_EMBEDDINGS = "ollama.embeddings"  # /embeddings at ollama api
-    OLLAMA_EMBED = "ollama.embed"  # /embed at ollama api
+    OLLAMA = "ollama"
+    OLLAMA_GENERATE = "ollama.generate"
+    OLLAMA_EMBEDDINGS = "ollama.embeddings"
+    OLLAMA_EMBED = "ollama.embed"
     OPENROUTER = "openrouter"
     BEDROCK = "bedrock"
-    ARK = "ark"  # https://www.volcengine.com/docs/82379/1263482#python-sdk
-    LITELLM = "litellm"  # Added for LiteLLM support
+    ARK = "ark"
+    LITELLM = "litellm"
 
     def __missing__(self, key):
         return self.OPENAI
 
 
 class LLMConfig(YamlModel):
-    """Option for LLM
+    """Configuration for an LLM provider."""
 
-    OpenAI: https://github.com/openai/openai-python/blob/main/src/openai/resources/chat/completions.py#L681
-    Optional Fields in pydantic: https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields
-    """
-
-    api_key: str = "sk-"
+    api_key: str = ""
     api_type: LLMType = LLMType.OPENAI
     base_url: Optional[str] = None
     api_version: Optional[str] = None
 
-    model: Optional[str] = None  # also stands for DEPLOYMENT_NAME
-    pricing_plan: Optional[str] = None  # Cost Settlement Plan Parameters.
+    model: Optional[str] = None
+    pricing_plan: Optional[str] = None
 
-    # For Cloud Service Provider like Baidu/ Alibaba
     access_key: Optional[str] = None
     secret_key: Optional[str] = None
     session_token: Optional[str] = None
-    endpoint: Optional[str] = None  # for self-deployed model on the cloud
+    endpoint: Optional[str] = None
 
-    # For Spark(Xunfei), maybe remove later
     app_id: Optional[str] = None
     api_secret: Optional[str] = None
     domain: Optional[str] = None
 
-    # For Chat Completion
     max_token: int = 4096
     temperature: float = 0.0
     top_p: float = 1.0
@@ -65,35 +57,36 @@ class LLMConfig(YamlModel):
     frequency_penalty: float = 0.0
     best_of: Optional[int] = None
     n: Optional[int] = None
-    stream: bool = False  # Default True
+    stream: bool = False
     seed: Optional[int] = None
-    # https://cookbook.openai.com/examples/using_logprobs
     logprobs: Optional[bool] = None
     top_logprobs: Optional[int] = None
     timeout: int = 600
-    context_length: Optional[int] = None  # Max input tokens
+    context_length: Optional[int] = None
 
-    # For Amazon Bedrock
-    region_name: str = None
-
-    # For Network
+    region_name: Optional[str] = None
     proxy: Optional[str] = None
-    max_concurrent:int  = 20 # Your concurrent number 
-    # Cost Control
+    max_concurrent: int = 20
     calc_usage: bool = True
-
-    # For Messages Control
     use_system_prompt: bool = True
 
-    @field_validator("api_key")
+    @field_validator("api_key", mode="before")
     @classmethod
-    def check_llm_key(cls, v):
-        if v in ["", None, "YOUR_API_KEY"]:
-            # Empty api_key is OK — litellm reads from env vars (loaded by llm_client)
-            return v or ""
-        return v
+    def check_llm_key(cls, value):
+        """Example placeholders mean "use provider environment credentials"."""
+        if value is None:
+            return ""
+        text = str(value).strip()
+        normalized = text.upper()
+        if not text or normalized.startswith("YOUR_API_KEY") or normalized in {
+            "CHANGEME",
+            "REPLACE_ME",
+            "PLACEHOLDER",
+        }:
+            return ""
+        return text
 
     @field_validator("timeout")
     @classmethod
-    def check_timeout(cls, v):
-        return v or LLM_API_TIMEOUT
+    def check_timeout(cls, value):
+        return value or LLM_API_TIMEOUT
