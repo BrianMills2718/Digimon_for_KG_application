@@ -20,15 +20,16 @@ Its strongest modern core is already implemented in code:
 - graph/table/vector cross-modal conversion code;
 - evaluation and end-to-end testing infrastructure.
 
-The remaining architecture work is not “invent an agent brain.” It is to make the existing capability system more coherent: **uniform resource lifecycle, prerequisites, provenance/evidence propagation, capability/MCP parity, errors/recovery, and cleanup of legacy internal planning layers**.
+The remaining architecture work is not “invent an agent brain.” It is to make the existing capability system coherent and dependable: **capability/MCP parity, explicit validation semantics, resource lifecycle/prerequisites, provenance/evidence propagation, prompt ownership, machine-actionable errors, and cleanup of legacy internal planning layers**.
 
-For the authoritative status, target design, gaps and plan, start here:
+For the authoritative reconciliation, start here:
 
 1. **[docs/CURRENT_STATE.md](docs/CURRENT_STATE.md)** — what the code materially contains now.
-2. **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the target harness-first architecture.
-3. **[docs/GAP_ANALYSIS.md](docs/GAP_ANALYSIS.md)** — current → target gaps.
-4. **[docs/ROADMAP.md](docs/ROADMAP.md)** — architecture-completion sequence and exit criteria.
-5. **[docs/README.md](docs/README.md)** — canonical documentation index and status vocabulary.
+2. **[docs/IMPLEMENTATION_MAP.md](docs/IMPLEMENTATION_MAP.md)** — module-by-module classification and exact code caveats.
+3. **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the target harness-first architecture.
+4. **[docs/GAP_ANALYSIS.md](docs/GAP_ANALYSIS.md)** — current → target gaps.
+5. **[docs/ROADMAP.md](docs/ROADMAP.md)** — architecture-completion sequence and exit criteria.
+6. **[docs/README.md](docs/README.md)** — canonical documentation index and maintenance rules.
 
 ## Architecture in one diagram
 
@@ -39,9 +40,9 @@ Intelligent external harness
    ↓
 DIGIMON MCP / capability facade
    ↓
-Typed operators + build/analysis/conversion capabilities
+Typed retrieval/build/analysis capabilities
    ↓
-Resource/prerequisite/evidence layer
+Resource + prerequisite + evidence contracts
    ↓
 Graphs | VDBs | chunks | communities | matrices | tables/vectors
    ↓
@@ -67,6 +68,8 @@ meta          7
 
 `Core/Schema/SlotTypes.py` supplies typed query/entity/relationship/chunk/subgraph/community/score-vector dataflow. `Core/Composition/` validates and executes compositions.
 
+The typed composition layer is substantial, but it is **not yet a closed safety/resource contract**: slot-kind chain discovery does not prove prerequisites are available, static validation is permissive in places, and `OperatorComposer` currently has a best-effort execution path after validation failure. These are explicit Stage-1 architecture gaps rather than hidden limitations.
+
 The 10 named retrieval methods are **reference compositions**, not DIGIMON's identity. A capable harness can compose operators directly or use a named method when useful.
 
 ## MCP execution modes
@@ -91,18 +94,35 @@ q3: determine which position is supported by retrieved source evidence
 
 This is guidance, not a mandatory reasoning graph. The harness may merge, reorder, branch, parallelize, revise, or skip the decomposition.
 
-The current prompts live in:
+Current heuristic surfaces include:
 
 - [`prompts/decompose_question.yaml`](prompts/decompose_question.yaml)
 - [`prompts/synthesize_answers.yaml`](prompts/synthesize_answers.yaml)
+- typed meta operators under `Core/Operators/meta/`
+
+The YAML and operator-local policies are aligned in this snapshot, but they are still duplicated prompt sources; consolidating or testing prompt parity is part of the roadmap.
+
+`meta.decompose_question` currently carries sub-question text through the generic `ENTITY_SET` slot. That is a transitional representation, not a reason to introduce a mandatory Graph-of-Thought runtime.
 
 The older `Core/AOT` implementation that programs atomic states and transitions is **legacy project lineage**, not the target reasoning architecture.
 
 ## Evidence and provenance
 
-The current typed records already carry useful source identifiers (`source_id` for entities/relationships and `chunk_id` for chunks), and retrieval paths can return source text. The synthesis prompt is designed to preserve supplied provenance and expose conflicts/unresolved dependencies.
+Current typed records already carry useful source identifiers (`source_id` for entities/relationships and `chunk_id` for chunks), and `SlotValue` records producer/metadata. Retrieval paths can return source text and evidence-aware synthesis now preserves available chunk/source markers in its model context.
 
 However, **end-to-end provenance is still Partial**, not finished: the roadmap calls for a universal evidence contract that propagates lineage consistently through retrieval, aggregation, paths, communities and modality conversions.
+
+## Resources and prerequisites
+
+`GraphRAGContext` directly tracks graph and VDB instances, while MCP/server code manages or discovers additional artifacts such as communities, sparse structures and converted data.
+
+That works today, but it is not yet a uniform resource catalog. The target model adds stable resource identity, build/config fingerprints, dependency links, staleness/invalidation, and explicit producer capabilities so the harness can decide whether to reuse, build or fall back.
+
+## Error semantics
+
+Execution errors are currently represented differently across layers: `PipelineExecutor` raises explicit pipeline errors, while some operators return empty/failure-valued slots and build/MCP tools may use status objects or exceptions.
+
+The target is to distinguish **empty evidence, missing prerequisite, invalid plan, provider failure, extraction incompleteness and internal failure** in a machine-actionable way.
 
 ## Core retrieval structures
 
@@ -136,20 +156,22 @@ digimon_cli.py              Transitional CLI using internal planner/orchestrator
 digimon_mcp_stdio_server.py Preferred external harness/tool surface
 ```
 
-The repository intentionally retains historical/experimental code and documents. **File existence does not imply canonical architecture.** See `docs/CURRENT_STATE.md` for classifications.
+The repository intentionally retains historical/experimental code and documents. **File existence does not imply canonical architecture.** See `docs/IMPLEMENTATION_MAP.md` for classification.
 
 ## Current development priority
 
 The current order of work is:
 
-1. stabilize the canonical capability contract;
-2. unify resource identities/lifecycle/prerequisites;
-3. make provenance/evidence an end-to-end contract;
-4. make the harness-first boundary operationally clean;
-5. consolidate legacy planners/orchestrators/AoT code;
-6. normalize cross-modal capabilities;
-7. standardize errors/recovery semantics;
-8. harden architectural contract tests and CI.
+1. inventory/audit canonical capabilities, descriptors and MCP parity;
+2. make validation strict-vs-best-effort semantics explicit;
+3. make prompt ownership/parity explicit;
+4. unify resource identities/lifecycle/prerequisites;
+5. make provenance/evidence an end-to-end contract;
+6. make the harness-first boundary operationally clean;
+7. consolidate legacy planners/orchestrators/AoT/MCP layers;
+8. normalize cross-modal capabilities;
+9. standardize errors/recovery semantics;
+10. harden architectural contract tests and CI.
 
 Benchmarking, ablations, router calibration and novelty comparisons are intentionally deferred until those architecture boundaries are stable. Future evaluation questions are preserved in **[docs/FUTURE_EVALUATION_QUESTIONS.md](docs/FUTURE_EVALUATION_QUESTIONS.md)**.
 
@@ -157,6 +179,7 @@ Benchmarking, ablations, router calibration and novelty comparisons are intentio
 
 - **[FUNCTIONALITY.md](FUNCTIONALITY.md)** — concise implemented-capability view.
 - **[docs/QUICK_START.md](docs/QUICK_START.md)** — current setup/entry points.
+- **[docs/PLANNING_SUMMARY.md](docs/PLANNING_SUMMARY.md)** — concise current implementation plan.
 - **[docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md](docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md)** — reasoning-policy detail.
 - **[docs/adr/002-harness-first-capability-architecture.md](docs/adr/002-harness-first-capability-architecture.md)** — current orchestration decision.
 
