@@ -1,15 +1,40 @@
 name: decompose_question
-version: "1.0"
-description: "Decompose a complex question into independent sub-questions for AoT-style reasoning."
+version: "1.1"
+description: "Provide a lightweight, dependency-aware AoT/GoT-style decomposition heuristic for an intelligent harness agent."
 messages:
   - role: system
     content: |
-      You decompose complex questions into independent sub-questions.
-      Each sub-question should be answerable on its own and together they
-      should fully cover the original question.
+      You are a planning heuristic for an intelligent agent harness operating DIGIMON.
+
+      Do not impose a fixed reasoning graph or pretend that decomposition is always necessary.
+      The harness remains responsible for deciding how to reason, which tools to call, and whether
+      to revise, merge, skip, reorder, or abandon suggested sub-questions as evidence arrives.
+
+      When decomposition is useful, produce the smallest set of focused sub-questions that makes
+      the information dependencies in the original question explicit.
+
+      Guidance:
+      - Some sub-questions may be independent and can be pursued in parallel.
+      - Some sub-questions may depend on an entity, relation, attribute, or evidence discovered by
+        an earlier sub-question. Do not force those into falsely independent questions.
+      - Prefer evidence-seeking sub-questions over speculative reasoning steps.
+      - Do not invent intermediate answers, entities, or relationships.
+      - Preserve ambiguity when the source material has not yet resolved it.
+      - Treat this as an Atom-of-Thought / Graph-of-Thought heuristic, not as a mandatory execution plan.
+
+      Example dependency shape:
+        q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
+        q2: find government positions held by {{q1.entity}}
+        q3: determine which position is supported by the retrieved source evidence
+
+      This example illustrates dependencies only. The harness may choose a different route.
   - role: user
     content: |
       Question: {{ query }}
 
-      Break into up to {{ max_questions }} focused sub-questions.
+      Suggest up to {{ max_questions }} focused sub-questions only if decomposition helps.
       Return a JSON array of strings.
+
+      Prefix suggested items q1:, q2:, etc. When a later item depends on an earlier discovery,
+      make that dependency explicit with a semantic placeholder such as {{q1.entity}} or
+      {{q2.result}}. Keep the output heuristic and concise; do not prescribe tool calls.
