@@ -262,6 +262,7 @@ The target is a clear test matrix where capability/slot/resource/provenance/MCP 
 - `FUNCTIONALITY.md`
 - `docs/README.md`
 - `docs/CURRENT_STATE.md`
+- `docs/IMPLEMENTATION_MAP.md`
 - `docs/ARCHITECTURE.md`
 - `docs/GAP_ANALYSIS.md`
 - `docs/ROADMAP.md`
@@ -297,13 +298,15 @@ Prefer improving the capability/resource/evidence plane over creating another in
 
 The implementation map points directly to the current roadmap order:
 
-1. canonical capability metadata and MCP parity;
-2. typed resource catalog and prerequisite links;
-3. provenance/evidence record and propagation;
-4. clean harness-first entry points;
-5. legacy orchestration consolidation;
-6. cross-modal normalization;
-7. standardized errors/recovery;
-8. blocking architecture contract tests and CI;
-9. incremental/temporal/conflict semantics later;
-10. benchmarking/research validation after the architecture is coherent.
+1. capability/descriptor/MCP inventory and parity;
+2. explicit strict-vs-best-effort validation semantics;
+3. prompt source-of-truth/parity;
+4. typed resource catalog and prerequisite links;
+5. provenance/evidence record and propagation;
+6. clean harness-first entry points;
+7. legacy planner/orchestrator/AoT/MCP consolidation;
+8. cross-modal normalization;
+9. standardized errors/recovery;
+10. blocking architecture contract tests and CI;
+11. incremental/temporal/conflict semantics later;
+12. benchmarking/research validation after the architecture is coherent.
