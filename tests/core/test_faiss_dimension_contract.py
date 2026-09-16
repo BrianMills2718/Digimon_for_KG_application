@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+import faiss
 import pytest
 
 import Core.Index.FaissIndex as faiss_module
@@ -63,3 +64,16 @@ async def test_faiss_uses_returned_vector_dimension_when_provider_has_no_metadat
     assert captured == {"dimension": 3, "neighbors": 32}
     assert index._index is not None
     assert len(index._index.nodes) == 1
+
+
+def test_l2_backend_distances_are_exposed_as_higher_is_better_similarity():
+    exact = FaissIndex.normalize_backend_score(0.0, faiss.METRIC_L2)
+    near = FaissIndex.normalize_backend_score(0.25, faiss.METRIC_L2)
+    far = FaissIndex.normalize_backend_score(4.0, faiss.METRIC_L2)
+
+    assert exact == 1.0
+    assert exact > near > far > 0.0
+
+
+def test_inner_product_scores_keep_native_direction():
+    assert FaissIndex.normalize_backend_score(0.75, faiss.METRIC_INNER_PRODUCT) == 0.75
