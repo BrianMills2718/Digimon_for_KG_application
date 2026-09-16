@@ -1,12 +1,4 @@
-"""OperatorComposer — method profiling, plan building, and execution.
-
-Lightweight helper that:
-1. Profiles all 10 method plans (operator chains, requirements, cost tiers)
-2. Instantiates method plans with query and parameters
-3. Validates and executes plans through PipelineExecutor
-
-No LLM selection logic. The calling agent decides which method to use.
-"""
+"""OperatorComposer — method profiling, plan building, validation, and execution."""
 
 from __future__ import annotations
 
@@ -51,7 +43,7 @@ _METHOD_GUIDANCE = {
     "gr": "PCST subgraph optimization. Best for finding compact, informative subgraphs from dual VDB search.",
     "dalk": "Entity linking + path filtering. Best for questions requiring specific knowledge paths.",
     "kgp": "TF-IDF + iterative neighbor reasoning. Best when entity descriptions are rich text.",
-    "med": "Subgraph extraction with Steiner tree. Best for domain-specific (medical) connected subgraph queries.",
+    "med": "Subgraph extraction with Steiner tree. Best for domain-specific connected subgraph queries.",
 }
 
 
@@ -63,8 +55,8 @@ class OperatorComposer:
         self.profiles: Dict[str, MethodProfile] = self._build_profiles()
 
     def _build_profiles(self) -> Dict[str, MethodProfile]:
-        from Core.Methods import METHOD_PLANS
         from Core.AgentSchema.plan import DynamicToolChainConfig, LoopConfig
+        from Core.Methods import METHOD_PLANS
 
         profiles = {}
         for name, plan_fn in METHOD_PLANS.items():
@@ -91,13 +83,20 @@ class OperatorComposer:
                             requires_community |= desc.requires_community
                             requires_sparse_matrices |= desc.requires_sparse_matrices
                             uses_llm |= desc.requires_llm
-                            if _COST_ORDER.get(desc.cost_tier, 0) > _COST_ORDER.get(max_cost, 0):
+                            if _COST_ORDER.get(desc.cost_tier, 0) > _COST_ORDER.get(
+                                max_cost, 0
+                            ):
                                 max_cost = desc.cost_tier
                 elif isinstance(step.action, LoopConfig):
                     has_loop = True
                     for body_id in step.action.body_step_ids:
-                        body_step = next((s for s in plan.steps if s.step_id == body_id), None)
-                        if body_step and isinstance(body_step.action, DynamicToolChainConfig):
+                        body_step = next(
+                            (candidate for candidate in plan.steps if candidate.step_id == body_id),
+                            None,
+                        )
+                        if body_step and isinstance(
+                            body_step.action, DynamicToolChainConfig
+                        ):
                             for tool_call in body_step.action.tools:
                                 op_id = tool_call.tool_id
                                 if op_id not in operator_chain:
@@ -105,7 +104,9 @@ class OperatorComposer:
                                 desc = self.registry.get(op_id)
                                 if desc:
                                     uses_llm |= desc.requires_llm
-                                    if _COST_ORDER.get(desc.cost_tier, 0) > _COST_ORDER.get(max_cost, 0):
+                                    if _COST_ORDER.get(
+                                        desc.cost_tier, 0
+                                    ) > _COST_ORDER.get(max_cost, 0):
                                         max_cost = desc.cost_tier
 
             profiles[name] = MethodProfile(
@@ -137,9 +138,8 @@ class OperatorComposer:
         return_context_only: bool = False,
         **kwargs: Any,
     ):
-        """Instantiate a named method plan."""
-        from Core.Methods import METHOD_PLANS
         from Core.AgentSchema.plan import DynamicToolChainConfig
+        from Core.Methods import METHOD_PLANS
 
         if method_name not in METHOD_PLANS:
             raise ValueError(
@@ -147,24 +147,22 @@ class OperatorComposer:
             )
 
         plan = METHOD_PLANS[method_name](query=query, **kwargs)
-
         if return_context_only and plan.steps:
             last_step = plan.steps[-1]
             if isinstance(last_step.action, DynamicToolChainConfig):
-                last_tools = last_step.action.tools
-                if last_tools and last_tools[-1].tool_id == "meta.generate_answer":
+                tools = last_step.action.tools
+                if tools and tools[-1].tool_id == "meta.generate_answer":
                     plan.steps = plan.steps[:-1]
-
         return plan
 
     def validate_plan(self, plan) -> bool:
-        """Validate plan with ChainValidator. Returns True if valid."""
         from Core.Composition.ChainValidator import ChainValidator
         from Core.Schema.SlotTypes import SlotKind
 
-        validator = ChainValidator(self.registry)
-        result = validator.validate(plan, plan_input_kinds={SlotKind.QUERY_TEXT})
-
+        result = ChainValidator(self.registry).validate(
+            plan,
+            plan_input_kinds={SlotKind.QUERY_TEXT},
+        )
         if not result.valid:
             for error in result.errors:
                 logger.warning(
@@ -172,8 +170,27 @@ class OperatorComposer:
                 )
         for warning in result.warnings:
             logger.debug(f"Validation warning: {warning}")
-
         return result.valid
+
+    @staticmethod
+    def _serialize_slot(slot_val):
+        if hasattr(slot_val, "data"):
+            return slot_val.data
+        return slot_val
+
+    @staticmethod
+    def _slot_metadata(slot_val) -> Dict[str, Any]:
+        """Return transport-safe slot metadata without changing data shape."""
+        if not hasattr(slot_val, "data"):
+            return {}
+        metadata = dict(getattr(slot_val, "metadata", {}) or {})
+        producer = getattr(slot_val, "producer", "")
+        kind = getattr(slot_val, "kind", None)
+        if producer:
+            metadata.setdefault("producer", producer)
+        if kind is not None:
+            metadata.setdefault("kind", getattr(kind, "value", str(kind)))
+        return metadata
 
     async def execute(
         self,
@@ -184,8 +201,9 @@ class OperatorComposer:
     ) -> Dict[str, Any]:
         """Validate and execute an operator plan.
 
-        Invalid plans are rejected by default. ``allow_invalid_plan=True`` is
-        available only for explicit debugging/legacy best-effort execution.
+        Existing ``all_step_outputs``/``final_output`` data shapes are preserved.
+        Parallel ``all_step_metadata``/``final_metadata`` maps carry provenance,
+        evidence IDs, status, producer, and slot-kind information.
         """
         from Core.Composition.PipelineExecutor import (
             PipelineExecutionError,
@@ -200,28 +218,46 @@ class OperatorComposer:
                 "Pass allow_invalid_plan=True only for explicit best-effort debugging."
             )
         if not is_valid:
-            logger.warning("Plan has validation errors — explicit best-effort execution requested")
+            logger.warning(
+                "Plan has validation errors — explicit best-effort execution requested"
+            )
 
-        executor = PipelineExecutor(self.registry, ctx)
-        step_outputs = await executor.execute(plan, fail_fast=fail_fast)
+        step_outputs = await PipelineExecutor(self.registry, ctx).execute(
+            plan,
+            fail_fast=fail_fast,
+        )
 
-        result = {"all_step_outputs": {}, "final_output": {}}
+        result = {
+            "all_step_outputs": {},
+            "all_step_metadata": {},
+            "final_output": {},
+            "final_metadata": {},
+        }
+
         for step_id, outputs in step_outputs.items():
             if outputs is _FAILED_STEP:
                 result["all_step_outputs"][step_id] = {"__error__": "step failed"}
+                result["all_step_metadata"][step_id] = {"__error__": "step failed"}
                 continue
+
             step_data = {}
+            step_metadata = {}
             for slot_name, slot_val in outputs.items():
-                step_data[slot_name] = slot_val.data if hasattr(slot_val, "data") else slot_val
+                step_data[slot_name] = self._serialize_slot(slot_val)
+                metadata = self._slot_metadata(slot_val)
+                if metadata:
+                    step_metadata[slot_name] = metadata
             result["all_step_outputs"][step_id] = step_data
+            result["all_step_metadata"][step_id] = step_metadata
 
         if step_outputs:
             last_step_id = list(step_outputs.keys())[-1]
             last_outputs = step_outputs[last_step_id]
             if last_outputs is not _FAILED_STEP:
                 for slot_name, slot_val in last_outputs.items():
-                    result["final_output"][slot_name] = (
-                        slot_val.data if hasattr(slot_val, "data") else slot_val
-                    )
+                    result["final_output"][slot_name] = self._serialize_slot(slot_val)
+                    metadata = self._slot_metadata(slot_val)
+                    if metadata:
+                        result["final_metadata"][slot_name] = metadata
 
         return result
