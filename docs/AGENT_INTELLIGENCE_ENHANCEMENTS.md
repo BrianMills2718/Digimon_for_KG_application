@@ -1,149 +1,107 @@
-# Agent Intelligence Enhancement Roadmap
+# Agent Intelligence Architecture
 
-## Current Intelligence Level: Advanced Tool Orchestration
-The agent can plan multi-step workflows, execute tools, and synthesize results.
+## Current Direction: Harness-First Reasoning
 
-## Proposed Enhancements
+DIGIMON should expose strong, typed retrieval and graph operations to an intelligent agent harness rather than attempting to encode a complete "agent brain" directly in Python.
 
-### 1. **Meta-Cognitive Layer** (High Impact)
-Add self-reflection and strategy evaluation:
-```python
-class MetaCognitiveAgent:
-    async def evaluate_strategy_effectiveness(self, plan, results):
-        """Reflect on whether the current approach is working"""
-        
-    async def generate_alternative_strategies(self, failed_plan):
-        """Create backup plans when primary approach fails"""
-        
-    async def learn_from_execution(self, query, plan, results):
-        """Store successful patterns for future use"""
+The architectural boundary is intentional:
+
+- **DIGIMON owns capabilities and constraints**: corpus preparation, graph construction, retrieval operators, modality conversion, resource discovery, evidence/provenance handling, and typed tool contracts.
+- **The harness owns adaptive reasoning**: understanding the user goal, deciding whether to decompose it, choosing and sequencing tools, revising a plan after observations, and deciding when enough evidence has been gathered.
+- **Prompts may provide heuristics**: Atom-of-Thought (AoT), Graph-of-Thought (GoT), ReAct-style planning, modality selection, and method profiles can help the harness reason, but they should not become a rigid state machine that replaces model intelligence.
+
+This direction avoids over-programming the reasoning policy while keeping the system inspectable and grounded.
+
+## AoT / GoT as a Heuristic, Not an Executor
+
+A useful decomposition should expose information dependencies without requiring DIGIMON to precompute the entire reasoning path.
+
+For example:
+
+```text
+q1: identify the performer who portrayed Corliss Archer in Kiss and Tell
+q2: find government positions held by {{q1.entity}}
+q3: determine which position is supported by the retrieved source evidence
 ```
 
-### 2. **Uncertainty Quantification**
-Make the agent express confidence:
-```python
-class UncertaintyAwareAgent:
-    def assess_answer_confidence(self, context, answer):
-        """Rate confidence in the answer (0-1)"""
-        
-    def identify_information_gaps(self, query, context):
-        """What information is missing to answer confidently?"""
-        
-    def suggest_verification_steps(self, answer, confidence):
-        """Propose ways to verify uncertain answers"""
+The important property is not the exact three-step sequence. It is that `q2` depends on a discovery from `q1`, while `q3` is an evidence-resolution step. An intelligent harness may instead resolve the entity and office in one retrieval operation, branch into multiple candidate entities, run independent searches in parallel, or abandon this decomposition if a more direct route is available.
+
+Therefore the decomposition prompt should:
+
+1. suggest the smallest useful set of sub-goals;
+2. distinguish independent work from dependency-linked work;
+3. make dependencies explicit when useful;
+4. avoid inventing intermediate answers;
+5. avoid prescribing specific tools unless the harness explicitly asks for a tool-level plan;
+6. permit revision, merging, reordering, parallelization, and early termination.
+
+The prompt in `prompts/decompose_question.yaml` follows this policy while retaining a simple JSON-array interface.
+
+## Relationship to the Legacy `Core/AOT` Code
+
+The repository contains an earlier `Core/AOT` implementation that represents atomic states, dependencies, transition probabilities, and heuristic entity/relationship/action extraction in code. That work remains useful as project history and as a source of ideas, but it should not be treated as the required reasoning architecture for the current harness-first direction.
+
+The preferred architecture is lighter:
+
+```text
+User goal
+   ↓
+Intelligent harness
+   ├─ optionally applies AoT/GoT decomposition heuristic
+   ├─ inspects available DIGIMON resources/tools
+   ├─ chooses actions adaptively
+   ├─ observes results and revises
+   └─ synthesizes an evidence-grounded answer
+          ↓
+DIGIMON typed tools + data/resource layer
 ```
 
-### 3. **Dynamic Tool Discovery**
-Let the agent create new tool combinations:
-```python
-class ToolComposer:
-    async def compose_tool_pipeline(self, need):
-        """Create custom tool chains for specific needs"""
-        
-    async def discover_tool_patterns(self, successful_plans):
-        """Learn effective tool combinations"""
-```
+The harness can reason over a graph of sub-goals without DIGIMON itself maintaining a mandatory graph-of-thought runtime.
 
-### 4. **Hypothesis Testing**
-Scientific reasoning capabilities:
-```python
-class HypothesisAgent:
-    async def generate_hypotheses(self, query, initial_findings):
-        """Form testable hypotheses about the data"""
-        
-    async def design_tests(self, hypothesis):
-        """Create experiments to validate hypotheses"""
-        
-    async def interpret_evidence(self, hypothesis, results):
-        """Evaluate support for/against hypothesis"""
-```
+## Evidence-Aware Synthesis
 
-### 5. **Multi-Modal Reasoning**
-Integrate different types of reasoning:
-```python
-class MultiModalReasoner:
-    async def causal_reasoning(self, entities, relationships):
-        """Infer causal relationships"""
-        
-    async def temporal_reasoning(self, events, timeline):
-        """Understand temporal sequences"""
-        
-    async def spatial_reasoning(self, locations, connections):
-        """Reason about spatial relationships"""
-        
-    async def counterfactual_reasoning(self, scenario):
-        """What-if analysis"""
-```
+Answer synthesis is part of the architectural boundary. The synthesis layer should not erase the distinction between retrieval and inference.
 
-### 6. **Conversation Memory**
-Remember and build on past interactions:
-```python
-class MemoryEnhancedAgent:
-    def remember_query_patterns(self, query_type, successful_plan):
-        """Store successful approaches"""
-        
-    def recall_similar_queries(self, new_query):
-        """Find relevant past experiences"""
-        
-    def build_user_model(self, interaction_history):
-        """Understand user preferences and needs"""
-```
+The current synthesis heuristic should:
 
-### 7. **Proactive Intelligence**
-Anticipate user needs:
-```python
-class ProactiveAgent:
-    async def suggest_follow_up_questions(self, answer, context):
-        """What might the user want to know next?"""
-        
-    async def identify_interesting_patterns(self, data):
-        """Find insights user didn't ask for"""
-        
-    async def warn_about_limitations(self, answer):
-        """Proactively mention caveats"""
-```
+- preserve source/citation/provenance markers when available;
+- only assert claims supported by retrieved evidence or explicit sub-results;
+- expose material conflicts rather than silently resolving them;
+- identify unresolved dependencies;
+- avoid treating missing evidence as proof that a claim is false;
+- avoid manufacturing confidence scores that have not been calibrated.
 
-## Implementation Priority
+This keeps the final response grounded even when the harness takes an adaptive path through the available tools.
 
-### Phase 1: Foundation (Weeks 1-2)
-- Add confidence scoring to answers
-- Implement basic strategy evaluation
-- Store successful query patterns
+## Tool and Method Selection
 
-### Phase 2: Advanced Reasoning (Weeks 3-4)
-- Hypothesis generation and testing
-- Multi-modal reasoning basics
-- Alternative strategy generation
+DIGIMON can provide method profiles and lightweight routing heuristics, but the harness should remain free to override them based on observations and resource availability.
 
-### Phase 3: Learning & Memory (Weeks 5-6)
-- Query pattern learning
-- User preference modeling
-- Performance optimization based on history
+Useful guidance includes:
 
-### Phase 4: Proactive Features (Weeks 7-8)
-- Insight discovery
-- Follow-up suggestions
-- Limitation awareness
+- graph operations for relationships, paths, communities, and multi-hop structure;
+- table operations for aggregation, filtering, counts, and explicit comparison;
+- vector operations for semantic similarity, nearest neighbors, clustering, and discovery;
+- cross-modal workflows when the question spans more than one analytical form.
 
-## Example Enhanced Interaction
+These mappings are priors, not hard rules. The agent may start with vector/entity discovery and then move into graph traversal, or retrieve text first to determine whether graph reasoning is warranted.
 
-**Current:**
-User: "What caused the financial crisis?"
-Agent: [Searches, retrieves, answers based on found text]
+## Architectural Priorities
 
-**Enhanced:**
-User: "What caused the financial crisis?"
-Agent: 
-- Generates hypotheses (housing bubble, regulation, etc.)
-- Tests each with targeted searches
-- Finds supporting/contradicting evidence
-- Expresses confidence levels
-- Suggests follow-ups ("Would you like to know about prevention measures?")
-- Remembers this pattern for similar economic queries
+The current priority is to finish and clarify the architecture rather than optimize benchmark scores or claim novelty.
 
-## Success Metrics
-- Answer accuracy: >90%
-- Confidence calibration: Predicted vs actual accuracy correlation >0.8
-- Strategy adaptation: Successful recovery from initial failures >75%
-- User satisfaction: Reduced follow-up clarifications by 50%
-- Learning effectiveness: Query execution time reduction over time
+Near-term work should emphasize:
+
+- stable typed tool contracts;
+- clear data flow between graph, text, vector, community, and structured representations;
+- resource discovery and prerequisite handling;
+- robust provenance from graph entities/relationships back to source text;
+- prompt heuristics that support intelligent harnesses without replacing them;
+- predictable failure behavior when resources or evidence are missing;
+- concise documentation of the intended execution model.
+
+Benchmarking, router calibration, ablations, and novelty comparisons are valuable later-stage validation tasks and are documented separately in `docs/FUTURE_EVALUATION_QUESTIONS.md`.
+
+## Design Principle
+
+> Program the capabilities, contracts, and evidence boundaries. Prompt useful reasoning heuristics. Let the harness remain intelligent.
