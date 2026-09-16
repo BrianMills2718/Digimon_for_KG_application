@@ -127,60 +127,54 @@ async def main():
             traceback.print_exc()
             return print_summary()
 
-    from Core.AgentTools.graph_construction_tools import build_er_graph
-    from Core.AgentSchema.graph_construction_tool_contracts import BuildERGraphInputs
-
-    config = mcp_srv._state["config"]
-    llm = mcp_srv._state["llm"]
-    encoder = mcp_srv._state["encoder"]
-    chunk_factory = mcp_srv._state["chunk_factory"]
-    context = mcp_srv._state["context"]
-
-    build_inputs = BuildERGraphInputs(
-        target_dataset_name=DATASET,
-        force_rebuild=REBUILD,
-    )
-    build_result = await build_er_graph(
-        build_inputs, config, llm, encoder, chunk_factory
-    )
-    graph_instance = getattr(build_result, "graph_instance", None)
-    if graph_instance:
-        if hasattr(graph_instance, "_graph") and hasattr(
-            graph_instance._graph, "namespace"
-        ):
-            graph_instance._graph.namespace = chunk_factory.get_namespace(DATASET)
-        context.add_graph_instance(GRAPH_ID, graph_instance)
-
-    graph_ok = build_result.status == "success" and GRAPH_ID in context.list_graphs()
-    record(
-        "A3: build/load ER graph",
-        graph_ok,
-        (
-            f"graph_id={GRAPH_ID}, status={build_result.status}, "
-            f"nodes={getattr(build_result, 'node_count', None)}, "
-            f"edges={getattr(build_result, 'edge_count', None)}"
-        ),
-    )
-    if not graph_ok:
+    try:
+        graph_json = await mcp_srv.graph_build_er(
+            DATASET,
+            force_rebuild=REBUILD,
+        )
+        graph_result = json.loads(graph_json)
+        context = mcp_srv._state["context"]
+        graph_ok = (
+            graph_result.get("status") == "success"
+            and GRAPH_ID in context.list_graphs()
+        )
+        record(
+            "A3: graph_build_er()",
+            graph_ok,
+            (
+                f"graph_id={GRAPH_ID}, status={graph_result.get('status')}, "
+                f"nodes={graph_result.get('node_count')}, "
+                f"edges={graph_result.get('edge_count')}"
+            ),
+        )
+        if not graph_ok:
+            return print_summary()
+    except Exception as exc:
+        record("A3: graph_build_er()", False, f"ERROR: {exc}")
+        traceback.print_exc()
         return print_summary()
 
-    # Build/load entity VDB.
-    from Core.AgentTools.entity_vdb_tools import entity_vdb_build_tool
-    from Core.AgentSchema.tool_contracts import EntityVDBBuildInputs
-
-    vdb_inputs = EntityVDBBuildInputs(
-        graph_reference_id=GRAPH_ID,
-        vdb_collection_name=VDB_ID,
-        force_rebuild=REBUILD,
-    )
-    vdb_result = await entity_vdb_build_tool(vdb_inputs, context)
-    vdb_ok = vdb_result.num_entities_indexed > 0
-    record(
-        "A4: build/load entity VDB",
-        vdb_ok,
-        f"entities_indexed={vdb_result.num_entities_indexed}",
-    )
-    if not vdb_ok:
+    try:
+        vdb_json = await mcp_srv.entity_vdb_build(
+            GRAPH_ID,
+            VDB_ID,
+            force_rebuild=REBUILD,
+        )
+        vdb_result = json.loads(vdb_json)
+        vdb_ok = vdb_result.get("num_entities_indexed", 0) > 0
+        record(
+            "A4: entity_vdb_build()",
+            vdb_ok,
+            (
+                f"status={vdb_result.get('status')}, "
+                f"entities_indexed={vdb_result.get('num_entities_indexed', 0)}"
+            ),
+        )
+        if not vdb_ok:
+            return print_summary()
+    except Exception as exc:
+        record("A4: entity_vdb_build()", False, f"ERROR: {exc}")
+        traceback.print_exc()
         return print_summary()
 
     # ================================================================
