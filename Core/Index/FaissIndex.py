@@ -1,398 +1,280 @@
-from Core.Common.Utils import mdhash_id
-from Core.Common.Logger import logger
-import os
-import faiss
-from typing import Any
-from llama_index.core.schema import (
-    Document,
-    TextNode
-)
-from llama_index.core import StorageContext, load_index_from_storage, VectorStoreIndex, Settings
-from Core.Index.BaseIndex import BaseIndex, VectorIndexNodeResult, VectorIndexEdgeResult
+"""FAISS-backed LlamaIndex adapter used by DIGIMON entity/relationship VDBs."""
+
+from __future__ import annotations
+
 import asyncio
-from llama_index.core.schema import QueryBundle
+import os
+from typing import Any
+
+import faiss
 import numpy as np
+from llama_index.core import Settings, StorageContext, VectorStoreIndex, load_index_from_storage
+from llama_index.core.schema import QueryBundle, TextNode
 from llama_index.vector_stores.faiss import FaissVectorStore
-from concurrent.futures import ProcessPoolExecutor
-from llama_index.embeddings.openai import OpenAIEmbedding
+
+from Core.Common.Logger import logger
+from Core.Common.Utils import mdhash_id
+from Core.Index.BaseIndex import BaseIndex
+from Core.Schema.VdbResult import VectorIndexEdgeResult, VectorIndexNodeResult
+
 
 class FaissIndex(BaseIndex):
-    """FaissIndex is designed to be simple and straightforward.
-
-    It is a lightweight and easy-to-use vector database for ANN search.
-    """
-
-    async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
-        logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix called with query_list type: {type(query_list)}, top_k: {top_k}")
-        # This implementation uses existing retrieval_nodes and formats output for PPR.
-
-        if not graph:
-            logger.error("FaissIndex.retrieval_nodes_with_score_matrix: graph object is None!")
-            node_num_fallback = 100 # Arbitrary fallback if graph.node_num is not accessible
-            try:
-                node_num_fallback = self.config.graph_node_num_default_for_empty_graph if hasattr(self.config, 'graph_node_num_default_for_empty_graph') else 100
-            except: pass # Ignore if self.config is not set or lacks attribute
-            logger.warning(f"Graph object is None. Using fallback node_num: {node_num_fallback}")
-            return np.zeros(node_num_fallback)
-
-        score_vector = np.zeros(graph.node_num)
-
-        queries_to_process = []
-        if isinstance(query_list, str):
-            queries_to_process.append(query_list)
-            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Processing single query string: {query_list}")
-        elif isinstance(query_list, list):
-            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Processing list of query items (count: {len(query_list)})")
-            for i, item in enumerate(query_list):
-                if isinstance(item, dict) and "entity_name" in item:
-                    queries_to_process.append(item["entity_name"])
-                    logger.debug(f"  Item {i} is dict, using entity_name: {item['entity_name']}")
-                elif isinstance(item, str):
-                    queries_to_process.append(item)
-                    logger.debug(f"  Item {i} is str: {item}")
-                else:
-                    logger.warning(f"FaissIndex.retrieval_nodes_with_score_matrix: Skipping unrecognized item in query_list: {item} (type: {type(item)})")
-        else: 
-            logger.warning(f"FaissIndex.retrieval_nodes_with_score_matrix: Unrecognized query_list type: {type(query_list)}. Attempting to process as string.")
-            queries_to_process.append(str(query_list))
-
-        if not queries_to_process:
-            logger.warning("FaissIndex.retrieval_nodes_with_score_matrix: No valid queries to process from query_list.")
-            return score_vector
-
-        aggregated_scores_for_nodes = {} 
-
-        for target_query in queries_to_process:
-            logger.debug(f"FaissIndex.retrieval_nodes_with_score_matrix: Performing VDB lookup for target_query: '{target_query}' with top_k={top_k}")
-            retrieved_data = await self.retrieval_nodes(
-                query=target_query,
-                top_k=top_k,
-                graph=graph,
-                need_score=True
-            )
-
-            if retrieved_data and isinstance(retrieved_data, tuple) and len(retrieved_data) == 2:
-                nodes_data, scores_from_vdb = retrieved_data
-                if nodes_data and scores_from_vdb:
-                    logger.debug(f"  Lookup for '{target_query}' found {len(nodes_data)} nodes.")
-                    for i, node_data_item in enumerate(nodes_data):
-                        if node_data_item is None:
-                            continue
-                        entity_name = node_data_item.get(graph.entity_metakey)
-                        if entity_name:
-                            node_idx = await graph.get_node_index(entity_name)
-                            if node_idx is not None and 0 <= node_idx < len(score_vector):
-                                current_score = scores_from_vdb[i] if scores_from_vdb[i] is not None else 0.0
-                                aggregated_scores_for_nodes[node_idx] = aggregated_scores_for_nodes.get(node_idx, 0.0) + current_score
-                                logger.debug(f"    Node '{entity_name}' (idx {node_idx}): score {current_score}, new aggregated score {aggregated_scores_for_nodes[node_idx]}")
-                            else:
-                                logger.warning(f"    Node index {node_idx} for entity '{entity_name}' is out of bounds or None for score_vector (len: {len(score_vector)}).")
-                        else:
-                            logger.warning(f"    Entity name not found using metakey '{graph.entity_metakey}' in node_data_item: {node_data_item}")
-                else:
-                    logger.debug(f"  Lookup for '{target_query}' returned no nodes/scores.")
-            else:
-                logger.warning(f"  Lookup for '{target_query}': retrieval_nodes did not return a tuple of (nodes, scores). Got: {type(retrieved_data)}")
-        
-        for node_idx, summed_score in aggregated_scores_for_nodes.items():
-            if 0 <= node_idx < len(score_vector):
-                score_vector[node_idx] = summed_score
-            
-        current_sum = np.sum(score_vector)
-        if current_sum > 0:
-            score_vector = score_vector / current_sum
-            logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix: Returning normalized score vector (sum before norm: {current_sum:.4f}).")
-        else:
-            logger.info(f"FaissIndex.retrieval_nodes_with_score_matrix: Returning zero score vector (sum is {current_sum:.4f}).")
-            
-        return score_vector
+    """Small FAISS adapter with runtime embedding-dimension discovery."""
 
     def __init__(self, config):
         super().__init__(config)
-        self.embedding_model =config.embed_model
+        self.embedding_model = config.embed_model
 
     async def retrieval(self, query, top_k):
+        if self._index is None:
+            raise RuntimeError("FAISS index is not loaded or built")
         if top_k is None:
             top_k = self._get_retrieve_top_k()
-        retriever = self._index.as_retriever(similarity_top_k=top_k, embed_model=self.config.embed_model)
-        query_emb = self._embed_text(query)
-        query_bundle = QueryBundle(query_str=query, embedding=query_emb)
-    
+
+        retriever = self._index.as_retriever(
+            similarity_top_k=top_k,
+            embed_model=self.config.embed_model,
+        )
+        query_embedding = await self._embed_text(query)
+        query_bundle = QueryBundle(query_str=query, embedding=query_embedding)
         return await retriever.aretrieve(query_bundle)
 
-    async def retrieval_nodes(self, query, top_k, graph, need_score=False, tree_node=False):
+    async def retrieval_nodes(
+        self, query, top_k, graph, need_score=False, tree_node=False
+    ):
         results = await self.retrieval(query, top_k)
         result = VectorIndexNodeResult(results)
         if tree_node:
             return await result.get_tree_node_data(graph, need_score)
-        else:
-            return await result.get_node_data(graph, need_score)
+        return await result.get_node_data(graph, need_score)
 
     async def retrieval_edges(self, query, top_k, graph, need_score=False):
-
         results = await self.retrieval(query, top_k)
         result = VectorIndexEdgeResult(results)
-
         return await result.get_edge_data(graph, need_score)
 
     async def retrieval_batch(self, queries, top_k):
-        pass
+        return await asyncio.gather(*[self.retrieval(query, top_k) for query in queries])
+
+    async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
+        if graph is None:
+            raise ValueError("graph is required for score-matrix retrieval")
+
+        queries = [query_list] if isinstance(query_list, str) else list(query_list)
+        score_vector = np.zeros(graph.node_num)
+        aggregated_scores: dict[int, float] = {}
+
+        for item in queries:
+            if isinstance(item, dict):
+                target_query = item.get("entity_name")
+            else:
+                target_query = str(item)
+            if not target_query:
+                continue
+
+            nodes, scores = await self.retrieval_nodes(
+                query=target_query,
+                top_k=top_k,
+                graph=graph,
+                need_score=True,
+            )
+            for node_data, score in zip(nodes or [], scores or []):
+                if not node_data:
+                    continue
+                entity_name = node_data.get(graph.entity_metakey)
+                if not entity_name:
+                    continue
+                node_idx = await graph.get_node_index(entity_name)
+                if node_idx is None or not 0 <= node_idx < len(score_vector):
+                    continue
+                aggregated_scores[node_idx] = aggregated_scores.get(node_idx, 0.0) + float(
+                    score or 0.0
+                )
+
+        for node_idx, score in aggregated_scores.items():
+            score_vector[node_idx] = score
+
+        total = float(np.sum(score_vector))
+        if total > 0:
+            score_vector /= total
+        return score_vector
 
     def _get_retrieve_top_k(self):
-        # Assuming self.config is an instance of FAISSIndexConfig (or a compatible config)
-        # and has an attribute like 'retrieve_top_k' or similar.
-        if hasattr(self.config, 'retrieve_top_k'):
-            return self.config.retrieve_top_k
-        else:
-            logger.warning("FaissIndex config does not have 'retrieve_top_k', defaulting to 5.")
-            return 5
+        return getattr(self.config, "retrieve_top_k", 5) or 5
 
+    async def _embed_text(self, text: str):
+        model = self.embedding_model
+        if hasattr(model, "aget_text_embedding"):
+            return await model.aget_text_embedding(text)
+        if hasattr(model, "get_text_embedding"):
+            return model.get_text_embedding(text)
+        if hasattr(model, "_get_text_embedding"):
+            return model._get_text_embedding(text)
+        raise TypeError(
+            f"Embedding provider {type(model).__name__} does not expose a supported text embedding API"
+        )
 
-    def _embed_text(self, text: str):
-        return self.embedding_model._get_text_embedding(text)
-    
+    async def _embed_batch(self, texts: list[str]) -> list[list[float]]:
+        model = self.config.embed_model
+        if hasattr(model, "aget_text_embedding_batch"):
+            return await model.aget_text_embedding_batch(texts, show_progress=False)
+        if hasattr(model, "get_text_embedding_batch"):
+            return model.get_text_embedding_batch(texts)
+        if hasattr(model, "_get_text_embeddings"):
+            batch_size = getattr(model, "embed_batch_size", 32) or 32
+            embeddings = []
+            for start in range(0, len(texts), batch_size):
+                embeddings.extend(model._get_text_embeddings(texts[start : start + batch_size]))
+            return embeddings
+        return [await self._embed_text(text) for text in texts]
+
+    @staticmethod
+    def _configured_dimension(model) -> int | None:
+        for attr in ("dimensions", "embed_dim"):
+            value = getattr(model, attr, None)
+            if isinstance(value, int) and value > 0:
+                return value
+        return None
+
     async def _update_index(self, datas: list[dict[str, Any]], meta_data_keys: list):
-        logger.info(f"Starting FaissIndex._update_index with {len(datas)} data elements.")
-        if not hasattr(self.config, 'embed_model') or self.config.embed_model is None:
-            logger.error("FaissIndex config is missing 'embed_model'. Cannot proceed with VDB update.")
+        if self.config.embed_model is None:
+            logger.error("FAISS index cannot build without an embedding provider")
             return
-        logger.info(f"Using embedding model: {type(self.config.embed_model)}")
-        embed_dims = None
-        if hasattr(self.config.embed_model, 'dimensions'):
-            embed_dims = self.config.embed_model.dimensions
-            logger.info(f"Embedding model dimensions: {embed_dims}")
-        elif hasattr(self.config.embed_model, 'embed_dim'):
-            embed_dims = self.config.embed_model.embed_dim
-            logger.info(f"Attempting to use embed_dim: {embed_dims}")
-        else:
-            logger.error("Cannot determine embedding dimensions. Faiss index creation will likely fail.")
+        if not datas:
+            logger.error("FAISS index cannot build from an empty data list")
             return
+
         Settings.embed_model = self.config.embed_model
-        nodes_to_insert = []
-        all_texts_to_embed = [data["content"] for data in datas]
-        text_embeddings = []
-        logger.info(f"Attempting to embed {len(all_texts_to_embed)} texts for FaissIndex.")
+        texts = [data["content"] for data in datas]
         try:
-            if hasattr(self.config.embed_model, 'aget_text_embedding_batch'):
-                text_embeddings = await self.config.embed_model.aget_text_embedding_batch(all_texts_to_embed, show_progress=True)
-            elif hasattr(self.config.embed_model, '_get_text_embeddings'):
-                batch_size = getattr(self.config.embed_model, "embed_batch_size", 32)
-                for i in range(0, len(all_texts_to_embed), batch_size):
-                    batch = all_texts_to_embed[i:i + batch_size]
-                    batch_embeddings = self.config.embed_model._get_text_embeddings(batch)
-                    text_embeddings.extend(batch_embeddings)
-            else:
-                logger.warning("Embedding model does not support a known batch embedding method. Embedding one by one (this might be slow or fail).")
-                for text_to_embed in all_texts_to_embed:
-                    text_embeddings.append(await self.config.embed_model.aget_text_embedding(text_to_embed) if hasattr(self.config.embed_model, 'aget_text_embedding') else self.config.embed_model.get_text_embedding(text_to_embed))
-        except Exception as e:
-            logger.error(f"Error during text embedding batch: {e}", exc_info=True)
+            text_embeddings = await self._embed_batch(texts)
+        except Exception as exc:
+            logger.error(f"FAISS embedding failed: {exc}", exc_info=True)
             return
-        if len(text_embeddings) != len(datas):
-            logger.error(f"Mismatch in number of embeddings ({len(text_embeddings)}) and data elements ({len(datas)}). Aborting VDB update.")
-            return
-        logger.info(f"Successfully generated {len(text_embeddings)} embeddings.")
-        for i, data_item in enumerate(datas):
-            node_metadata_dict = {}
-            for key in meta_data_keys:
-                if key in data_item:
-                    node_metadata_dict[key] = data_item[key]
-                else:
-                    logger.warning(f"Metadata key '{key}' not found in data_item: {data_item}. It will be missing from VDB metadata.")
-            node_id_for_llama_index = str(data_item.get("index", mdhash_id(data_item["content"])))
-            node = TextNode(
-                id_=node_id_for_llama_index,
-                text=data_item["content"],
-                embedding=text_embeddings[i],
-                metadata=node_metadata_dict,
-                excluded_embed_metadata_keys=list(node_metadata_dict.keys()),
-                excluded_llm_metadata_keys=list(node_metadata_dict.keys())
+
+        if len(text_embeddings) != len(datas) or not text_embeddings:
+            logger.error(
+                f"Embedding count mismatch: {len(text_embeddings)} embeddings for {len(datas)} items"
             )
-            nodes_to_insert.append(node)
-        if not self._index:
-            logger.info("FaissIndex: Creating new FaissVectorStore and VectorStoreIndex in _update_index.")
-            if embed_dims is None:
-                logger.error("FaissIndex: CRITICAL - Cannot determine embedding_model dimensions for Faiss IndexHNSWFlat creation. Aborting VDB update logic in _update_index.")
+            return
+
+        inferred_dimension = len(text_embeddings[0]) if text_embeddings[0] else 0
+        configured_dimension = self._configured_dimension(self.config.embed_model)
+        embed_dims = configured_dimension or inferred_dimension
+        if not embed_dims:
+            logger.error("Could not infer FAISS embedding dimension from provider or returned vectors")
+            return
+        if configured_dimension and inferred_dimension and configured_dimension != inferred_dimension:
+            logger.warning(
+                f"Configured embedding dimension {configured_dimension} differs from returned vector "
+                f"dimension {inferred_dimension}; using returned dimension"
+            )
+            embed_dims = inferred_dimension
+
+        nodes = []
+        for data_item, embedding in zip(datas, text_embeddings):
+            if len(embedding) != embed_dims:
+                logger.error(
+                    f"Inconsistent embedding dimension: expected {embed_dims}, got {len(embedding)}"
+                )
+                self._index = None
                 return
-            logger.info(f"FaissIndex: Initializing Faiss IndexHNSWFlat with dimensions: {embed_dims}.")
-            faiss_index_instance = faiss.IndexHNSWFlat(embed_dims, 32)
-            vector_store = FaissVectorStore(faiss_index=faiss_index_instance)
-            logger.info(f"FaissIndex: FaissVectorStore created. faiss_index object: {vector_store.faiss_index}")
+            metadata = {
+                key: data_item[key]
+                for key in meta_data_keys
+                if key in data_item
+            }
+            nodes.append(
+                TextNode(
+                    id_=str(data_item.get("index", mdhash_id(data_item["content"]))),
+                    text=data_item["content"],
+                    embedding=embedding,
+                    metadata=metadata,
+                    excluded_embed_metadata_keys=list(metadata.keys()),
+                    excluded_llm_metadata_keys=list(metadata.keys()),
+                )
+            )
+
+        try:
+            faiss_index = faiss.IndexHNSWFlat(int(embed_dims), 32)
+            vector_store = FaissVectorStore(faiss_index=faiss_index)
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
             self._index = VectorStoreIndex(
                 nodes=[],
                 storage_context=storage_context,
-                embed_model=self.config.embed_model
+                embed_model=self.config.embed_model,
             )
-            logger.info(f"FaissIndex: New VectorStoreIndex created. Index ID: {self._index.index_id}")
-        if nodes_to_insert:
-            logger.info(f"FaissIndex: Inserting {len(nodes_to_insert)} nodes into index.")
-            self._index.insert_nodes(nodes_to_insert)
-            logger.info(f"FaissIndex: Node insertion complete.")
-        else:
-            logger.warning("FaissIndex: No nodes to insert into index during _update_index.")
+            self._index.insert_nodes(nodes)
+            logger.info(
+                f"Built FAISS index with {len(nodes)} vectors at dimension {embed_dims}"
+            )
+        except Exception as exc:
+            logger.error(f"FAISS index construction failed: {exc}", exc_info=True)
+            self._index = None
 
     async def _load_index(self) -> bool:
-        logger.info(f"FaissIndex._load_index: Attempting to load index from persist_path: {self.config.persist_path}")
         try:
-            Settings.embed_model = self.config.embed_model # Ensure embed_model is set for LlamaIndex
-            logger.info(f"FaissIndex._load_index: Set Settings.embed_model to: {type(Settings.embed_model)}")
-
             if not os.path.exists(str(self.config.persist_path)):
-                logger.error(f"FaissIndex._load_index: Persist path {self.config.persist_path} does NOT exist. Cannot load.")
                 return False
-            logger.info(f"FaissIndex._load_index: Persist path {self.config.persist_path} confirmed to exist.")
-            logger.info(f"FaissIndex._load_index: Contents of persist_path: {os.listdir(str(self.config.persist_path))}")
-
-            # Key step: Load the FaissVectorStore from the directory
+            Settings.embed_model = self.config.embed_model
             vector_store = FaissVectorStore.from_persist_dir(str(self.config.persist_path))
-            logger.info(f"FaissIndex._load_index: Successfully called FaissVectorStore.from_persist_dir().")
-            logger.info(f"FaissIndex._load_index: Type of loaded vector_store: {type(vector_store)}")
-
-            if vector_store and hasattr(vector_store, '_faiss_index') and vector_store._faiss_index:
-                logger.info(f"FaissIndex._load_index: Loaded vector_store has attribute _faiss_index.")
-                logger.info(f"FaissIndex._load_index: vector_store._faiss_index object: {vector_store._faiss_index}")
-                logger.info(f"FaissIndex._load_index: Loaded vector_store._faiss_index.ntotal: {vector_store._faiss_index.ntotal}")
-            else:
-                logger.warning("FaissIndex._load_index: Loaded vector_store OR its _faiss_index is None/empty/missing after from_persist_dir.")
-                if vector_store:
-                    logger.warning(f"FaissIndex._load_index: Attributes of loaded vector_store: {dir(vector_store)}")
-
-            # Create StorageContext using the loaded vector_store and the same persist_dir
             storage_context = StorageContext.from_defaults(
                 vector_store=vector_store,
-                persist_dir=str(self.config.persist_path) # Pass persist_dir again as per LlamaIndex patterns
+                persist_dir=str(self.config.persist_path),
             )
-            logger.info("FaissIndex._load_index: StorageContext created from defaults with loaded vector_store.")
-
-            # Load the overall VectorStoreIndex
             self._index = load_index_from_storage(
                 storage_context=storage_context,
-                embed_model=self.config.embed_model # Pass embed_model here too
+                embed_model=self.config.embed_model,
             )
-            logger.info(f"FaissIndex._load_index: Successfully loaded index from storage. Index object: {self._index}")
-
-            if self._index and self._index.index_struct: # Check if index structure is loaded
-                 logger.info(f"FaissIndex._load_index: Index ID: {self._index.index_id}, Summary: {self._index.index_struct.summary}")
-            else:
-                logger.warning("FaissIndex._load_index: self._index or self._index.index_struct is None after loading.")
-
-            return True
-        except Exception as e:
-            logger.error(f"FaissIndex._load_index: Loading index error: {e}", exc_info=True)
-            # You might want to log self.config.persist_path and its contents here for debugging
-            if hasattr(self.config, 'persist_path') and self.config.persist_path and os.path.exists(str(self.config.persist_path)):
-                logger.error(f"FaissIndex._load_index: Contents of {self.config.persist_path} at time of error: {os.listdir(str(self.config.persist_path))}")
-            elif hasattr(self.config, 'persist_path') and self.config.persist_path:
-                logger.error(f"FaissIndex._load_index: Persist path {self.config.persist_path} does not exist at time of error.")
-            else:
-                logger.error(f"FaissIndex._load_index: self.config has no persist_path or it's None at time of error.")
-
-            self._index = None # Ensure index is None if loading fails
+            return self._index is not None
+        except Exception as exc:
+            logger.error(f"FAISS index load failed: {exc}", exc_info=True)
+            self._index = None
             return False
 
-    async def upsert(self, data: dict[str: Any]):
-        pass
+    async def upsert(self, data: dict[str, Any]):
+        if self._index is None:
+            raise RuntimeError("FAISS index is not loaded or built")
+        await self._update_index([data], list(data.keys()))
 
     def exist_index(self):
         return os.path.exists(self.config.persist_path)
 
     def _storage_index(self):
-        if self._index and self._index.storage_context and hasattr(self.config, 'persist_path') and self.config.persist_path:
+        if self._index is None or not self.config.persist_path:
+            logger.error("Cannot persist an unavailable FAISS index")
+            return
+        try:
             persist_dir = str(self.config.persist_path)
-            logger.info(f"FaissIndex._storage_index: Attempting to persist LlamaIndex StorageContext to directory: {persist_dir}")
-            try:
-                os.makedirs(persist_dir, exist_ok=True)
-                logger.info(f"FaissIndex._storage_index: Ensured persist directory exists: {persist_dir}")
-            except Exception as e:
-                logger.error(f"FaissIndex._storage_index: Error creating persist directory {persist_dir}: {e}", exc_info=True)
-                return
-            try:
-                # ADD THESE NEW LOGGING LINES:
-                if self._index.storage_context.vector_store:
-                    vector_store_instance = self._index.storage_context.vector_store
-                    logger.info(f"FaissIndex._storage_index: Type of vector_store from storage_context: {type(vector_store_instance)}")
-                    # import pdb; pdb.set_trace()  # Debugger removed
-                    if isinstance(vector_store_instance, FaissVectorStore):
-                        logger.info(f"FaissIndex._storage_index: vector_store IS a FaissVectorStore instance.")
-                        logger.info(f"FaissIndex._storage_index: vector_store._faiss_index object: {vector_store_instance._faiss_index}")
-                        if vector_store_instance._faiss_index:
-                            logger.info(f"FaissIndex._storage_index: vector_store._faiss_index.ntotal (num vectors): {vector_store_instance._faiss_index.ntotal}")
-                        else:
-                            logger.warning("FaissIndex._storage_index: vector_store._faiss_index is None or empty!")
-                    else:
-                        logger.warning(f"FaissIndex._storage_index: vector_store is NOT a FaissVectorStore instance. Type is: {type(vector_store_instance)}")
-                else:
-                    logger.warning("FaissIndex._storage_index: self._index.storage_context.vector_store is None!")
-                # END OF NEW LOGGING LINES
+            os.makedirs(persist_dir, exist_ok=True)
+            self._index.storage_context.persist(persist_dir=persist_dir)
+        except Exception as exc:
+            logger.error(f"FAISS index persistence failed: {exc}", exc_info=True)
+            self._index = None
 
-                self._index.storage_context.persist(persist_dir=persist_dir)
-                logger.info(f"FaissIndex._storage_index: LlamaIndex storage_context.persist() called successfully for directory: {persist_dir}")
-            except Exception as e:
-                logger.error(f"FaissIndex._storage_index: Error during LlamaIndex storage_context.persist() for {persist_dir}: {e}", exc_info=True)
-                return
-            try:
-                persisted_files = os.listdir(persist_dir)
-                logger.info(f"FaissIndex._storage_index: Files found in persist directory '{persist_dir}' after persist call: {persisted_files}")
-                expected_faiss_binary_filename = "default__vector_store.json"  # LlamaIndex's actual output name
-                faiss_binary_path = os.path.join(persist_dir, expected_faiss_binary_filename)
-                if not os.path.exists(faiss_binary_path):
-                    logger.warning(
-                        f"FaissIndex._storage_index: WARNING! Expected Faiss binary data file '",
-                        f"{expected_faiss_binary_filename}' NOT FOUND in '{persist_dir}'. "
-                        f"This will cause loading errors if this file is the intended binary Faiss index."
-                    )
-                else:
-                    logger.info(
-                        f"FaissIndex._storage_index: Found file '{expected_faiss_binary_filename}' "
-                        f"in '{persist_dir}', which is expected to be the binary Faiss index."
-                    )
-            except Exception as e:
-                logger.error(f"FaissIndex._storage_index: Error listing files in persist directory {persist_dir} after persist: {e}", exc_info=True)
-        else:
-            logger.warning("FaissIndex._storage_index: Skipped persistence. Conditions not met: self._index and self._index.storage_context and self.config.persist_path must be valid.")
-            if not self._index:
-                logger.warning("FaissIndex._storage_index: self._index is None.")
-            elif not self._index.storage_context:
-                logger.warning("FaissIndex._storage_index: self._index.storage_context is None.")
-            elif not (hasattr(self.config, 'persist_path') and self.config.persist_path):
-                logger.warning("FaissIndex._storage_index: self.config.persist_path is not set.")
-
-    async def _update_index_from_documents(self, docs: list[Document]):
-        refreshed_docs = self._index.refresh_ref_docs(docs)
-
-        # the number of docs that are refreshed. if True in refreshed_docs, it means the doc is refreshed.
-        logger.info("refresh index size is {}".format(len([True for doc in refreshed_docs if doc])))
+    async def _update_index_from_documents(self, docs):
+        if self._index is None:
+            raise RuntimeError("FAISS index is not loaded or built")
+        refreshed = self._index.refresh_ref_docs(docs)
+        logger.info(f"Refreshed {sum(bool(value) for value in refreshed)} FAISS documents")
 
     def _get_index(self):
+        """Compatibility hook; BaseIndex.build_index no longer calls this method."""
+        dimension = self._configured_dimension(self.config.embed_model)
+        if not dimension:
+            raise RuntimeError(
+                "FAISS dimension is unknown before embeddings are generated; use build_index()"
+            )
         Settings.embed_model = self.config.embed_model
-        #TODO: config the faiss index config
-        vector_store = FaissVectorStore(faiss_index=faiss.IndexHNSWFlat(1024, 32))
+        vector_store = FaissVectorStore(
+            faiss_index=faiss.IndexHNSWFlat(int(dimension), 32)
+        )
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-        return  VectorStoreIndex(
-            nodes = [],
+        return VectorStoreIndex(
+            nodes=[],
             storage_context=storage_context,
-            embed_model= self.config.embed_model,
-        )   
-        # self.config.embed_model
-        # return VectorStoreIndex([])
+            embed_model=self.config.embed_model,
+        )
 
     async def _similarity_score(self, object_q, object_d):
-        # For llama_index based vector database, we do not need it now!
-        pass
-
-
-
-        async def set_idx_score(idx, res):
-            for entity, score in zip(res[0], res[1]):
-                entity_indices.append(await graph.get_node_index(entity["entity_name"]))
-                scores.append(score)
-
-        await asyncio.gather(*[set_idx_score(idx, res) for idx, res in enumerate(results)])
-        reset_prob_matrix[np.arange(len(query_list)).reshape(-1, 1), entity_indices] = scores
-        all_entity_weights = reset_prob_matrix.max(axis=0)  # (1, #all_entities)
-
-        # Normalize the scores
-        all_entity_weights /= all_entity_weights.sum()
-        return all_entity_weights
+        return None
