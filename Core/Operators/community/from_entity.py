@@ -1,19 +1,25 @@
-"""Community from entity operator.
+"""Community-from-entity operator.
 
-Find community reports associated with a set of entities via their cluster memberships.
+Resolve entity cluster memberships to persisted community reports while keeping
+identity/level/occurrence anchored to the authoritative Leiden schema.
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 from collections import Counter
 from typing import Any, Dict, Optional
 
-import asyncio
-
-from Core.Common.Logger import logger
 from Core.Common.Utils import truncate_list_by_token_size
 from Core.Schema.SlotTypes import CommunityRecord, SlotKind, SlotValue
+
+
+def _level_int(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 async def community_from_entity(
@@ -22,81 +28,121 @@ async def community_from_entity(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"entities": SlotValue(ENTITY_SET)}  -- entities must have clusters populated
-    Outputs: {"communities": SlotValue(COMMUNITY_SET)}
+    Inputs:  {"entities": ENTITY_SET} -- entities with cluster memberships
+    Outputs: {"communities": COMMUNITY_SET}
     Params:  {"level": int, "max_token": int, "single_one": bool}
     """
     entities = inputs["entities"].data
     p = params or {}
-    level = p.get("level", getattr(ctx.config, "level", 2))
-    single_one = p.get("single_one", False)
-    max_token = p.get("max_token", getattr(ctx.config, "local_max_token_for_community_report", 4096))
+    level = int(p.get("level", getattr(ctx.config, "level", 2)))
+    single_one = bool(p.get("single_one", False))
+    max_token = int(
+        p.get(
+            "max_token",
+            getattr(ctx.config, "local_max_token_for_community_report", 4096),
+        )
+    )
 
-    if not entities:
-        return {"communities": SlotValue(kind=SlotKind.COMMUNITY_SET, data=[], producer="community.from_entity")}
+    if not entities or ctx.community is None:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_entity",
+            )
+        }
 
-    related_communities = []
-    for ent in entities:
-        if not ent.clusters:
+    related_memberships = []
+    for entity in entities:
+        cluster_data = entity.clusters
+        if not cluster_data:
             continue
-        cluster_data = ent.clusters
         if isinstance(cluster_data, str):
             try:
                 cluster_data = json.loads(cluster_data)
             except Exception:
                 continue
         if isinstance(cluster_data, list):
-            related_communities.extend(cluster_data)
+            related_memberships.extend(
+                membership
+                for membership in cluster_data
+                if isinstance(membership, dict)
+            )
 
-    # Filter by level
-    dup_keys = [
-        str(dp["cluster"])
-        for dp in related_communities
-        if dp.get("level", 0) <= level
+    cluster_ids = [
+        str(membership["cluster"])
+        for membership in related_memberships
+        if membership.get("cluster") is not None
+        and _level_int(membership.get("level", 0)) <= level
     ]
+    if not cluster_ids:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_entity",
+            )
+        }
 
-    if not dup_keys:
-        return {"communities": SlotValue(kind=SlotKind.COMMUNITY_SET, data=[], producer="community.from_entity")}
-
-    key_counts = dict(Counter(dup_keys))
-    community_reports = ctx.community.community_reports
-
-    raw_data = await asyncio.gather(
-        *[community_reports.get_by_id(k) for k in key_counts.keys()]
+    cluster_counts = Counter(cluster_ids)
+    ordered_ids = list(cluster_counts.keys())
+    raw_reports = await asyncio.gather(
+        *[ctx.community.community_reports.get_by_id(key) for key in ordered_ids]
     )
-    community_data = {
-        k: v for k, v in zip(key_counts.keys(), raw_data)
-        if v is not None
+    reports = {
+        key: report
+        for key, report in zip(ordered_ids, raw_reports)
+        if report is not None
     }
+    schema_map = ctx.community.community_schema or {}
 
-    sorted_keys = sorted(
-        key_counts.keys(),
-        key=lambda k: (
-            key_counts[k],
-            community_data[k]["report_json"].get("rating", -1) if k in community_data else -1,
+    ranked_ids = sorted(
+        reports,
+        key=lambda key: (
+            cluster_counts[key],
+            float(reports[key].get("report_json", {}).get("rating", 0.0) or 0.0),
+            float(getattr(schema_map.get(key), "occurrence", 0.0) or 0.0),
         ),
         reverse=True,
     )
 
-    sorted_data = [community_data[k] for k in sorted_keys if k in community_data]
-    sorted_data = truncate_list_by_token_size(
-        sorted_data,
-        key=lambda x: x["report_string"],
+    ranked_pairs = [(key, reports[key]) for key in ranked_ids]
+    ranked_pairs = truncate_list_by_token_size(
+        ranked_pairs,
+        key=lambda pair: pair[1].get("report_string", ""),
         max_token_size=max_token,
     )
     if single_one:
-        sorted_data = sorted_data[:1]
+        ranked_pairs = ranked_pairs[:1]
 
     records = []
-    for cd in sorted_data:
-        rj = cd.get("report_json", {})
-        records.append(CommunityRecord(
-            community_id=str(rj.get("id", "")),
-            level=rj.get("level", 0),
-            title=rj.get("title", ""),
-            report=cd.get("report_string", ""),
-            rating=rj.get("rating", 0.0),
-            extra={"report_json": rj},
-        ))
+    for community_id, report_data in ranked_pairs:
+        report_json = report_data.get("report_json", {}) or {}
+        schema = schema_map.get(community_id)
+        records.append(
+            CommunityRecord(
+                community_id=str(community_id),
+                level=_level_int(getattr(schema, "level", 0)),
+                title=str(
+                    report_json.get("title")
+                    or getattr(schema, "title", "")
+                    or community_id
+                ),
+                report=str(report_data.get("report_string", "") or ""),
+                occurrence=float(getattr(schema, "occurrence", 0.0) or 0.0),
+                rating=float(report_json.get("rating", 0.0) or 0.0),
+                nodes=set(getattr(schema, "nodes", set()) or set()),
+                extra={
+                    "report_json": report_json,
+                    "entity_membership_count": int(cluster_counts[community_id]),
+                },
+            )
+        )
 
-    return {"communities": SlotValue(kind=SlotKind.COMMUNITY_SET, data=records, producer="community.from_entity")}
+    return {
+        "communities": SlotValue(
+            kind=SlotKind.COMMUNITY_SET,
+            data=records,
+            producer="community.from_entity",
+        )
+    }
