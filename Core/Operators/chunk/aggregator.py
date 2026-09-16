@@ -1,7 +1,7 @@
 """Chunk score aggregator operator.
 
-Propagate relationship scores through rel-to-chunk sparse matrix
-to score and retrieve text chunks.
+Propagate entity/PPR scores through entity→relationship→chunk sparse matrices
+while preserving the source chunk identifiers used by the corpus store.
 """
 
 from __future__ import annotations
@@ -11,8 +11,58 @@ from typing import Any, Dict, Optional
 import numpy as np
 
 from Core.Common.Logger import logger
-from Core.Common.Utils import min_max_normalize
 from Core.Schema.SlotTypes import ChunkRecord, SlotKind, SlotValue
+
+
+def _normalize_nonnegative_scores(values) -> np.ndarray:
+    """Normalize non-negative evidence scores without producing NaNs."""
+    scores = np.asarray(values, dtype=float).reshape(-1)
+    if scores.size == 0:
+        return scores
+
+    scores = np.where(np.isfinite(scores), scores, 0.0)
+    max_score = float(np.max(scores))
+    min_score = float(np.min(scores))
+
+    if max_score <= 0.0:
+        return np.zeros_like(scores)
+    if max_score == min_score:
+        # All chunks have the same positive evidence. Keep them as equal ties.
+        return np.ones_like(scores)
+    return (scores - min_score) / (max_score - min_score)
+
+
+def _chunk_id_from_store(doc_chunks: Any, index: int, doc: Any) -> str:
+    """Resolve a matrix column back to the corpus chunk ID when possible."""
+    if hasattr(doc, "chunk_id") and getattr(doc, "chunk_id"):
+        return str(doc.chunk_id)
+    if isinstance(doc, dict):
+        for key in ("chunk_id", "id"):
+            if doc.get(key):
+                return str(doc[key])
+
+    # The MCP _ChunkLookup keeps an insertion-ordered chunk_id -> text mapping.
+    mapping = getattr(doc_chunks, "_chunks", None)
+    if isinstance(mapping, dict):
+        keys = list(mapping.keys())
+        if 0 <= index < len(keys):
+            return str(keys[index])
+
+    # Last-resort compatibility for stores that expose only positional access.
+    # Keep the matrix index explicit rather than pretending it is a source ID.
+    return f"matrix_index:{index}"
+
+
+def _chunk_text(doc: Any) -> str:
+    if isinstance(doc, str):
+        return doc
+    if hasattr(doc, "content"):
+        return str(doc.content)
+    if hasattr(doc, "text"):
+        return str(doc.text)
+    if isinstance(doc, dict):
+        return str(doc.get("content", doc.get("text", "")))
+    return str(doc)
 
 
 async def chunk_aggregator(
@@ -21,45 +71,74 @@ async def chunk_aggregator(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"score_vector": SlotValue(SCORE_VECTOR)}  -- PPR node scores
-    Outputs: {"chunks": SlotValue(CHUNK_SET)}
+    Inputs:  {"score_vector": SCORE_VECTOR}
+    Outputs: {"chunks": CHUNK_SET}
     Params:  {"top_k": int}
-
-    Uses entity_to_rel and rel_to_chunk sparse matrices to propagate
-    node PPR scores all the way to chunks.
     """
-    score_vector = inputs["score_vector"].data  # np.ndarray
+    score_vector = inputs["score_vector"].data
     p = params or {}
     top_k = p.get("top_k", ctx.config.top_k)
 
     if score_vector is None or len(score_vector) == 0:
-        return {"chunks": SlotValue(kind=SlotKind.CHUNK_SET, data=[], producer="chunk.aggregator")}
+        return {
+            "chunks": SlotValue(
+                kind=SlotKind.CHUNK_SET,
+                data=[],
+                producer="chunk.aggregator",
+            )
+        }
 
     try:
         e2r = ctx.sparse_matrices["entity_to_rel"]
         r2c = ctx.sparse_matrices["rel_to_chunk"]
 
-        edge_prob = e2r.T.dot(score_vector)
-        chunk_prob = r2c.T.dot(edge_prob)
-        chunk_prob = min_max_normalize(chunk_prob)
+        node_scores = np.asarray(score_vector, dtype=float).reshape(-1)
+        edge_scores = np.asarray(e2r.T.dot(node_scores)).reshape(-1)
+        chunk_scores_raw = np.asarray(r2c.T.dot(edge_scores)).reshape(-1)
+        chunk_scores = _normalize_nonnegative_scores(chunk_scores_raw)
 
-        sorted_ids = np.argsort(chunk_prob, kind="mergesort")[::-1]
-        sorted_scores = chunk_prob[sorted_ids]
+        if chunk_scores.size == 0 or float(np.max(chunk_scores)) <= 0.0:
+            return {
+                "chunks": SlotValue(
+                    kind=SlotKind.CHUNK_SET,
+                    data=[],
+                    producer="chunk.aggregator",
+                )
+            }
 
-        docs = await ctx.doc_chunks.get_data_by_indices(sorted_ids[:top_k])
+        ranked_indices = np.argsort(chunk_scores, kind="mergesort")[::-1][:top_k]
+        docs = await ctx.doc_chunks.get_data_by_indices(ranked_indices.tolist())
 
         records = []
-        for i, doc in enumerate(docs):
+        for index, doc in zip(ranked_indices, docs):
             if doc is None:
                 continue
-            records.append(ChunkRecord(
-                chunk_id=str(sorted_ids[i]),
-                text=doc,
-                score=float(sorted_scores[i]),
-            ))
+            index_int = int(index)
+            records.append(
+                ChunkRecord(
+                    chunk_id=_chunk_id_from_store(ctx.doc_chunks, index_int, doc),
+                    text=_chunk_text(doc),
+                    score=float(chunk_scores[index_int]),
+                    extra={
+                        "matrix_index": index_int,
+                        "raw_propagated_score": float(chunk_scores_raw[index_int]),
+                    },
+                )
+            )
 
-        return {"chunks": SlotValue(kind=SlotKind.CHUNK_SET, data=records, producer="chunk.aggregator")}
-
-    except Exception as e:
-        logger.exception(f"chunk_aggregator failed: {e}")
-        return {"chunks": SlotValue(kind=SlotKind.CHUNK_SET, data=[], producer="chunk.aggregator")}
+        return {
+            "chunks": SlotValue(
+                kind=SlotKind.CHUNK_SET,
+                data=records,
+                producer="chunk.aggregator",
+            )
+        }
+    except Exception as exc:
+        logger.exception(f"chunk_aggregator failed: {exc}")
+        return {
+            "chunks": SlotValue(
+                kind=SlotKind.CHUNK_SET,
+                data=[],
+                producer="chunk.aggregator",
+            )
+        }
