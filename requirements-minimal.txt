@@ -25,10 +25,11 @@ scikit-learn>=1.6.0
 pypdf>=5.4.0  # corpus_prepare PDF support
 
 # LLM and embeddings
-openai>=1.70.0  # For OpenAI embeddings and API
-tiktoken>=0.9.0  # For token counting
-litellm>=1.0.0  # For multi-provider LLM support
-instructor>=1.0.0  # For structured outputs
+openai>=1.70.0  # OpenAI API/types used by provider + token accounting
+anthropic>=0.49.0  # TokenCounter supports Claude models directly
+tiktoken>=0.9.0  # Token counting
+litellm>=1.0.0  # Multi-provider LLM support
+instructor>=1.0.0  # Structured outputs
 
 # Vector databases and indexing
 faiss-cpu>=1.7.4  # CPU version to avoid CUDA dependencies
