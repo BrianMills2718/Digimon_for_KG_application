@@ -1,73 +1,116 @@
 # Core/AgentSchema/context.py
 
 import uuid
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Any, Optional, Dict, List
+
+from Core.Chunk.ChunkFactory import ChunkFactory
+from Core.Common.Logger import logger
 from Core.Graph.BaseGraph import BaseGraph
 from Core.Index.BaseIndex import BaseIndex
-from Option.Config2 import Config as FullConfig # Use FullConfig alias
 from Core.Provider.BaseLLM import BaseLLM
+from Option.Config2 import Config as FullConfig
 from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
-from Core.Chunk.ChunkFactory import ChunkFactory # If passed as chunk_storage_manager
-from Core.Common.Logger import logger
+
+
+_GRAPH_SUFFIXES = (
+    "_TreeGraphBalanced",
+    "_PassageGraph",
+    "_ERGraph",
+    "_RKGraph",
+    "_TreeGraph",
+)
+
+
+def _dataset_from_graph_id(graph_id: str) -> Optional[str]:
+    for suffix in _GRAPH_SUFFIXES:
+        if graph_id.endswith(suffix):
+            return graph_id[: -len(suffix)]
+    return None
+
 
 class GraphRAGContext(BaseModel):
-    """
-    Provides the necessary context and access to GraphRAG system components
-    for executing individual tools within an ExecutionPlan.
-    This object will be instantiated and passed by the Agent Orchestrator.
-    """
+    """Runtime resources used by DIGIMON tools and operator plans."""
 
-    request_id: str = Field(default_factory=lambda: str(uuid.uuid4())[:8], description="Unique identifier for this context instance")
-    target_dataset_name: str = Field(description="The name of the target dataset for the current plan.")
+    request_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4())[:8],
+        description="Unique identifier for this context instance",
+    )
+    target_dataset_name: str = Field(
+        description="The name of the target dataset for the current plan."
+    )
     main_config: FullConfig = Field(description="The main configuration object.")
-    llm_provider: Optional[BaseLLM] = Field(default=None, description="LLM provider instance.")
-    embedding_provider: Optional[LlamaIndexBaseEmbedding] = Field(default=None, description="Embedding provider instance.")
-    chunk_storage_manager: Optional[ChunkFactory] = Field(default=None, description="ChunkFactory instance for chunk access.") # Changed type
+    llm_provider: Optional[BaseLLM] = Field(default=None)
+    embedding_provider: Optional[LlamaIndexBaseEmbedding] = Field(default=None)
+    chunk_storage_manager: Optional[ChunkFactory] = Field(default=None)
 
-    graphs: Dict[str, BaseGraph] = Field(default_factory=dict, description="Stores graph_id: graph_instance pairs.")
-    vdbs: Dict[str, BaseIndex] = Field(default_factory=dict, description="Stores vdb_id: vdb_instance pairs.")
-
+    graphs: Dict[str, BaseGraph] = Field(default_factory=dict)
+    vdbs: Dict[str, BaseIndex] = Field(default_factory=dict)
     resolved_configs: Dict[str, Any] = Field(default_factory=dict)
+    active_dataset_name: Optional[str] = Field(
+        default=None,
+        exclude=True,
+        description="Dataset most recently selected through a concrete graph lookup.",
+    )
 
     class Config:
         arbitrary_types_allowed = True
-        validate_assignment = True 
+        validate_assignment = True
 
     def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
-        logger.debug(f"GraphRAGContext: Before adding graph '{graph_id}'. Current graphs: {list(self.graphs.keys())}")
         self.graphs[graph_id] = graph_instance
-        logger.info(f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}). Updated graphs: {list(self.graphs.keys())}")
+        logger.info(
+            f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}). "
+            f"Available graphs: {list(self.graphs.keys())}"
+        )
 
     def get_graph_instance(self, graph_id: str) -> Optional[BaseGraph]:
-        logger.debug(f"GraphRAGContext: Attempting to get graph '{graph_id}'. Current available graphs: {list(self.graphs.keys())}")
         instance = self.graphs.get(graph_id)
-        if instance:
-            logger.debug(f"GraphRAGContext: Successfully retrieved graph '{graph_id}'.")
+        if instance is not None:
+            dataset_name = _dataset_from_graph_id(graph_id)
+            if dataset_name:
+                self.active_dataset_name = dataset_name
+            logger.debug(f"GraphRAGContext: Retrieved graph '{graph_id}'.")
         else:
-            logger.warning(f"GraphRAGContext: Graph ID '{graph_id}' not found. Available: {list(self.graphs.keys())}")
+            logger.warning(
+                f"GraphRAGContext: Graph ID '{graph_id}' not found. "
+                f"Available: {list(self.graphs.keys())}"
+            )
         return instance
 
     def add_vdb_instance(self, vdb_id: str, vdb_instance: BaseIndex):
-        logger.debug(f"GraphRAGContext: Before adding VDB '{vdb_id}'. Current VDBs: {list(self.vdbs.keys())}")
         self.vdbs[vdb_id] = vdb_instance
-        logger.info(f"GraphRAGContext: Added VDB '{vdb_id}' (type: {type(vdb_instance)}). Updated VDBs: {list(self.vdbs.keys())}")
+        logger.info(
+            f"GraphRAGContext: Added VDB '{vdb_id}' (type: {type(vdb_instance)}). "
+            f"Available VDBs: {list(self.vdbs.keys())}"
+        )
 
     def get_vdb_instance(self, vdb_id: str) -> Optional[BaseIndex]:
-        logger.debug(f"GraphRAGContext: Attempting to get VDB '{vdb_id}'. Current available VDBs: {list(self.vdbs.keys())}")
         instance = self.vdbs.get(vdb_id)
-        if instance:
-            logger.debug(f"GraphRAGContext: Successfully retrieved VDB '{vdb_id}'.")
-        else:
-            logger.warning(f"GraphRAGContext: VDB ID '{vdb_id}' not found. Available: {list(self.vdbs.keys())}")
+        if instance is None:
+            logger.warning(
+                f"GraphRAGContext: VDB ID '{vdb_id}' not found. "
+                f"Available: {list(self.vdbs.keys())}"
+            )
         return instance
 
     def list_graphs(self) -> List[str]:
-        keys = list(self.graphs.keys())
-        logger.debug(f"GraphRAGContext: Listing all graph keys. Found: {keys}")
-        return keys
+        return list(self.graphs.keys())
 
     def list_vdbs(self) -> List[str]:
+        """List all VDB IDs, prioritizing the currently active dataset.
+
+        The MCP server may hold resources for multiple datasets in one process.
+        Existing callers often choose the first entity/relationship VDB from this
+        list. Prioritizing the dataset selected by the most recent graph lookup
+        preserves the complete resource list while preventing cross-dataset
+        index selection in those callers.
+        """
         keys = list(self.vdbs.keys())
-        logger.debug(f"GraphRAGContext: Listing all VDB keys. Found: {keys}")
-        return keys
+        dataset = self.active_dataset_name
+        if not dataset:
+            return keys
+
+        prefix = f"{dataset}_"
+        return sorted(keys, key=lambda key: (not key.startswith(prefix), keys.index(key)))
