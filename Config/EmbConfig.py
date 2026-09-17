@@ -12,6 +12,17 @@ class EmbeddingType(Enum):
     OLLAMA = "ollama"
 
 
+def _looks_like_api_key_placeholder(text: str) -> bool:
+    normalized = text.strip().upper()
+    if not normalized:
+        return True
+    if normalized in {"CHANGEME", "REPLACE_ME", "PLACEHOLDER"}:
+        return True
+    if normalized.startswith("YOUR_API_KEY"):
+        return True
+    return normalized.startswith("YOUR_") and "API_KEY" in normalized
+
+
 class EmbeddingConfig(YamlModel):
     """Embedding provider configuration."""
 
@@ -38,11 +49,4 @@ class EmbeddingConfig(YamlModel):
         if value is None:
             return None
         text = str(value).strip()
-        normalized = text.upper()
-        if not text or normalized.startswith("YOUR_API_KEY") or normalized in {
-            "CHANGEME",
-            "REPLACE_ME",
-            "PLACEHOLDER",
-        }:
-            return None
-        return text
+        return None if _looks_like_api_key_placeholder(text) else text
