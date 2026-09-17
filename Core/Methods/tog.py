@@ -1,8 +1,9 @@
 """Think-on-Graph reference plan.
 
-The reference method is unrolled to the requested depth so each hop consumes the
-entities selected by the previous hop. This keeps the plan deterministic and
-avoids relying on the generic loop executor to mutate wiring between iterations.
+The plan is explicitly unrolled to the requested depth so each hop consumes the
+entities selected by the previous hop. Selected relationship evidence is merged
+across hops before source-chunk retrieval, keeping multi-hop answers grounded in
+the full explored chain rather than only the final edge.
 """
 
 from Core.AgentSchema.plan import (
@@ -12,9 +13,11 @@ from Core.AgentSchema.plan import (
     ToolCall,
     ToolInputSource,
 )
+from Core.Operators.relationship.merge import ensure_relationship_merge_registered
 
 
 def tog_plan(query: str, **kwargs) -> ExecutionPlan:
+    ensure_relationship_merge_registered()
     depth = max(1, int(kwargs.get("depth", 3)))
     width = max(1, int(kwargs.get("width", 3)))
 
@@ -45,7 +48,7 @@ def tog_plan(query: str, **kwargs) -> ExecutionPlan:
     ]
 
     previous_entity_step = "seed_entities"
-    last_relationship_step = None
+    accumulated_relationship_step = None
 
     for hop in range(1, depth + 1):
         relationship_step = f"hop_{hop}_relationships"
@@ -74,6 +77,36 @@ def tog_plan(query: str, **kwargs) -> ExecutionPlan:
                 ),
             )
         )
+
+        if accumulated_relationship_step is None:
+            accumulated_relationship_step = relationship_step
+        else:
+            history_step = f"hop_{hop}_relationship_history"
+            steps.append(
+                ExecutionStep(
+                    step_id=history_step,
+                    description=f"Hop {hop}: accumulate selected relationship evidence",
+                    action=DynamicToolChainConfig(
+                        tools=[
+                            ToolCall(
+                                tool_id="relationship.merge",
+                                inputs={
+                                    "left": ToolInputSource(
+                                        from_step_id=accumulated_relationship_step,
+                                        named_output_key="relationships",
+                                    ),
+                                    "right": ToolInputSource(
+                                        from_step_id=relationship_step,
+                                        named_output_key="relationships",
+                                    ),
+                                },
+                                named_outputs={"relationships": "relationship_set"},
+                            )
+                        ]
+                    ),
+                )
+            )
+            accumulated_relationship_step = history_step
 
         steps.append(
             ExecutionStep(
@@ -120,20 +153,19 @@ def tog_plan(query: str, **kwargs) -> ExecutionPlan:
         )
 
         previous_entity_step = entity_step
-        last_relationship_step = relationship_step
 
     steps.extend(
         [
             ExecutionStep(
                 step_id="evidence_chunks",
-                description="Retrieve source chunks for the final explored relations",
+                description="Retrieve source chunks for all selected reasoning hops",
                 action=DynamicToolChainConfig(
                     tools=[
                         ToolCall(
                             tool_id="chunk.from_relation",
                             inputs={
                                 "relationships": ToolInputSource(
-                                    from_step_id=last_relationship_step,
+                                    from_step_id=accumulated_relationship_step,
                                     named_output_key="relationships",
                                 )
                             },
@@ -144,7 +176,7 @@ def tog_plan(query: str, **kwargs) -> ExecutionPlan:
             ),
             ExecutionStep(
                 step_id="answer",
-                description="Generate an answer from retrieved evidence",
+                description="Generate an answer from the accumulated source evidence",
                 action=DynamicToolChainConfig(
                     tools=[
                         ToolCall(
@@ -166,7 +198,8 @@ def tog_plan(query: str, **kwargs) -> ExecutionPlan:
 
     return ExecutionPlan(
         plan_description=(
-            f"ToG: linked seeds -> {depth} explicit relation/entity exploration hops -> evidence -> answer"
+            f"ToG: linked seeds -> {depth} explicit relation/entity exploration hops -> "
+            "accumulated source evidence -> answer"
         ),
         target_dataset_name=kwargs.get("dataset", ""),
         plan_inputs={"query": query},
