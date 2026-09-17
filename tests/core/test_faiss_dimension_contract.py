@@ -66,6 +66,32 @@ async def test_faiss_uses_returned_vector_dimension_when_provider_has_no_metadat
     assert len(index._index.nodes) == 1
 
 
+@pytest.mark.asyncio
+async def test_faiss_upsert_appends_without_replacing_existing_index(monkeypatch, tmp_path):
+    config = SimpleNamespace(
+        embed_model=FakeEmbedding(),
+        persist_path=tmp_path / "faiss",
+        retrieve_top_k=5,
+    )
+    index = FaissIndex(config)
+    existing = SimpleNamespace(node_id="existing")
+    index._index = FakeVectorStoreIndex(
+        nodes=[existing],
+        storage_context=SimpleNamespace(),
+        embed_model=config.embed_model,
+    )
+
+    monkeypatch.setattr(index, "_storage_index", lambda: None)
+
+    await index.upsert(
+        {"id": "beta", "name": "beta", "content": "beta description"}
+    )
+
+    assert len(index._index.nodes) == 2
+    assert index._index.nodes[0] is existing
+    assert index._index.nodes[1].metadata["name"] == "beta"
+
+
 def test_l2_backend_distances_are_exposed_as_higher_is_better_similarity():
     exact = FaissIndex.normalize_backend_score(0.0, faiss.METRIC_L2)
     near = FaissIndex.normalize_backend_score(0.25, faiss.METRIC_L2)
