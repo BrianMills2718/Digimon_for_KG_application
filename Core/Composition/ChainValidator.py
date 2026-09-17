@@ -44,7 +44,7 @@ class ChainValidator:
         plan,
         plan_input_kinds: Optional[Set[SlotKind]] = None,
     ) -> ValidationResult:
-        """Check that required inputs/outputs are available and type-compatible."""
+        """Check that required inputs/outputs are explicitly wired and compatible."""
         from Core.AgentSchema.plan import DynamicToolChainConfig
 
         errors: List[ValidationError] = []
@@ -77,124 +77,124 @@ class ChainValidator:
                     )
                     continue
 
-                for slot_spec in operator.input_slots:
-                    if not slot_spec.required:
-                        continue
-
-                    satisfied = False
-                    explicit_source = (
-                        tool_call.inputs.get(slot_spec.name)
-                        if tool_call.inputs
-                        else None
+                provided_inputs = tool_call.inputs or {}
+                expected_input_names = {slot.name for slot in operator.input_slots}
+                unknown_input_names = set(provided_inputs) - expected_input_names
+                for unknown_name in sorted(unknown_input_names):
+                    errors.append(
+                        ValidationError(
+                            step_id=step.step_id,
+                            tool_id=tool_call.tool_id,
+                            slot_name=unknown_name,
+                            expected_kind=SlotKind.QUERY_TEXT,
+                            message=(
+                                f"Unknown input '{unknown_name}' for operator "
+                                f"'{tool_call.tool_id}'. Expected inputs: "
+                                f"{sorted(expected_input_names)}"
+                            ),
+                        )
                     )
 
-                    if explicit_source is not None:
-                        if isinstance(explicit_source, str) and explicit_source.startswith(
-                            "plan_inputs."
-                        ):
-                            actual_kind = available.get(explicit_source)
-                            if actual_kind is None:
-                                errors.append(
-                                    ValidationError(
-                                        step_id=step.step_id,
-                                        tool_id=tool_call.tool_id,
-                                        slot_name=slot_spec.name,
-                                        expected_kind=slot_spec.kind,
-                                        message=(
-                                            "Unknown or untyped plan input reference: "
-                                            f"{explicit_source}; expected {slot_spec.kind}"
-                                        ),
-                                    )
-                                )
-                            elif actual_kind != slot_spec.kind:
-                                errors.append(
-                                    ValidationError(
-                                        step_id=step.step_id,
-                                        tool_id=tool_call.tool_id,
-                                        slot_name=slot_spec.name,
-                                        expected_kind=slot_spec.kind,
-                                        message=(
-                                            f"Type mismatch: {explicit_source} is "
-                                            f"{actual_kind}, expected {slot_spec.kind}"
-                                        ),
-                                    )
-                                )
-                            satisfied = True
+                for slot_spec in operator.input_slots:
+                    explicit_source = provided_inputs.get(slot_spec.name)
 
-                        elif hasattr(explicit_source, "from_step_id"):
-                            ref_key = (
-                                f"{explicit_source.from_step_id}."
-                                f"{explicit_source.named_output_key}"
+                    if explicit_source is None:
+                        if slot_spec.required:
+                            available_refs = sorted(
+                                ref
+                                for ref, kind in available.items()
+                                if kind == slot_spec.kind
                             )
-                            actual_kind = available.get(ref_key)
-                            if actual_kind is None:
-                                errors.append(
-                                    ValidationError(
-                                        step_id=step.step_id,
-                                        tool_id=tool_call.tool_id,
-                                        slot_name=slot_spec.name,
-                                        expected_kind=slot_spec.kind,
-                                        message=(
-                                            f"Unknown upstream output reference: {ref_key}; "
-                                            f"expected {slot_spec.kind}"
-                                        ),
-                                    )
-                                )
-                            elif actual_kind != slot_spec.kind:
-                                errors.append(
-                                    ValidationError(
-                                        step_id=step.step_id,
-                                        tool_id=tool_call.tool_id,
-                                        slot_name=slot_spec.name,
-                                        expected_kind=slot_spec.kind,
-                                        message=(
-                                            f"Type mismatch: {ref_key} is {actual_kind}, "
-                                            f"expected {slot_spec.kind}"
-                                        ),
-                                    )
-                                )
-                            satisfied = True
-
-                        else:
-                            warnings.append(
-                                f"Step {step.step_id}/{tool_call.tool_id}: cannot "
-                                f"statically type literal input '{slot_spec.name}'"
+                            detail = (
+                                f" Compatible values exist ({available_refs}) but must be "
+                                "wired explicitly by input name."
+                                if available_refs
+                                else ""
                             )
-                            satisfied = True
-
-                    elif tool_call.inputs:
-                        # Legacy convenience: a differently named input can
-                        # satisfy a slot only when its source kind is known and
-                        # exactly compatible.
-                        for source in tool_call.inputs.values():
-                            if isinstance(source, str) and source.startswith(
-                                "plan_inputs."
-                            ):
-                                if available.get(source) == slot_spec.kind:
-                                    satisfied = True
-                                    break
-                            elif hasattr(source, "from_step_id"):
-                                ref_key = (
-                                    f"{source.from_step_id}."
-                                    f"{source.named_output_key}"
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=slot_spec.name,
+                                    expected_kind=slot_spec.kind,
+                                    message=(
+                                        f"Required input '{slot_spec.name}' "
+                                        f"({slot_spec.kind}) is not explicitly wired.{detail}"
+                                    ),
                                 )
-                                if available.get(ref_key) == slot_spec.kind:
-                                    satisfied = True
-                                    break
+                            )
+                        continue
 
-                    if not satisfied:
-                        kind_available = any(
-                            kind == slot_spec.kind for kind in available.values()
+                    if isinstance(explicit_source, str) and explicit_source.startswith(
+                        "plan_inputs."
+                    ):
+                        actual_kind = available.get(explicit_source)
+                        if actual_kind is None:
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=slot_spec.name,
+                                    expected_kind=slot_spec.kind,
+                                    message=(
+                                        "Unknown or untyped plan input reference: "
+                                        f"{explicit_source}; expected {slot_spec.kind}"
+                                    ),
+                                )
+                            )
+                        elif actual_kind != slot_spec.kind:
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=slot_spec.name,
+                                    expected_kind=slot_spec.kind,
+                                    message=(
+                                        f"Type mismatch: {explicit_source} is "
+                                        f"{actual_kind}, expected {slot_spec.kind}"
+                                    ),
+                                )
+                            )
+                        continue
+
+                    if hasattr(explicit_source, "from_step_id"):
+                        ref_key = (
+                            f"{explicit_source.from_step_id}."
+                            f"{explicit_source.named_output_key}"
                         )
-                        if kind_available:
-                            satisfied = True
-                            warnings.append(
-                                f"Step {step.step_id}/{tool_call.tool_id}: input "
-                                f"'{slot_spec.name}' ({slot_spec.kind}) is available "
-                                "but not explicitly wired"
+                        actual_kind = available.get(ref_key)
+                        if actual_kind is None:
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=slot_spec.name,
+                                    expected_kind=slot_spec.kind,
+                                    message=(
+                                        f"Unknown upstream output reference: {ref_key}; "
+                                        f"expected {slot_spec.kind}"
+                                    ),
+                                )
                             )
+                        elif actual_kind != slot_spec.kind:
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=slot_spec.name,
+                                    expected_kind=slot_spec.kind,
+                                    message=(
+                                        f"Type mismatch: {ref_key} is {actual_kind}, "
+                                        f"expected {slot_spec.kind}"
+                                    ),
+                                )
+                            )
+                        continue
 
-                    if not satisfied:
+                    # PipelineExecutor wraps literal values as QUERY_TEXT. Match
+                    # that exact runtime contract instead of pretending arbitrary
+                    # Python literals satisfy typed entity/chunk/subgraph slots.
+                    if slot_spec.kind != SlotKind.QUERY_TEXT:
                         errors.append(
                             ValidationError(
                                 step_id=step.step_id,
@@ -202,8 +202,8 @@ class ChainValidator:
                                 slot_name=slot_spec.name,
                                 expected_kind=slot_spec.kind,
                                 message=(
-                                    f"Required input '{slot_spec.name}' "
-                                    f"({slot_spec.kind}) not satisfied by any prior step"
+                                    f"Literal input for '{slot_spec.name}' is resolved as "
+                                    f"{SlotKind.QUERY_TEXT} at runtime, not {slot_spec.kind}."
                                 ),
                             )
                         )
@@ -234,9 +234,7 @@ class ChainValidator:
                                 )
                             )
                             continue
-                        available[
-                            f"{step.step_id}.{output_name}"
-                        ] = output_spec.kind
+                        available[f"{step.step_id}.{output_name}"] = output_spec.kind
 
         return ValidationResult(
             valid=not errors,
