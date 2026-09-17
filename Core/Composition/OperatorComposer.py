@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, is_dataclass
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from Core.Common.Logger import logger
@@ -45,6 +46,56 @@ _METHOD_GUIDANCE = {
     "kgp": "TF-IDF + iterative neighbor reasoning. Best when entity descriptions are rich text.",
     "med": "Subgraph extraction with Steiner tree. Best for domain-specific connected subgraph queries.",
 }
+
+
+def _to_transport_value(value: Any) -> Any:
+    """Recursively convert operator payloads to JSON-friendly primitives.
+
+    Context-only method results must remain machine-readable for the harness.
+    Dataclass records are therefore serialized structurally rather than relying
+    on ``json.dumps(default=str)`` at the MCP boundary.
+    """
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, Enum):
+        return _to_transport_value(value.value)
+    if hasattr(value, "model_dump"):
+        return _to_transport_value(value.model_dump())
+    if is_dataclass(value) and not isinstance(value, type):
+        return {
+            field.name: _to_transport_value(getattr(value, field.name))
+            for field in fields(value)
+        }
+    if isinstance(value, dict):
+        return {
+            str(key): _to_transport_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, (list, tuple)):
+        return [_to_transport_value(item) for item in value]
+    if isinstance(value, set):
+        return [
+            _to_transport_value(item)
+            for item in sorted(value, key=lambda item: str(item))
+        ]
+
+    # NumPy arrays/scalars and similar numeric containers expose tolist/item.
+    tolist = getattr(value, "tolist", None)
+    if callable(tolist):
+        try:
+            return _to_transport_value(tolist())
+        except Exception:
+            pass
+    item = getattr(value, "item", None)
+    if callable(item):
+        try:
+            return _to_transport_value(item())
+        except Exception:
+            pass
+
+    # Large runtime-only objects (e.g. NetworkX handles) should never make the
+    # transport fail. Their useful identifiers belong in record metadata.
+    return str(value)
 
 
 class OperatorComposer:
@@ -91,7 +142,11 @@ class OperatorComposer:
                     has_loop = True
                     for body_id in step.action.body_step_ids:
                         body_step = next(
-                            (candidate for candidate in plan.steps if candidate.step_id == body_id),
+                            (
+                                candidate
+                                for candidate in plan.steps
+                                if candidate.step_id == body_id
+                            ),
                             None,
                         )
                         if body_step and isinstance(
@@ -174,13 +229,12 @@ class OperatorComposer:
 
     @staticmethod
     def _serialize_slot(slot_val):
-        if hasattr(slot_val, "data"):
-            return slot_val.data
-        return slot_val
+        raw_value = slot_val.data if hasattr(slot_val, "data") else slot_val
+        return _to_transport_value(raw_value)
 
     @staticmethod
     def _slot_metadata(slot_val) -> Dict[str, Any]:
-        """Return transport-safe slot metadata without changing data shape."""
+        """Return transport-safe slot metadata without changing output shape."""
         if not hasattr(slot_val, "data"):
             return {}
         metadata = dict(getattr(slot_val, "metadata", {}) or {})
@@ -190,7 +244,8 @@ class OperatorComposer:
             metadata.setdefault("producer", producer)
         if kind is not None:
             metadata.setdefault("kind", getattr(kind, "value", str(kind)))
-        return metadata
+        serialized = _to_transport_value(metadata)
+        return serialized if isinstance(serialized, dict) else {}
 
     async def execute(
         self,
@@ -201,9 +256,9 @@ class OperatorComposer:
     ) -> Dict[str, Any]:
         """Validate and execute an operator plan.
 
-        Existing ``all_step_outputs``/``final_output`` data shapes are preserved.
-        Parallel ``all_step_metadata``/``final_metadata`` maps carry provenance,
-        evidence IDs, status, producer, and slot-kind information.
+        ``all_step_outputs``/``final_output`` preserve their public shape while
+        containing only transport-safe structured values. Parallel metadata maps
+        carry provenance, evidence IDs, status, producer, and slot-kind data.
         """
         from Core.Composition.PipelineExecutor import (
             PipelineExecutionError,
