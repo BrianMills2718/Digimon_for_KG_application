@@ -56,3 +56,29 @@ def test_switching_graph_switches_vdb_priority():
 
     ctx.get_graph_instance("Alpha_ERGraph")
     assert ctx.list_vdbs()[0].startswith("Alpha_")
+
+
+def test_graph_listing_prevents_legacy_substring_match_from_binding_longer_dataset():
+    ctx = GraphRAGContext.model_construct(
+        request_id="test",
+        target_dataset_name="mcp_session",
+        main_config=object(),
+        llm_provider=None,
+        embedding_provider=None,
+        chunk_storage_manager=None,
+        graphs={
+            # Insert the ambiguous longer dataset first to reproduce the old bug.
+            "Test2_ERGraph": object(),
+            "Test_ERGraph": object(),
+            "Test_RKGraph": object(),
+        },
+        vdbs={},
+        resolved_configs={},
+        active_dataset_name=None,
+    )
+
+    graph_ids = ctx.list_graphs()
+    legacy_match = next(graph_id for graph_id in graph_ids if "Test" in graph_id)
+
+    assert legacy_match == "Test_ERGraph"
+    assert graph_ids.index("Test_ERGraph") < graph_ids.index("Test2_ERGraph")
