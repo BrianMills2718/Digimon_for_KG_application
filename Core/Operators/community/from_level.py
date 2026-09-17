@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from Core.Operators.community.resource_state import stale_community_reason
 from Core.Schema.SlotTypes import CommunityRecord, SlotKind, SlotValue
 
 
@@ -53,6 +54,17 @@ async def community_from_level(
                 data=[],
                 producer="community.from_level",
                 metadata={"error": "community resource unavailable"},
+            )
+        }
+
+    stale_reason = stale_community_reason(ctx.community)
+    if stale_reason:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_level",
+                metadata={"error": stale_reason, "status": "stale_resource"},
             )
         }
 
