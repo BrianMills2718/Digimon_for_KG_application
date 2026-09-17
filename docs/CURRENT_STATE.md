@@ -1,172 +1,206 @@
 # DIGIMON Current State
 
-**Snapshot:** 2026-09-16  
+**Snapshot:** 2026-09-17  
 **Repository:** `BrianMills2718/Digimon_for_KG_application`  
-**Purpose:** describe what is materially present in the public codebase now, without treating historical plans as current implementation.
+**Purpose:** describe what is materially present in the code now, without confusing the full north star with current implementation or historical plans.
 
 ## Executive summary
 
-DIGIMON is currently a **hybrid/transitional codebase** whose strongest architectural center is the typed operator/composition layer exposed through the stdio MCP server.
+DIGIMON remains a **hybrid/transitional codebase**, but the maintained core is substantially more coherent than the 2026-09-16 documentation described.
 
-The repository already contains substantial working structure: typed operator slots, a machine-readable registry of 26 operators, plan validation/execution, 10 reference method profiles, multiple graph builders, entity/relationship/chunk/subgraph/community operations, resource inspection, prerequisite-building helpers, cross-modal conversion code, CLI/API/MCP surfaces, evaluation infrastructure, and end-to-end tests.
+The strongest current implementation is a typed representation/retrieval/analysis core with:
 
-At the same time, the repository still contains earlier internal planning/orchestration systems, programmed AoT code, multiple orchestrators, old MCP/multi-agent experiments, and documentation from earlier architectural directions. The current target is **harness-first**: DIGIMON should make retrieval/analysis capabilities safe, discoverable, composable, resource-aware, and evidence-grounded while a capable external harness owns adaptive reasoning.
+- typed operator slots and records;
+- strict-by-default composition validation/execution;
+- ten maintained reference methods;
+- ER/RK/tree/balanced-tree/passage graph build surfaces;
+- vector indexes and graph-derived resources;
+- entity/relationship/chunk/subgraph/community operations;
+- graph structural/analytic operators such as PPR, PCST, Steiner and community-related transforms;
+- evidence-grounded synthesis with exact evidence IDs and citation validation;
+- source/chunk manifests and practical invalidation rules for derived resources;
+- active dataset/graph and canonical VDB selection;
+- a stdio MCP surface plus transitional CLI/API surfaces;
+- deterministic core contract tests covering many repaired semantics.
 
-This reconciliation is a **source/documentation inspection**, not a fresh full runtime certification. “Implemented” below means substantive code is present and wired into a current surface; it does not claim every live LLM/provider path was rerun on 2026-09-16.
+The target project vision is broader: DIGIMON should eventually project governed semantic IR into complementary representations, support composable retrieval and analytics over them, materialize an agent-readable progressive-disclosure catalog/wiki, preserve shared identity across projections, and maintain artifact/derivation lineage. See [VISION.md](VISION.md).
 
-For module-by-module classification and implementation caveats, see [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md).
+This file is a **source-level current-state reconciliation**, not a fresh full runtime certification. The current head has not been executed end-to-end in the available environment. Historical GitHub Actions failed during dependency installation before tests, while commits made through the connected GitHub path have not generated new workflow runs. “Implemented” below means substantive code is present and wired, not that every current path is freshly certified green.
 
 ## Status vocabulary
 
-- **Implemented** — meaningful code exists and is wired into a current execution surface.
-- **Partial** — meaningful code exists, but integration, consistency, lifecycle, contracts, or reliability are incomplete.
-- **Legacy** — retained code/documentation that is not the preferred target architecture.
-- **Planned** — target behavior is not materially complete in this snapshot.
+- **Implemented** — meaningful code exists and is wired into a maintained/current surface.
+- **Partial** — meaningful code exists, but coverage/integration/reliability or the target architecture remains incomplete.
+- **Legacy / Transitional** — retained for compatibility/history or still used by an older entry point but not the preferred target architecture.
+- **Planned** — part of the target vision but not materially complete in current code.
 
 ## Current capability map
 
-| Area | Status | What exists now | Main evidence |
-|---|---|---|---|
-| Typed operator dataflow | **Implemented** | Seven slot kinds plus typed entity, relationship, chunk, subgraph, community and score records; `SlotValue` records producer and metadata. | `Core/Schema/SlotTypes.py` |
-| Operator registry | **Implemented** | 26 operators across entity, relationship, chunk, subgraph, community and meta categories, with typed I/O, cost and prerequisite metadata. | `Core/Operators/registry.py` |
-| Composition engine | **Implemented / Partial hardening** | Static chain validation, pre-dispatch slot checks, pipeline execution, loops/conditionals, reference-method profiling and execution. | `Core/Composition/` |
-| Reference retrieval methods | **Implemented** | Ten named method plans: `basic_local`, `basic_global`, `lightrag`, `fastgraphrag`, `hipporag`, `tog`, `gr`, `dalk`, `kgp`, `med`. | `Core/Methods/`, `OperatorComposer.py` |
-| Corpus preparation | **Implemented** | MCP-facing preparation for `.txt`, `.md`, `.json`, `.jsonl`, `.csv`, and `.pdf`; structured-field parsers exist. | `digimon_mcp_stdio_server.py`, `Core/AgentTools/corpus_*` |
-| Graph construction | **Implemented** | ER, RK, tree, balanced-tree and passage graph build tools are wired into MCP; corpus can be auto-prepared from an input directory. | `digimon_mcp_stdio_server.py`, `Core/AgentTools/graph_construction_tools.py` |
-| Entity/vector retrieval | **Implemented** | Entity VDB search, one-hop expansion, PPR, linking, TF-IDF and model-assisted entity paths exist in current operator/tool layers. | `Core/Operators/entity/`, MCP server |
-| Relationship retrieval | **Implemented** | One-hop, VDB, score aggregation and model-assisted relationship operators; MCP also exposes relationship-resource helpers. | `Core/Operators/relationship/`, MCP server |
-| Chunk/source retrieval | **Implemented** | Relationship→chunk, entity-occurrence and score→chunk operations plus direct chunk/source lookup surfaces. | `Core/Operators/chunk/`, MCP server |
-| Subgraph/path retrieval | **Implemented** | K-hop paths/neighborhoods, Steiner-tree extraction and model-assisted path filtering. | `Core/Operators/subgraph/`, MCP server |
-| Community operations | **Implemented / Partial lifecycle** | Community operators and community-building/access tools exist; usability depends on derived artifacts. | `Core/Operators/community/`, MCP server |
-| Resource discovery | **Partial** | MCP can inspect graphs, VDBs and other derived artifacts; `GraphRAGContext` itself models graphs/VDBs plus providers/config. | `digimon_mcp_stdio_server.py`, `Core/AgentSchema/context.py` |
-| Prerequisite handling | **Partial** | Descriptor flags and `auto_build` helpers cover several prerequisites. | descriptors, MCP server, composition code |
-| MCP harness surface | **Implemented in code** | `FastMCP` stdio server exposes individual capabilities, reference methods, auto-selection, config/resource tools and cross-modal operations. | `digimon_mcp_stdio_server.py` |
-| CLI | **Implemented / Transitional** | CLI still instantiates `PlanningAgent`/`AgentOrchestrator`, including experimental ReAct behavior. | `digimon_cli.py` |
-| HTTP/API and UI surfaces | **Partial / Secondary** | API, dashboard, Streamlit and React-era surfaces remain, but are not the canonical orchestration boundary. | `api.py`, UI files |
-| Cross-modal graph/table/vector conversion | **Implemented / Experimental integration** | Conversion code uses NetworkX/pandas/NumPy plus embedding adapters and validation helpers. | `Core/AgentTools/cross_modal_tools.py` |
-| Dependency-aware decomposition heuristic | **Implemented / Transitional representation** | YAML and typed meta-operator prompts now use advisory dependency-aware AoT/GoT guidance; sub-questions are still carried as `EntityRecord` values in `ENTITY_SET`. | `prompts/decompose_question.yaml`, `Core/Operators/meta/decompose_question.py` |
-| Evidence-aware synthesis heuristic | **Implemented / Partial provenance inputs** | YAML and typed meta-operator prompts preserve available evidence markers, surface conflicts/unresolved dependencies, and avoid unsupported bridges. | `prompts/synthesize_answers.yaml`, `Core/Operators/meta/synthesize_answers.py` |
-| Prompt source-of-truth | **Partial** | YAML and operator-local decomposition/synthesis prompts are aligned in this snapshot. | `prompts/`, `Core/Operators/meta/` |
-| Legacy programmed AoT runtime | **Legacy** | `Core/AOT` encodes atomic states, heuristic extraction and transition probabilities directly in code. | `Core/AOT/` |
-| Internal agent brain / multiple orchestrators | **Legacy / Transitional** | Substantial internal planner/orchestrator code remains and is used by some entry points. | `Core/AgentBrain/`, `Core/AgentOrchestrator/` |
-| Provenance/evidence representation | **Partial** | Entity/relationship records carry `source_id`; chunks carry `chunk_id`; `SlotValue` can carry producer/metadata; retrieval can return source text. | `Core/Schema/SlotTypes.py`, chunk operators |
-| Error/recovery semantics | **Partial** | Pipeline dispatch has explicit errors, but individual operators/build tools can also return empty/failure-valued results or status objects. | `PipelineExecutor.py`, operator/tool implementations |
-| Conflict/temporal evidence semantics | **Planned / Uneven** | No canonical cross-system assertion/conflict/valid-time evidence model. | architecture gap |
-| Incremental resource updates | **Planned / Not canonical** | No uniform update/invalidation semantics across graphs, VDBs, communities and conversions. | architecture gap |
-| Evaluation framework | **Implemented / Deferred priority** | Benchmark runner records EM, token F1/precision/recall, latency, LLM calls and token usage; benchmark/E2E tests exist. | `eval/benchmark.py`, tests |
-| Automated CI | **Partial** | Black/Flake8 and unit tests are blocking; MyPy and integration tests are currently permissive/non-blocking. | `.github/workflows/ci.yml` |
+| Area | Status | Current reality |
+|---|---|---|
+| Typed operator dataflow | **Implemented** | Current core has typed query/entity/relationship/chunk/subgraph/community/score-vector values plus producer/metadata lineage. |
+| Operator registry | **Implemented / evolving** | Stable typed operators exist across entity, relationship, chunk, subgraph, community and meta families. Utility adapters such as materialization/merge operators can register alongside the original base set, so documentation should not depend on a permanent hard-coded operator count. |
+| Composition validation | **Implemented / materially hardened** | Explicit wiring/type validation is stricter; omitted required named inputs no longer pass merely because a same-kind value exists elsewhere. Unknown named outputs are errors. |
+| Composition execution | **Implemented / materially hardened** | `OperatorComposer` rejects static-invalid plans by default; best-effort is explicit. Generic loop/conditional ownership was repaired so control-owned steps are not executed again at top level, and loop carry-forward preserves actual slot kinds. |
+| Reference methods | **Implemented / repaired** | Ten maintained plans: `basic_local`, `basic_global`, `lightrag`, `fastgraphrag`, `hipporag`, `tog`, `gr`, `dalk`, `kgp`, `med`. They normally terminate in grounded answer generation; context-only mode strips only the terminal answer step. |
+| Canonical raw corpus path | **Implemented / standalone mode** | Raw corpus preparation exists and the maintained `ChunkFactory` now actually applies configured chunking instead of treating each document as one chunk. Pre-chunked records remain supported. This is useful standalone/compatibility behavior, not the canonical ecosystem authority boundary. |
+| Graph build lifecycle | **Implemented / hardened** | All five graph wrappers return truthful success/failure, require usable non-empty graphs, share one lifecycle path, use source-chunk manifests to detect corpus changes, and invalidate known derived artifacts after successful rebuilds. |
+| ER/RK extraction | **Implemented / hardened** | Rich metadata defaults are retained; RK enables keyword extraction; zero-node extraction fails closed; entity identity/text normalization now preserves Unicode rather than deleting non-ASCII semantics. |
+| Vector indexes / FAISS | **Implemented / hardened** | Dimensions derive from actual embeddings, L2 distances are normalized in the correct direction, persisted/load state is fail-closed, batch retrieval exists, and single-item upsert no longer replaces the entire collection. |
+| Entity VDB | **Implemented / hardened** | Build refuses false success; stale registered indexes reload/rebuild; graph-prepared identity content is embedded; graph-native metadata survives indexing; stable graph IDs are preferred; exact graph entity linking precedes approximate VDB linking. |
+| Relationship VDB | **Implemented / hardened** | Exact requested IDs are preserved, build success is checked, retrieval uses normalized scores, endpoints/source metadata survive mapping, and embedding text includes source/target identity plus relation semantics. |
+| Entity retrieval / linking | **Implemented** | Vector retrieval, one-hop, PPR, linking, TF-IDF and model-assisted extraction paths exist. Exact canonical graph matches bypass VDB approximation. |
+| PPR / diffusion | **Implemented / corrected** | Teleport/reset vs damping semantics were corrected; maintained methods explicitly select intended similarity-vs-specificity behavior; seed fallback handles valid entities when matrix lookup misses. |
+| Relationship retrieval | **Implemented** | One-hop, VDB, score aggregation and model-assisted relation selection exist. ToG relation selection now explores the whole beam and preserves exact source chunk IDs. |
+| Chunk/evidence retrieval | **Implemented / evidence-safe** | Occurrence, relation→chunk and score→chunk paths resolve exact stored source IDs, normalize real `TextChunk` objects, and fail closed instead of fabricating placeholder/fuzzy evidence. |
+| Subgraph/path retrieval | **Implemented / repaired** | K-hop/path normalization no longer invents adjacency across concatenated paths; Steiner is a real NetworkX approximation and degrades to the best connected terminal group on disconnected inputs; PCST prizes/costs reflect retrieved relevance. |
+| Structural materialization | **Implemented** | Subgraph selections are materialized back to exact graph entities/source chunks, allowing GR/DALK/Med structural choices to control evidence rather than remain decorative. |
+| Community operations | **Implemented / hardened** | Community materialization exists; singleton graphs bypass unnecessary Leiden calls; persisted metadata identity/level/occurrence comes from authoritative schema; set-valued schema fields serialize safely; stale community artifacts are invalidated/rejected after graph rebuild. |
+| Basic Global | **Implemented / repaired** | Community selection now reaches exact report/evidence materialization and grounded answer generation. |
+| ToG | **Implemented / repaired** | Explicit depth unrolling replaces the broken pseudo-loop; each hop consumes prior entities; relationship→entity bridge works; beam entities are all explored; evidence is accumulated across selected hops. |
+| KGP | **Implemented / repaired** | Explicit hop unrolling replaces stale-state loop behavior; refinement is evidence-gated; TF-IDF uses direct sklearn with stop-word fallback; evidence can accumulate across hops. |
+| FastGraphRAG | **Implemented / corrected** | Typed entity seeds are mapped correctly into score-matrix lookup; similarity-seeded PPR is requested explicitly; sparse propagation fails on shape mismatch rather than producing plausible wrong rankings. |
+| HippoRAG | **Implemented / corrected** | Extract/link/PPR propagation is wired, and the method explicitly requests its intended specificity/IDF-aware PPR mode instead of silently sharing FastGraphRAG defaults. |
+| GR / DALK / Med | **Implemented / repaired** | Retrieved/filtered structural results now feed materialization/evidence paths; disconnected Med terminals degrade explicitly instead of collapsing the method. |
+| Grounded answer generation | **Implemented / hardened** | No evidence => no LLM call and explicit insufficient-evidence status. Evidence enters prompts with exact IDs; citations are validated; evidence IDs/provenance survive output metadata and composer serialization. |
+| Meta decomposition | **Implemented / advisory** | Dependency-aware decomposition is explicitly optional/harness-controlled; malformed model output falls back conservatively to the original question rather than inventing subquestions from prose. |
+| Meta synthesis | **Implemented / fail-closed** | Empty evidence/subanswer synthesis does not invite unsupported LLM bridging. |
+| Resource selection | **Implemented / pragmatic** | `GraphRAGContext` tracks active dataset/graph, prioritizes exact canonical VDB IDs, restores canonical graph namespaces at registration and evicts same-dataset in-memory VDBs when a graph is replaced. |
+| Derived-resource invalidation | **Implemented / pragmatic, not generalized** | Successful graph rebuilds remove canonical entity/relation VDB artifacts and community files; ER rebuilds also invalidate sparse matrices. This is intentionally smaller than a generalized resource-governance system. |
+| Graph/source freshness | **Implemented / pragmatic** | Per-graph source-chunk manifests detect missing/changed/added chunks and force rebuild before reuse. |
+| Sparse propagation | **Implemented / guarded** | Entity→relationship and relationship→chunk propagation validate matrix dimensions; unresolved chunk IDs/unknown objects no longer become pseudo-evidence. Same-shaped cross-graph matrix reuse remains a known edge case. |
+| Cross-modal graph/table/vector code | **Implemented / experimental integration** | Conversion code exists, but it is not yet the complete projection system described in the vision and does not yet include all target representation families/catalog metadata. |
+| Analytical tool suite | **Partial** | Substantial graph analytics/transformations exist (PPR, community, PCST, Steiner, paths and related score/subgraph operations). The broader general analytical suite—centrality families, statistical/table analytics, typed finding/model artifacts—is not yet organized as a complete first-class capability plane. |
+| Relational projection/runtime | **Partial / target gap** | Table/DataFrame conversion code exists, but there is not yet a canonical Foundation-IR→relational database projection with an agent-readable schema/catalog and stable cross-representation IDs. |
+| Wiki/progressive-disclosure projection | **Planned** | The target agent-readable semantic/representation catalog is not yet a canonical implemented projection. |
+| RDF/semantic-graph projection | **Planned / not canonical** | Not yet a maintained projection surface in current DIGIMON. |
+| Specialized lexical/BM25 index | **Planned / selective** | Ordinary harness-native text/file search should not be rewrapped. A specialized lexical index remains a target only where it adds real retrieval capability. |
+| Artifact/derivation graph | **Partial foundations / target gap** | Evidence IDs, producer metadata, manifests and invalidation exist, but there is not yet a first-class cross-representation graph of projection/retrieval/transformation executions and analytical findings. |
+| MCP agent surface | **Implemented in code** | Stdio MCP exposes build, retrieval, inspection, composition and resource tools; it is the strongest current modern agent-facing surface. |
+| Python public runtime | **Partial / target gap** | The target is a clean developer/application library over the maintained core; current code is less consolidated than the vision requires. |
+| CLI | **Implemented / Transitional** | `digimon_cli.py` remains human-facing but currently instantiates legacy `PlanningAgent`/`AgentOrchestrator` and optional ReAct behavior rather than the maintained typed runtime directly. |
+| Internal agent brain / old orchestrators / programmed AoT | **Legacy / Transitional** | Significant older planning/orchestration code remains and is still used by some entry points, but it is not the target control architecture. |
+| Error/recovery semantics | **Partial** | Many fail-open cases were repaired, but one small uniform machine-actionable error taxonomy/envelope is not yet universal across all layers. |
+| Evaluation framework | **Implemented / deferred priority** | Benchmark/evaluation code exists, but evaluation is not the current architecture driver. |
+| Current-head runtime certification | **Not available yet** | Deterministic contracts have been added source-side, but the available environment cannot execute the repository and current connector-created commits/PRs have not triggered GitHub Actions. |
 
-## What is architecturally strongest today
+## Current architectural center
 
-### 1. Typed composable operators
-
-The clearest modern core is:
+The strongest maintained path is now:
 
 ```text
-Slot types / records
-      ↓
-Operator descriptors + registry
-      ↓
-Chain validation / execution
-      ↓
-Reference plans or harness-built compositions
+typed capability records
+        ↓
+strict composition / reference plans
+        ↓
+current graph / VDB / community / matrix resources
+        ↓
+exact evidence recovery
+        ↓
+grounded answer or explicit evidence gap
 ```
 
-This layer describes reusable capabilities without requiring DIGIMON to own the user-level reasoning policy.
+That is an important current implementation center, but it is narrower than the full `Represent → Retrieve → Analyze` north star.
 
-### 2. External harness access through MCP
+## Current public/control surfaces
 
-The stdio MCP server exposes three useful levels:
+### MCP
 
-1. **individual capabilities/operators** — conceptual default for a capable harness;
-2. **reference methods** — known operator compositions;
-3. **auto selection** — optional prompt/model selection of a reference method.
+The stdio MCP server is currently the strongest modern agent-facing integration surface. It supports individual capabilities and maintained reference methods, plus older/direct helpers.
 
-Modes 2 and 3 are conveniences and future baselines. Mode 1 defines the target architectural boundary.
+### CLI
 
-### 3. Multiple retrieval structures
+The CLI is a real human-facing surface but still belongs to the older planner/orchestrator generation internally.
 
-The codebase contains ER/RK graphs, hierarchical trees, passage graphs, vector indexes, graph traversal, communities, sparse operations and graph/table/vector conversions. DIGIMON is therefore already broader than a single fixed GraphRAG pipeline.
+### Python/application surface
 
-## Important implementation caveats
+A clean consolidated public library over the same maintained runtime remains incomplete.
 
-### Composition is typed, but not yet a closed safety contract
+The target is **CLI + Python + MCP over one core**, not three independent architectures.
 
-- Registry successor/chain helpers reason mainly over `SlotKind`; they do not prove resource prerequisites, field requirements, semantic applicability or cost constraints.
-- `ChainValidator` may accept an unwired input when another prior output of the same kind exists, emitting a warning.
-- `OperatorComposer.execute()` currently logs static validation failures and proceeds best-effort.
-- `PipelineExecutor` then performs stricter input-name/type checks before dispatch and defaults to fail-fast operator execution.
-- Loop accumulation currently wraps carried outputs as `ENTITY_SET`, which is not a fully general typed-loop model.
-- Some descriptors represent semantically broader behavior than their declared slot type, such as the current rerank descriptor.
+## Current representation reality
 
-The composition layer is therefore **implemented with contract-hardening gaps**, not a fully solved planner/type/resource system.
+### Strong/current
 
-### Prompt policy is aligned, but prompt ownership is duplicated
+- property graphs (ER/RK plus tree/passage variants);
+- vector indexes;
+- communities/sparse structures;
+- graph/table/vector conversion experiments;
+- exact source/chunk evidence representation.
 
-The decomposition and synthesis YAML prompts match the operator-local prompts conceptually. However, the typed meta operators do not automatically load those YAML files. Equivalent instructions live in more than one place and can drift again.
+### Partial or target-state only
 
-The architecture should solve this through centralized prompt loading or explicit ownership/parity tests—not by building a new reasoning executor.
+- canonical governed-IR→relational database projection;
+- first-class semantic/RDF projection;
+- generated wiki/progressive-disclosure catalog describing semantic organization plus available representations/schemas/capabilities;
+- specialized lexical/BM25 representation where native harness search is insufficient;
+- unified analytical artifact/finding model across graph and non-graph methods.
 
-### Sub-questions use a generic carrier type
+## Current analytics reality
 
-`meta.decompose_question` stores suggested sub-question text in `EntityRecord.entity_name` under an `ENTITY_SET` slot. This is compatible with the current seven-slot system but semantically awkward.
+DIGIMON already has significant graph-focused analytical machinery reflecting its GraphRAG/SNA lineage. However, analytics are not yet documented/organized as fully as retrieval.
 
-A more general text/task-list slot may eventually be useful. A formal dependency DAG should still only be introduced when a concrete runtime function—scheduling, resumability, caching, provenance or auditing—requires it.
+Current substantive examples include:
 
-### Resource state is split across abstractions
+- PPR/diffusion scores;
+- community detection/materialization;
+- PCST optimization;
+- Steiner-tree approximation;
+- k-hop/path/subgraph operations;
+- score aggregation/propagation;
+- tree/community-derived structures.
 
-`GraphRAGContext` directly stores graphs and VDBs. Other resources are discovered or built through MCP/server logic and filesystem conventions. There is no one typed resource catalog with stable IDs, build fingerprints, dependencies, staleness and invalidation semantics.
+The broader north-star suite—centrality families, cohesion/brokerage measures, general table/statistical methods, explicit model/finding outputs—remains a gap rather than a current guarantee.
 
-### MCP state is process-level
+## Current provenance reality
 
-The stdio server lazily initializes process-level `_state`, stores providers/context there, and changes the process working directory to the project root. That is adequate for the present tool-server model but is not yet a general multi-session resource architecture.
+### Implemented foundations
 
-### Evidence exists, but not as an invariant
+- entity/relationship source IDs;
+- exact chunk/evidence IDs;
+- evidence provenance carried into answers;
+- composer step metadata;
+- graph/source manifests;
+- practical dependent-artifact invalidation;
+- source-aware structural materialization;
+- community source lineage.
 
-Current records preserve useful IDs and the synthesis operator can pass available chunk/source markers to the model. The missing piece is enforced lineage propagation through every aggregation, path/community operation and cross-modal transformation.
+### Missing target layer
 
-### Errors are not uniform
+The system does not yet have one explicit derivation graph recording, for every important artifact:
 
-`PipelineExecutor` can raise actionable `PipelineExecutionError`, while some operators catch failures and return empty/failure-valued slots and MCP/build tools may return structured status objects or raise exceptions. Empty retrieval, missing prerequisite and actual execution failure remain too easy to conflate.
+```text
+input artifact/version
+→ projection/retrieval/analytic execution + parameters
+→ output artifact/version
+→ finding
+```
 
-## Historical material that is not current truth
+That target is broader than answer citations and should not be confused with the domain/property graph.
 
-Older implementations/documents describe priorities that no longer match the target architecture, including:
+## Important remaining implementation gaps
 
-- internal general-purpose planner/orchestrator expansion;
-- mandatory programmed AoT/Markov preprocessing;
-- old WebSocket MCP checkpoint sequences;
-- older UKRF/multi-agent roadmaps;
-- historical tool registries/counts and performance targets.
-
-`docs/CHECKPOINT_PROGRESS.md` and the root MCP planning files are explicitly marked historical. Git history preserves the original details.
-
-## Current development priority
-
-The canonical order, matching `IMPLEMENTATION_MAP.md`, `PLANNING_SUMMARY.md`, and `ROADMAP.md`, is:
-
-1. capability/descriptor/MCP inventory and parity;
-2. explicit strict-vs-best-effort validation semantics;
-3. prompt source-of-truth/parity;
-4. typed resource catalog and prerequisite/lifecycle semantics;
-5. end-to-end provenance/evidence propagation;
-6. clean harness-first entry points;
-7. legacy planner/orchestrator/AoT/MCP consolidation;
-8. cross-modal normalization;
-9. standardized machine-actionable errors/recovery;
-10. blocking architecture contract tests and CI hardening;
-11. incremental/temporal/conflict semantics after the foundations exist;
-12. benchmarking/research validation after the architecture is coherent.
+1. **Fresh runtime execution** — run the deterministic core suite and E2E canaries on the current head; fix real failures before more speculative refactors.
+2. **Governed IR projection seam** — make the onto-canon/Foundation IR path the clear canonical ecosystem input and verify what semantic fields each target projection requires.
+3. **Representation plane expansion** — relational database projection, wiki/catalog projection, and other high-value text-derived representations are not yet first-class maintained outputs.
+4. **Analytics as a first-class plane** — expose/describe a coherent analytic method taxonomy and typed outputs, not only retrieval/reference methods.
+5. **Artifact/derivation lineage** — record projection/retrieval/transformation executions and outputs, extending the current evidence/manifests/invalidation foundations.
+6. **Cross-graph sparse resources** — sparse matrices are still effectively dataset/ER scoped and can theoretically be same-shaped but semantically stale for another active graph.
+7. **Public surfaces convergence** — modernize CLI/Python surfaces onto the same maintained core used by agent-facing capabilities.
+8. **Error/result uniformity** — finish a small machine-actionable convention across maintained layers.
+9. **Legacy isolation** — continue classifying/deprecating old internal brain/orchestrator/AoT/MCP paths without deleting useful lineage prematurely.
 
 ## Verification boundary
 
-This pass inspected repository structure and key implementation files. It did **not** rerun every graph builder, provider-dependent operator, MCP tool, UI/API path, benchmark, Docker build or CI job.
+No current documentation should claim that the present head has passed the full deterministic suite or clean-rebuild canary until a real runner executes it.
 
-Runtime claims in historical documentation should not be promoted into current guarantees unless a current test or fresh execution supports them.
+Historical CI evidence showed dependency installation failing before meaningful tests due the obsolete `umap==0.1.1` dependency. That dependency has been removed, but current commits have not produced a fresh GitHub Actions signal through the available integration.
 
 Continue with:
 
-- [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) — exact module classification and implementation caveats;
-- [ARCHITECTURE.md](ARCHITECTURE.md) — target design;
+- [VISION.md](VISION.md) — full north star;
+- [ARCHITECTURE.md](ARCHITECTURE.md) — target system design;
+- [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) — module-level reality;
 - [GAP_ANALYSIS.md](GAP_ANALYSIS.md) — current → target gaps;
-- [ROADMAP.md](ROADMAP.md) — ordered closure plan.
+- [ROADMAP.md](ROADMAP.md) — closure order;
+- [DOCUMENTATION_COVERAGE.md](DOCUMENTATION_COVERAGE.md) — reconciliation checklist.
