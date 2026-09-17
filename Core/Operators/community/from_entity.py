@@ -12,6 +12,7 @@ from collections import Counter
 from typing import Any, Dict, Optional
 
 from Core.Common.Utils import truncate_list_by_token_size
+from Core.Operators.community.resource_state import stale_community_reason
 from Core.Schema.SlotTypes import CommunityRecord, SlotKind, SlotValue
 
 
@@ -52,6 +53,17 @@ async def community_from_entity(
                 kind=SlotKind.COMMUNITY_SET,
                 data=[],
                 producer="community.from_entity",
+            )
+        }
+
+    stale_reason = stale_community_reason(ctx.community)
+    if stale_reason:
+        return {
+            "communities": SlotValue(
+                kind=SlotKind.COMMUNITY_SET,
+                data=[],
+                producer="community.from_entity",
+                metadata={"error": stale_reason, "status": "stale_resource"},
             )
         }
 
