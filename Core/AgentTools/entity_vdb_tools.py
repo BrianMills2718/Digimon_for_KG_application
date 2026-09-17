@@ -80,11 +80,20 @@ async def entity_vdb_build_tool(
                 if node_type not in params.entity_types:
                     continue
 
-            entity_id = str(node.get("entity_name", node.get("id", uuid.uuid4().hex)))
+            # Tree graphs expose a stable numeric ``index`` rather than an
+            # entity_name. Prefer graph-native stable identifiers before UUIDs.
+            raw_entity_id = (
+                node.get("entity_name")
+                if node.get("entity_name") is not None
+                else node.get("id")
+                if node.get("id") is not None
+                else node.get("index")
+            )
+            entity_id = str(raw_entity_id if raw_entity_id is not None else uuid.uuid4().hex)
             content = (
                 node.get("description")
                 or node.get("content")
-                or str(node.get("entity_name", ""))
+                or str(node.get("entity_name", node.get("index", "")))
             )
             if not content:
                 continue
@@ -92,12 +101,15 @@ async def entity_vdb_build_tool(
             entity_doc = {
                 "id": entity_id,
                 "content": content,
-                "name": node.get("entity_name", entity_id),
+                "name": str(node.get("entity_name", raw_entity_id if raw_entity_id is not None else entity_id)),
             }
             if params.include_metadata:
                 for key, value in node.items():
-                    if key not in {"id", "content", "name", "description"}:
-                        entity_doc[key] = value
+                    # ``content`` is the embedded TextNode body. Preserve all
+                    # other graph-native fields (source_id, entity_type,
+                    # tree index/layer, etc.) as retrieval metadata.
+                    if key != "content":
+                        entity_doc.setdefault(key, value)
             entities_data.append(entity_doc)
 
         if not entities_data:
@@ -116,9 +128,19 @@ async def entity_vdb_build_tool(
         )
         entity_vdb = FaissIndex(config)
 
+        # Metadata must follow the graph representation rather than a fixed ER
+        # subset. In particular TreeGraph retrieval requires ``index``/``layer``
+        # while ER/RK paths rely on source_id/entity_type provenance.
+        metadata_keys = {"id", "name"}
+        if params.include_metadata:
+            for entity_doc in entities_data:
+                metadata_keys.update(
+                    key for key in entity_doc.keys() if key != "content"
+                )
+
         build_ok = await entity_vdb.build_index(
             elements=entities_data,
-            meta_data=["id", "content", "name"],
+            meta_data=sorted(metadata_keys),
             force=params.force_rebuild,
         )
         if not build_ok:
