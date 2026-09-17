@@ -71,6 +71,29 @@ async def test_relationship_propagation_returns_highest_score_first():
 
 
 @pytest.mark.asyncio
+async def test_relationship_propagation_reports_stale_matrix_shape_mismatch():
+    ctx = SimpleNamespace(
+        sparse_matrices={
+            "entity_to_rel": csr_matrix(np.array([[1.0], [1.0]])),
+        },
+        graph=FakeGraph(),
+        config=SimpleNamespace(top_k=1),
+    )
+    inputs = {
+        "score_vector": SlotValue(
+            kind=SlotKind.SCORE_VECTOR,
+            data=np.array([1.0]),
+            producer="test",
+        )
+    }
+
+    result = await relationship_score_agg(inputs, ctx, {})
+
+    assert result["relationships"].data == []
+    assert "shape mismatch" in result["relationships"].metadata["error"].lower()
+
+
+@pytest.mark.asyncio
 async def test_chunk_propagation_preserves_real_chunk_ids_and_rank_order():
     ctx = SimpleNamespace(
         sparse_matrices={
