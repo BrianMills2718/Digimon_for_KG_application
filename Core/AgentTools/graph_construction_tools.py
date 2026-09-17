@@ -100,6 +100,17 @@ async def get_graph_counts(graph_instance) -> dict:
     }
 
 
+def _graph_counts_are_usable(counts: dict) -> bool:
+    """A graph claiming success must contain nodes when node count is known."""
+    node_count = counts.get("node_count")
+    if node_count is None:
+        return True
+    try:
+        return int(node_count) > 0
+    except (TypeError, ValueError):
+        return False
+
+
 def _invalidate_if_forced(
     main_config: Config,
     dataset_name: str,
@@ -107,7 +118,7 @@ def _invalidate_if_forced(
     force_rebuild: bool,
     er_graph: bool,
 ) -> None:
-    """Invalidate known derived artifacts only after a successful forced build."""
+    """Invalidate known derived artifacts only after a successful usable build."""
     if not force_rebuild:
         return
     invalidate_after_forced_graph_rebuild(
@@ -153,13 +164,21 @@ async def build_er_graph(
                 message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return BuildERGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_ERGraph",
+                status="failure",
+                message=f"ERGraph for {tool_input.target_dataset_name} contains no usable nodes.",
+                **counts,
+            )
+
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
             force_rebuild=tool_input.force_rebuild,
             er_graph=True,
         )
-        counts = await get_graph_counts(graph)
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
             status="success",
@@ -213,13 +232,21 @@ async def build_rk_graph(
                 message=f"RKGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return BuildRKGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_RKGraph",
+                status="failure",
+                message=f"RKGraph for {tool_input.target_dataset_name} contains no usable nodes.",
+                **counts,
+            )
+
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
             force_rebuild=tool_input.force_rebuild,
             er_graph=False,
         )
-        counts = await get_graph_counts(graph)
         return BuildRKGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_RKGraph",
             status="success",
@@ -273,13 +300,21 @@ async def build_tree_graph(
                 message=f"TreeGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return BuildTreeGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
+                status="failure",
+                message=f"TreeGraph for {tool_input.target_dataset_name} contains no usable nodes.",
+                **counts,
+            )
+
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
             force_rebuild=tool_input.force_rebuild,
             er_graph=False,
         )
-        counts = await get_graph_counts(graph)
         return BuildTreeGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
             status="success",
@@ -333,13 +368,21 @@ async def build_tree_graph_balanced(
                 message=f"TreeGraphBalanced building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return BuildTreeGraphBalancedOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
+                status="failure",
+                message=f"TreeGraphBalanced for {tool_input.target_dataset_name} contains no usable nodes.",
+                **counts,
+            )
+
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
             force_rebuild=tool_input.force_rebuild,
             er_graph=False,
         )
-        counts = await get_graph_counts(graph)
         return BuildTreeGraphBalancedOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
             status="success",
@@ -395,13 +438,21 @@ async def build_passage_graph(
                 message=f"PassageGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return BuildPassageGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
+                status="failure",
+                message=f"PassageGraph for {tool_input.target_dataset_name} contains no usable nodes.",
+                **counts,
+            )
+
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
             force_rebuild=tool_input.force_rebuild,
             er_graph=False,
         )
-        counts = await get_graph_counts(graph)
         return BuildPassageGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
             status="success",
