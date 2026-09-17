@@ -5,6 +5,7 @@ import pytest
 
 import Core.AgentTools.graph_construction_tools as tools
 from Core.AgentSchema.graph_construction_tool_contracts import (
+    BuildERGraphInputs,
     BuildPassageGraphInputs,
     BuildRKGraphInputs,
 )
@@ -21,16 +22,17 @@ class FakeGraphConfig:
 class FakeMainConfig:
     def __init__(self):
         self.graph = FakeGraphConfig()
+        self.working_dir = "./results"
 
     def model_copy(self, deep=False):
         return copy.deepcopy(self)
 
 
 class FakeGraph:
-    def __init__(self, succeeds=True):
+    def __init__(self, succeeds=True, node_num=3, edge_num=2):
         self._graph = SimpleNamespace(namespace=None)
-        self.node_num = 3
-        self.edge_num = 2
+        self.node_num = node_num
+        self.edge_num = edge_num
         self.succeeds = succeeds
 
     async def build_graph(self, chunks, force=False):
@@ -101,3 +103,57 @@ async def test_passage_graph_uses_canonical_namespace_name(monkeypatch):
 
     assert result.status == "success"
     assert chunks.namespace_types == ["passage_graph"]
+
+
+@pytest.mark.asyncio
+async def test_empty_loaded_graph_is_failure_and_does_not_invalidate_old_artifacts(monkeypatch):
+    graph = FakeGraph(succeeds=True, node_num=0, edge_num=0)
+    monkeypatch.setattr(tools, "get_graph", lambda **kwargs: graph)
+    invalidations = []
+    monkeypatch.setattr(
+        tools,
+        "invalidate_after_forced_graph_rebuild",
+        lambda *args, **kwargs: invalidations.append((args, kwargs)),
+    )
+
+    result = await tools.build_er_graph(
+        BuildERGraphInputs(target_dataset_name="Demo", force_rebuild=True),
+        FakeMainConfig(),
+        llm_instance=object(),
+        encoder_instance=object(),
+        chunk_factory=FakeChunkFactory(),
+    )
+
+    assert result.status == "failure"
+    assert result.node_count == 0
+    assert result.graph_instance is None
+    assert invalidations == []
+
+
+@pytest.mark.asyncio
+async def test_successful_forced_er_rebuild_invalidates_after_graph_is_usable(monkeypatch):
+    graph = FakeGraph(succeeds=True, node_num=2, edge_num=1)
+    monkeypatch.setattr(tools, "get_graph", lambda **kwargs: graph)
+    invalidations = []
+
+    def capture_invalidation(config, dataset_name, *, invalidate_sparse_matrices):
+        invalidations.append((dataset_name, invalidate_sparse_matrices))
+        return []
+
+    monkeypatch.setattr(
+        tools,
+        "invalidate_after_forced_graph_rebuild",
+        capture_invalidation,
+    )
+
+    result = await tools.build_er_graph(
+        BuildERGraphInputs(target_dataset_name="Demo", force_rebuild=True),
+        FakeMainConfig(),
+        llm_instance=object(),
+        encoder_instance=object(),
+        chunk_factory=FakeChunkFactory(),
+    )
+
+    assert result.status == "success"
+    assert result.node_count == 2
+    assert invalidations == [("Demo", True)]
