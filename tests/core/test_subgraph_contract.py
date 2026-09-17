@@ -26,8 +26,6 @@ class FakePathGraph:
 
 class FakeConcatenatedPathGraph:
     async def get_paths_from_sources(self, start_nodes, cutoff=5):
-        # Mirrors storage behavior that can concatenate multiple paths found
-        # from the same seed into one edge-record list.
         return [
             [
                 {"src_id": "alpha", "tgt_id": "x"},
@@ -119,6 +117,42 @@ async def test_steiner_operator_includes_required_intermediate_node():
     subgraph = result["subgraph"].data
     assert subgraph.nodes == {"alpha", "middle", "beta"}
     assert len(subgraph.edges) == 2
+
+
+@pytest.mark.asyncio
+async def test_steiner_operator_uses_best_connected_terminal_group():
+    graph = nx.Graph()
+    graph.add_edges_from(
+        [
+            ("alpha", "middle"),
+            ("middle", "beta"),
+            ("isolated-high", "isolated-helper"),
+        ]
+    )
+    ctx = SimpleNamespace(
+        graph=SimpleNamespace(_graph=SimpleNamespace(graph=graph))
+    )
+
+    result = await subgraph_steiner_tree(
+        inputs={
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[
+                    EntityRecord(entity_name="alpha", score=0.6),
+                    EntityRecord(entity_name="beta", score=0.5),
+                    EntityRecord(entity_name="isolated-high", score=0.99),
+                ],
+                producer="test",
+            )
+        },
+        ctx=ctx,
+        params={},
+    )
+
+    slot = result["subgraph"]
+    assert slot.data.nodes == {"alpha", "middle", "beta"}
+    assert slot.metadata["used_terminals"] == ["alpha", "beta"]
+    assert slot.metadata["dropped_disconnected_terminals"] == ["isolated-high"]
 
 
 class FakeMaterializeGraph:
