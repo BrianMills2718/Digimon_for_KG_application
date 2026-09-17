@@ -92,6 +92,24 @@ async def test_faiss_upsert_appends_without_replacing_existing_index(monkeypatch
     assert index._index.nodes[1].metadata["name"] == "beta"
 
 
+def test_faiss_node_identity_prefers_record_id_over_shared_content_hash():
+    embedding = [0.1, 0.2, 0.3]
+    first = FaissIndex._node_from_data(
+        {"id": "entity-a", "name": "A", "content": "same description"},
+        embedding,
+        ["id", "name"],
+    )
+    second = FaissIndex._node_from_data(
+        {"id": "entity-b", "name": "B", "content": "same description"},
+        embedding,
+        ["id", "name"],
+    )
+
+    assert first.node_id == "entity-a"
+    assert second.node_id == "entity-b"
+    assert first.node_id != second.node_id
+
+
 def test_l2_backend_distances_are_exposed_as_higher_is_better_similarity():
     exact = FaissIndex.normalize_backend_score(0.0, faiss.METRIC_L2)
     near = FaissIndex.normalize_backend_score(0.25, faiss.METRIC_L2)
