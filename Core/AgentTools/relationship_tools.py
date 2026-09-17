@@ -69,7 +69,6 @@ def _relationship_embedding_text(
     parts = []
     for field in fields:
         value = edge_data.get(field)
-        # Backward-compatible alias for graphs that still expose ``type``.
         if value is None and field == "relation_name":
             value = edge_data.get("type")
         if value is None and field == "type":
@@ -81,6 +80,20 @@ def _relationship_embedding_text(
         relation_name = edge_data.get("relation_name") or edge_data.get("type") or "related_to"
         parts.append(f"{source} {relation_name} {target}")
     return " | ".join(parts)
+
+
+async def _registered_vdb_is_usable(vdb) -> bool:
+    """Return True only when a registered VDB has or can load a live index."""
+    if getattr(vdb, "_index", None) is not None:
+        return True
+    load = getattr(vdb, "load", None)
+    if load is None:
+        return False
+    try:
+        return bool(await load())
+    except Exception as exc:
+        logger.warning(f"Registered relationship VDB reload failed: {exc}")
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -197,10 +210,14 @@ async def relationship_vdb_build_tool(
     vdb_id = params.vdb_collection_name
     existing = graphrag_context.get_vdb_instance(vdb_id)
     if existing is not None and not params.force_rebuild:
-        return RelationshipVDBBuildOutputs(
-            vdb_reference_id=vdb_id,
-            num_relationships_indexed=graph.number_of_edges(),
-            status="VDB already exists",
+        if await _registered_vdb_is_usable(existing):
+            return RelationshipVDBBuildOutputs(
+                vdb_reference_id=vdb_id,
+                num_relationships_indexed=graph.number_of_edges(),
+                status="VDB already exists",
+            )
+        logger.warning(
+            f"Registered relationship VDB '{vdb_id}' is unusable; rebuilding it"
         )
 
     embedding_provider = graphrag_context.embedding_provider
