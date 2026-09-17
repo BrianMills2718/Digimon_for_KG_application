@@ -211,10 +211,28 @@ async def main():
             )
         )
         method_answer = str(method_result.get("final_output", {}).get("answer", ""))
+        answer_metadata = method_result.get("final_metadata", {}).get("answer", {})
+        evidence_ids = answer_metadata.get("evidence_chunk_ids", [])
+        cited_ids = answer_metadata.get("cited_evidence_ids", [])
+        citation_status = answer_metadata.get("citation_status")
+        answer_status = answer_metadata.get("status")
+        method_ok = (
+            "error" not in method_result
+            and valid_answer(method_answer)
+            and answer_status == "grounded_answer"
+            and citation_status == "valid"
+            and bool(evidence_ids)
+            and bool(cited_ids)
+            and set(cited_ids).issubset(set(evidence_ids))
+        )
         record(
             "execute_method.basic_local",
-            "error" not in method_result and valid_answer(method_answer),
-            f"answer={method_answer[:100]}, steps={list(method_result.get('all_step_outputs', {}))}",
+            method_ok,
+            (
+                f"status={answer_status}, citation_status={citation_status}, "
+                f"evidence_ids={evidence_ids}, cited_ids={cited_ids}, "
+                f"answer={method_answer[:100]}"
+            ),
         )
     except Exception as exc:
         record("execute_method.basic_local", False, str(exc))
