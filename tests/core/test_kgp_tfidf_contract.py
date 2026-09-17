@@ -3,8 +3,9 @@ from types import SimpleNamespace
 import pytest
 
 from Core.Methods.kgp import kgp_plan
+from Core.Operators.chunk.merge import chunk_merge
 from Core.Operators.entity.tfidf import entity_tfidf
-from Core.Schema.SlotTypes import SlotKind, SlotValue
+from Core.Schema.SlotTypes import ChunkRecord, SlotKind, SlotValue
 
 
 class FakeGraph:
@@ -60,3 +61,66 @@ def test_kgp_second_hop_depends_on_first_hop_selection_and_reasoning():
     reason2 = steps["hop_2_reason"].action.tools[0]
     assert reason2.inputs["query"].from_step_id == "hop_1_reason"
     assert reason2.inputs["chunks"].from_step_id == "hop_2_evidence"
+
+
+def test_kgp_answer_uses_accumulated_intermediate_and_terminal_evidence():
+    plan = kgp_plan("What is crystal technology?", dataset="Demo", depth=2)
+    steps = {step.step_id: step for step in plan.steps}
+
+    history = steps["hop_2_evidence_history"].action.tools[0]
+    assert history.tool_id == "chunk.merge"
+    assert history.inputs["left"].from_step_id == "hop_1_evidence"
+    assert history.inputs["right"].from_step_id == "hop_2_evidence"
+
+    answer_evidence = steps["answer_evidence"].action.tools[0]
+    assert answer_evidence.tool_id == "chunk.merge"
+    assert answer_evidence.inputs["left"].from_step_id == "hop_2_evidence_history"
+    assert answer_evidence.inputs["right"].from_step_id == "final_evidence"
+
+    answer = steps["answer"].action.tools[0]
+    assert answer.inputs["chunks"].from_step_id == "answer_evidence"
+
+
+@pytest.mark.asyncio
+async def test_chunk_merge_deduplicates_by_source_id_and_preserves_best_score():
+    left = SlotValue(
+        kind=SlotKind.CHUNK_SET,
+        data=[
+            ChunkRecord(
+                chunk_id="chunk-a",
+                text="first evidence",
+                score=0.4,
+                extra={"hop": 1},
+            )
+        ],
+        producer="hop1",
+    )
+    right = SlotValue(
+        kind=SlotKind.CHUNK_SET,
+        data=[
+            ChunkRecord(
+                chunk_id="chunk-a",
+                text="first evidence",
+                score=0.9,
+                extra={"reranked": True},
+            ),
+            ChunkRecord(
+                chunk_id="chunk-b",
+                text="second evidence",
+                score=0.7,
+            ),
+        ],
+        producer="hop2",
+    )
+
+    result = await chunk_merge(
+        inputs={"left": left, "right": right},
+        ctx=SimpleNamespace(),
+        params={},
+    )
+
+    chunks = result["chunks"].data
+    assert [chunk.chunk_id for chunk in chunks] == ["chunk-a", "chunk-b"]
+    assert chunks[0].score == pytest.approx(0.9)
+    assert chunks[0].extra == {"hop": 1, "reranked": True}
+    assert result["chunks"].metadata["unique_evidence_chunks"] == 2
