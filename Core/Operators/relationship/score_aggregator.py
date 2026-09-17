@@ -20,9 +20,9 @@ async def relationship_score_agg(
 ) -> Dict[str, SlotValue]:
     score_vector = inputs["score_vector"].data
     p = params or {}
-    top_k = p.get("top_k", ctx.config.top_k)
+    top_k = max(0, int(p.get("top_k", ctx.config.top_k)))
 
-    if score_vector is None or len(score_vector) == 0:
+    if score_vector is None or len(score_vector) == 0 or top_k == 0:
         return {
             "relationships": SlotValue(
                 kind=SlotKind.RELATIONSHIP_SET,
@@ -33,13 +33,20 @@ async def relationship_score_agg(
 
     try:
         e2r = ctx.sparse_matrices["entity_to_rel"]
-        edge_scores = np.asarray(e2r.T.dot(score_vector)).reshape(-1)
+        node_scores = np.asarray(score_vector, dtype=float).reshape(-1)
+        if e2r.shape[0] != node_scores.shape[0]:
+            raise ValueError(
+                "Sparse matrix/entity score shape mismatch: "
+                f"entity_to_rel rows={e2r.shape[0]}, score_vector={node_scores.shape[0]}"
+            )
+
+        edge_scores = np.asarray(e2r.T.dot(node_scores)).reshape(-1)
         if edge_scores.size == 0:
             topk_indices = np.array([], dtype=int)
         else:
-            topk_indices = np.argsort(edge_scores)[-top_k:][::-1]
+            topk_indices = np.argsort(edge_scores, kind="mergesort")[-top_k:][::-1]
 
-        edges = await ctx.graph.get_edge_by_indices(topk_indices)
+        edges = await ctx.graph.get_edge_by_indices(topk_indices.tolist())
         records = []
         for idx, edge_data in zip(topk_indices, edges):
             if edge_data is None:
@@ -53,7 +60,7 @@ async def relationship_score_agg(
                     weight=edge_data.get("weight", 0.0),
                     keywords=edge_data.get("keywords", ""),
                     source_id=edge_data.get("source_id", ""),
-                    score=float(edge_scores[idx]),
+                    score=float(edge_scores[int(idx)]),
                     extra={"edge_index": int(idx)},
                 )
             )
@@ -72,5 +79,6 @@ async def relationship_score_agg(
                 kind=SlotKind.RELATIONSHIP_SET,
                 data=[],
                 producer="relationship.score_agg",
+                metadata={"error": str(exc)},
             )
         }
