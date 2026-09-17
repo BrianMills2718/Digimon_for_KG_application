@@ -1,10 +1,16 @@
-"""Agent tools for building DIGIMON graph variants truthfully."""
+"""Agent tools for building DIGIMON graph variants truthfully.
+
+All maintained graph builders share the same concrete lifecycle:
+chunks -> source-manifest decision -> build/load -> usability check -> manifest
+write -> invalidate known derived artifacts when the graph was rebuilt.
+"""
 
 import asyncio
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
 from Core.AgentSchema.graph_construction_tool_contracts import (
+    BaseGraphBuildOutputs,
     BuildERGraphInputs,
     BuildERGraphOutputs,
     BuildPassageGraphInputs,
@@ -103,29 +109,7 @@ def _graph_counts_are_usable(counts: dict) -> bool:
         return False
 
 
-def _invalidate_if_rebuilt(
-    main_config: Config,
-    dataset_name: str,
-    *,
-    rebuilt: bool,
-    er_graph: bool,
-) -> None:
-    if not rebuilt:
-        return
-    invalidate_after_forced_graph_rebuild(
-        main_config,
-        dataset_name,
-        invalidate_sparse_matrices=er_graph,
-    )
-
-
 def _effective_force_for_manifest(graph, chunks, requested_force: bool) -> tuple[bool, str | None]:
-    """Decide whether ER/RK artifacts can be safely reused.
-
-    A source-chunk manifest gives us an exact corpus/chunk identity check. Missing
-    manifests trigger a one-time rebuild for old artifacts; changed manifests
-    catch additions, removals, edits, and chunking-strategy changes.
-    """
     if requested_force:
         return True, "requested"
     match = manifest_matches(graph, chunks)
@@ -142,31 +126,97 @@ def _manifest_message(reason: str | None) -> str:
     return ""
 
 
-async def _finalize_chunk_scoped_graph(
-    graph,
-    chunks,
-    main_config,
-    dataset_name,
+async def _build_graph_variant(
+    tool_input,
+    main_config: Config,
+    llm_instance: Any,
+    encoder_instance: Any,
+    chunk_factory: Any,
     *,
-    effective_force: bool,
-    er_graph: bool,
-) -> tuple[dict, bool]:
-    counts = await get_graph_counts(graph)
-    if not _graph_counts_are_usable(counts):
-        return counts, False
+    graph_type: str,
+    graph_id_suffix: str,
+    display_name: str,
+    output_class: Type[BaseGraphBuildOutputs],
+    invalidate_sparse_matrices: bool = False,
+):
+    dataset = tool_input.target_dataset_name
+    graph_id = f"{dataset}_{graph_id_suffix}"
 
-    if not write_manifest(graph, chunks):
-        logger.warning(
-            f"Graph for '{dataset_name}' is usable but its source-chunk manifest "
-            "could not be persisted; the next load will conservatively rebuild it."
+    try:
+        graph_config = main_config.graph.model_copy(deep=True)
+        apply_overrides(graph_config, tool_input.config_overrides)
+        config = main_config.model_copy(deep=True)
+        config.graph = graph_config
+        config.graph.type = graph_type
+
+        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
+        if hasattr(graph._graph, "namespace"):
+            graph._graph.namespace = chunk_factory.get_namespace(
+                dataset,
+                graph_type=graph_type,
+            )
+
+        chunks = await chunk_factory.get_chunks_for_dataset(dataset)
+        if not chunks:
+            return output_class(
+                graph_id="",
+                status="failure",
+                message=f"No input chunks found for dataset: {dataset}",
+            )
+
+        effective_force, rebuild_reason = _effective_force_for_manifest(
+            graph,
+            chunks,
+            bool(tool_input.force_rebuild),
         )
-    _invalidate_if_rebuilt(
-        main_config,
-        dataset_name,
-        rebuilt=effective_force,
-        er_graph=er_graph,
-    )
-    return counts, True
+        success = await graph.build_graph(chunks=chunks, force=effective_force)
+        if not success:
+            return output_class(
+                graph_id=graph_id,
+                status="failure",
+                message=f"{display_name} building failed internally for {dataset}.",
+            )
+
+        counts = await get_graph_counts(graph)
+        if not _graph_counts_are_usable(counts):
+            return output_class(
+                graph_id=graph_id,
+                status="failure",
+                message=f"{display_name} for {dataset} contains no usable nodes.",
+                **counts,
+            )
+
+        if not write_manifest(graph, chunks):
+            logger.warning(
+                f"{display_name} for '{dataset}' is usable but its source-chunk "
+                "manifest could not be persisted; the next load will conservatively rebuild it."
+            )
+
+        if effective_force:
+            invalidate_after_forced_graph_rebuild(
+                main_config,
+                dataset,
+                invalidate_sparse_matrices=invalidate_sparse_matrices,
+            )
+
+        return output_class(
+            graph_id=graph_id,
+            status="success",
+            message=(
+                f"{display_name} built successfully for {dataset}."
+                + _manifest_message(rebuild_reason)
+            ),
+            artifact_path=get_artifact_path(graph),
+            graph_instance=graph,
+            **counts,
+        )
+    except Exception as exc:
+        logger.exception(f"{display_name} build failed for {dataset}: {exc}")
+        return output_class(
+            graph_id=graph_id,
+            status="failure",
+            message=str(exc),
+        )
 
 
 async def build_er_graph(
@@ -176,72 +226,18 @@ async def build_er_graph(
     encoder_instance: Any,
     chunk_factory: Any,
 ) -> BuildERGraphOutputs:
-    try:
-        graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(graph_config, tool_input.config_overrides)
-        config = main_config.model_copy(deep=True)
-        config.graph = graph_config
-        config.graph.type = "er_graph"
-
-        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
-        if hasattr(graph._graph, "namespace"):
-            graph._graph.namespace = chunk_factory.get_namespace(
-                tool_input.target_dataset_name, graph_type="er_graph"
-            )
-
-        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not chunks:
-            return BuildERGraphOutputs(
-                graph_id="",
-                status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-            )
-
-        effective_force, rebuild_reason = _effective_force_for_manifest(
-            graph, chunks, tool_input.force_rebuild
-        )
-        success = await graph.build_graph(chunks=chunks, force=effective_force)
-        if not success:
-            return BuildERGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_ERGraph",
-                status="failure",
-                message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
-            )
-
-        counts, usable = await _finalize_chunk_scoped_graph(
-            graph,
-            chunks,
-            main_config,
-            tool_input.target_dataset_name,
-            effective_force=effective_force,
-            er_graph=True,
-        )
-        if not usable:
-            return BuildERGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_ERGraph",
-                status="failure",
-                message=f"ERGraph for {tool_input.target_dataset_name} contains no usable nodes.",
-                **counts,
-            )
-
-        return BuildERGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_ERGraph",
-            status="success",
-            message=(
-                f"ERGraph built successfully for {tool_input.target_dataset_name}."
-                + _manifest_message(rebuild_reason)
-            ),
-            artifact_path=get_artifact_path(graph),
-            graph_instance=graph,
-            **counts,
-        )
-    except Exception as exc:
-        logger.exception(f"ERGraph build failed for {tool_input.target_dataset_name}: {exc}")
-        return BuildERGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_ERGraph",
-            status="failure",
-            message=str(exc),
-        )
+    return await _build_graph_variant(
+        tool_input,
+        main_config,
+        llm_instance,
+        encoder_instance,
+        chunk_factory,
+        graph_type="er_graph",
+        graph_id_suffix="ERGraph",
+        display_name="ERGraph",
+        output_class=BuildERGraphOutputs,
+        invalidate_sparse_matrices=True,
+    )
 
 
 async def build_rk_graph(
@@ -251,72 +247,17 @@ async def build_rk_graph(
     encoder_instance: Any,
     chunk_factory: Any,
 ) -> BuildRKGraphOutputs:
-    try:
-        graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(graph_config, tool_input.config_overrides)
-        config = main_config.model_copy(deep=True)
-        config.graph = graph_config
-        config.graph.type = "rkg_graph"
-
-        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
-        if hasattr(graph._graph, "namespace"):
-            graph._graph.namespace = chunk_factory.get_namespace(
-                tool_input.target_dataset_name, graph_type="rkg_graph"
-            )
-
-        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not chunks:
-            return BuildRKGraphOutputs(
-                graph_id="",
-                status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-            )
-
-        effective_force, rebuild_reason = _effective_force_for_manifest(
-            graph, chunks, tool_input.force_rebuild
-        )
-        success = await graph.build_graph(chunks=chunks, force=effective_force)
-        if not success:
-            return BuildRKGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_RKGraph",
-                status="failure",
-                message=f"RKGraph building failed internally for {tool_input.target_dataset_name}.",
-            )
-
-        counts, usable = await _finalize_chunk_scoped_graph(
-            graph,
-            chunks,
-            main_config,
-            tool_input.target_dataset_name,
-            effective_force=effective_force,
-            er_graph=False,
-        )
-        if not usable:
-            return BuildRKGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_RKGraph",
-                status="failure",
-                message=f"RKGraph for {tool_input.target_dataset_name} contains no usable nodes.",
-                **counts,
-            )
-
-        return BuildRKGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_RKGraph",
-            status="success",
-            message=(
-                f"RKGraph built successfully for {tool_input.target_dataset_name}."
-                + _manifest_message(rebuild_reason)
-            ),
-            artifact_path=get_artifact_path(graph),
-            graph_instance=graph,
-            **counts,
-        )
-    except Exception as exc:
-        logger.exception(f"RKGraph build failed for {tool_input.target_dataset_name}: {exc}")
-        return BuildRKGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_RKGraph",
-            status="failure",
-            message=str(exc),
-        )
+    return await _build_graph_variant(
+        tool_input,
+        main_config,
+        llm_instance,
+        encoder_instance,
+        chunk_factory,
+        graph_type="rkg_graph",
+        graph_id_suffix="RKGraph",
+        display_name="RKGraph",
+        output_class=BuildRKGraphOutputs,
+    )
 
 
 async def build_tree_graph(
@@ -326,49 +267,17 @@ async def build_tree_graph(
     encoder_instance: Any,
     chunk_factory: Any,
 ) -> BuildTreeGraphOutputs:
-    try:
-        graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(graph_config, tool_input.config_overrides)
-        config = main_config.model_copy(deep=True)
-        config.graph = graph_config
-        config.graph.type = "tree_graph"
-        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
-        if hasattr(graph._graph, "namespace"):
-            graph._graph.namespace = chunk_factory.get_namespace(
-                tool_input.target_dataset_name, graph_type="tree_graph"
-            )
-        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not chunks:
-            return BuildTreeGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-            )
-        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
-        if not success:
-            return BuildTreeGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_TreeGraph", status="failure",
-                message=f"TreeGraph building failed internally for {tool_input.target_dataset_name}.",
-            )
-        counts = await get_graph_counts(graph)
-        if not _graph_counts_are_usable(counts):
-            return BuildTreeGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_TreeGraph", status="failure",
-                message=f"TreeGraph for {tool_input.target_dataset_name} contains no usable nodes.", **counts,
-            )
-        _invalidate_if_rebuilt(
-            main_config, tool_input.target_dataset_name,
-            rebuilt=tool_input.force_rebuild, er_graph=False,
-        )
-        return BuildTreeGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_TreeGraph", status="success",
-            message=f"TreeGraph built successfully for {tool_input.target_dataset_name}.",
-            artifact_path=get_artifact_path(graph), graph_instance=graph, **counts,
-        )
-    except Exception as exc:
-        logger.exception(f"TreeGraph build failed for {tool_input.target_dataset_name}: {exc}")
-        return BuildTreeGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_TreeGraph", status="failure", message=str(exc)
-        )
+    return await _build_graph_variant(
+        tool_input,
+        main_config,
+        llm_instance,
+        encoder_instance,
+        chunk_factory,
+        graph_type="tree_graph",
+        graph_id_suffix="TreeGraph",
+        display_name="TreeGraph",
+        output_class=BuildTreeGraphOutputs,
+    )
 
 
 async def build_tree_graph_balanced(
@@ -378,52 +287,17 @@ async def build_tree_graph_balanced(
     encoder_instance: Any,
     chunk_factory: Any,
 ) -> BuildTreeGraphBalancedOutputs:
-    try:
-        graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(graph_config, tool_input.config_overrides)
-        config = main_config.model_copy(deep=True)
-        config.graph = graph_config
-        config.graph.type = "tree_graph_balanced"
-        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
-        if hasattr(graph._graph, "namespace"):
-            graph._graph.namespace = chunk_factory.get_namespace(
-                tool_input.target_dataset_name, graph_type="tree_graph_balanced"
-            )
-        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not chunks:
-            return BuildTreeGraphBalancedOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-            )
-        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
-        if not success:
-            return BuildTreeGraphBalancedOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced", status="failure",
-                message=f"TreeGraphBalanced building failed internally for {tool_input.target_dataset_name}.",
-            )
-        counts = await get_graph_counts(graph)
-        if not _graph_counts_are_usable(counts):
-            return BuildTreeGraphBalancedOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced", status="failure",
-                message=f"TreeGraphBalanced for {tool_input.target_dataset_name} contains no usable nodes.", **counts,
-            )
-        _invalidate_if_rebuilt(
-            main_config, tool_input.target_dataset_name,
-            rebuilt=tool_input.force_rebuild, er_graph=False,
-        )
-        return BuildTreeGraphBalancedOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced", status="success",
-            message=f"TreeGraphBalanced built successfully for {tool_input.target_dataset_name}.",
-            artifact_path=get_artifact_path(graph), graph_instance=graph, **counts,
-        )
-    except Exception as exc:
-        logger.exception(
-            f"TreeGraphBalanced build failed for {tool_input.target_dataset_name}: {exc}"
-        )
-        return BuildTreeGraphBalancedOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
-            status="failure", message=str(exc),
-        )
+    return await _build_graph_variant(
+        tool_input,
+        main_config,
+        llm_instance,
+        encoder_instance,
+        chunk_factory,
+        graph_type="tree_graph_balanced",
+        graph_id_suffix="TreeGraphBalanced",
+        display_name="TreeGraphBalanced",
+        output_class=BuildTreeGraphBalancedOutputs,
+    )
 
 
 async def build_passage_graph(
@@ -433,46 +307,14 @@ async def build_passage_graph(
     encoder_instance: Any,
     chunk_factory: Any,
 ) -> BuildPassageGraphOutputs:
-    try:
-        graph_config = main_config.graph.model_copy(deep=True)
-        apply_overrides(graph_config, tool_input.config_overrides)
-        config = main_config.model_copy(deep=True)
-        config.graph = graph_config
-        config.graph.type = "passage_graph"
-        graph = get_graph(config=config, llm=llm_instance, encoder=encoder_instance)
-        if hasattr(graph._graph, "namespace"):
-            graph._graph.namespace = chunk_factory.get_namespace(
-                tool_input.target_dataset_name, graph_type="passage_graph"
-            )
-        chunks = await chunk_factory.get_chunks_for_dataset(tool_input.target_dataset_name)
-        if not chunks:
-            return BuildPassageGraphOutputs(
-                graph_id="", status="failure",
-                message=f"No input chunks found for dataset: {tool_input.target_dataset_name}",
-            )
-        success = await graph.build_graph(chunks=chunks, force=tool_input.force_rebuild)
-        if not success:
-            return BuildPassageGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_PassageGraph", status="failure",
-                message=f"PassageGraph building failed internally for {tool_input.target_dataset_name}.",
-            )
-        counts = await get_graph_counts(graph)
-        if not _graph_counts_are_usable(counts):
-            return BuildPassageGraphOutputs(
-                graph_id=f"{tool_input.target_dataset_name}_PassageGraph", status="failure",
-                message=f"PassageGraph for {tool_input.target_dataset_name} contains no usable nodes.", **counts,
-            )
-        _invalidate_if_rebuilt(
-            main_config, tool_input.target_dataset_name,
-            rebuilt=tool_input.force_rebuild, er_graph=False,
-        )
-        return BuildPassageGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_PassageGraph", status="success",
-            message=f"PassageGraph built successfully for {tool_input.target_dataset_name}.",
-            artifact_path=get_artifact_path(graph), graph_instance=graph, **counts,
-        )
-    except Exception as exc:
-        logger.exception(f"PassageGraph build failed for {tool_input.target_dataset_name}: {exc}")
-        return BuildPassageGraphOutputs(
-            graph_id=f"{tool_input.target_dataset_name}_PassageGraph", status="failure", message=str(exc)
-        )
+    return await _build_graph_variant(
+        tool_input,
+        main_config,
+        llm_instance,
+        encoder_instance,
+        chunk_factory,
+        graph_type="passage_graph",
+        graph_id_suffix="PassageGraph",
+        display_name="PassageGraph",
+        output_class=BuildPassageGraphOutputs,
+    )
