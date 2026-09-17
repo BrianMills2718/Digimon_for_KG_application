@@ -187,13 +187,13 @@ class GraphRAGContext(BaseModel):
         )
 
     def list_vdbs(self) -> List[str]:
-        """List all VDB IDs, prioritizing the currently active dataset.
+        """List all VDB IDs with canonical active-dataset indexes first.
 
-        The MCP server may hold resources for multiple datasets in one process.
-        Existing callers often choose the first entity/relationship VDB from this
-        list. Prioritizing the dataset selected by the most recent graph lookup
-        preserves the complete resource list while preventing cross-dataset
-        index selection in those callers.
+        Transitional MCP context construction chooses the first entity/relation
+        VDB it sees. For the active dataset, the maintained canonical IDs
+        ``<dataset>_entities`` and ``<dataset>_relations`` must therefore precede
+        old/custom indexes such as ``<dataset>_entities_old``. All registered
+        resources remain visible after those canonical entries.
         """
         keys = list(self.vdbs.keys())
         dataset = self.active_dataset_name
@@ -201,8 +201,17 @@ class GraphRAGContext(BaseModel):
             return keys
 
         prefix = f"{dataset}_"
+        canonical_entities = f"{dataset}_entities"
+        canonical_relations = f"{dataset}_relations"
         positions = {key: index for index, key in enumerate(keys)}
-        return sorted(
-            keys,
-            key=lambda key: (not key.startswith(prefix), positions[key]),
-        )
+
+        def priority(key: str):
+            if key == canonical_entities:
+                return (0, positions[key])
+            if key == canonical_relations:
+                return (1, positions[key])
+            if key.startswith(prefix):
+                return (2, positions[key])
+            return (3, positions[key])
+
+        return sorted(keys, key=priority)
