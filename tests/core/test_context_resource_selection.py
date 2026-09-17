@@ -81,6 +81,37 @@ def test_switching_graph_switches_vdb_priority():
     assert ctx.list_vdbs()[0].startswith("Alpha_")
 
 
+def test_canonical_vdb_ids_precede_legacy_same_dataset_indexes():
+    ctx = GraphRAGContext.model_construct(
+        request_id="test",
+        target_dataset_name="mcp_session",
+        main_config=object(),
+        llm_provider=None,
+        embedding_provider=None,
+        chunk_storage_manager=None,
+        graphs={"Demo_ERGraph": object()},
+        vdbs={
+            "Demo_entities_old": object(),
+            "Demo_relations_old": object(),
+            "Demo_entities": object(),
+            "Demo_relations": object(),
+            "Other_entities": object(),
+        },
+        resolved_configs={},
+        active_dataset_name=None,
+        active_graph_id=None,
+    )
+
+    ctx.get_graph_instance("Demo_ERGraph")
+    ordered = ctx.list_vdbs()
+
+    assert ordered[:2] == ["Demo_entities", "Demo_relations"]
+    assert ordered.index("Demo_entities_old") > ordered.index("Demo_relations")
+    assert ordered.index("Demo_relations_old") > ordered.index("Demo_relations")
+    assert ordered[-1] == "Other_entities"
+    assert set(ordered) == set(ctx.vdbs)
+
+
 def test_active_graph_is_first_within_same_dataset():
     ctx = GraphRAGContext.model_construct(
         request_id="test",
