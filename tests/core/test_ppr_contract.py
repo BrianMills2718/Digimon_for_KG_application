@@ -9,6 +9,8 @@ from Core.AgentTools.entity_tools import (
     entity_ppr_tool,
     ppr_damping_from_teleport_alpha,
 )
+from Core.Methods.fastgraphrag import fastgraphrag_plan
+from Core.Methods.hipporag import hipporag_plan
 from Core.Operators.entity.ppr import entity_ppr
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
@@ -51,6 +53,11 @@ class FakeContext:
 class ZeroScoreVDB:
     async def retrieval_nodes_with_score_matrix(self, query, top_k, graph):
         return np.zeros(graph.node_num)
+
+
+class FailIfUsedVDB:
+    async def retrieval_nodes_with_score_matrix(self, query, top_k, graph):
+        raise AssertionError("Similarity VDB path should not be used")
 
 
 def typed_inputs(seed="alpha"):
@@ -133,3 +140,39 @@ async def test_fast_ppr_falls_back_to_explicit_seed_when_vdb_reset_is_zero():
 
     assert graph.last_reset.tolist() == pytest.approx([1.0, 0.0])
     assert result["score_vector"].data.tolist() == pytest.approx([0.7, 0.3])
+
+
+@pytest.mark.asyncio
+async def test_per_call_hipporag_mode_overrides_similarity_enabled_global_config():
+    graph = FakeGraph(scores=[0.6, 0.4])
+    ctx = SimpleNamespace(
+        graph=graph,
+        entities_vdb=FailIfUsedVDB(),
+        sparse_matrices={},
+        config=SimpleNamespace(
+            use_entity_similarity_for_ppr=True,
+            top_k_entity_for_ppr=5,
+            node_specificity=False,
+            top_k=2,
+        ),
+    )
+
+    result = await entity_ppr(
+        inputs=typed_inputs("alpha"),
+        ctx=ctx,
+        params={"use_entity_similarity_for_ppr": False},
+    )
+
+    assert graph.last_reset.tolist() == pytest.approx([1.0, 0.0])
+    assert result["score_vector"].metadata["use_entity_similarity_for_ppr"] is False
+
+
+def test_reference_methods_pin_opposite_ppr_modes():
+    fast_plan = fastgraphrag_plan("q", dataset="Demo")
+    hippo_plan = hipporag_plan("q", dataset="Demo")
+
+    fast_ppr = next(step for step in fast_plan.steps if step.step_id == "ppr").action.tools[0]
+    hippo_ppr = next(step for step in hippo_plan.steps if step.step_id == "ppr").action.tools[0]
+
+    assert fast_ppr.parameters["use_entity_similarity_for_ppr"] is True
+    assert hippo_ppr.parameters["use_entity_similarity_for_ppr"] is False
