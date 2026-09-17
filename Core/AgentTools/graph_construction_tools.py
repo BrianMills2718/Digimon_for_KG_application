@@ -21,6 +21,9 @@ from Core.AgentSchema.graph_construction_tool_contracts import (
     BuildTreeGraphInputs,
     BuildTreeGraphOutputs,
 )
+from Core.AgentTools.derived_resource_cleanup import (
+    invalidate_after_forced_graph_rebuild,
+)
 from Core.Common.Logger import logger
 from Core.Graph.GraphFactory import get_graph
 from Option.Config2 import Config
@@ -97,6 +100,23 @@ async def get_graph_counts(graph_instance) -> dict:
     }
 
 
+def _invalidate_if_forced(
+    main_config: Config,
+    dataset_name: str,
+    *,
+    force_rebuild: bool,
+    er_graph: bool,
+) -> None:
+    """Invalidate known derived artifacts only after a successful forced build."""
+    if not force_rebuild:
+        return
+    invalidate_after_forced_graph_rebuild(
+        main_config,
+        dataset_name,
+        invalidate_sparse_matrices=er_graph,
+    )
+
+
 async def build_er_graph(
     tool_input: BuildERGraphInputs,
     main_config: Config,
@@ -133,6 +153,12 @@ async def build_er_graph(
                 message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        _invalidate_if_forced(
+            main_config,
+            tool_input.target_dataset_name,
+            force_rebuild=tool_input.force_rebuild,
+            er_graph=True,
+        )
         counts = await get_graph_counts(graph)
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
@@ -187,6 +213,12 @@ async def build_rk_graph(
                 message=f"RKGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        _invalidate_if_forced(
+            main_config,
+            tool_input.target_dataset_name,
+            force_rebuild=tool_input.force_rebuild,
+            er_graph=False,
+        )
         counts = await get_graph_counts(graph)
         return BuildRKGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_RKGraph",
@@ -241,6 +273,12 @@ async def build_tree_graph(
                 message=f"TreeGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        _invalidate_if_forced(
+            main_config,
+            tool_input.target_dataset_name,
+            force_rebuild=tool_input.force_rebuild,
+            er_graph=False,
+        )
         counts = await get_graph_counts(graph)
         return BuildTreeGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraph",
@@ -295,6 +333,12 @@ async def build_tree_graph_balanced(
                 message=f"TreeGraphBalanced building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        _invalidate_if_forced(
+            main_config,
+            tool_input.target_dataset_name,
+            force_rebuild=tool_input.force_rebuild,
+            er_graph=False,
+        )
         counts = await get_graph_counts(graph)
         return BuildTreeGraphBalancedOutputs(
             graph_id=f"{tool_input.target_dataset_name}_TreeGraphBalanced",
@@ -351,6 +395,12 @@ async def build_passage_graph(
                 message=f"PassageGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        _invalidate_if_forced(
+            main_config,
+            tool_input.target_dataset_name,
+            force_rebuild=tool_input.force_rebuild,
+            er_graph=False,
+        )
         counts = await get_graph_counts(graph)
         return BuildPassageGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_PassageGraph",
