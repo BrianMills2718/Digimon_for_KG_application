@@ -96,7 +96,24 @@ class GraphRAGContext(BaseModel):
         return instance
 
     def list_graphs(self) -> List[str]:
-        return list(self.graphs.keys())
+        """List graph IDs with more specific dataset names considered last.
+
+        A few transitional MCP helpers still locate a dataset graph using
+        substring matching (``if dataset_name in graph_id``). Ordering by the
+        parsed dataset-name length makes the exact dataset graph the first
+        matching resource: ``Test_ERGraph`` precedes ``Test2_ERGraph`` when the
+        requested dataset is ``Test``. Insertion order is preserved among graph
+        types belonging to the same dataset.
+        """
+        keys = list(self.graphs.keys())
+        positions = {key: index for index, key in enumerate(keys)}
+        return sorted(
+            keys,
+            key=lambda key: (
+                len(_dataset_from_graph_id(key) or key),
+                positions[key],
+            ),
+        )
 
     def list_vdbs(self) -> List[str]:
         """List all VDB IDs, prioritizing the currently active dataset.
@@ -113,4 +130,8 @@ class GraphRAGContext(BaseModel):
             return keys
 
         prefix = f"{dataset}_"
-        return sorted(keys, key=lambda key: (not key.startswith(prefix), keys.index(key)))
+        positions = {key: index for index, key in enumerate(keys)}
+        return sorted(
+            keys,
+            key=lambda key: (not key.startswith(prefix), positions[key]),
+        )
