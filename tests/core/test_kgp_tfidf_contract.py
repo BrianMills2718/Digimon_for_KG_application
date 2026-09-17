@@ -5,7 +5,7 @@ import pytest
 from Core.Methods.kgp import kgp_plan
 from Core.Operators.chunk.merge import chunk_merge
 from Core.Operators.entity.tfidf import entity_tfidf
-from Core.Schema.SlotTypes import ChunkRecord, SlotKind, SlotValue
+from Core.Schema.SlotTypes import ChunkRecord, EntityRecord, SlotKind, SlotValue
 
 
 class FakeGraph:
@@ -49,6 +49,38 @@ async def test_entity_tfidf_reports_cosine_similarity_not_candidate_index():
     assert [record.entity_name for record in records] == ["alpha", "beta"]
     assert 0.0 <= records[1].score <= records[0].score <= 1.0
     assert records[0].source_id == "chunk-a"
+
+
+@pytest.mark.asyncio
+async def test_entity_tfidf_retries_without_stop_words_for_tiny_valid_candidates():
+    ctx = SimpleNamespace(config=SimpleNamespace(top_k=2))
+    candidates = SlotValue(
+        kind=SlotKind.ENTITY_SET,
+        data=[
+            EntityRecord(entity_name="the", source_id="chunk-the"),
+            EntityRecord(entity_name="and", source_id="chunk-and"),
+        ],
+        producer="test",
+    )
+
+    result = await entity_tfidf(
+        inputs={
+            "query": SlotValue(
+                kind=SlotKind.QUERY_TEXT,
+                data="the",
+                producer="test",
+            ),
+            "entities": candidates,
+        },
+        ctx=ctx,
+        params={"top_k": 2},
+    )
+
+    records = result["entities"].data
+    assert len(records) == 2
+    assert records[0].entity_name == "the"
+    assert records[0].source_id == "chunk-the"
+    assert records[0].score > records[1].score
 
 
 def test_kgp_second_hop_depends_on_first_hop_selection_and_reasoning():
