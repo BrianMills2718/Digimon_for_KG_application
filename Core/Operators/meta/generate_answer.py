@@ -12,8 +12,8 @@ from Core.Schema.SlotTypes import SlotKind, SlotValue
 INSUFFICIENT_EVIDENCE_ANSWER = "Insufficient retrieved evidence to answer the question."
 
 
-def _evidence_entries(chunk_data) -> list[tuple[str, str]]:
-    """Return stable ``(evidence_id, text)`` pairs from non-empty chunks."""
+def _evidence_entries(chunk_data) -> list[tuple[str, str, dict]]:
+    """Return stable ``(evidence_id, text, provenance)`` triples."""
     entries = []
     seen_ids = set()
     for index, chunk in enumerate(chunk_data or []):
@@ -26,7 +26,9 @@ def _evidence_entries(chunk_data) -> list[tuple[str, str]]:
         if evidence_id in seen_ids:
             continue
         seen_ids.add(evidence_id)
-        entries.append((evidence_id, text))
+        extra = getattr(chunk, "extra", {}) or {}
+        provenance = dict(extra) if isinstance(extra, dict) else {}
+        entries.append((evidence_id, text, provenance))
     return entries
 
 
@@ -67,10 +69,9 @@ async def meta_generate_answer(
     Outputs: {"answer": QUERY_TEXT}
     Params:  {"system_prompt": str, "response_type": str}
 
-    Evidence IDs are preserved in the prompt and output metadata. Factual claims
-    should cite the supporting ID in square brackets, e.g. ``[chunk-abc]``.
-    The operator validates those citations after generation so the harness can
-    distinguish a fully grounded answer from missing/invalid citations.
+    Evidence IDs are preserved in the prompt and output metadata. Chunk ``extra``
+    metadata is propagated as ``evidence_provenance`` so a community-summary
+    citation can still be traced to its underlying raw chunk IDs.
     """
     query = inputs["query"].data
     chunks = inputs.get("chunks")
@@ -87,6 +88,7 @@ async def meta_generate_answer(
                 metadata={
                     "status": "insufficient_evidence",
                     "evidence_chunk_ids": [],
+                    "evidence_provenance": {},
                     "citation_status": "not_applicable",
                     "cited_evidence_ids": [],
                     "invalid_citation_ids": [],
@@ -94,9 +96,15 @@ async def meta_generate_answer(
             )
         }
 
-    evidence_ids = [evidence_id for evidence_id, _text in evidence]
+    evidence_ids = [evidence_id for evidence_id, _text, _provenance in evidence]
+    evidence_provenance = {
+        evidence_id: provenance
+        for evidence_id, _text, provenance in evidence
+        if provenance
+    }
     context = "\n\n---\n\n".join(
-        f"[{evidence_id}]\n{text}" for evidence_id, text in evidence
+        f"[{evidence_id}]\n{text}"
+        for evidence_id, text, _provenance in evidence
     )
     grounding_instruction = (
         "Use only the supplied evidence. Do not invent unsupported facts. "
@@ -153,6 +161,7 @@ async def meta_generate_answer(
                     "status": status,
                     "evidence_chunks": len(evidence),
                     "evidence_chunk_ids": evidence_ids,
+                    "evidence_provenance": evidence_provenance,
                     **citation_meta,
                 },
             )
@@ -168,6 +177,7 @@ async def meta_generate_answer(
                     "status": "error",
                     "error": str(exc),
                     "evidence_chunk_ids": evidence_ids,
+                    "evidence_provenance": evidence_provenance,
                     "citation_status": "not_applicable",
                     "cited_evidence_ids": [],
                     "invalid_citation_ids": [],
