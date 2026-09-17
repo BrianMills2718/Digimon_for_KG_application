@@ -29,6 +29,7 @@ def make_context():
         },
         resolved_configs={},
         active_dataset_name=None,
+        active_graph_id=None,
     )
 
 
@@ -80,6 +81,36 @@ def test_switching_graph_switches_vdb_priority():
     assert ctx.list_vdbs()[0].startswith("Alpha_")
 
 
+def test_active_graph_is_first_within_same_dataset():
+    ctx = GraphRAGContext.model_construct(
+        request_id="test",
+        target_dataset_name="mcp_session",
+        main_config=object(),
+        llm_provider=None,
+        embedding_provider=None,
+        chunk_storage_manager=None,
+        graphs={
+            "Demo_ERGraph": object(),
+            "Demo_RKGraph": object(),
+            "Other_ERGraph": object(),
+        },
+        vdbs={},
+        resolved_configs={},
+        active_dataset_name=None,
+        active_graph_id=None,
+    )
+
+    ctx.get_graph_instance("Demo_RKGraph")
+    demo_graphs = [graph_id for graph_id in ctx.list_graphs() if graph_id.startswith("Demo_")]
+    assert demo_graphs[0] == "Demo_RKGraph"
+    assert ctx.active_graph_id == "Demo_RKGraph"
+
+    ctx.get_graph_instance("Demo_ERGraph")
+    demo_graphs = [graph_id for graph_id in ctx.list_graphs() if graph_id.startswith("Demo_")]
+    assert demo_graphs[0] == "Demo_ERGraph"
+    assert ctx.active_graph_id == "Demo_ERGraph"
+
+
 def test_replacing_graph_evicts_only_same_dataset_vdbs():
     ctx = make_context()
     old_graph = ctx.graphs["Beta_ERGraph"]
@@ -93,6 +124,7 @@ def test_replacing_graph_evicts_only_same_dataset_vdbs():
     assert "Beta_relations" not in ctx.vdbs
     assert "Alpha_entities" in ctx.vdbs
     assert "Alpha_relations" in ctx.vdbs
+    assert ctx.active_graph_id == "Beta_ERGraph"
 
 
 def test_reregistering_same_graph_object_keeps_dataset_vdbs():
@@ -122,6 +154,7 @@ def test_graph_listing_prevents_legacy_substring_match_from_binding_longer_datas
         vdbs={},
         resolved_configs={},
         active_dataset_name=None,
+        active_graph_id=None,
     )
 
     graph_ids = ctx.list_graphs()
@@ -167,6 +200,7 @@ def test_registration_restores_graph_specific_namespace(graph_id, expected_type)
         vdbs={},
         resolved_configs={},
         active_dataset_name=None,
+        active_graph_id=None,
     )
 
     ctx.add_graph_instance(graph_id, graph)
@@ -174,3 +208,5 @@ def test_registration_restores_graph_specific_namespace(graph_id, expected_type)
     assert chunks.calls == [("Demo", expected_type)]
     assert storage.namespace.path == f"/Demo/{expected_type}"
     assert ctx.graphs[graph_id] is graph
+    assert ctx.active_dataset_name == "Demo"
+    assert ctx.active_graph_id == graph_id
