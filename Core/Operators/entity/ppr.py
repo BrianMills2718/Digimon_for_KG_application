@@ -42,15 +42,25 @@ async def _run_ppr(
     query: str,
     seed_entities: list,
     damping: float = 0.85,
+    use_entity_similarity_for_ppr: Optional[bool] = None,
 ) -> np.ndarray:
-    """Run Personalized PageRank from seed entities."""
+    """Run Personalized PageRank from seed entities.
+
+    ``use_entity_similarity_for_ppr`` is method-level behavior: FastGraphRAG
+    uses vector-similarity reset weights, while HippoRAG uses IDF/specificity
+    weighting over linked entities. When omitted, retain the configured default.
+    """
     if not 0.0 <= damping <= 1.0:
         raise ValueError("PPR damping must be between 0 and 1")
 
     reset_prob = np.zeros(ctx.graph.node_num)
+    use_similarity = (
+        bool(ctx.config.use_entity_similarity_for_ppr)
+        if use_entity_similarity_for_ppr is None
+        else bool(use_entity_similarity_for_ppr)
+    )
 
-    if ctx.config.use_entity_similarity_for_ppr:
-        # FastGraphRAG-style: combine VDB similarities for supplied seeds and query.
+    if use_similarity:
         reset_prob += await ctx.entities_vdb.retrieval_nodes_with_score_matrix(
             seed_entities,
             top_k=1,
@@ -62,11 +72,9 @@ async def _run_ppr(
             graph=ctx.graph,
         )
 
-        # A vector-search miss should not discard valid explicit graph seeds.
         if not np.any(reset_prob):
             reset_prob = await _seed_reset_vector(ctx, seed_entities)
     else:
-        # HippoRAG-style: weight linked seed entities by inverse document frequency.
         if (
             ctx.sparse_matrices
             and "entity_to_rel" in ctx.sparse_matrices
@@ -74,6 +82,16 @@ async def _run_ppr(
         ):
             e2r = ctx.sparse_matrices["entity_to_rel"]
             r2c = ctx.sparse_matrices["rel_to_chunk"]
+            if e2r.shape[0] != ctx.graph.node_num:
+                raise ValueError(
+                    "HippoRAG entity_to_rel shape does not match graph node count: "
+                    f"rows={e2r.shape[0]}, nodes={ctx.graph.node_num}"
+                )
+            if e2r.shape[1] != r2c.shape[0]:
+                raise ValueError(
+                    "HippoRAG sparse matrix relationship dimensions do not align: "
+                    f"entity_to_rel cols={e2r.shape[1]}, rel_to_chunk rows={r2c.shape[0]}"
+                )
             c2e = e2r.dot(r2c).T
             c2e[c2e.nonzero()] = 1
             entity_chunk_count = np.asarray(c2e.sum(0)).reshape(-1)
@@ -117,15 +135,17 @@ async def entity_ppr(
     """
     Inputs:  {"query": QUERY_TEXT, "entities": ENTITY_SET}
     Outputs: {"entities": ENTITY_SET, "score_vector": SCORE_VECTOR}
-    Params:  {"top_k": int, "damping": float}
+    Params:  {"top_k": int, "damping": float,
+              "use_entity_similarity_for_ppr": bool | None}
     """
     query = inputs["query"].data
     seed = inputs["entities"].data
     p = params or {}
-    top_k = p.get("top_k", ctx.config.top_k)
+    top_k = max(0, int(p.get("top_k", ctx.config.top_k)))
     damping = float(p.get("damping", 0.85))
+    ppr_mode = p.get("use_entity_similarity_for_ppr")
 
-    if not seed:
+    if not seed or top_k == 0:
         return {
             "entities": SlotValue(
                 kind=SlotKind.ENTITY_SET,
@@ -139,13 +159,37 @@ async def entity_ppr(
             ),
         }
 
-    ppr_matrix = await _run_ppr(ctx, query, seed, damping=damping)
+    try:
+        ppr_matrix = await _run_ppr(
+            ctx,
+            query,
+            seed,
+            damping=damping,
+            use_entity_similarity_for_ppr=ppr_mode,
+        )
+    except Exception as exc:
+        logger.exception(f"entity_ppr failed: {exc}")
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[],
+                producer="entity.ppr",
+                metadata={"error": str(exc)},
+            ),
+            "score_vector": SlotValue(
+                kind=SlotKind.SCORE_VECTOR,
+                data=np.array([]),
+                producer="entity.ppr",
+                metadata={"error": str(exc)},
+            ),
+        }
+
     if ppr_matrix.size == 0:
         topk_indices = np.array([], dtype=int)
     else:
-        topk_indices = np.argsort(ppr_matrix)[-top_k:][::-1]
+        topk_indices = np.argsort(ppr_matrix, kind="mergesort")[-top_k:][::-1]
 
-    nodes = await ctx.graph.get_node_by_indices(topk_indices)
+    nodes = await ctx.graph.get_node_by_indices(topk_indices.tolist())
     records = []
     for idx, node_data in zip(topk_indices, nodes):
         if node_data is None:
@@ -160,7 +204,7 @@ async def entity_ppr(
                 source_id=node_data.get("source_id", ""),
                 entity_type=node_data.get("entity_type", ""),
                 description=node_data.get("description", ""),
-                score=float(ppr_matrix[idx]),
+                score=float(ppr_matrix[int(idx)]),
                 extra={"ppr_index": int(idx)},
             )
         )
@@ -170,10 +214,12 @@ async def entity_ppr(
             kind=SlotKind.ENTITY_SET,
             data=records,
             producer="entity.ppr",
+            metadata={"use_entity_similarity_for_ppr": ppr_mode},
         ),
         "score_vector": SlotValue(
             kind=SlotKind.SCORE_VECTOR,
             data=ppr_matrix,
             producer="entity.ppr",
+            metadata={"use_entity_similarity_for_ppr": ppr_mode},
         ),
     }
