@@ -172,8 +172,17 @@ class FaissIndex(BaseIndex):
             for key in meta_data_keys
             if key in data_item
         }
+        # Prefer graph/VDB-native identity over content-derived identity. Two
+        # distinct entities or relationships can legitimately share identical
+        # descriptions; content hashes would collapse those records onto the
+        # same LlamaIndex node ID.
+        node_id = data_item.get("index")
+        if node_id is None:
+            node_id = data_item.get("id")
+        if node_id is None:
+            node_id = mdhash_id(data_item["content"])
         return TextNode(
-            id_=str(data_item.get("index", mdhash_id(data_item["content"]))),
+            id_=str(node_id),
             text=data_item["content"],
             embedding=embedding,
             metadata=metadata,
