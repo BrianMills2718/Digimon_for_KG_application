@@ -11,6 +11,7 @@ class CommunityReportsResult:
 
 @dataclass
 class LeidenInfo:
+    community_id: str = field(default="")
     level: str = field(default="")
     title: str = field(default="")
     edges: Set[str] = field(default_factory=set)
