@@ -99,17 +99,15 @@ async def _load_dataset_chunks(
 
 def _chunk_data(actual_id: str, chunk: Any, metadata: dict | None = None) -> ChunkData:
     """Construct ChunkData using its real TextChunk-compatible runtime init."""
-    result = ChunkData(
+    return ChunkData(
         tokens=int(getattr(chunk, "tokens", 0) or 0),
         chunk_id=actual_id,
         content=str(getattr(chunk, "content", "") or ""),
         doc_id=str(getattr(chunk, "doc_id", "") or ""),
         index=int(getattr(chunk, "index", 0) or 0),
         title=getattr(chunk, "title", None),
+        metadata=metadata or {},
     )
-    result.metadata = metadata or {}
-    result.relevance_score = None
-    return result
 
 
 def _relationship_matches(graph: nx.Graph, u: Any, v: Any, data: dict, spec: Any) -> bool:
@@ -194,17 +192,17 @@ def chunk_from_relationships(
                 if not chunk_id or not content or chunk_id in seen:
                     continue
                 seen.add(chunk_id)
-                chunk = ChunkData(
-                    tokens=int(raw.get("tokens", 0) or 0),
-                    chunk_id=chunk_id,
-                    content=str(content),
-                    doc_id=str(raw.get("doc_id", "") or ""),
-                    index=int(raw.get("index", 0) or 0),
-                    title=raw.get("title"),
+                output.append(
+                    ChunkData(
+                        tokens=int(raw.get("tokens", 0) or 0),
+                        chunk_id=chunk_id,
+                        content=str(content),
+                        doc_id=str(raw.get("doc_id", "") or ""),
+                        index=int(raw.get("index", 0) or 0),
+                        title=raw.get("title"),
+                        metadata={"relationship": str(spec)},
+                    )
                 )
-                chunk.metadata = {"relationship": str(spec)}
-                chunk.relevance_score = None
-                output.append(chunk)
                 per_relationship += 1
                 if (
                     params.max_chunks_per_relationship
@@ -330,13 +328,126 @@ async def chunk_occurrence_tool(
 # Candidate chunk score aggregation (legacy direct tool)
 # ---------------------------------------------------------------------------
 
+def _score_relationship_sources_in_graph(
+    graph: nx.Graph,
+    relationship_scores: dict[str, float],
+) -> tuple[dict[str, float], int]:
+    """Map scored relationship identifiers to exact graph source chunk IDs."""
+    chunk_scores: dict[str, float] = {}
+    matched_keys = set()
+
+    for u, v, edge_data in graph.edges(data=True):
+        for relationship_id, raw_score in relationship_scores.items():
+            if not _relationship_matches(graph, u, v, edge_data, relationship_id):
+                continue
+            matched_keys.add(str(relationship_id))
+            score = float(raw_score)
+            for chunk_id in _edge_source_chunk_ids(edge_data):
+                chunk_scores[chunk_id] = chunk_scores.get(chunk_id, 0.0) + score
+
+    return chunk_scores, len(matched_keys)
+
+
+def _candidate_graphs_for_direct_aggregation(
+    context: GraphRAGContext,
+) -> list[tuple[str, nx.Graph]]:
+    """Return registered NetworkX-backed graphs without mutating active dataset."""
+    candidates = []
+    graphs = getattr(context, "graphs", {}) or {}
+    for graph_id in context.list_graphs():
+        graph = _extract_networkx_graph(graphs.get(graph_id))
+        if graph is not None:
+            candidates.append((graph_id, graph))
+    return candidates
+
+
+async def _derive_scored_chunks_from_relationships(
+    params: ChunkRelationshipScoreAggregatorInputs,
+    context: GraphRAGContext,
+) -> list[ChunkData]:
+    """Recover exact chunk candidates when the legacy MCP wrapper passes none."""
+    if not params.relationship_scores:
+        return []
+
+    active_dataset = getattr(context, "active_dataset_name", None)
+    ranked_graphs = []
+    for graph_id, graph in _candidate_graphs_for_direct_aggregation(context):
+        chunk_scores, matched_count = _score_relationship_sources_in_graph(
+            graph,
+            params.relationship_scores,
+        )
+        if matched_count <= 0 or not chunk_scores:
+            continue
+        dataset = _dataset_from_graph_reference(graph_id)
+        ranked_graphs.append(
+            (
+                matched_count,
+                dataset == active_dataset,
+                sum(abs(score) for score in chunk_scores.values()),
+                graph_id,
+                chunk_scores,
+            )
+        )
+
+    if not ranked_graphs:
+        logger.warning(
+            "Chunk.Aggregator: no registered graph matched the supplied relationship score IDs"
+        )
+        return []
+
+    ranked_graphs.sort(
+        key=lambda item: (item[0], item[1], item[2]),
+        reverse=True,
+    )
+    _matches, _active, _magnitude, graph_id, chunk_scores = ranked_graphs[0]
+
+    exact_chunks, aliases = await _load_dataset_chunks(context, graph_id)
+    output = []
+    seen = set()
+    for requested_id, score in sorted(
+        chunk_scores.items(),
+        key=lambda item: item[1],
+        reverse=True,
+    ):
+        actual_id = requested_id if requested_id in exact_chunks else aliases.get(requested_id)
+        if not actual_id or actual_id in seen:
+            continue
+        seen.add(actual_id)
+        chunk = _chunk_data(
+            actual_id,
+            exact_chunks[actual_id],
+            {
+                "derived_from_relationship_scores": True,
+                "graph_reference_id": graph_id,
+                "requested_reference_id": requested_id,
+            },
+        )
+        chunk.relevance_score = float(score)
+        output.append(chunk)
+        if len(output) >= params.top_k_chunks:
+            break
+    return output
+
+
 async def chunk_aggregator_tool(
     params: ChunkRelationshipScoreAggregatorInputs,
     graphrag_context: GraphRAGContext,
 ) -> ChunkRelationshipScoreAggregatorOutputs:
-    """Rank already-grounded candidate chunks by supplied relationship scores."""
+    """Rank grounded chunks by relationship scores.
+
+    The legacy stdio MCP wrapper currently supplies ``chunk_candidates=[]``.
+    In that case recover candidates from registered graph edges and exact
+    ``source_id`` chunks rather than returning an empty result. If candidates
+    are explicitly provided, retain the existing candidate-ranking behavior.
+    """
     if not params.chunk_candidates:
-        return ChunkRelationshipScoreAggregatorOutputs(ranked_aggregated_chunks=[])
+        derived = await _derive_scored_chunks_from_relationships(
+            params,
+            graphrag_context,
+        )
+        return ChunkRelationshipScoreAggregatorOutputs(
+            ranked_aggregated_chunks=derived
+        )
 
     total_relationship_score = float(sum(params.relationship_scores.values()))
     baseline = (
@@ -359,17 +470,18 @@ async def chunk_aggregator_tool(
     scored.sort(key=lambda item: item[1], reverse=True)
     output = []
     for original, score in scored[: params.top_k_chunks]:
-        chunk = ChunkData(
-            tokens=original.tokens,
-            chunk_id=original.chunk_id,
-            content=original.content,
-            doc_id=original.doc_id,
-            index=original.index,
-            title=original.title,
+        output.append(
+            ChunkData(
+                tokens=original.tokens,
+                chunk_id=original.chunk_id,
+                content=original.content,
+                doc_id=original.doc_id,
+                index=original.index,
+                title=original.title,
+                metadata=getattr(original, "metadata", None) or {},
+                relevance_score=float(score),
+            )
         )
-        chunk.metadata = getattr(original, "metadata", None) or {}
-        chunk.relevance_score = float(score)
-        output.append(chunk)
 
     return ChunkRelationshipScoreAggregatorOutputs(ranked_aggregated_chunks=output)
 
