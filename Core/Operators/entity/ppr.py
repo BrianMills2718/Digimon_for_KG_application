@@ -10,6 +10,33 @@ from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
+async def _seed_reset_vector(ctx: Any, seed_entities: list) -> np.ndarray:
+    """Build a uniform reset vector from explicit graph seed entities."""
+    reset_prob = np.zeros(ctx.graph.node_num)
+    valid_indices = []
+
+    for entity in seed_entities:
+        name = (
+            entity.entity_name
+            if hasattr(entity, "entity_name")
+            else entity["entity_name"]
+            if isinstance(entity, dict)
+            else str(entity)
+        )
+        idx = await ctx.graph.get_node_index(name)
+        if idx is None:
+            logger.warning(f"PPR: Seed entity '{name}' not found in graph, skipping")
+            continue
+        if 0 <= idx < ctx.graph.node_num:
+            valid_indices.append(idx)
+
+    if valid_indices:
+        weight = 1.0 / len(valid_indices)
+        for idx in valid_indices:
+            reset_prob[idx] = weight
+    return reset_prob
+
+
 async def _run_ppr(
     ctx: Any,
     query: str,
@@ -34,6 +61,10 @@ async def _run_ppr(
             top_k=ctx.config.top_k_entity_for_ppr,
             graph=ctx.graph,
         )
+
+        # A vector-search miss should not discard valid explicit graph seeds.
+        if not np.any(reset_prob):
+            reset_prob = await _seed_reset_vector(ctx, seed_entities)
     else:
         # HippoRAG-style: weight linked seed entities by inverse document frequency.
         if (
@@ -67,8 +98,10 @@ async def _run_ppr(
             else:
                 reset_prob[idx] = 1.0
 
-    if not np.any(reset_prob):
+    total = float(np.sum(reset_prob))
+    if total <= 0:
         return np.zeros(ctx.graph.node_num)
+    reset_prob = reset_prob / total
 
     return await ctx.graph.personalized_pagerank(
         [reset_prob],
