@@ -66,6 +66,23 @@ class GraphRAGContext(BaseModel):
         arbitrary_types_allowed = True
         validate_assignment = True
 
+    def invalidate_dataset_vdbs(self, dataset_name: str) -> List[str]:
+        """Evict in-memory VDBs belonging to ``dataset_name``.
+
+        This is intentionally small and name-based. A rebuilt graph must not keep
+        serving an in-memory vector index derived from the previous graph. Disk
+        invalidation for the canonical VDB paths happens in the graph build tool.
+        """
+        prefix = f"{dataset_name}_"
+        removed = [vdb_id for vdb_id in list(self.vdbs) if vdb_id.startswith(prefix)]
+        for vdb_id in removed:
+            self.vdbs.pop(vdb_id, None)
+        if removed:
+            logger.info(
+                f"GraphRAGContext: invalidated dataset VDBs for '{dataset_name}': {removed}"
+            )
+        return removed
+
     def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
         """Register a graph and restore its canonical dataset/type namespace.
 
@@ -73,6 +90,10 @@ class GraphRAGContext(BaseModel):
         immediately before calling this method. The graph ID is the authoritative
         resource identity, so repair the namespace here for ER/RK/tree/passage
         graphs rather than allowing a non-ER graph to read/write ER artifacts.
+
+        Replacing a graph object for an already-registered graph ID also evicts
+        that dataset's in-memory VDBs. They may have been derived from the previous
+        graph and must be rebuilt or reloaded after graph replacement.
         """
         dataset_name = _dataset_from_graph_id(graph_id)
         graph_type = _graph_type_from_graph_id(graph_id)
@@ -88,6 +109,14 @@ class GraphRAGContext(BaseModel):
                 dataset_name,
                 graph_type=graph_type,
             )
+
+        previous_graph = self.graphs.get(graph_id)
+        if (
+            dataset_name
+            and previous_graph is not None
+            and previous_graph is not graph_instance
+        ):
+            self.invalidate_dataset_vdbs(dataset_name)
 
         self.graphs[graph_id] = graph_instance
         logger.info(
