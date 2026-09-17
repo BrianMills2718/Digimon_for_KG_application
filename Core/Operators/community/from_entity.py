@@ -1,7 +1,7 @@
 """Community-from-entity operator.
 
 Resolve entity cluster memberships to persisted community reports while keeping
-identity/level/occurrence anchored to the authoritative Leiden schema.
+identity/level/occurrence/source provenance anchored to the Leiden schema.
 """
 
 from __future__ import annotations
@@ -22,16 +22,19 @@ def _level_int(value: Any) -> int:
         return 0
 
 
+def _schema_source_chunk_ids(schema) -> list[str]:
+    return sorted(
+        str(chunk_id)
+        for chunk_id in (getattr(schema, "chunk_ids", []) or [])
+        if chunk_id
+    )
+
+
 async def community_from_entity(
     inputs: Dict[str, SlotValue],
     ctx: Any,
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
-    """
-    Inputs:  {"entities": ENTITY_SET} -- entities with cluster memberships
-    Outputs: {"communities": COMMUNITY_SET}
-    Params:  {"level": int, "max_token": int, "single_one": bool}
-    """
     entities = inputs["entities"].data
     p = params or {}
     level = int(p.get("level", getattr(ctx.config, "level", 2)))
@@ -106,9 +109,8 @@ async def community_from_entity(
         reverse=True,
     )
 
-    ranked_pairs = [(key, reports[key]) for key in ranked_ids]
     ranked_pairs = truncate_list_by_token_size(
-        ranked_pairs,
+        [(key, reports[key]) for key in ranked_ids],
         key=lambda pair: pair[1].get("report_string", ""),
         max_token_size=max_token,
     )
@@ -135,6 +137,7 @@ async def community_from_entity(
                 extra={
                     "report_json": report_json,
                     "entity_membership_count": int(cluster_counts[community_id]),
+                    "source_chunk_ids": _schema_source_chunk_ids(schema),
                 },
             )
         )
