@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from Core.Common.Utils import clean_str
+from Core.Common.EntityNormalization import normalize_entity_id
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
@@ -18,7 +18,7 @@ async def _exact_graph_match(ctx: Any, query: str):
         return None, None
 
     candidates = []
-    for candidate in (query, clean_str(query)):
+    for candidate in (query, normalize_entity_id(query)):
         if candidate and candidate not in candidates:
             candidates.append(candidate)
 
