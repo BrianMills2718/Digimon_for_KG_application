@@ -20,6 +20,7 @@ class FakeGraph:
         self.node_num = 2
         self._graph = SimpleNamespace(graph=nx.Graph([("alpha", "beta")]))
         self.last_damping = None
+        self.last_reset = None
         self.scores = np.array(scores if scores is not None else [0.8, 0.2])
 
     async def get_node_index(self, entity_id):
@@ -34,7 +35,8 @@ class FakeGraph:
 
     async def personalized_pagerank(self, reset_prob_chunk, damping):
         self.last_damping = damping
-        assert np.asarray(reset_prob_chunk[0]).sum() > 0
+        self.last_reset = np.asarray(reset_prob_chunk[0], dtype=float)
+        assert self.last_reset.sum() == pytest.approx(1.0)
         return self.scores.copy()
 
 
@@ -44,6 +46,26 @@ class FakeContext:
 
     def get_graph_instance(self, graph_id):
         return self.graph
+
+
+class ZeroScoreVDB:
+    async def retrieval_nodes_with_score_matrix(self, query, top_k, graph):
+        return np.zeros(graph.node_num)
+
+
+def typed_inputs(seed="alpha"):
+    return {
+        "query": SlotValue(
+            kind=SlotKind.QUERY_TEXT,
+            data="How are alpha and beta connected?",
+            producer="test",
+        ),
+        "entities": SlotValue(
+            kind=SlotKind.ENTITY_SET,
+            data=[EntityRecord(entity_name=seed, source_id="chunk-a")],
+            producer="test",
+        ),
+    }
 
 
 def test_teleport_alpha_converts_to_igraph_damping():
@@ -83,21 +105,31 @@ async def test_typed_ppr_uses_standard_damping_and_returns_highest_score_first()
             top_k=2,
         ),
     )
-    inputs = {
-        "query": SlotValue(
-            kind=SlotKind.QUERY_TEXT,
-            data="How are alpha and beta connected?",
-            producer="test",
-        ),
-        "entities": SlotValue(
-            kind=SlotKind.ENTITY_SET,
-            data=[EntityRecord(entity_name="alpha", source_id="chunk-a")],
-            producer="test",
-        ),
-    }
 
-    result = await entity_ppr(inputs=inputs, ctx=ctx, params={})
+    result = await entity_ppr(inputs=typed_inputs(), ctx=ctx, params={})
 
     assert graph.last_damping == pytest.approx(0.85)
+    assert graph.last_reset.tolist() == pytest.approx([1.0, 0.0])
     ranked = result["entities"].data
     assert [entity.entity_name for entity in ranked] == ["beta", "alpha"]
+
+
+@pytest.mark.asyncio
+async def test_fast_ppr_falls_back_to_explicit_seed_when_vdb_reset_is_zero():
+    graph = FakeGraph(scores=[0.7, 0.3])
+    ctx = SimpleNamespace(
+        graph=graph,
+        entities_vdb=ZeroScoreVDB(),
+        sparse_matrices={},
+        config=SimpleNamespace(
+            use_entity_similarity_for_ppr=True,
+            top_k_entity_for_ppr=5,
+            node_specificity=False,
+            top_k=2,
+        ),
+    )
+
+    result = await entity_ppr(inputs=typed_inputs("alpha"), ctx=ctx, params={})
+
+    assert graph.last_reset.tolist() == pytest.approx([1.0, 0.0])
+    assert result["score_vector"].data.tolist() == pytest.approx([0.7, 0.3])
