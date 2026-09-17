@@ -66,7 +66,16 @@ def _relationship_embedding_text(
     edge_data: Dict[str, Any],
     fields: List[str],
 ) -> str:
-    parts = []
+    """Build searchable relationship text with endpoints and edge semantics.
+
+    Relationship retrieval is commonly driven by queries that name one or both
+    endpoint entities. Omitting endpoints whenever a description/keyword exists
+    makes those queries depend on whether the LLM happened to repeat entity
+    names in its description. Always include source/target identity, then append
+    the requested semantic fields.
+    """
+    parts = [f"source: {source}", f"target: {target}"]
+    semantic_parts = []
     for field in fields:
         value = edge_data.get(field)
         if value is None and field == "relation_name":
@@ -74,12 +83,12 @@ def _relationship_embedding_text(
         if value is None and field == "type":
             value = edge_data.get("relation_name")
         if value not in (None, ""):
-            parts.append(f"{field}: {value}")
+            semantic_parts.append(f"{field}: {value}")
 
-    if not parts:
+    if not semantic_parts:
         relation_name = edge_data.get("relation_name") or edge_data.get("type") or "related_to"
-        parts.append(f"{source} {relation_name} {target}")
-    return " | ".join(parts)
+        semantic_parts.append(f"relation_name: {relation_name}")
+    return " | ".join(parts + semantic_parts)
 
 
 async def _registered_vdb_is_usable(vdb) -> bool:
