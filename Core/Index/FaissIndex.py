@@ -35,13 +35,7 @@ class FaissIndex(BaseIndex):
 
     @staticmethod
     def normalize_backend_score(raw_score, metric_type):
-        """Convert backend scores to DIGIMON's higher-is-better convention.
-
-        LlamaIndex's FAISS integration returns raw FAISS values as the result
-        similarities. For L2 indexes those are squared distances, so smaller is
-        better. DIGIMON operators consistently consume scores as similarities,
-        therefore L2 is mapped monotonically to ``1 / (1 + distance)``.
-        """
+        """Convert backend scores to DIGIMON's higher-is-better convention."""
         if raw_score is None:
             return None
         score = float(raw_score)
@@ -55,12 +49,13 @@ class FaissIndex(BaseIndex):
         if top_k is None:
             top_k = self._get_retrieve_top_k()
 
+        query_text = str(query)
         retriever = self._index.as_retriever(
             similarity_top_k=top_k,
             embed_model=self.config.embed_model,
         )
-        query_embedding = await self._embed_text(query)
-        query_bundle = QueryBundle(query_str=query, embedding=query_embedding)
+        query_embedding = await self._embed_text(query_text)
+        query_bundle = QueryBundle(query_str=query_text, embedding=query_embedding)
         results = await retriever.aretrieve(query_bundle)
         metric_type = self._metric_type()
         return [
@@ -88,6 +83,18 @@ class FaissIndex(BaseIndex):
     async def retrieval_batch(self, queries, top_k):
         return await asyncio.gather(*[self.retrieval(query, top_k) for query in queries])
 
+    @staticmethod
+    def _query_text_from_seed(item: Any) -> str:
+        """Resolve typed/dict/string entity seeds to the text that should be searched."""
+        if item is None:
+            return ""
+        entity_name = getattr(item, "entity_name", None)
+        if entity_name:
+            return str(entity_name)
+        if isinstance(item, dict):
+            return str(item.get("entity_name") or item.get("name") or item.get("id") or "")
+        return str(item)
+
     async def retrieval_nodes_with_score_matrix(self, query_list, top_k, graph):
         if graph is None:
             raise ValueError("graph is required for score-matrix retrieval")
@@ -97,7 +104,7 @@ class FaissIndex(BaseIndex):
         aggregated_scores: dict[int, float] = {}
 
         for item in queries:
-            target_query = item.get("entity_name") if isinstance(item, dict) else str(item)
+            target_query = self._query_text_from_seed(item)
             if not target_query:
                 continue
 
@@ -172,10 +179,6 @@ class FaissIndex(BaseIndex):
             for key in meta_data_keys
             if key in data_item
         }
-        # Prefer graph/VDB-native identity over content-derived identity. Two
-        # distinct entities or relationships can legitimately share identical
-        # descriptions; content hashes would collapse those records onto the
-        # same LlamaIndex node ID.
         node_id = data_item.get("index")
         if node_id is None:
             node_id = data_item.get("id")
@@ -273,13 +276,7 @@ class FaissIndex(BaseIndex):
             return False
 
     async def upsert(self, data: dict[str, Any]):
-        """Insert one item into the existing index without replacing prior vectors.
-
-        FAISS itself does not support keyed replacement in this adapter, so this
-        method is append/insert semantics. Reusing an existing node ID may still
-        create a duplicate vector; callers that need true replacement should
-        rebuild the collection explicitly.
-        """
+        """Insert one item into the existing index without replacing prior vectors."""
         if self._index is None:
             raise RuntimeError("FAISS index is not loaded or built")
         if "content" not in data:
