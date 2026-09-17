@@ -15,6 +15,21 @@ from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
+def _fit_entity_tfidf(descriptions: list[str]):
+    """Fit TF-IDF, retaining stop words only when the filtered vocabulary is empty."""
+    vectorizer = TfidfVectorizer(stop_words="english")
+    try:
+        return vectorizer, vectorizer.fit_transform(descriptions)
+    except ValueError as exc:
+        if "empty vocabulary" not in str(exc).lower():
+            raise
+        # Tiny/synthetic KGs can legitimately contain only short stop-word-like
+        # names. Falling back to unfiltered tokens is better than converting a
+        # valid candidate set into an empty retrieval result.
+        vectorizer = TfidfVectorizer(stop_words=None)
+        return vectorizer, vectorizer.fit_transform(descriptions)
+
+
 async def entity_tfidf(
     inputs: Dict[str, SlotValue],
     ctx: Any,
@@ -25,9 +40,18 @@ async def entity_tfidf(
     Outputs: {"entities": ENTITY_SET}
     Params:  {"top_k": int}
     """
-    query = inputs["query"].data
+    query = str(inputs["query"].data or "")
     seed = inputs.get("entities")
-    top_k = (params or {}).get("top_k", ctx.config.top_k)
+    top_k = max(0, int((params or {}).get("top_k", ctx.config.top_k)))
+
+    if top_k == 0:
+        return {
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[],
+                producer="entity.tfidf",
+            )
+        }
 
     try:
         if seed and seed.data:
@@ -74,12 +98,16 @@ async def entity_tfidf(
                 )
             }
 
-        vectorizer = TfidfVectorizer(stop_words="english")
-        matrix = vectorizer.fit_transform(descriptions)
+        # Names are always included above, but keep a defensive non-empty text
+        # for unusual graph records with blank IDs/descriptions.
+        descriptions = [text.strip() or str(name) for name, text in zip(names, descriptions)]
+        vectorizer, matrix = _fit_entity_tfidf(descriptions)
         query_vector = vectorizer.transform([query])
         similarities = cosine_similarity(query_vector, matrix).reshape(-1)
 
-        ranked_indices = similarities.argsort()[::-1][: min(top_k, len(names))]
+        ranked_indices = similarities.argsort(kind="mergesort")[::-1][
+            : min(top_k, len(names))
+        ]
         records = [
             EntityRecord(
                 entity_name=str(names[index]),
@@ -106,5 +134,6 @@ async def entity_tfidf(
                 kind=SlotKind.ENTITY_SET,
                 data=[],
                 producer="entity.tfidf",
+                metadata={"error": str(exc)},
             )
         }
