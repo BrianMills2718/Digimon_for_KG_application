@@ -6,6 +6,7 @@ import pytest
 from Core.Common.EntityNormalization import normalize_entity_id
 from Core.Community.LeidenCommunity import LeidenCommunity
 from Core.Graph.DelimiterExtraction import DelimiterExtractionMixin
+from Core.Graph.ERGraph import ERGraph
 from Core.Operators.entity.link import entity_link
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
@@ -77,6 +78,23 @@ async def test_delimiter_extraction_preserves_unicode_entity_endpoints():
     assert entity.entity_name == "москва"
     assert relationship.src_id == "москва"
     assert relationship.tgt_id == "россия"
+
+
+@pytest.mark.asyncio
+async def test_two_step_er_tuples_preserve_unicode_entity_endpoints():
+    nodes, edges = await ERGraph._build_graph_from_tuples(
+        object(),
+        ["Москва", "Россия", "北京"],
+        [
+            ["Москва", "столица", "Россия"],
+            ["北京", "位于", "中国"],
+        ],
+        "chunk-1",
+    )
+
+    assert {"москва", "россия", "北京"}.issubset(nodes)
+    assert ("москва", "россия") in edges
+    assert ("北京", "中国") in edges
 
 
 @pytest.mark.asyncio
