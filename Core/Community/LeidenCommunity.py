@@ -46,6 +46,24 @@ class LeidenCommunity(BaseCommunity):
         if largest_cc is None:
             logger.warning("No largest connected component found, skipping Leiden clustering; Please check the input graph.")
             return None
+
+        nodes = list(largest_cc.nodes())
+        if not nodes:
+            logger.warning("Largest connected component is empty; skipping Leiden clustering.")
+            return None
+
+        # Leiden is unnecessary (and backend-dependent) for a singleton graph.
+        # Keep tiny valid KGs queryable by materializing the obvious one-node
+        # community directly instead of treating them as a clustering failure.
+        if len(nodes) == 1:
+            node_id = clean_str(nodes[0])
+            node_communities = {
+                node_id: [{"level": 0, "cluster": "0"}],
+            }
+            logger.info("Singleton graph: created one level-0 community without Leiden.")
+            await self._community_node_map.upsert(node_communities)
+            return node_communities
+
         community_mapping = hierarchical_leiden(
             largest_cc,
             max_cluster_size=max_cluster_size,
@@ -66,6 +84,7 @@ class LeidenCommunity(BaseCommunity):
         __levels = {k: len(v) for k, v in __levels.items()}
         logger.info(f"Each level has communities: {dict(__levels)}")
         await self._community_node_map.upsert(node_communities)
+        return node_communities
 
 
     @property
