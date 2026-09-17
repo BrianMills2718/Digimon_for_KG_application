@@ -3,6 +3,7 @@ import json
 from collections import defaultdict
 from typing import Any, List
 
+from Core.Common.EntityNormalization import normalize_entity_id
 from Core.Common.Logger import logger
 from Core.Common.Utils import clean_str, prase_json_from_response
 from Core.Graph.BaseGraph import BaseGraph
@@ -24,10 +25,6 @@ class ERGraph(DelimiterExtractionMixin, BaseGraph):
         super().__init__(config, llm, tokenizer)
         self._graph = storage_instance if storage_instance is not None else NetworkXStorage()
         self.graph_config = config.graph if hasattr(config, "graph") else config
-
-    # ------------------------------------------------------------------
-    # Two-step extraction (NER + OpenIE)
-    # ------------------------------------------------------------------
 
     async def _named_entity_recognition(self, passage: str):
         from Core.Common.TokenBudgetManager import TokenBudgetManager
@@ -146,10 +143,6 @@ class ERGraph(DelimiterExtractionMixin, BaseGraph):
         records = await self._extract_records_from_chunk(chunk_info)
         return await self._build_graph_from_records(records, chunk_key)
 
-    # ------------------------------------------------------------------
-    # Graph building orchestration
-    # ------------------------------------------------------------------
-
     async def _build_graph(self, chunk_list: List[Any]) -> bool:
         from Core.Common.TokenBudgetManager import TokenBudgetManager
 
@@ -205,10 +198,6 @@ class ERGraph(DelimiterExtractionMixin, BaseGraph):
                 )
                 await self.__graph__(results)
 
-            # A non-empty corpus producing zero graph nodes is an extraction
-            # failure, not a successful empty KG. Failing here prevents graph
-            # registration/VDB construction from turning a provider/parser
-            # failure into a misleading green canary.
             if self.node_num <= 0:
                 logger.error(
                     "ER graph extraction produced zero nodes from a non-empty corpus; "
@@ -233,7 +222,7 @@ class ERGraph(DelimiterExtractionMixin, BaseGraph):
         maybe_edges = defaultdict(list)
 
         for raw_entity in entities:
-            entity_name = clean_str(raw_entity)
+            entity_name = normalize_entity_id(raw_entity)
             if not entity_name:
                 logger.warning(f"Invalid entity name: {raw_entity}; skipping")
                 continue
@@ -252,8 +241,8 @@ class ERGraph(DelimiterExtractionMixin, BaseGraph):
                 logger.warning(f"Invalid triple: {triple}; skipping")
                 continue
 
-            src_entity = clean_str(triple[0])
-            tgt_entity = clean_str(triple[2])
+            src_entity = normalize_entity_id(triple[0])
+            tgt_entity = normalize_entity_id(triple[2])
             relation_name = clean_str(triple[1])
             if not src_entity or not tgt_entity or not relation_name:
                 logger.warning(f"Triple contains empty values: {triple}; skipping")
