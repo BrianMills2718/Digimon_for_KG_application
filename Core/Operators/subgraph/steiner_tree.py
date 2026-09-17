@@ -17,6 +17,47 @@ def _networkx_graph(graph):
     return candidate if isinstance(candidate, nx.Graph) else None
 
 
+def _best_connected_terminal_group(graph: nx.Graph, entities) -> tuple[list[str], list[str]]:
+    """Choose the connected terminal group with the strongest query evidence.
+
+    A Steiner tree cannot connect terminals from different connected components.
+    Instead of failing the whole method, choose the component containing the
+    most selected terminals, breaking ties by summed entity relevance score.
+    Returns ``(kept, dropped)`` terminal names.
+    """
+    score_by_name = {
+        record.entity_name: float(record.score or 0.0)
+        for record in entities
+    }
+    terminals = [record.entity_name for record in entities if record.entity_name in graph]
+    if len(terminals) <= 1:
+        return terminals, []
+
+    undirected = graph.to_undirected() if graph.is_directed() else graph
+    component_by_node = {}
+    for component_index, component in enumerate(nx.connected_components(undirected)):
+        for node in component:
+            component_by_node[node] = component_index
+
+    groups: dict[int, list[str]] = {}
+    for terminal in terminals:
+        groups.setdefault(component_by_node[terminal], []).append(terminal)
+
+    if len(groups) <= 1:
+        return terminals, []
+
+    kept = max(
+        groups.values(),
+        key=lambda group: (
+            len(group),
+            sum(score_by_name.get(name, 0.0) for name in group),
+        ),
+    )
+    kept_set = set(kept)
+    dropped = [terminal for terminal in terminals if terminal not in kept_set]
+    return kept, dropped
+
+
 async def subgraph_steiner_tree(
     inputs: Dict[str, SlotValue],
     ctx: Any,
@@ -37,14 +78,12 @@ async def subgraph_steiner_tree(
             )
         }
 
-    names = [record.entity_name for record in entities]
-
     try:
         graph = _networkx_graph(ctx.graph)
         if graph is None:
             raise TypeError("Steiner-tree operator requires a NetworkX-backed graph")
 
-        terminals = [name for name in names if name in graph]
+        terminals, dropped_terminals = _best_connected_terminal_group(graph, entities)
         if not terminals:
             result_graph = graph.subgraph([]).copy()
         elif len(terminals) == 1:
@@ -52,10 +91,13 @@ async def subgraph_steiner_tree(
         else:
             # DIGIMON edge weights are relevance-like rather than guaranteed
             # path costs. Default to minimum-hop Steiner structure unless a
-            # caller explicitly supplies a cost attribute.
+            # caller explicitly supplies a true cost attribute.
             weight_attribute = (params or {}).get("weight_attribute") or "__unit_cost__"
+            working_graph = graph.to_undirected() if graph.is_directed() else graph
+            component_nodes = nx.node_connected_component(working_graph, terminals[0])
+            connected_graph = working_graph.subgraph(component_nodes).copy()
             result_graph = steiner_tree(
-                graph,
+                connected_graph,
                 terminal_nodes=terminals,
                 weight=weight_attribute,
             )
@@ -70,6 +112,11 @@ async def subgraph_steiner_tree(
                 kind=SlotKind.SUBGRAPH,
                 data=record,
                 producer="subgraph.steiner_tree",
+                metadata={
+                    "requested_terminals": [record.entity_name for record in entities],
+                    "used_terminals": terminals,
+                    "dropped_disconnected_terminals": dropped_terminals,
+                },
             )
         }
     except Exception as exc:
@@ -79,5 +126,6 @@ async def subgraph_steiner_tree(
                 kind=SlotKind.SUBGRAPH,
                 data=SubgraphRecord(nodes=set(), edges=[]),
                 producer="subgraph.steiner_tree",
+                metadata={"error": str(exc)},
             )
         }
