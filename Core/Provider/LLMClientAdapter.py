@@ -2,49 +2,70 @@
 
 Operators call ctx.llm.aask() unchanged. This adapter routes calls through
 llm_client which handles retry, fallback, cost tracking, and model routing.
-
-Usage:
-    from Core.Provider.LLMClientAdapter import LLMClientAdapter
-    adapter = LLMClientAdapter(model="anthropic/claude-sonnet-4-5-20250929")
-    answer = await adapter.aask("What is the capital of France?")
 """
 
 from __future__ import annotations
 
 import asyncio
+import importlib
 from typing import Any, Dict, Optional
 
+from Config.LLMConfig import LLMConfig, LLMType
 from Core.Common.Logger import logger
 from Core.Provider.BaseLLM import BaseLLM
-from Config.LLMConfig import LLMConfig, LLMType
+
+
+def _load_llm_client_acall():
+    """Resolve llm_client at adapter construction/call time.
+
+    The MCP bootstrap catches ``ImportError`` around agentic-adapter creation and
+    falls back to the default DIGIMON LLM. Importing the optional dependency only
+    on the first request made that fallback ineffective, so resolve it eagerly.
+    """
+    module = importlib.import_module("llm_client")
+    acall_llm = getattr(module, "acall_llm", None)
+    if acall_llm is None:
+        raise ImportError("llm_client is installed but does not expose acall_llm")
+    return acall_llm
 
 
 class LLMClientAdapter(BaseLLM):
-    """Adapter: makes llm_client look like BaseLLM for operator compatibility.
-
-    BaseLLM.aask() builds messages then calls self.acompletion_text().
-    We implement acompletion_text() via llm_client.acall_llm.
-    """
+    """Adapter that makes ``llm_client`` compatible with BaseLLM operators."""
 
     def __init__(self, model: str, **llm_client_kwargs: Any):
-        # Build a minimal LLMConfig so BaseLLM fields are satisfied
+        # Fail here, not on the first user query, so MCP initialization can use
+        # its existing ImportError fallback to the default LLM provider.
+        self._acall_llm = _load_llm_client_acall()
+
         self.config = LLMConfig(
             api_type=LLMType.LITELLM,
             model=model,
             api_key="managed-by-llm-client",
         )
         self.model = model
-        self._kwargs = llm_client_kwargs
+        self._kwargs = dict(llm_client_kwargs)
         self.semaphore = asyncio.Semaphore(
-            llm_client_kwargs.pop("max_concurrency", 5)
+            self._kwargs.pop("max_concurrency", 5)
         )
-        self.cost_manager = None  # llm_client tracks costs internally
+        self.cost_manager = None
         self.use_system_prompt = True
         self.system_prompt = "You are a helpful assistant."
         self.pricing_plan = model
         self.aclient = None
 
         logger.info(f"LLMClientAdapter initialized for model: {model}")
+
+    def _call_kwargs(
+        self,
+        timeout: int,
+        max_tokens: Optional[int],
+    ) -> Dict[str, Any]:
+        kwargs = dict(self._kwargs)
+        if timeout is not None:
+            kwargs["timeout"] = timeout
+        if max_tokens is not None:
+            kwargs["max_tokens"] = max_tokens
+        return kwargs
 
     async def _achat_completion(
         self,
@@ -53,17 +74,13 @@ class LLMClientAdapter(BaseLLM):
         max_tokens: Optional[int] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
-        """Call llm_client.acall_llm and return OpenAI-compatible response dict."""
-        from llm_client import acall_llm
-
-        result = await acall_llm(
+        """Call llm_client and return an OpenAI-compatible response dict."""
+        result = await self._acall_llm(
             self.model,
             messages,
-            timeout=timeout,
-            **self._kwargs,
+            **self._call_kwargs(timeout, max_tokens),
         )
 
-        # Convert LLMCallResult to OpenAI-style response dict for get_choice_text()
         return {
             "choices": [
                 {
@@ -83,17 +100,14 @@ class LLMClientAdapter(BaseLLM):
         max_tokens: Optional[int] = None,
         format: str = "text",
     ) -> str:
-        """Return string response via llm_client. Called by BaseLLM.aask()."""
+        """Return a string response via llm_client. Called by BaseLLM.aask()."""
         if stream:
             raise NotImplementedError("Use non-streaming for operator calls")
 
-        from llm_client import acall_llm
-
-        result = await acall_llm(
+        result = await self._acall_llm(
             self.model,
             messages,
-            timeout=timeout,
-            **self._kwargs,
+            **self._call_kwargs(timeout, max_tokens),
         )
         return result.content
 
@@ -104,7 +118,6 @@ class LLMClientAdapter(BaseLLM):
         max_tokens: Optional[int] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
-        """Asynchronous completion returning OpenAI-compatible dict."""
         return await self._achat_completion(
             messages, timeout=timeout, max_tokens=max_tokens, **kwargs
         )
