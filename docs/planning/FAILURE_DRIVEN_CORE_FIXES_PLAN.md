@@ -47,6 +47,7 @@ Concrete failure → smallest fix → regression check → rerun. Generalize onl
 | Structural materialization can stringify opaque runtime objects as evidence | Emit only resolvable real text/content | fail-closed subgraph grounding test |
 | Community clustering calls nonexistent `logger.start()` | Use ordinary lifecycle logging; align abstract loader signature | community lifecycle test |
 | Persisted Leiden reports lose ID/level/occurrence on read | Pair report text/rating with authoritative community schema | community metadata tests |
+| Community summary citations cannot be traced to raw chunks | Carry schema `chunk_ids` through materialization into answer provenance metadata | community provenance test |
 | Basic Global stops at community reports | Add `community.materialize` and answer synthesis | community/method-plan tests |
 | Direct chunk tools fabricate placeholder text or fuzzy-match missing source IDs | Exact stored source references only | direct chunk grounding tests |
 | Named methods inconsistently stop at chunks | All 10 terminate in `meta.generate_answer`; context-only strips it | method-plan tests |
@@ -64,15 +65,16 @@ Concrete failure → smallest fix → regression check → rerun. Generalize onl
 
 The maintained core now has deterministic contracts covering composition, transport, credentials, resource scoping, graph builds, FAISS dimensions/scores, entity/relationship retrieval, PPR, TF-IDF, score propagation, subgraphs/PCST, communities, exact source grounding, answer provenance/citation validation, and all ten reference plans.
 
-Runtime verification remains distinct from implementation status. GitHub currently reports **zero Actions runs** for this fork/branch and connector-generated commits have no attached checks. The repository is a fork, so a one-time GitHub-side Actions enablement is a plausible cause, but that has not been verified through an Actions-permissions endpoint. The connected tooling also cannot dispatch a workflow or run a fresh checkout here.
+GitHub Actions is **enabled** on this fork and the repository has historical CI runs (29 were visible when checked). The latest visible historical run predates this implementation pass. The current problem is narrower: commits created through the connected GitHub contents API are not producing new workflow runs or attached status checks, and the connector exposes no workflow-dispatch action. Therefore the current head still lacks an executable green/red signal from CI even though CI infrastructure exists.
 
 ## Remaining work before broader architecture work
 
-1. run `pytest tests/core -q` in a clean minimal environment;
-2. run the cached MCP canary;
-3. run `DIGIMON_CANARY_REBUILD=1` with provider credentials;
-4. fix the first observed red failure with the smallest patch;
-5. only after those are green, smoke optional breadth paths such as live Leiden community generation and the external WAT-backed PassageGraph.
+1. manually run the current `CI` workflow in GitHub Actions **or** make a normal push outside this connector so the current head gets a real run;
+2. run `pytest tests/core -q` in a clean minimal environment;
+3. run the cached MCP canary;
+4. run `DIGIMON_CANARY_REBUILD=1` with provider credentials;
+5. fix the first observed red failure with the smallest patch;
+6. only after those are green, smoke optional breadth paths such as live Leiden community generation and the external WAT-backed PassageGraph.
 
 ## Non-goals
 
