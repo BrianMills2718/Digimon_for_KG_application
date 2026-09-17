@@ -14,19 +14,27 @@ from Option.Config2 import Config as FullConfig
 from llama_index.core.embeddings import BaseEmbedding as LlamaIndexBaseEmbedding
 
 
-_GRAPH_SUFFIXES = (
-    "_TreeGraphBalanced",
-    "_PassageGraph",
-    "_ERGraph",
-    "_RKGraph",
-    "_TreeGraph",
+_GRAPH_SUFFIX_TO_TYPE = (
+    ("_TreeGraphBalanced", "tree_graph_balanced"),
+    ("_PassageGraph", "passage_graph"),
+    ("_ERGraph", "er_graph"),
+    ("_RKGraph", "rkg_graph"),
+    ("_TreeGraph", "tree_graph"),
 )
+_GRAPH_SUFFIXES = tuple(suffix for suffix, _ in _GRAPH_SUFFIX_TO_TYPE)
 
 
 def _dataset_from_graph_id(graph_id: str) -> Optional[str]:
     for suffix in _GRAPH_SUFFIXES:
         if graph_id.endswith(suffix):
             return graph_id[: -len(suffix)]
+    return None
+
+
+def _graph_type_from_graph_id(graph_id: str) -> Optional[str]:
+    for suffix, graph_type in _GRAPH_SUFFIX_TO_TYPE:
+        if graph_id.endswith(suffix):
+            return graph_type
     return None
 
 
@@ -59,6 +67,28 @@ class GraphRAGContext(BaseModel):
         validate_assignment = True
 
     def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
+        """Register a graph and restore its canonical dataset/type namespace.
+
+        Transitional MCP registration code may assign a generic ER namespace
+        immediately before calling this method. The graph ID is the authoritative
+        resource identity, so repair the namespace here for ER/RK/tree/passage
+        graphs rather than allowing a non-ER graph to read/write ER artifacts.
+        """
+        dataset_name = _dataset_from_graph_id(graph_id)
+        graph_type = _graph_type_from_graph_id(graph_id)
+        storage = getattr(graph_instance, "_graph", None)
+        if (
+            dataset_name
+            and graph_type
+            and storage is not None
+            and hasattr(storage, "namespace")
+            and self.chunk_storage_manager is not None
+        ):
+            storage.namespace = self.chunk_storage_manager.get_namespace(
+                dataset_name,
+                graph_type=graph_type,
+            )
+
         self.graphs[graph_id] = graph_instance
         logger.info(
             f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}). "
