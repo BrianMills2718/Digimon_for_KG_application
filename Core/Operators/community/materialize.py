@@ -19,6 +19,13 @@ async def community_materialize(
         text = community.report or community.title
         if not text:
             continue
+        source_chunk_ids = list(
+            dict.fromkeys(
+                str(chunk_id)
+                for chunk_id in community.extra.get("source_chunk_ids", [])
+                if chunk_id
+            )
+        )
         chunks.append(
             ChunkRecord(
                 chunk_id=f"community:{community.community_id}",
@@ -30,6 +37,8 @@ async def community_materialize(
                     "title": community.title,
                     "occurrence": community.occurrence,
                     "rating": community.rating,
+                    "source_chunk_ids": source_chunk_ids,
+                    "source_nodes": sorted(str(node) for node in community.nodes),
                 },
             )
         )
@@ -60,7 +69,7 @@ def ensure_community_materialize_registered() -> None:
             cost_tier=CostTier.FREE,
             when_to_use=(
                 "Convert selected community reports into answer context while "
-                "preserving community identifiers and scores."
+                "preserving community identity and source chunk provenance."
             ),
             implementation=community_materialize,
         )
