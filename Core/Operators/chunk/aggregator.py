@@ -27,13 +27,16 @@ def _normalize_nonnegative_scores(values) -> np.ndarray:
     if max_score <= 0.0:
         return np.zeros_like(scores)
     if max_score == min_score:
-        # All chunks have the same positive evidence. Keep them as equal ties.
         return np.ones_like(scores)
     return (scores - min_score) / (max_score - min_score)
 
 
-def _chunk_id_from_store(doc_chunks: Any, index: int, doc: Any) -> str:
-    """Resolve a matrix column back to the corpus chunk ID when possible."""
+def _chunk_id_from_store(doc_chunks: Any, index: int, doc: Any) -> Optional[str]:
+    """Resolve a matrix column back to a real corpus chunk ID.
+
+    If the store cannot recover an exact source identifier, return ``None``
+    instead of inventing a matrix-position pseudo ID.
+    """
     if hasattr(doc, "chunk_id") and getattr(doc, "chunk_id"):
         return str(doc.chunk_id)
     if isinstance(doc, dict):
@@ -41,28 +44,25 @@ def _chunk_id_from_store(doc_chunks: Any, index: int, doc: Any) -> str:
             if doc.get(key):
                 return str(doc[key])
 
-    # The MCP _ChunkLookup keeps an insertion-ordered chunk_id -> text mapping.
     mapping = getattr(doc_chunks, "_chunks", None)
     if isinstance(mapping, dict):
         keys = list(mapping.keys())
         if 0 <= index < len(keys):
             return str(keys[index])
-
-    # Last-resort compatibility for stores that expose only positional access.
-    # Keep the matrix index explicit rather than pretending it is a source ID.
-    return f"matrix_index:{index}"
+    return None
 
 
 def _chunk_text(doc: Any) -> str:
+    """Return real textual evidence or an empty string for unknown objects."""
     if isinstance(doc, str):
-        return doc
+        return doc.strip()
     if hasattr(doc, "content"):
-        return str(doc.content)
+        return str(doc.content or "").strip()
     if hasattr(doc, "text"):
-        return str(doc.text)
+        return str(doc.text or "").strip()
     if isinstance(doc, dict):
-        return str(doc.get("content", doc.get("text", "")))
-    return str(doc)
+        return str(doc.get("content", doc.get("text", "")) or "").strip()
+    return ""
 
 
 async def chunk_aggregator(
@@ -93,7 +93,19 @@ async def chunk_aggregator(
         r2c = ctx.sparse_matrices["rel_to_chunk"]
 
         node_scores = np.asarray(score_vector, dtype=float).reshape(-1)
+        if e2r.shape[0] != node_scores.shape[0]:
+            raise ValueError(
+                "Sparse matrix/entity score shape mismatch: "
+                f"entity_to_rel rows={e2r.shape[0]}, score_vector={node_scores.shape[0]}"
+            )
+
         edge_scores = np.asarray(e2r.T.dot(node_scores)).reshape(-1)
+        if r2c.shape[0] != edge_scores.shape[0]:
+            raise ValueError(
+                "Sparse matrix relationship shape mismatch: "
+                f"rel_to_chunk rows={r2c.shape[0]}, edge_scores={edge_scores.shape[0]}"
+            )
+
         chunk_scores_raw = np.asarray(r2c.T.dot(edge_scores)).reshape(-1)
         chunk_scores = _normalize_nonnegative_scores(chunk_scores_raw)
 
@@ -110,14 +122,21 @@ async def chunk_aggregator(
         docs = await ctx.doc_chunks.get_data_by_indices(ranked_indices.tolist())
 
         records = []
+        skipped_unresolved = 0
         for index, doc in zip(ranked_indices, docs):
             if doc is None:
                 continue
             index_int = int(index)
+            chunk_id = _chunk_id_from_store(ctx.doc_chunks, index_int, doc)
+            text = _chunk_text(doc)
+            if not chunk_id or not text:
+                skipped_unresolved += 1
+                continue
+
             records.append(
                 ChunkRecord(
-                    chunk_id=_chunk_id_from_store(ctx.doc_chunks, index_int, doc),
-                    text=_chunk_text(doc),
+                    chunk_id=chunk_id,
+                    text=text,
                     score=float(chunk_scores[index_int]),
                     extra={
                         "matrix_index": index_int,
@@ -126,11 +145,16 @@ async def chunk_aggregator(
                 )
             )
 
+        metadata = {}
+        if skipped_unresolved:
+            metadata["skipped_unresolved_evidence"] = skipped_unresolved
+
         return {
             "chunks": SlotValue(
                 kind=SlotKind.CHUNK_SET,
                 data=records,
                 producer="chunk.aggregator",
+                metadata=metadata,
             )
         }
     except Exception as exc:
@@ -140,5 +164,6 @@ async def chunk_aggregator(
                 kind=SlotKind.CHUNK_SET,
                 data=[],
                 producer="chunk.aggregator",
+                metadata={"error": str(exc)},
             )
         }
