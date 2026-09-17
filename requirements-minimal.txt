@@ -1,6 +1,6 @@
 # Minimal requirements for DIGIMON core functionality
-# This set is intended to start the stdio MCP server and run the core ER-graph
-# retrieval path without installing the full research/UI environment.
+# This set is intended to start the stdio MCP server and run the maintained
+# ER-graph retrieval/reference-method paths without the full research/UI stack.
 
 # Core Python utilities
 pydantic>=2.11.0
@@ -22,6 +22,7 @@ networkx>=3.3
 igraph>=0.11.0
 scipy>=1.12.0
 scikit-learn>=1.6.0
+graspologic==3.4.1  # Leiden/community build used by basic_global
 pypdf>=5.4.0  # corpus_prepare PDF support
 
 # LLM and embeddings
