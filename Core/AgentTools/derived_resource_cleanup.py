@@ -1,9 +1,10 @@
 """Small cleanup helpers for graph-derived canonical artifacts.
 
 This is deliberately not a resource lifecycle framework. The maintained MCP
-reference methods use predictable dataset-scoped VDB IDs and ER sparse-matrix
-paths. A successful forced graph rebuild should remove those known derived
-artifacts so they cannot be reused against a different graph generation.
+reference methods use predictable dataset-scoped VDB IDs, community storage,
+and ER sparse-matrix paths. A successful forced graph rebuild should remove
+those known derived artifacts so they cannot be reused against a different
+graph generation.
 """
 
 from __future__ import annotations
@@ -17,10 +18,18 @@ from Core.Common.Logger import logger
 
 _CANONICAL_VDB_SUFFIXES = ("entities", "relations")
 _SPARSE_FILENAMES = ("sparse_e2r.pkl", "sparse_r2c.pkl")
+_COMMUNITY_FILENAMES = ("community_report.json", "community_node_map.json")
 
 
 def _project_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+def _working_dir(main_config) -> Path:
+    working_dir = Path(getattr(main_config, "working_dir", "./results"))
+    if not working_dir.is_absolute():
+        working_dir = _project_root() / working_dir
+    return working_dir
 
 
 def canonical_vdb_paths(dataset_name: str) -> list[Path]:
@@ -28,11 +37,13 @@ def canonical_vdb_paths(dataset_name: str) -> list[Path]:
     return [base / f"{dataset_name}_{suffix}" for suffix in _CANONICAL_VDB_SUFFIXES]
 
 
+def canonical_community_paths(main_config, dataset_name: str) -> list[Path]:
+    community_dir = _working_dir(main_config) / dataset_name / "community_storage"
+    return [community_dir / filename for filename in _COMMUNITY_FILENAMES]
+
+
 def canonical_sparse_paths(main_config, dataset_name: str) -> list[Path]:
-    working_dir = Path(getattr(main_config, "working_dir", "./results"))
-    if not working_dir.is_absolute():
-        working_dir = _project_root() / working_dir
-    er_dir = working_dir / dataset_name / "er_graph"
+    er_dir = _working_dir(main_config) / dataset_name / "er_graph"
     return [er_dir / filename for filename in _SPARSE_FILENAMES]
 
 
@@ -59,12 +70,13 @@ def invalidate_after_forced_graph_rebuild(
 ) -> list[str]:
     """Remove canonical persisted resources derived from a rebuilt graph.
 
-    Canonical VDBs are dataset-scoped but not graph-type-scoped, so rebuilding
-    any graph variant invalidates the maintained `<dataset>_entities` and
-    `<dataset>_relations` indexes. Sparse matrices are currently persisted under
-    the ER graph namespace and are invalidated only for ER rebuilds.
+    Canonical VDBs and community reports are dataset-scoped but not
+    graph-generation-scoped, so rebuilding any graph variant invalidates them.
+    Sparse matrices are currently persisted under the ER graph namespace and are
+    invalidated only for ER rebuilds.
     """
     paths = list(canonical_vdb_paths(dataset_name))
+    paths.extend(canonical_community_paths(main_config, dataset_name))
     if invalidate_sparse_matrices:
         paths.extend(canonical_sparse_paths(main_config, dataset_name))
 
