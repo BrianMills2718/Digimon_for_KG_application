@@ -15,6 +15,38 @@ from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import EntityRecord, SlotKind, SlotValue
 
 
+def _fallback_subquestions(query: str) -> list[str]:
+    """Fail conservatively by preserving the original question unchanged."""
+    value = str(query or "").strip()
+    return [value] if value else []
+
+
+def _parse_subquestions(response: Any, query: str) -> list[str]:
+    """Parse only a JSON array of strings; otherwise preserve the query.
+
+    Decomposition is advisory. Turning arbitrary explanatory prose into planner
+    state is worse than declining to decompose, so malformed model output falls
+    back to the original question instead of line-splitting prose.
+    """
+    if isinstance(response, list):
+        values = response
+    else:
+        text = str(response or "").strip()
+        match = re.search(r"\[[\s\S]*?\]", text)
+        if match is None:
+            return _fallback_subquestions(query)
+        try:
+            values = json.loads(match.group(0))
+        except (json.JSONDecodeError, TypeError):
+            return _fallback_subquestions(query)
+
+    if not isinstance(values, list):
+        return _fallback_subquestions(query)
+
+    cleaned = [str(value).strip() for value in values if isinstance(value, str) and value.strip()]
+    return cleaned or _fallback_subquestions(query)
+
+
 async def meta_decompose_question(
     inputs: Dict[str, SlotValue],
     ctx: Any,
@@ -33,7 +65,10 @@ async def meta_decompose_question(
     """
     query = inputs["query"].data
     p = params or {}
-    max_questions = p.get("max_questions", 5)
+    try:
+        max_questions = max(1, int(p.get("max_questions", 5)))
+    except (TypeError, ValueError):
+        max_questions = 5
 
     try:
         prompt = (
@@ -54,13 +89,7 @@ async def meta_decompose_question(
             f"Suggest up to {max_questions} focused sub-questions. Return only a JSON array of strings."
         )
         result = await ctx.llm.aask(msg=[{"role": "user", "content": prompt}])
-
-        # Parse JSON array from response.
-        match = re.search(r"\[.*?\]", result, re.DOTALL)
-        if match:
-            sub_qs = json.loads(match.group())
-        else:
-            sub_qs = [q.strip().strip('"').strip("'") for q in result.split("\n") if q.strip()]
+        sub_qs = _parse_subquestions(result, str(query))
 
         # Transitional representation: EntityRecord.entity_name carries sub-question text.
         records = [
@@ -71,7 +100,6 @@ async def meta_decompose_question(
                 extra={"advisory": True, "decomposition_index": i + 1},
             )
             for i, q in enumerate(sub_qs[:max_questions])
-            if isinstance(q, str) and q.strip()
         ]
 
         logger.info(f"meta_decompose_question: suggested {len(records)} sub-questions")
@@ -86,11 +114,20 @@ async def meta_decompose_question(
 
     except Exception as e:
         logger.exception(f"meta_decompose_question failed: {e}")
+        fallback = [
+            EntityRecord(
+                entity_name=q,
+                entity_type="sub_question",
+                score=1.0,
+                extra={"advisory": True, "decomposition_index": i + 1},
+            )
+            for i, q in enumerate(_fallback_subquestions(str(query)))
+        ]
         return {
             "sub_questions": SlotValue(
                 kind=SlotKind.ENTITY_SET,
-                data=[],
+                data=fallback,
                 producer="meta.decompose_question",
-                metadata={"advisory": True, "error": str(e)},
+                metadata={"advisory": True, "error": str(e), "fallback": "original_query"},
             )
         }
