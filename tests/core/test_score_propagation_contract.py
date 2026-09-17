@@ -25,6 +25,11 @@ class FakeChunkStore:
         return [values[index] for index in indices]
 
 
+class UnknownChunkStore:
+    async def get_data_by_indices(self, indices):
+        return [object() for _ in indices]
+
+
 class FakeGraph:
     async def get_edge_by_indices(self, indices):
         edges = [
@@ -90,6 +95,54 @@ async def test_chunk_propagation_preserves_real_chunk_ids_and_rank_order():
     assert [record.text for record in records] == ["alpha evidence", "beta evidence"]
     assert records[0].score > records[1].score
     assert records[0].extra["matrix_index"] == 0
+
+
+@pytest.mark.asyncio
+async def test_chunk_propagation_does_not_fabricate_unresolved_evidence():
+    ctx = SimpleNamespace(
+        sparse_matrices={
+            "entity_to_rel": csr_matrix(np.array([[1.0]])),
+            "rel_to_chunk": csr_matrix(np.array([[1.0]])),
+        },
+        doc_chunks=UnknownChunkStore(),
+        config=SimpleNamespace(top_k=1),
+    )
+    inputs = {
+        "score_vector": SlotValue(
+            kind=SlotKind.SCORE_VECTOR,
+            data=np.array([1.0]),
+            producer="test",
+        )
+    }
+
+    result = await chunk_aggregator(inputs, ctx, {})
+
+    assert result["chunks"].data == []
+    assert result["chunks"].metadata["skipped_unresolved_evidence"] == 1
+
+
+@pytest.mark.asyncio
+async def test_chunk_propagation_reports_stale_matrix_shape_mismatch():
+    ctx = SimpleNamespace(
+        sparse_matrices={
+            "entity_to_rel": csr_matrix(np.array([[1.0], [1.0]])),
+            "rel_to_chunk": csr_matrix(np.array([[1.0]])),
+        },
+        doc_chunks=FakeChunkStore(),
+        config=SimpleNamespace(top_k=1),
+    )
+    inputs = {
+        "score_vector": SlotValue(
+            kind=SlotKind.SCORE_VECTOR,
+            data=np.array([1.0]),
+            producer="test",
+        )
+    }
+
+    result = await chunk_aggregator(inputs, ctx, {})
+
+    assert result["chunks"].data == []
+    assert "shape mismatch" in result["chunks"].metadata["error"].lower()
 
 
 def test_score_normalization_is_finite_for_zero_and_flat_inputs():
