@@ -165,6 +165,22 @@ class FaissIndex(BaseIndex):
                 return value
         return None
 
+    @staticmethod
+    def _node_from_data(data_item: dict[str, Any], embedding, meta_data_keys: list):
+        metadata = {
+            key: data_item[key]
+            for key in meta_data_keys
+            if key in data_item
+        }
+        return TextNode(
+            id_=str(data_item.get("index", mdhash_id(data_item["content"]))),
+            text=data_item["content"],
+            embedding=embedding,
+            metadata=metadata,
+            excluded_embed_metadata_keys=list(metadata.keys()),
+            excluded_llm_metadata_keys=list(metadata.keys()),
+        )
+
     async def _update_index(self, datas: list[dict[str, Any]], meta_data_keys: list):
         if self.config.embed_model is None:
             logger.error("FAISS index cannot build without an embedding provider")
@@ -208,21 +224,7 @@ class FaissIndex(BaseIndex):
                 )
                 self._index = None
                 return
-            metadata = {
-                key: data_item[key]
-                for key in meta_data_keys
-                if key in data_item
-            }
-            nodes.append(
-                TextNode(
-                    id_=str(data_item.get("index", mdhash_id(data_item["content"]))),
-                    text=data_item["content"],
-                    embedding=embedding,
-                    metadata=metadata,
-                    excluded_embed_metadata_keys=list(metadata.keys()),
-                    excluded_llm_metadata_keys=list(metadata.keys()),
-                )
-            )
+            nodes.append(self._node_from_data(data_item, embedding, meta_data_keys))
 
         try:
             faiss_index = faiss.IndexHNSWFlat(int(embed_dims), 32)
@@ -262,9 +264,27 @@ class FaissIndex(BaseIndex):
             return False
 
     async def upsert(self, data: dict[str, Any]):
+        """Insert one item into the existing index without replacing prior vectors.
+
+        FAISS itself does not support keyed replacement in this adapter, so this
+        method is append/insert semantics. Reusing an existing node ID may still
+        create a duplicate vector; callers that need true replacement should
+        rebuild the collection explicitly.
+        """
         if self._index is None:
             raise RuntimeError("FAISS index is not loaded or built")
-        await self._update_index([data], list(data.keys()))
+        if "content" not in data:
+            raise ValueError("FAISS upsert requires a 'content' field")
+
+        embeddings = await self._embed_batch([data["content"]])
+        if len(embeddings) != 1 or not embeddings[0]:
+            raise RuntimeError("FAISS upsert failed to generate an embedding")
+
+        node = self._node_from_data(data, embeddings[0], list(data.keys()))
+        self._index.insert_nodes([node])
+        self._storage_index()
+        if self._index is None:
+            raise RuntimeError("FAISS upsert persistence failed")
 
     def exist_index(self):
         return os.path.exists(self.config.persist_path)
