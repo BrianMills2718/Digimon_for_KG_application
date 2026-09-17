@@ -1,7 +1,7 @@
 """Community-from-level operator.
 
-Retrieve persisted community reports while preserving the authoritative
-community identity/level/occurrence from the graph-derived Leiden schema.
+Retrieve persisted community reports while preserving authoritative community
+identity and graph-derived source provenance.
 """
 
 from __future__ import annotations
@@ -18,16 +18,19 @@ def _community_level(value: Any) -> int:
         return 0
 
 
+def _source_chunk_ids(schema) -> list[str]:
+    return sorted(
+        str(chunk_id)
+        for chunk_id in (getattr(schema, "chunk_ids", []) or [])
+        if chunk_id
+    )
+
+
 async def community_from_level(
     inputs: Dict[str, SlotValue],
     ctx: Any,
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
-    """
-    Inputs:  none required (uses community/config in context)
-    Outputs: {"communities": COMMUNITY_SET}
-    Params:  {"level": int, "max_consider": int, "min_rating": float}
-    """
     p = params or {}
     level = int(p.get("level", getattr(ctx.config, "level", 2)))
     max_consider = int(
@@ -98,7 +101,10 @@ async def community_from_level(
                 occurrence=float(getattr(schema, "occurrence", 0.0) or 0.0),
                 rating=rating,
                 nodes=set(getattr(schema, "nodes", set()) or set()),
-                extra={"report_json": report_json},
+                extra={
+                    "report_json": report_json,
+                    "source_chunk_ids": _source_chunk_ids(schema),
+                },
             )
         )
 
