@@ -16,12 +16,7 @@ from Core.Provider.BaseLLM import BaseLLM
 
 
 def _load_llm_client_acall():
-    """Resolve llm_client at adapter construction/call time.
-
-    The MCP bootstrap catches ``ImportError`` around agentic-adapter creation and
-    falls back to the default DIGIMON LLM. Importing the optional dependency only
-    on the first request made that fallback ineffective, so resolve it eagerly.
-    """
+    """Resolve llm_client while MCP initialization can still fall back safely."""
     module = importlib.import_module("llm_client")
     acall_llm = getattr(module, "acall_llm", None)
     if acall_llm is None:
@@ -55,16 +50,11 @@ class LLMClientAdapter(BaseLLM):
 
         logger.info(f"LLMClientAdapter initialized for model: {model}")
 
-    def _call_kwargs(
-        self,
-        timeout: int,
-        max_tokens: Optional[int],
-    ) -> Dict[str, Any]:
+    def _call_kwargs(self, timeout: int) -> Dict[str, Any]:
+        """Preserve the previously used llm_client argument surface."""
         kwargs = dict(self._kwargs)
         if timeout is not None:
             kwargs["timeout"] = timeout
-        if max_tokens is not None:
-            kwargs["max_tokens"] = max_tokens
         return kwargs
 
     async def _achat_completion(
@@ -78,7 +68,7 @@ class LLMClientAdapter(BaseLLM):
         result = await self._acall_llm(
             self.model,
             messages,
-            **self._call_kwargs(timeout, max_tokens),
+            **self._call_kwargs(timeout),
         )
 
         return {
@@ -107,7 +97,7 @@ class LLMClientAdapter(BaseLLM):
         result = await self._acall_llm(
             self.model,
             messages,
-            **self._call_kwargs(timeout, max_tokens),
+            **self._call_kwargs(timeout),
         )
         return result.content
 
