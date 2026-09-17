@@ -12,6 +12,9 @@ from Core.Common.Logger import logger
 from Core.Schema.SlotTypes import SlotKind, SlotValue
 
 
+INSUFFICIENT_EVIDENCE_ANSWER = "Insufficient retrieved evidence to answer the question."
+
+
 def _format_evidence_item(item: Any) -> str:
     """Render one chunk/sub-answer with whatever provenance markers are available."""
     text = getattr(item, "text", "") or ""
@@ -52,7 +55,31 @@ async def meta_synthesize_answers(
     p = params or {}
     style = p.get("synthesis_style", "concise")
 
-    evidence_lines = [_format_evidence_item(c) for c in chunk_data if getattr(c, "text", "")]
+    evidence_lines = [
+        _format_evidence_item(c)
+        for c in chunk_data
+        if str(getattr(c, "text", "") or "").strip()
+    ]
+    evidence_ids = [
+        str(getattr(c, "chunk_id", ""))
+        for c in chunk_data
+        if str(getattr(c, "text", "") or "").strip()
+        and getattr(c, "chunk_id", "")
+    ]
+
+    if not evidence_lines:
+        return {
+            "answer": SlotValue(
+                kind=SlotKind.QUERY_TEXT,
+                data=INSUFFICIENT_EVIDENCE_ANSWER,
+                producer="meta.synthesize_answers",
+                metadata={
+                    "status": "insufficient_evidence",
+                    "evidence_item_count": 0,
+                    "evidence_chunk_ids": [],
+                },
+            )
+        }
 
     try:
         evidence_block = "\n".join(evidence_lines)
@@ -75,13 +102,19 @@ async def meta_synthesize_answers(
         )
         response = await ctx.llm.aask(msg=[{"role": "user", "content": prompt}])
 
-        logger.info(f"meta_synthesize_answers: synthesized {len(evidence_lines)} evidence items")
+        logger.info(
+            f"meta_synthesize_answers: synthesized {len(evidence_lines)} evidence items"
+        )
         return {
             "answer": SlotValue(
                 kind=SlotKind.QUERY_TEXT,
-                data=response,
+                data=str(response).strip() or INSUFFICIENT_EVIDENCE_ANSWER,
                 producer="meta.synthesize_answers",
-                metadata={"evidence_item_count": len(evidence_lines)},
+                metadata={
+                    "status": "synthesized",
+                    "evidence_item_count": len(evidence_lines),
+                    "evidence_chunk_ids": list(dict.fromkeys(evidence_ids)),
+                },
             )
         }
 
@@ -92,6 +125,11 @@ async def meta_synthesize_answers(
                 kind=SlotKind.QUERY_TEXT,
                 data="Failed to synthesize answer.",
                 producer="meta.synthesize_answers",
-                metadata={"error": str(e)},
+                metadata={
+                    "status": "error",
+                    "error": str(e),
+                    "evidence_item_count": len(evidence_lines),
+                    "evidence_chunk_ids": list(dict.fromkeys(evidence_ids)),
+                },
             )
         }
