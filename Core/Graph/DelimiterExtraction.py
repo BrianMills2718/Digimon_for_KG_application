@@ -11,6 +11,7 @@ import json
 from collections import defaultdict
 from typing import Any, List, Optional, Tuple
 
+from Core.Common.EntityNormalization import normalize_entity_id
 from Core.Common.Logger import logger
 from Core.Common.Utils import clean_str, split_string_by_multi_markers, is_float_regex
 from Core.Common.Constants import (
@@ -37,10 +38,6 @@ class DelimiterExtractionMixin:
                               OR self.config with the relevant fields
     """
 
-    # ------------------------------------------------------------------
-    # Context builder
-    # ------------------------------------------------------------------
-
     @staticmethod
     def _build_context_for_entity_extraction(content: str) -> dict:
         return dict(
@@ -51,15 +48,8 @@ class DelimiterExtractionMixin:
             input_text=content,
         )
 
-    # ------------------------------------------------------------------
-    # LLM call + gleaning
-    # ------------------------------------------------------------------
-
     async def _extract_records_from_chunk(self, chunk_info: TextChunk) -> List[str]:
-        """
-        Call the LLM with ENTITY_EXTRACTION (or ENTITY_EXTRACTION_KEYWORD) and
-        return the raw delimiter-split records list.
-        """
+        """Call the LLM and return delimiter-split extraction records."""
         graph_cfg = getattr(self, "graph_config", self.config)
 
         context = self._build_context_for_entity_extraction(chunk_info.content)
@@ -107,10 +97,6 @@ class DelimiterExtractionMixin:
         logger.info(f"Split records for chunk {chunk_info.chunk_id}: {extracted_records}")
         return extracted_records
 
-    # ------------------------------------------------------------------
-    # Record → Entity / Relationship parsing
-    # ------------------------------------------------------------------
-
     async def _build_graph_from_records(
         self, records: List[str], chunk_key: str
     ) -> Tuple[dict, dict]:
@@ -143,16 +129,16 @@ class DelimiterExtractionMixin:
 
         return dict(maybe_nodes), dict(maybe_edges)
 
-    # ------------------------------------------------------------------
-
     async def _handle_single_entity_extraction(
         self, record_attributes: List[str], chunk_key: str
     ) -> Optional[Entity]:
         if len(record_attributes) < 4 or record_attributes[0] != '"entity"':
             return None
 
-        entity_name = clean_str(record_attributes[1])
-        if not entity_name.strip():
+        # Graph identity is Unicode-safe. Free-text type/description normalization
+        # remains unchanged to minimize the scope of this identity migration.
+        entity_name = normalize_entity_id(record_attributes[1])
+        if not entity_name or not entity_name.strip():
             return None
 
         graph_cfg = getattr(self, "graph_config", self.config)
@@ -181,8 +167,6 @@ class DelimiterExtractionMixin:
             attributes=entity_attributes,
         )
 
-    # ------------------------------------------------------------------
-
     async def _handle_single_relationship_extraction(
         self, record_attributes: List[str], chunk_key: str
     ) -> Optional[Relationship]:
@@ -208,10 +192,14 @@ class DelimiterExtractionMixin:
                     break
 
         enable_keywords = getattr(graph_cfg, "enable_edge_keywords", False)
+        src_id = normalize_entity_id(record_attributes[1])
+        tgt_id = normalize_entity_id(record_attributes[2])
+        if not src_id or not tgt_id:
+            return None
 
         return Relationship(
-            src_id=clean_str(record_attributes[1]),
-            tgt_id=clean_str(record_attributes[2]),
+            src_id=src_id,
+            tgt_id=tgt_id,
             weight=float(record_attributes[-1]) if is_float_regex(record_attributes[-1]) else 1.0,
             description=clean_str(record_attributes[3]),
             source_id=chunk_key,
