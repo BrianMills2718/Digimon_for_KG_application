@@ -1,4 +1,4 @@
-"""HippoRAG reference plan: extract/link -> PPR -> source chunks -> answer."""
+"""HippoRAG reference plan: extract/link -> IDF-aware PPR -> source chunks -> answer."""
 
 from Core.AgentSchema.plan import (
     DynamicToolChainConfig,
@@ -51,11 +51,12 @@ def hipporag_plan(query: str, **kwargs) -> ExecutionPlan:
             ),
             ExecutionStep(
                 step_id="ppr",
-                description="Diffuse linked-entity relevance through graph topology",
+                description="Diffuse specificity-weighted linked entities through graph topology",
                 action=DynamicToolChainConfig(
                     tools=[
                         ToolCall(
                             tool_id="entity.ppr",
+                            parameters={"use_entity_similarity_for_ppr": False},
                             inputs={
                                 "query": "plan_inputs.query",
                                 "entities": ToolInputSource(
