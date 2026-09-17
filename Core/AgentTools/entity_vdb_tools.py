@@ -90,9 +90,14 @@ async def entity_vdb_build_tool(
                 else node.get("index")
             )
             entity_id = str(raw_entity_id if raw_entity_id is not None else uuid.uuid4().hex)
+
+            # ``nodes_data()`` prepares a graph-native searchable content field.
+            # For ER/RK graphs it includes entity name + type + description;
+            # preferring description alone made exact/named-entity VDB queries
+            # ignore the entity's own identity whenever a description existed.
             content = (
-                node.get("description")
-                or node.get("content")
+                node.get("content")
+                or node.get("description")
                 or str(node.get("entity_name", node.get("index", "")))
             )
             if not content:
