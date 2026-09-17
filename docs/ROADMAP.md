@@ -1,298 +1,447 @@
-# DIGIMON Architecture Completion Roadmap
+# DIGIMON Roadmap
 
-**Updated:** 2026-09-16  
-**Scope:** finish and consolidate the architecture before making benchmarking, novelty, production-scale optimization, or additional UI surfaces the primary focus.
+**Updated:** 2026-09-17  
+**Scope:** move from the current graph/vector-heavy retrieval core toward the full [VISION.md](VISION.md): **Represent → Retrieve → Analyze**, downstream of governed semantic IR, with shared identity and derivation lineage across the workflow.
 
-This roadmap is ordered by architectural dependency, not by calendar estimates.
+This roadmap is ordered by dependency, not calendar estimates.
 
 ## Guiding principle
 
-> **Make capabilities, resources, prerequisites, validation, errors, prompts, and evidence explicit enough that a capable harness can reason with DIGIMON without DIGIMON hard-coding the harness's reasoning policy.**
+> **Make the current core demonstrably correct first. Then broaden DIGIMON from a strong graph/vector retrieval system into the intended general text-derived representation, retrieval, and analytics runtime—without rebuilding the external harness's reasoning abilities.**
 
-## Stage 0 — Canonical documentation baseline
+## Stage 0 — Keep the documentation hierarchy truthful
 
-**Goal:** keep one accurate description of code reality and target architecture.
+**Goal:** prevent the current workstream from being mistaken for the project north star.
 
-### Work
+### Canonical roles
 
-- maintain `docs/CURRENT_STATE.md` as code-truth status;
-- maintain `docs/IMPLEMENTATION_MAP.md` as the module/capability map;
-- maintain `docs/ARCHITECTURE.md` as target design;
-- maintain `docs/GAP_ANALYSIS.md` as current→target distance;
-- use this roadmap for active architectural sequencing;
-- keep `README.md`, `FUNCTIONALITY.md`, `AGENTS.md` and `CLAUDE.md` aligned;
-- convert high-authority obsolete trackers to explicit historical stubs rather than leaving competing “IN PROGRESS” plans.
+- `VISION.md` — durable product/research north star;
+- `CURRENT_STATE.md` — current code reality;
+- `IMPLEMENTATION_MAP.md` — module-level implementation map;
+- `ARCHITECTURE.md` — target technical/system boundaries;
+- `GAP_ANALYSIS.md` — current→target gaps;
+- `ROADMAP.md` — ordered work;
+- `DOCUMENTATION_COVERAGE.md` — checklist preventing myopic documentation updates.
 
 ### Exit criteria
 
-- a contributor can identify canonical docs in under a minute;
-- no active instruction/status file mandates a superseded planner/AoT/WebSocket checkpoint program;
-- old plans are clearly labeled historical/superseded;
-- `Implemented / Partial / Legacy / Planned` terminology is used consistently;
-- current docs distinguish source inspection from fresh runtime certification.
+- README and docs index lead with the full Represent/Retrieve/Analyze thesis;
+- harness-first is documented as a control boundary, not the project identity;
+- onto-canon6 is clearly upstream semantic authority;
+- provenance/derivation is important but not allowed to displace representation, retrieval, analytics, wiki/catalog, identity or surface concerns;
+- current-state docs do not claim fresh runtime certification without a real run.
 
 **Current status:** substantially complete; maintain continuously.
 
-## Stage 1 — Stabilize the capability and composition contract
+## Stage 1 — Obtain a real current-head runtime signal
 
-**Goal:** make the typed capability system the unequivocal canonical core and make plan validation semantics unambiguous.
-
-### Work
-
-- inventory all 26 registered operators against their actual implementations;
-- inventory additional MCP-facing corpus/build/resource/config/analysis/cross-modal tools;
-- define one common capability descriptor model or an explicit mapping for non-operator tools;
-- audit every operator descriptor for exact input/output semantics, field requirements, LLM/cost/prerequisite claims and limitations;
-- resolve known semantic mismatches such as generic `ENTITY_SET` use for sub-questions and broader rerank behavior than its current descriptor expresses;
-- distinguish compatibility **discovery** from proof of **executability**;
-- make validation policy caller-visible:
-  - strict mode: invalid plan does not execute;
-  - explicit best-effort mode: proceed with structured warnings when intentionally requested;
-- remove accidental fail-open ambiguity from `OperatorComposer.execute()`;
-- decide prompt-source ownership for typed meta operators versus YAML templates and prevent semantic drift;
-- add deterministic contract tests for registry metadata, reference plans and MCP parity.
-
-### Exit criteria
-
-- every canonical harness-facing capability has machine-readable metadata or a documented adapter into the canonical model;
-- descriptor behavior matches implementation behavior;
-- static validation produces structured errors/warnings;
-- strict execution cannot silently proceed after failed validation;
-- best-effort execution is explicit and distinguishable;
-- compatibility/chain discovery does not present resource-incomplete suggestions as validated execution plans;
-- decomposition/synthesis prompt execution paths cannot silently drift from their documented policy;
-- reference methods are visibly compositions of capabilities, not a separate architecture.
-
-## Stage 2 — Unify resources and prerequisites
-
-**Goal:** let the harness inspect what exists, what is missing, and how derived artifacts depend on each other.
+**Goal:** stop relying on source inspection as the primary confidence mechanism.
 
 ### Work
 
-- introduce a typed `ResourceDescriptor`/resource-catalog abstraction;
-- represent corpus, graph, VDB, community, sparse-matrix and converted table/vector artifacts consistently;
-- define stable resource IDs/namespaces and dataset association;
-- record producer/config/build fingerprints;
-- record dependency/prerequisite links;
-- expose resource state through the canonical harness surface;
-- replace/augment boolean prerequisite flags with explicit resource requirements;
-- link missing prerequisites to capabilities that can produce them;
-- make `auto_build` a thin convenience policy over explicit resource facts;
-- define reuse, rebuild, staleness and invalidation behavior;
-- document the supported current stdio session/process scope before considering more complex multi-session state.
+Run the maintained deterministic path on a real runner:
+
+```bash
+pip install -r requirements-minimal.txt
+pytest tests/core -q
+python tests/e2e/test_mcp_smoke.py
+DIGIMON_CANARY_REBUILD=1 python tests/e2e/test_mcp_smoke.py
+```
+
+Then use the existing failure-driven rule:
+
+```text
+first concrete failure
+→ smallest fix
+→ regression test
+→ rerun
+```
+
+Do not use the lack of GitHub Actions runs as evidence that current code is green or broken.
 
 ### Exit criteria
 
-For any capability request, the harness can determine:
+- deterministic core suite runs on current head;
+- reuse canary runs;
+- clean-rebuild canary runs;
+- first failures have been fixed rather than worked around in documentation;
+- runtime status is recorded explicitly.
 
-1. which resources it requires;
-2. whether compatible resources already exist;
-3. whether they are current/stale;
-4. which capability can build them;
-5. what downstream resources depend on them;
-6. whether to build, reuse, rebuild or choose a fallback.
+## Stage 2 — Finish the canonical governed-IR input seam
 
-## Stage 3 — Make provenance an end-to-end contract
-
-**Goal:** preserve source lineage through retrieval, transformation and composition.
+**Goal:** make onto-canon/Foundation-style governed IR the canonical ecosystem input to DIGIMON projections.
 
 ### Work
 
-- define a first-class evidence/provenance/assertion record;
-- connect entity/relationship `source_id` and chunk IDs to stable source-document metadata;
-- propagate evidence references through subgraphs, communities, scoring/reranking and aggregation;
-- use `SlotValue.metadata` only as an interim bridge where a stronger typed record is not yet available;
-- define provenance behavior for graph/table/vector conversions;
-- mark derived/inferred outputs separately from directly retrieved assertions;
-- represent when lineage has been combined, summarized or lost;
-- make answer synthesis consume structured evidence rather than relying only on free-form text;
-- preserve conflicting evidence rather than silently collapsing it.
+- inspect the actual current Foundation IR/export contract from onto-canon6;
+- map stable IDs, predicates, n-ary roles, entity types, aliases, literals, qualifiers, source refs and evidence spans into DIGIMON projection inputs;
+- complete and test custom-ontology selection/load behavior where graph extraction still uses standalone/raw mode;
+- distinguish **canonical governed-IR projection** from **standalone raw-document ingestion** in code/docs;
+- preserve raw mode for experiments, benchmarks and independent use without treating it as the ecosystem authority path;
+- add one small governed fixture that can drive multiple DIGIMON projections.
 
 ### Exit criteria
 
-- a material final claim can be traced to one or more source chunks/documents;
-- important relationship/path evidence can identify source material that justified it;
-- aggregation/conversion states whether lineage was preserved, combined or lost;
-- missing evidence is distinguishable from negative evidence;
-- synthesis can surface unresolved/conflicting evidence using structured inputs.
+- one governed IR fixture imports deterministically;
+- entity/assertion/source/evidence identities survive the handoff;
+- no projection silently invents semantic meaning absent from the IR;
+- raw-document mode is still usable but clearly secondary in the ecosystem architecture.
 
-## Stage 4 — Make the harness-first boundary operationally clean
+## Stage 3 — Establish cross-representation identity as an invariant
 
-**Goal:** ensure the preferred execution path matches the documented architecture.
+**Goal:** make heterogeneous representations cheaply composable by the harness.
 
 ### Work
 
-- treat stdio MCP/capability access as the canonical external orchestration surface;
-- keep individual capability composition as the primary conceptual mode;
-- retain `execute_method` and `auto_compose` as optional conveniences;
-- document bounded internal model-assisted operators clearly;
-- adapt CLI/API paths to use the canonical capability layer where practical, or label them compatibility/experimental;
-- remove assumptions that `PlanningAgent` must control ordinary queries;
-- keep AoT/GoT/ReAct decomposition advisory;
-- if sub-question typing is improved, prefer a reusable text/task-list abstraction before introducing a formal reasoning DAG;
-- introduce a dependency graph only when a concrete feature such as scheduling, resumability, caching, provenance or auditing requires it.
+Define and test canonical identity mappings for at least:
+
+- `entity_id`;
+- `assertion_id`;
+- `predicate_id`;
+- `source_ref`;
+- evidence/span identity.
+
+Ensure projections use those identities wherever their native engines permit it.
+
+Example invariant:
+
+```text
+entity:alice-smith
+    ├─ relational entities.entity_id
+    ├─ property-graph node ID
+    ├─ vector metadata.entity_id
+    ├─ semantic-graph identifier
+    └─ wiki/catalog metadata
+```
+
+Projection-local IDs may exist, but they must not become the only bridge between representations.
 
 ### Exit criteria
 
-- a capable external harness can complete supported build→retrieve→evidence flows without invoking the legacy internal planner;
-- optional internal/reference execution remains available without defining the core architecture;
-- no canonical document or entry point description implies a mandatory two-brain/cognitive architecture;
-- CLI/API documentation accurately identifies canonical, compatibility and experimental paths.
+- a harness can move from one representation to another using explicit canonical IDs rather than fuzzy rediscovery;
+- projection tests verify identity preservation;
+- evidence/source IDs remain reopenable after cross-representation moves.
 
-## Stage 5 — Consolidate legacy and duplicate architecture
+## Stage 4 — Canonical relational/tabular projection
 
-**Goal:** reduce ambiguity and maintenance cost without prematurely deleting useful lineage.
+**Goal:** add the first major non-graph canonical representation family.
 
 ### Work
 
-- identify live callers of `Core/AgentBrain`, each `Core/AgentOrchestrator` variant, `Core/AOT`, `Core/Memory`, and older `Core/MCP` components;
-- classify each module as canonical, compatibility, experimental or legacy;
-- deprecate/remove unused variants when safe;
-- retain historical behavior in Git instead of maintaining competing active trackers;
-- stop maintaining duplicate tool registries/planners where the canonical descriptor system can serve the requirement;
-- remove generated/cache/vendor artifacts from source control where safe;
-- reconcile dependency/environment files around supported paths.
+Define a compact relational projection of governed IR, likely including:
+
+- entities;
+- aliases / identity memberships;
+- assertions;
+- assertion roles;
+- literal values;
+- source/evidence references;
+- qualifiers/provenance.
+
+Prefer an engine such as DuckDB/SQLite where it keeps local operation simple. The point is not the database brand; the point is native relational capability:
+
+- exact filtering;
+- joins;
+- aggregation;
+- grouping;
+- analytical SQL;
+- window/recursive operations where useful.
+
+Do not embed user-level reasoning policy in SQL helpers.
 
 ### Exit criteria
 
-- every major orchestration/MCP/memory/AoT module is classified;
-- unused architecture is removed or clearly isolated;
-- new contributors are not presented with several equally authoritative “brains”;
-- root/docs directories no longer contain apparently active superseded implementation trackers.
+- governed fixture projects to a relational artifact;
+- schema is documented in machine- and agent-readable form;
+- canonical IDs match other projections;
+- a few representative exact/aggregate SQL tasks work;
+- relational results can feed typed downstream retrieval/analytic operations.
 
-## Stage 6 — Normalize cross-modal capabilities
+## Stage 5 — Materialize the agent wiki / progressive-disclosure catalog
 
-**Goal:** bring graph/table/vector transformations under the same capability/resource/evidence rules.
+**Goal:** give the harness a navigable map of both knowledge and the retrieval/analytic environment.
 
 ### Work
 
-- describe conversion operations with canonical capability metadata;
-- represent converted outputs as resources with fingerprints and schemas;
-- record transformation parameters/provider and lossiness;
-- preserve provenance mappings where feasible;
-- use explicit typed adapters rather than ad hoc DataFrame/ndarray/dictionary payload conventions at harness boundaries;
-- keep modality-selection prompts advisory.
+Generate a deterministic artifact surface such as:
+
+```text
+index.md
+knowledge/
+  people/
+  organizations/
+  concepts/
+  topics/
+  sources/
+representations/
+  property-graph.md
+  relational.md
+  vectors.md
+  ...
+schemas/
+  ontology.md
+  graph-schema.md
+  relational-schema.md
+  vector-collections.md
+```
+
+Pages should expose:
+
+- semantic summaries and organization;
+- canonical IDs;
+- source/evidence links;
+- available representations for an entity/assertion/concept;
+- representation schemas;
+- specialized capabilities applicable to those representations.
+
+Do **not** build `wiki.open`, `wiki.follow`, basic grep/search wrappers merely for symmetry when the harness already has those native capabilities.
 
 ### Exit criteria
 
-- the harness can discover valid conversion paths and their schemas;
-- converted artifacts participate in resource lifecycle/discovery;
-- lossy conversions are explicitly marked;
-- source/evidence lineage survives where technically possible.
+- the governed fixture generates a useful progressive-disclosure knowledge/catalog artifact;
+- a harness using ordinary file/link/search abilities can discover an entity and learn how to address it in SQL/graph/vector representations;
+- the wiki describes available operations without prescribing a workflow.
 
-## Stage 7 — Standardize failure and recovery semantics
+## Stage 6 — Make analytics a first-class capability plane
 
-**Goal:** make tool failures actionable to an intelligent harness.
+**Goal:** expose DIGIMON's analytical lineage explicitly instead of treating analytics as scattered retrieval helpers.
 
 ### Work
 
-- define error categories for missing resources/prerequisites, invalid plan/wiring, incompatible resource/config, empty retrieval, provider failure, likely extraction incompleteness, unsupported conversion and internal failure;
-- standardize result/error envelopes or MCP exception conventions;
-- distinguish zero results from execution failure;
-- stop converting provider/operator exceptions into ordinary empty results unless the result explicitly carries failure state;
-- provide structured recovery hints only where they express capability/resource facts, not hard-coded user-level reasoning policy.
+First inventory existing analysis/transformation code before adding anything new.
+
+Prioritize graph/SNA capabilities already close to the codebase and the project's lineage, such as:
+
+- degree/weighted degree;
+- PageRank/eigenvector-style scores where supported;
+- betweenness and related centrality measures;
+- Leiden/community detection;
+- connected components;
+- k-core/cohesion/density/assortativity where useful;
+- brokerage/bridging measures;
+- shortest paths and path statistics;
+- diffusion/propagation;
+- PCST/Steiner/subgraph transformations.
+
+Then add non-graph methods only where they have clear reusable value:
+
+- relational aggregation/statistics;
+- distributions/group comparisons;
+- clustering/dimensionality reduction;
+- anomaly detection;
+- temporal aggregation/trends;
+- model fitting where a concrete use case requires it.
+
+### Type model
+
+Extend the current typed algebra only when concrete capabilities require it. Candidate reusable types include:
+
+- `TABLE`;
+- `VECTOR_SET`;
+- richer score/metric records;
+- `MODEL`;
+- `FINDING_SET` / derived artifact records.
+
+Do not encode a thought process as types.
 
 ### Exit criteria
 
-- the harness can programmatically distinguish build/retry/fallback/reformulate/stop cases;
-- canonical contract tests cover error classes;
-- empty/incomplete KG results do not automatically become negative factual conclusions;
-- no failure path masquerades as a successful answer payload.
+- analytic capabilities are discoverable alongside retrieval capabilities;
+- retrieved working sets can feed analytics directly;
+- analytic outputs can feed later retrieval/analytics;
+- graph analytics are no longer hidden as incidental implementation details;
+- source evidence and derived state are clearly distinguished.
 
-## Stage 8 — Architectural reliability and CI
+## Stage 7 — Build first-class artifact / derivation lineage
 
-**Goal:** prove the contracts remain stable as implementation changes.
+**Goal:** extend provenance from source citations into the entire analytical chain.
+
+### Distinguish three things
+
+- evidence provenance;
+- semantic provenance;
+- artifact/derivation lineage.
 
 ### Work
 
-Create a deterministic test matrix for:
+Define the smallest useful derivation contract recording:
 
-- operator descriptor↔implementation parity;
-- slot and field compatibility;
-- strict/best-effort validation semantics;
-- custom composition execution;
-- MCP discovery/execution parity;
-- prompt-policy parity where duplicate prompt surfaces remain;
-- resource registration/prerequisite/invalidation;
-- provenance propagation;
-- graph-build→retrieve→evidence E2E flow;
-- cross-modal conversion contracts;
-- standardized failures/recovery;
-- intentionally retained legacy-entry-point compatibility.
+- input artifact/resource IDs + versions/hashes;
+- transformation/capability identity;
+- parameters/configuration/provider where material;
+- output artifact ID + version/hash;
+- projection/analytic kind;
+- scope/lossiness where applicable;
+- links back to canonical semantic/source identity.
 
-Tighten CI so canonical contract tests are blocking. Keep live-provider/expensive tests separately classified.
+Target lineage:
+
+```text
+source artifact
+→ governed semantic IR
+→ representation projection
+→ retrieval artifact / bounded working set
+→ analytic transformation
+→ derived artifact
+→ finding
+```
+
+The derivation graph must remain distinct from the domain/property graph.
+
+### First practical uses
+
+- reproduce a centrality/community result;
+- explain which subgraph produced it;
+- trace it to the graph/IR/source versions;
+- mark dependent artifacts stale when their inputs change.
 
 ### Exit criteria
 
-- architecture contract regressions fail CI;
-- MyPy/integration permissiveness is either tightened for supported paths or clearly scoped as non-blocking optional coverage;
-- provider/LLM tests are separated from deterministic core tests;
-- supported Python/package/build paths are documented and exercised;
-- status docs can reference test categories rather than anecdotal past runs.
+- at least projection, retrieval and analytic outputs have explicit derivation records;
+- recursive lineage reaches source evidence or declared root/human inputs;
+- stale-artifact detection uses recorded dependency identity rather than only naming/path conventions;
+- findings can cite both evidence and analytic derivation.
 
-## Stage 9 — Incremental and temporal/conflict semantics
+## Stage 8 — Close remaining resource correctness seams
 
-**Goal:** add sophisticated lifecycle/evidence behavior after the resource/provenance foundation exists.
+**Goal:** keep resource logic concrete and trustworthy without inventing enterprise infrastructure.
 
 ### Work
 
-- define supported incremental corpus/graph/index updates;
-- specify entity identity behavior across updates;
-- propagate invalidation to communities/matrices/VDBs/conversions;
-- add assertion validity/time metadata where required;
-- represent source disagreement explicitly;
-- define query-time filtering/selection as capabilities, not hidden global policy.
+- bind sparse matrices to exact graph identity/version to eliminate same-shaped cross-graph ambiguity;
+- preserve current source-chunk manifest behavior;
+- retain practical VDB/community invalidation rules;
+- extend identity/invalidation only as new relational/wiki/vector/analytic artifacts are added;
+- introduce more general resource descriptors only where multiple real producers/consumers need them.
 
 ### Exit criteria
 
-- new documents can be incorporated with documented consequences for derived artifacts;
-- stale resources are detectable;
-- conflicting/time-bounded claims can coexist and be surfaced to the harness.
+- no maintained projection/analytic artifact can be silently paired with a different source graph/IR version;
+- resource rebuild/reuse behavior is deterministic and explainable;
+- derivation records provide enough dependency information for invalidation.
 
-## Stage 10 — Later evaluation and research validation
+## Stage 9 — Converge public surfaces on one maintained core
 
-**Goal:** measure the stabilized architecture rather than allowing a benchmark to define it.
+**Goal:** CLI, Python and MCP become different interfaces over the same runtime.
 
-This stage is intentionally deferred until earlier architecture exit criteria are substantially met.
+### Python runtime
 
-Use [FUTURE_EVALUATION_QUESTIONS.md](FUTURE_EVALUATION_QUESTIONS.md) to evaluate:
+Create a narrow supported application/developer API for:
 
-- when KG structure helps versus lexical/vector retrieval;
-- adaptive composition versus fixed methods;
-- extraction/entity-resolution error propagation;
-- provenance quality;
-- routing quality and calibration;
-- path-expansion control;
-- latency/token/quality tradeoffs;
-- incomplete-graph fallback behavior;
-- incremental update behavior.
+- loading/creating projections;
+- inspecting representations/resources;
+- executing typed retrieval/analytic capabilities;
+- obtaining evidence/derivation results.
 
-## What not to add before it solves a documented gap
+### CLI
 
-Avoid expanding scope with:
+Replace or adapt the current `PlanningAgent`/`AgentOrchestrator` dependence so the CLI calls the same maintained runtime. The CLI remains human-facing; it does not need to become another internal agent brain.
 
-- another general-purpose internal planner;
-- another orchestrator variant;
-- a mandatory Graph-of-Thought/AoT executor;
-- a formal reasoning DAG without a concrete scheduling/resume/cache/provenance use case;
-- another UI shell;
-- a multi-agent coordination framework without a concrete capability need;
-- benchmark-specific special cases in the core resource model;
-- self-reported confidence as a substitute for evidence/provenance.
+### MCP
 
-## Immediate implementation focus
+Retain MCP as the agent-facing protocol surface for specialized DIGIMON capabilities. Do not make MCP itself the product identity.
 
-If code work begins directly from this roadmap, the next sequence is:
+### Exit criteria
 
-1. **capability/descriptor/MCP inventory and parity audit**;
-2. **validation policy cleanup** — strict vs explicit best-effort;
-3. **prompt-source ownership/parity cleanup**;
-4. **resource descriptor/catalog**;
-5. **prerequisite/lifecycle semantics**;
-6. **evidence/provenance contract**;
-7. **harness-first entry-point cleanup**;
-8. **legacy consolidation**;
-9. **cross-modal/error normalization**;
-10. **blocking contract tests/CI hardening**.
+- equivalent supported operations behave consistently across Python/CLI/MCP;
+- user-level planning is not duplicated inside the CLI/runtime by default;
+- legacy planner/orchestrator paths are clearly compatibility-only or retired.
 
-That sequence closes concrete implementation gaps without programming the harness's intelligence for it.
+## Stage 10 — Standardize errors and retire architectural ambiguity
+
+**Goal:** make the stabilized public surfaces easy for humans, applications and harnesses to recover from.
+
+### Work
+
+Use a small actionable error/result convention distinguishing at least:
+
+- missing resource/prerequisite;
+- incompatible/stale resource;
+- invalid wiring/type;
+- empty evidence/result;
+- provider/model failure;
+- unsupported/lossy transformation;
+- internal failure.
+
+Then finish live-caller classification for old AgentBrain/AOT/orchestrator/MCP generations and remove or isolate dead code.
+
+### Exit criteria
+
+- maintained callers do not need tool-specific prose parsing for ordinary recovery;
+- old cognitive/runtime generations cannot be mistaken for the preferred architecture;
+- repository navigation reflects the current system.
+
+## Stage 11 — Reliability and CI as an architectural gate
+
+**Goal:** make the full thesis testable, not merely documented.
+
+### Test matrix
+
+Cover at least:
+
+- governed IR → representation projections;
+- cross-representation identity;
+- graph/vector/relational retrieval contracts;
+- wiki/catalog generation;
+- typed retrieval→analytic chains;
+- evidence vs derived-state semantics;
+- derivation lineage;
+- invalidation on upstream changes;
+- public Python/CLI/MCP parity for supported operations;
+- clean rebuild + reuse canaries.
+
+Keep live-provider/expensive suites separately classified from deterministic core tests.
+
+### Exit criteria
+
+- architectural regressions fail CI;
+- current-state docs can cite fresh deterministic certification;
+- representation/retrieval/analytic composition is covered by at least one small canonical governed fixture.
+
+## Stage 12 — Later evaluation and research validation
+
+Only after the earlier stages are substantially coherent should evaluation become a primary workstream.
+
+Questions then include:
+
+- when relational vs vector vs graph vs wiki navigation is most useful;
+- when graph structure adds evidence value over simpler methods;
+- fixed retrieval methods vs adaptive harness composition;
+- retrieval→analytics workflows versus retrieval-only workflows;
+- quality/cost effects of different projections;
+- robustness to incomplete/noisy semantic extraction;
+- value of derivation lineage for debugging/reproducibility;
+- when specialized lexical indexing adds value beyond native harness search;
+- how well agents use the progressive-disclosure catalog to move across representations.
+
+See [FUTURE_EVALUATION_QUESTIONS.md](FUTURE_EVALUATION_QUESTIONS.md).
+
+## What not to build merely for symmetry
+
+Avoid adding:
+
+- another internal general-purpose planner;
+- another orchestrator generation;
+- mandatory AoT/GoT/ReAct state machines;
+- `wiki.open` / `wiki.follow` / basic text-search wrappers when the harness already has those abilities;
+- a generalized enterprise resource catalog before real projection/analytic artifacts demand it;
+- geospatial representation in the current text-derived scope;
+- every conceivable database/analytic engine before a concrete capability needs it;
+- benchmark-specific core architecture.
+
+## Immediate implementation sequence
+
+If code work resumes directly from this roadmap:
+
+1. get a real current-head test/canary run;
+2. finish custom ontology wiring and any first runtime reds;
+3. verify current onto-canon/Foundation IR and its DIGIMON handoff;
+4. define/test cross-representation canonical identity;
+5. implement the first canonical relational projection;
+6. generate the first progressive-disclosure wiki/catalog over the same fixture;
+7. inventory and promote existing graph analytics into a coherent typed analytic catalog;
+8. add minimal derivation records across projection → retrieval → analytic outputs;
+9. bind remaining graph-derived resources such as sparse matrices to exact graph identity;
+10. converge Python/CLI/MCP on the same core;
+11. expand deterministic architecture tests;
+12. evaluate only after these seams are real.
