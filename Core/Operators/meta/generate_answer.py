@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, Optional
 
 from Core.Common.Logger import logger
@@ -19,12 +20,41 @@ def _evidence_entries(chunk_data) -> list[tuple[str, str]]:
         text = str(getattr(chunk, "text", "") or "").strip()
         if not text:
             continue
-        evidence_id = str(getattr(chunk, "chunk_id", "") or f"evidence-{index + 1}")
+        evidence_id = str(
+            getattr(chunk, "chunk_id", "") or f"evidence-{index + 1}"
+        )
         if evidence_id in seen_ids:
             continue
         seen_ids.add(evidence_id)
         entries.append((evidence_id, text))
     return entries
+
+
+def _citation_metadata(response: str, evidence_ids: list[str]) -> dict:
+    """Validate square-bracket evidence citations emitted by the model."""
+    allowed = set(evidence_ids)
+    bracketed = [
+        token.strip()
+        for token in re.findall(r"\[([^\[\]\n]{1,200})\]", response)
+        if token.strip()
+    ]
+    cited = list(dict.fromkeys(token for token in bracketed if token in allowed))
+    invalid = list(
+        dict.fromkeys(token for token in bracketed if token not in allowed)
+    )
+
+    if invalid:
+        citation_status = "invalid"
+    elif cited:
+        citation_status = "valid"
+    else:
+        citation_status = "missing"
+
+    return {
+        "citation_status": citation_status,
+        "cited_evidence_ids": cited,
+        "invalid_citation_ids": invalid,
+    }
 
 
 async def meta_generate_answer(
@@ -39,6 +69,8 @@ async def meta_generate_answer(
 
     Evidence IDs are preserved in the prompt and output metadata. Factual claims
     should cite the supporting ID in square brackets, e.g. ``[chunk-abc]``.
+    The operator validates those citations after generation so the harness can
+    distinguish a fully grounded answer from missing/invalid citations.
     """
     query = inputs["query"].data
     chunks = inputs.get("chunks")
@@ -55,6 +87,9 @@ async def meta_generate_answer(
                 metadata={
                     "status": "insufficient_evidence",
                     "evidence_chunk_ids": [],
+                    "citation_status": "not_applicable",
+                    "cited_evidence_ids": [],
+                    "invalid_citation_ids": [],
                 },
             )
         }
@@ -93,11 +128,21 @@ async def meta_generate_answer(
             )
 
         response = str(response).strip() or INSUFFICIENT_EVIDENCE_ANSWER
-        status = (
-            "insufficient_evidence"
-            if response == INSUFFICIENT_EVIDENCE_ANSWER
-            else "grounded_answer"
-        )
+        if response == INSUFFICIENT_EVIDENCE_ANSWER:
+            status = "insufficient_evidence"
+            citation_meta = {
+                "citation_status": "not_applicable",
+                "cited_evidence_ids": [],
+                "invalid_citation_ids": [],
+            }
+        else:
+            citation_meta = _citation_metadata(response, evidence_ids)
+            if citation_meta["citation_status"] == "valid":
+                status = "grounded_answer"
+            elif citation_meta["citation_status"] == "invalid":
+                status = "answer_with_invalid_citations"
+            else:
+                status = "answer_missing_citations"
 
         return {
             "answer": SlotValue(
@@ -108,6 +153,7 @@ async def meta_generate_answer(
                     "status": status,
                     "evidence_chunks": len(evidence),
                     "evidence_chunk_ids": evidence_ids,
+                    **citation_meta,
                 },
             )
         }
@@ -122,6 +168,9 @@ async def meta_generate_answer(
                     "status": "error",
                     "error": str(exc),
                     "evidence_chunk_ids": evidence_ids,
+                    "citation_status": "not_applicable",
+                    "cited_evidence_ids": [],
+                    "invalid_citation_ids": [],
                 },
             )
         }
