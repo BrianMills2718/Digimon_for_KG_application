@@ -27,6 +27,19 @@ class LLMType(Enum):
         return self.OPENAI
 
 
+def _looks_like_api_key_placeholder(text: str) -> bool:
+    normalized = text.strip().upper()
+    if not normalized:
+        return True
+    if normalized in {"CHANGEME", "REPLACE_ME", "PLACEHOLDER"}:
+        return True
+    if normalized.startswith("YOUR_API_KEY"):
+        return True
+    # Checked-in examples commonly use provider-qualified placeholders such as
+    # YOUR_OPENAI_API_KEY_HERE or YOUR_ANTHROPIC_API_KEY.
+    return normalized.startswith("YOUR_") and "API_KEY" in normalized
+
+
 class LLMConfig(YamlModel):
     """Configuration for an LLM provider."""
 
@@ -77,14 +90,7 @@ class LLMConfig(YamlModel):
         if value is None:
             return ""
         text = str(value).strip()
-        normalized = text.upper()
-        if not text or normalized.startswith("YOUR_API_KEY") or normalized in {
-            "CHANGEME",
-            "REPLACE_ME",
-            "PLACEHOLDER",
-        }:
-            return ""
-        return text
+        return "" if _looks_like_api_key_placeholder(text) else text
 
     @field_validator("timeout")
     @classmethod
