@@ -149,6 +149,28 @@ def make_invalid_plan():
     )
 
 
+def make_wrong_plan_input_type_plan():
+    return ExecutionPlan(
+        plan_description="query text wired into entity slot",
+        target_dataset_name="test",
+        plan_inputs={"query": "not an entity set"},
+        steps=[
+            ExecutionStep(
+                step_id="relationships",
+                action=DynamicToolChainConfig(
+                    tools=[
+                        ToolCall(
+                            tool_id="test.entities_to_relationships",
+                            inputs={"entities": "plan_inputs.query"},
+                            named_outputs={"relationships": "relationship_set"},
+                        )
+                    ]
+                ),
+            )
+        ],
+    )
+
+
 def make_composer():
     composer = object.__new__(OperatorComposer)
     composer.registry = make_registry()
@@ -171,6 +193,18 @@ def test_chain_validator_rejects_missing_required_input():
     assert any(error.slot_name == "entities" for error in result.errors)
 
 
+def test_chain_validator_rejects_wrong_plan_input_kind_statically():
+    result = ChainValidator(make_registry()).validate(
+        make_wrong_plan_input_type_plan(),
+        plan_input_kinds={SlotKind.QUERY_TEXT},
+    )
+    assert not result.valid
+    assert any(
+        error.slot_name == "entities" and "Type mismatch" in error.message
+        for error in result.errors
+    )
+
+
 @pytest.mark.asyncio
 async def test_pipeline_executor_runs_explicit_typed_chain():
     executor = PipelineExecutor(make_registry(), ctx=object())
@@ -183,29 +217,9 @@ async def test_pipeline_executor_runs_explicit_typed_chain():
 
 @pytest.mark.asyncio
 async def test_pipeline_executor_rejects_wrong_plan_input_kind():
-    plan = ExecutionPlan(
-        plan_description="invalid type wiring",
-        target_dataset_name="test",
-        plan_inputs={"query": "not an entity set"},
-        steps=[
-            ExecutionStep(
-                step_id="relationships",
-                action=DynamicToolChainConfig(
-                    tools=[
-                        ToolCall(
-                            tool_id="test.entities_to_relationships",
-                            inputs={"entities": "plan_inputs.query"},
-                            named_outputs={"relationships": "relationship_set"},
-                        )
-                    ]
-                ),
-            )
-        ],
-    )
-
     executor = PipelineExecutor(make_registry(), ctx=object())
     with pytest.raises(PipelineExecutionError, match="Type mismatch"):
-        await executor.execute(plan)
+        await executor.execute(make_wrong_plan_input_type_plan())
 
 
 @pytest.mark.asyncio
