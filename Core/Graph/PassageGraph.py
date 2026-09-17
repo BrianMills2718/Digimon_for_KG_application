@@ -29,6 +29,11 @@ class PassageGraph(BaseGraph):
 
     @staticmethod
     async def _wat_entity_linking(text: str):
+        if not GCUBE_TOKEN:
+            raise RuntimeError(
+                "PassageGraph requires GCUBE_TOKEN in the environment for WAT entity linking"
+            )
+
         wat_url = "https://wat.d4science.org/wat/tag/tag"
         payload = [
             ("gcube-token", GCUBE_TOKEN),
@@ -64,8 +69,7 @@ class PassageGraph(BaseGraph):
                     f"WAT entity linking attempt {attempt + 1}/3 failed: {exc}"
                 )
 
-        logger.error("WAT entity linking failed after 3 attempts")
-        return []
+        raise RuntimeError("WAT entity linking failed after 3 attempts")
 
     async def _extract_entity_relationship(
         self, chunk_key_pair: tuple[str, TextChunk]
@@ -77,12 +81,17 @@ class PassageGraph(BaseGraph):
     async def _build_graph(self, chunk_list: List[Any]):
         """Extract shared entities and build the passage graph.
 
-        The previous implementation contained a hard-coded cold-start index and
-        loaded generic checkpoint files from the process working directory. That
-        made small/fresh datasets silently skip extraction and allowed cross-run
-        contamination. Build directly from the supplied dataset instead.
+        PassageGraph depends on WAT entity linking. Missing credentials or a
+        failed external lookup is a build failure, not a valid disconnected
+        passage graph, so callers get a clear red signal.
         """
         try:
+            if not GCUBE_TOKEN:
+                logger.error(
+                    "PassageGraph cannot build: GCUBE_TOKEN is not configured"
+                )
+                return False
+
             concurrency = max(1, min(8, len(chunk_list)))
             semaphore = asyncio.Semaphore(concurrency)
 
@@ -94,6 +103,11 @@ class PassageGraph(BaseGraph):
                 *(extract(chunk_pair) for chunk_pair in chunk_list)
             )
             await self.__passage_graph__(results, chunk_list)
+            if self.node_num <= 0:
+                logger.error(
+                    "PassageGraph build produced no passage nodes; treating build as failed"
+                )
+                return False
             return True
         except Exception as exc:
             logger.exception(f"Error building passage graph: {exc}")
