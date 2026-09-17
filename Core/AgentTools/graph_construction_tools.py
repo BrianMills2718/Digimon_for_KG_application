@@ -24,7 +24,9 @@ from Core.AgentSchema.graph_construction_tool_contracts import (
 from Core.AgentTools.derived_resource_cleanup import (
     invalidate_after_forced_graph_rebuild,
 )
+from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
+from Core.Common.Utils import split_string_by_multi_markers
 from Core.Graph.GraphFactory import get_graph
 from Option.Config2 import Config
 
@@ -128,6 +130,66 @@ def _invalidate_if_forced(
     )
 
 
+def _chunk_ids(chunks) -> set[str]:
+    return {
+        str(chunk_id)
+        for chunk_id, _chunk in chunks or []
+        if chunk_id is not None and str(chunk_id)
+    }
+
+
+async def _graph_node_source_ids(graph) -> set[str]:
+    """Collect exact chunk IDs referenced by ER/RK graph nodes."""
+    try:
+        nodes = await graph.nodes_data()
+    except Exception as exc:
+        logger.warning(f"Could not inspect graph node provenance: {exc}")
+        return set()
+
+    source_ids = set()
+    for node in nodes or []:
+        if not isinstance(node, dict):
+            continue
+        for chunk_id in split_string_by_multi_markers(
+            str(node.get("source_id", "")),
+            [GRAPH_FIELD_SEP],
+        ):
+            if chunk_id:
+                source_ids.add(chunk_id)
+    return source_ids
+
+
+async def _ensure_graph_chunk_provenance(
+    graph,
+    chunks,
+    *,
+    force_requested: bool,
+) -> tuple[bool, bool]:
+    """Ensure a loaded ER/RK graph refers to the current corpus chunk IDs.
+
+    Returns ``(success, rebuilt_for_migration)``. Fresh/forced builds already use
+    the supplied chunks and need no migration check. A non-forced persisted graph
+    is rebuilt once when its node provenance refers to old chunk identities (for
+    example after changing the canonical chunking strategy or corpus contents).
+    """
+    if force_requested:
+        return True, False
+
+    current_chunk_ids = _chunk_ids(chunks)
+    referenced_ids = await _graph_node_source_ids(graph)
+    if referenced_ids and referenced_ids.issubset(current_chunk_ids):
+        return True, False
+
+    missing = sorted(referenced_ids - current_chunk_ids)
+    logger.warning(
+        "Loaded graph provenance does not match current corpus chunks; "
+        f"rebuilding graph. missing_source_ids={missing[:10]}, "
+        f"referenced={len(referenced_ids)}, current_chunks={len(current_chunk_ids)}"
+    )
+    rebuilt = await graph.build_graph(chunks=chunks, force=True)
+    return bool(rebuilt), True
+
+
 async def build_er_graph(
     tool_input: BuildERGraphInputs,
     main_config: Config,
@@ -164,6 +226,21 @@ async def build_er_graph(
                 message=f"ERGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        provenance_ok, migrated = await _ensure_graph_chunk_provenance(
+            graph,
+            chunks,
+            force_requested=tool_input.force_rebuild,
+        )
+        if not provenance_ok:
+            return BuildERGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_ERGraph",
+                status="failure",
+                message=(
+                    f"ERGraph for {tool_input.target_dataset_name} could not be rebuilt "
+                    "after stale chunk provenance was detected."
+                ),
+            )
+
         counts = await get_graph_counts(graph)
         if not _graph_counts_are_usable(counts):
             return BuildERGraphOutputs(
@@ -176,13 +253,16 @@ async def build_er_graph(
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
-            force_rebuild=tool_input.force_rebuild,
+            force_rebuild=bool(tool_input.force_rebuild or migrated),
             er_graph=True,
         )
         return BuildERGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_ERGraph",
             status="success",
-            message=f"ERGraph built successfully for {tool_input.target_dataset_name}.",
+            message=(
+                f"ERGraph built successfully for {tool_input.target_dataset_name}."
+                + (" Rebuilt stale chunk provenance." if migrated else "")
+            ),
             artifact_path=get_artifact_path(graph),
             graph_instance=graph,
             **counts,
@@ -232,6 +312,21 @@ async def build_rk_graph(
                 message=f"RKGraph building failed internally for {tool_input.target_dataset_name}.",
             )
 
+        provenance_ok, migrated = await _ensure_graph_chunk_provenance(
+            graph,
+            chunks,
+            force_requested=tool_input.force_rebuild,
+        )
+        if not provenance_ok:
+            return BuildRKGraphOutputs(
+                graph_id=f"{tool_input.target_dataset_name}_RKGraph",
+                status="failure",
+                message=(
+                    f"RKGraph for {tool_input.target_dataset_name} could not be rebuilt "
+                    "after stale chunk provenance was detected."
+                ),
+            )
+
         counts = await get_graph_counts(graph)
         if not _graph_counts_are_usable(counts):
             return BuildRKGraphOutputs(
@@ -244,13 +339,16 @@ async def build_rk_graph(
         _invalidate_if_forced(
             main_config,
             tool_input.target_dataset_name,
-            force_rebuild=tool_input.force_rebuild,
+            force_rebuild=bool(tool_input.force_rebuild or migrated),
             er_graph=False,
         )
         return BuildRKGraphOutputs(
             graph_id=f"{tool_input.target_dataset_name}_RKGraph",
             status="success",
-            message=f"RKGraph built successfully for {tool_input.target_dataset_name}.",
+            message=(
+                f"RKGraph built successfully for {tool_input.target_dataset_name}."
+                + (" Rebuilt stale chunk provenance." if migrated else "")
+            ),
             artifact_path=get_artifact_path(graph),
             graph_instance=graph,
             **counts,
