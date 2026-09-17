@@ -80,6 +80,31 @@ def test_switching_graph_switches_vdb_priority():
     assert ctx.list_vdbs()[0].startswith("Alpha_")
 
 
+def test_replacing_graph_evicts_only_same_dataset_vdbs():
+    ctx = make_context()
+    old_graph = ctx.graphs["Beta_ERGraph"]
+    replacement = object()
+
+    ctx.add_graph_instance("Beta_ERGraph", replacement)
+
+    assert ctx.graphs["Beta_ERGraph"] is replacement
+    assert ctx.graphs["Beta_ERGraph"] is not old_graph
+    assert "Beta_entities" not in ctx.vdbs
+    assert "Beta_relations" not in ctx.vdbs
+    assert "Alpha_entities" in ctx.vdbs
+    assert "Alpha_relations" in ctx.vdbs
+
+
+def test_reregistering_same_graph_object_keeps_dataset_vdbs():
+    ctx = make_context()
+    same_graph = ctx.graphs["Beta_ERGraph"]
+
+    ctx.add_graph_instance("Beta_ERGraph", same_graph)
+
+    assert "Beta_entities" in ctx.vdbs
+    assert "Beta_relations" in ctx.vdbs
+
+
 def test_graph_listing_prevents_legacy_substring_match_from_binding_longer_dataset():
     ctx = GraphRAGContext.model_construct(
         request_id="test",
