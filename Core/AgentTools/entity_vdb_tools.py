@@ -10,6 +10,20 @@ from Core.Common.Logger import logger
 from Core.Index.FaissIndex import FaissIndex
 
 
+async def _registered_vdb_is_usable(vdb) -> bool:
+    """Return True only when a registered VDB has or can load a live index."""
+    if getattr(vdb, "_index", None) is not None:
+        return True
+    load = getattr(vdb, "load", None)
+    if load is None:
+        return False
+    try:
+        return bool(await load())
+    except Exception as exc:
+        logger.warning(f"Registered VDB reload failed: {exc}")
+        return False
+
+
 async def entity_vdb_build_tool(
     params: EntityVDBBuildInputs,
     graphrag_context: GraphRAGContext,
@@ -44,12 +58,16 @@ async def entity_vdb_build_tool(
         vdb_id = params.vdb_collection_name
         existing_vdb = graphrag_context.get_vdb_instance(vdb_id)
         if existing_vdb and not params.force_rebuild:
-            nodes_data = await graph_instance.nodes_data()
-            logger.info(f"VDB '{vdb_id}' already registered; reusing it")
-            return EntityVDBBuildOutputs(
-                vdb_reference_id=vdb_id,
-                num_entities_indexed=len(nodes_data),
-                status="VDB already exists",
+            if await _registered_vdb_is_usable(existing_vdb):
+                nodes_data = await graph_instance.nodes_data()
+                logger.info(f"VDB '{vdb_id}' already registered and usable; reusing it")
+                return EntityVDBBuildOutputs(
+                    vdb_reference_id=vdb_id,
+                    num_entities_indexed=len(nodes_data),
+                    status="VDB already exists",
+                )
+            logger.warning(
+                f"Registered entity VDB '{vdb_id}' is unusable; rebuilding it"
             )
 
         nodes_data = await graph_instance.nodes_data()
