@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import networkx as nx
 import pytest
 
-from Core.Common.EntityNormalization import normalize_entity_id
+from Core.Common.EntityNormalization import normalize_entity_id, normalize_graph_text
 from Core.Community.LeidenCommunity import LeidenCommunity
 from Core.Graph.DelimiterExtraction import DelimiterExtractionMixin
 from Core.Graph.ERGraph import ERGraph
@@ -48,16 +48,18 @@ class UnicodeGraph:
         return self.nodes.get(entity_id)
 
 
-def test_normalize_entity_id_preserves_unicode_and_ascii_behavior():
+def test_normalization_preserves_unicode_identity_and_semantic_text():
     assert normalize_entity_id("Москва") == "москва"
     assert normalize_entity_id("北京") == "北京"
     assert normalize_entity_id("José Álvarez") == "josé álvarez"
     assert normalize_entity_id("ACME, Inc.") == "acme inc"
     assert normalize_entity_id("  Scott\tDerrickson  ") == "scott derrickson"
+    assert normalize_graph_text('"Столица России — Москва."') == "Столица России — Москва."
+    assert normalize_graph_text("北京位于中国。") == "北京位于中国。"
 
 
 @pytest.mark.asyncio
-async def test_delimiter_extraction_preserves_unicode_entity_endpoints():
+async def test_delimiter_extraction_preserves_unicode_identity_and_descriptions():
     extractor = DummyExtractor()
 
     entity = await extractor._handle_single_entity_extraction(
@@ -76,8 +78,10 @@ async def test_delimiter_extraction_preserves_unicode_entity_endpoints():
     )
 
     assert entity.entity_name == "москва"
+    assert entity.description == "Столица России"
     assert relationship.src_id == "москва"
     assert relationship.tgt_id == "россия"
+    assert relationship.description == "Москва является столицей России"
 
 
 @pytest.mark.asyncio
@@ -127,8 +131,6 @@ async def test_singleton_leiden_mapping_preserves_unicode_identity():
         namespace=FakeNamespace(),
     )
     graph = nx.Graph()
-    # Stable-LCC clustering uses an uppercase copy; mapping must return the
-    # canonical lowercase Unicode entity ID used by the real graph.
     graph.add_node("МОСКВА")
 
     result = await community._clustering(
