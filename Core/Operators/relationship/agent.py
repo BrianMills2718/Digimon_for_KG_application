@@ -2,7 +2,9 @@
 
 Scores candidate graph relations for every current beam entity. When a graph
 has only DIGIMON's generic ``relationship`` label, the edge description is used
-as the semantic relation label so ToG still has meaningful choices.
+as the semantic relation label so ToG still has meaningful choices. Selected
+relations preserve their original graph ``source_id`` values so downstream
+answer generation can remain grounded in the documents used for each hop.
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ from typing import Any, Dict, Optional
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
 from Core.Common.Logger import logger
+from Core.Common.Utils import split_string_by_multi_markers
 from Core.Schema.SlotTypes import RelationshipRecord, SlotKind, SlotValue
 
 
@@ -20,7 +23,6 @@ _GENERIC_RELATION_LABELS = {"", "relationship", "related_to", "unknown_relations
 
 
 def _relation_labels(edge_data: dict) -> list[str]:
-    """Return semantic labels suitable for ToG relation selection."""
     relation_name = str(edge_data.get("relation_name", "") or "").strip()
     labels = [
         value.strip()
@@ -35,9 +37,6 @@ def _relation_labels(edge_data: dict) -> list[str]:
     if meaningful:
         return meaningful
 
-    # Default ER extraction has no typed relation name. Use the evidence-bearing
-    # description (or keyword summary) instead of presenting every edge to the
-    # LLM as the indistinguishable label "relationship".
     description = str(edge_data.get("description", "") or "").strip()
     if description:
         return [description[:300]]
@@ -47,6 +46,16 @@ def _relation_labels(edge_data: dict) -> list[str]:
         return [keywords[:300]]
 
     return ["related_to"]
+
+
+def _append_source_ids(target: list[str], source_id: Any) -> None:
+    if not source_id:
+        return
+    for chunk_id in split_string_by_multi_markers(
+        str(source_id), [GRAPH_FIELD_SEP]
+    ):
+        if chunk_id and chunk_id not in target:
+            target.append(chunk_id)
 
 
 async def relationship_agent(
@@ -59,9 +68,9 @@ async def relationship_agent(
     Outputs: {"relationships": RELATIONSHIP_SET}
     Params:  {"width": int}
 
-    Every input entity is explored. Each output record stores the candidate
-    neighbor mapping in ``extra['relations_dict']`` for ``entity.rel_node`` and
-    ``entity.agent`` to select the next-hop entities.
+    Every input entity is explored. Each selected relation carries both the
+    candidate-neighbor mapping used by the next ToG hop and the merged source
+    chunk IDs of the concrete graph edges represented by that relation.
     """
     from Core.Prompt.TogPrompt import extract_relation_prompt
 
@@ -88,6 +97,8 @@ async def relationship_agent(
                 continue
 
             relations_dict = defaultdict(list)
+            relation_sources = defaultdict(list)
+            relation_weights = defaultdict(list)
             relation_labels = []
 
             for edge in edges:
@@ -101,8 +112,19 @@ async def relationship_agent(
 
                 neighbor = tgt if src == entity else src
                 for label in _relation_labels(edge_data):
-                    if neighbor not in relations_dict[(entity, label)]:
-                        relations_dict[(entity, label)].append(neighbor)
+                    key = (entity, label)
+                    if neighbor not in relations_dict[key]:
+                        relations_dict[key].append(neighbor)
+                    _append_source_ids(
+                        relation_sources[key],
+                        edge_data.get("source_id", ""),
+                    )
+                    try:
+                        relation_weights[key].append(
+                            float(edge_data.get("weight", 0.0) or 0.0)
+                        )
+                    except (TypeError, ValueError):
+                        pass
                     relation_labels.append(label)
 
             candidates = list(dict.fromkeys(relation_labels))
@@ -150,12 +172,16 @@ async def relationship_agent(
 
             selected_for_entity.sort(key=lambda item: item[0], reverse=True)
             for score, label in selected_for_entity[:width]:
+                key = (entity, label)
+                weights = relation_weights.get(key, [])
                 records.append(
                     RelationshipRecord(
                         src_id=entity,
                         tgt_id="",
                         relation_name=label,
                         description=label,
+                        source_id=GRAPH_FIELD_SEP.join(relation_sources.get(key, [])),
+                        weight=max(weights) if weights else 0.0,
                         score=score,
                         extra={
                             "head": True,
