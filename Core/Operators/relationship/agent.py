@@ -22,28 +22,36 @@ from Core.Schema.SlotTypes import RelationshipRecord, SlotKind, SlotValue
 _GENERIC_RELATION_LABELS = {"", "relationship", "related_to", "unknown_relationship"}
 
 
+def _safe_relation_label(value: Any, max_length: int = 220) -> str:
+    """Normalize graph text into a ToG prompt/parser-safe relation label."""
+    text = " ".join(str(value or "").split())
+    for char, replacement in ((";", ","), ("(", "["), (")", "]"), ("{", ""), ("}", "")):
+        text = text.replace(char, replacement)
+    return text[:max_length].strip()
+
+
 def _relation_labels(edge_data: dict) -> list[str]:
     relation_name = str(edge_data.get("relation_name", "") or "").strip()
     labels = [
-        value.strip()
+        _safe_relation_label(value)
         for value in relation_name.split(GRAPH_FIELD_SEP)
         if value.strip()
     ]
     meaningful = [
         label
         for label in labels
-        if label.lower() not in _GENERIC_RELATION_LABELS
+        if label and label.lower() not in _GENERIC_RELATION_LABELS
     ]
     if meaningful:
         return meaningful
 
-    description = str(edge_data.get("description", "") or "").strip()
+    description = _safe_relation_label(edge_data.get("description", ""))
     if description:
-        return [description[:300]]
+        return [description]
 
-    keywords = str(edge_data.get("keywords", "") or "").strip()
+    keywords = _safe_relation_label(edge_data.get("keywords", ""))
     if keywords:
-        return [keywords[:300]]
+        return [keywords]
 
     return ["related_to"]
 
@@ -56,6 +64,17 @@ def _append_source_ids(target: list[str], source_id: Any) -> None:
     ):
         if chunk_id and chunk_id not in target:
             target.append(chunk_id)
+
+
+def _fallback_relation_selections(entity, candidates, relation_weights, width):
+    """Keep graph exploration alive if the LLM response format is unusable."""
+    ranked = []
+    for label in candidates:
+        weights = relation_weights.get((entity, label), [])
+        score = max(weights) if weights else 1.0
+        ranked.append((float(score), label, True))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return ranked[:width]
 
 
 async def relationship_agent(
@@ -158,9 +177,7 @@ async def relationship_agent(
             selected_for_entity = []
 
             for match in re.finditer(pattern, response):
-                proposed = match.group("relation").strip()
-                if ";" in proposed:
-                    continue
+                proposed = _safe_relation_label(match.group("relation"))
                 label = candidate_lookup.get(proposed.casefold())
                 if label is None:
                     continue
@@ -168,10 +185,24 @@ async def relationship_agent(
                     score = float(match.group("score"))
                 except ValueError:
                     continue
-                selected_for_entity.append((score, label))
+                selected_for_entity.append((score, label, False))
 
-            selected_for_entity.sort(key=lambda item: item[0], reverse=True)
-            for score, label in selected_for_entity[:width]:
+            if not selected_for_entity:
+                logger.warning(
+                    f"relationship.agent could not parse scored relations for '{entity}'; "
+                    "falling back to graph-weight ordering"
+                )
+                selected_for_entity = _fallback_relation_selections(
+                    entity,
+                    candidates,
+                    relation_weights,
+                    width,
+                )
+            else:
+                selected_for_entity.sort(key=lambda item: item[0], reverse=True)
+                selected_for_entity = selected_for_entity[:width]
+
+            for score, label, used_fallback in selected_for_entity:
                 key = (entity, label)
                 weights = relation_weights.get(key, [])
                 records.append(
@@ -186,6 +217,7 @@ async def relationship_agent(
                         extra={
                             "head": True,
                             "relations_dict": dict(relations_dict),
+                            "selection_fallback": used_fallback,
                         },
                     )
                 )
