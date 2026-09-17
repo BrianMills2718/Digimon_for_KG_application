@@ -119,12 +119,16 @@ class PipelineExecutor:
         self.step_outputs[step.step_id] = chain_outputs
 
     async def _execute_loop(self, step, step_map, plan, fail_fast: bool = True) -> None:
-        """Execute a LoopConfig step."""
+        """Execute a LoopConfig while preserving carried slot contracts."""
         loop = step.action
-        accumulated = {}
+        accumulated_data: Dict[str, list] = {}
+        accumulated_kinds: Dict[str, SlotKind] = {}
+        accumulated_metadata: Dict[str, Dict[str, Any]] = {}
 
         for iteration in range(loop.max_iterations):
-            logger.info(f"Loop {step.step_id}: iteration {iteration + 1}/{loop.max_iterations}")
+            logger.info(
+                f"Loop {step.step_id}: iteration {iteration + 1}/{loop.max_iterations}"
+            )
 
             for body_step_id in loop.body_step_ids:
                 body_step = step_map.get(body_step_id)
@@ -133,29 +137,59 @@ class PipelineExecutor:
                     continue
                 from Core.AgentSchema.plan import DynamicToolChainConfig
                 if isinstance(body_step.action, DynamicToolChainConfig):
-                    await self._execute_tool_chain(body_step, plan, fail_fast=fail_fast)
+                    await self._execute_tool_chain(
+                        body_step,
+                        plan,
+                        fail_fast=fail_fast,
+                    )
 
-            # Check termination
+            # Carry forward the outputs produced by this iteration before testing
+            # termination so a terminating iteration is not silently discarded.
+            for output_key in loop.carry_forward_outputs:
+                for body_step_id in loop.body_step_ids:
+                    outputs = self.step_outputs.get(body_step_id)
+                    if not outputs or outputs is _FAILED_STEP:
+                        continue
+                    slot = outputs.get(output_key)
+                    if slot is None:
+                        continue
+
+                    previous_kind = accumulated_kinds.get(output_key)
+                    if previous_kind is not None and previous_kind != slot.kind:
+                        raise PipelineExecutionError(
+                            f"Loop '{step.step_id}' carry-forward output '{output_key}' "
+                            f"changed kind from '{previous_kind.value}' to '{slot.kind.value}'."
+                        )
+                    accumulated_kinds[output_key] = slot.kind
+
+                    if output_key not in accumulated_data:
+                        accumulated_data[output_key] = []
+                    if isinstance(slot.data, list):
+                        accumulated_data[output_key].extend(slot.data)
+                    elif slot.data is not None:
+                        accumulated_data[output_key].append(slot.data)
+
+                    metadata = accumulated_metadata.setdefault(output_key, {})
+                    metadata.update(dict(slot.metadata or {}))
+
             if self._evaluate_condition(loop.termination_condition):
-                logger.info(f"Loop {step.step_id}: termination condition met at iteration {iteration + 1}")
+                logger.info(
+                    f"Loop {step.step_id}: termination condition met at iteration "
+                    f"{iteration + 1}"
+                )
                 break
 
-            # Carry forward outputs
-            for output_key in loop.carry_forward_outputs:
-                for sid, outputs in self.step_outputs.items():
-                    if outputs is _FAILED_STEP:
-                        continue
-                    if output_key in outputs:
-                        if output_key not in accumulated:
-                            accumulated[output_key] = []
-                        val = outputs[output_key]
-                        if hasattr(val, "data") and isinstance(val.data, list):
-                            accumulated[output_key].extend(val.data)
-
-        # Store accumulated outputs
         self.step_outputs[step.step_id] = {
-            k: SlotValue(kind=SlotKind.ENTITY_SET, data=v, producer=f"loop.{step.step_id}")
-            for k, v in accumulated.items()
+            output_key: SlotValue(
+                kind=accumulated_kinds[output_key],
+                data=data,
+                producer=f"loop.{step.step_id}",
+                metadata={
+                    **accumulated_metadata.get(output_key, {}),
+                    "iterations_accumulated": loop.max_iterations,
+                },
+            )
+            for output_key, data in accumulated_data.items()
         }
 
     async def _execute_conditional(self, step, step_map, plan, fail_fast: bool = True) -> None:
