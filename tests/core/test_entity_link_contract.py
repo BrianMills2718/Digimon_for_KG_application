@@ -25,6 +25,25 @@ class FakeVDB:
         )
 
 
+class ExactGraph:
+    entity_metakey = "entity_name"
+
+    async def get_node(self, entity_id):
+        if entity_id == "zorathian empire":
+            return {
+                "entity_name": "zorathian empire",
+                "source_id": "chunk-z",
+                "entity_type": "organization",
+                "description": "interstellar civilization",
+            }
+        return None
+
+
+class MustNotSearchVDB:
+    async def retrieval_nodes(self, *args, **kwargs):
+        raise AssertionError("exact graph match should bypass VDB retrieval")
+
+
 @pytest.mark.asyncio
 async def test_entity_link_preserves_normalized_similarity_score():
     ctx = SimpleNamespace(
@@ -48,6 +67,7 @@ async def test_entity_link_preserves_normalized_similarity_score():
     assert linked[0].entity_name == "Canonical Alpha"
     assert linked[0].score == pytest.approx(0.82)
     assert linked[0].extra["linked_from"] == "alpha mention"
+    assert linked[0].extra["link_method"] == "vdb"
 
 
 @pytest.mark.asyncio
@@ -69,3 +89,32 @@ async def test_entity_link_can_reject_weak_top1_match():
     )
 
     assert result["entities"].data == []
+
+
+@pytest.mark.asyncio
+async def test_entity_link_prefers_normalized_exact_graph_match_without_vdb_search():
+    ctx = SimpleNamespace(
+        entities_vdb=MustNotSearchVDB(),
+        graph=ExactGraph(),
+    )
+    result = await entity_link(
+        inputs={
+            "entities": SlotValue(
+                kind=SlotKind.ENTITY_SET,
+                data=[EntityRecord(entity_name="Zorathian Empire")],
+                producer="test",
+            )
+        },
+        ctx=ctx,
+        params={"similarity_threshold": 0.9},
+    )
+
+    linked = result["entities"].data
+    assert len(linked) == 1
+    assert linked[0].entity_name == "zorathian empire"
+    assert linked[0].score == pytest.approx(1.0)
+    assert linked[0].source_id == "chunk-z"
+    assert linked[0].extra == {
+        "linked_from": "Zorathian Empire",
+        "link_method": "exact_graph",
+    }
