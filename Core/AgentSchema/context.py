@@ -61,6 +61,11 @@ class GraphRAGContext(BaseModel):
         exclude=True,
         description="Dataset most recently selected through a concrete graph lookup.",
     )
+    active_graph_id: Optional[str] = Field(
+        default=None,
+        exclude=True,
+        description="Graph most recently built/retrieved for the active dataset.",
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -82,6 +87,12 @@ class GraphRAGContext(BaseModel):
                 f"GraphRAGContext: invalidated dataset VDBs for '{dataset_name}': {removed}"
             )
         return removed
+
+    def _activate_graph(self, graph_id: str) -> None:
+        dataset_name = _dataset_from_graph_id(graph_id)
+        if dataset_name:
+            self.active_dataset_name = dataset_name
+            self.active_graph_id = graph_id
 
     def add_graph_instance(self, graph_id: str, graph_instance: BaseGraph):
         """Register a graph and restore its canonical dataset/type namespace.
@@ -119,6 +130,7 @@ class GraphRAGContext(BaseModel):
             self.invalidate_dataset_vdbs(dataset_name)
 
         self.graphs[graph_id] = graph_instance
+        self._activate_graph(graph_id)
         logger.info(
             f"GraphRAGContext: Added graph '{graph_id}' (type: {type(graph_instance)}). "
             f"Available graphs: {list(self.graphs.keys())}"
@@ -127,9 +139,7 @@ class GraphRAGContext(BaseModel):
     def get_graph_instance(self, graph_id: str) -> Optional[BaseGraph]:
         instance = self.graphs.get(graph_id)
         if instance is not None:
-            dataset_name = _dataset_from_graph_id(graph_id)
-            if dataset_name:
-                self.active_dataset_name = dataset_name
+            self._activate_graph(graph_id)
             logger.debug(f"GraphRAGContext: Retrieved graph '{graph_id}'.")
         else:
             logger.warning(
@@ -155,14 +165,15 @@ class GraphRAGContext(BaseModel):
         return instance
 
     def list_graphs(self) -> List[str]:
-        """List graph IDs with more specific dataset names considered last.
+        """List graph IDs with exact-dataset and active-graph priority.
 
-        A few transitional MCP helpers still locate a dataset graph using
-        substring matching (``if dataset_name in graph_id``). Ordering by the
-        parsed dataset-name length makes the exact dataset graph the first
-        matching resource: ``Test_ERGraph`` precedes ``Test2_ERGraph`` when the
-        requested dataset is ``Test``. Insertion order is preserved among graph
-        types belonging to the same dataset.
+        Transitional MCP helpers still locate dataset graphs by iterating this
+        list and taking the first substring match. Shorter parsed dataset names
+        therefore come first so ``Test_ERGraph`` precedes ``Test2_ERGraph`` for a
+        request targeting ``Test``. Within one dataset, the graph most recently
+        built/retrieved is first, allowing an explicit RK/tree/etc. selection to
+        survive generic context construction instead of being hidden by insertion
+        order.
         """
         keys = list(self.graphs.keys())
         positions = {key: index for index, key in enumerate(keys)}
@@ -170,6 +181,7 @@ class GraphRAGContext(BaseModel):
             keys,
             key=lambda key: (
                 len(_dataset_from_graph_id(key) or key),
+                key != self.active_graph_id,
                 positions[key],
             ),
         )
