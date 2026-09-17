@@ -1,16 +1,17 @@
 # DIGIMON Quick Start
 
-**Snapshot:** 2026-09-16
+**Snapshot:** 2026-09-17
 
-This guide is intentionally narrow: configure the public snapshot and choose an entry point without relying on older experimental setup instructions.
+This guide is intentionally narrow: configure the repository and choose a current entry point without relying on older experimental setup instructions.
 
-For architecture/status before running the project, see:
+For context before running the project, see:
 
+- `VISION.md` — full project north star;
 - `CURRENT_STATE.md` — what is materially implemented now;
-- `IMPLEMENTATION_MAP.md` — module classification and concrete code caveats;
-- `ARCHITECTURE.md` — target design;
+- `IMPLEMENTATION_MAP.md` — module classification and code caveats;
+- `ARCHITECTURE.md` — target technical design;
 - `GAP_ANALYSIS.md` — current→target gaps;
-- `ROADMAP.md` — ordered architecture-completion plan.
+- `ROADMAP.md` — ordered work.
 
 ## 1. Install dependencies
 
@@ -36,40 +37,41 @@ Copy the example configuration:
 cp Option/Config2.example.yaml Option/Config2.yaml
 ```
 
-Then edit `Option/Config2.yaml` with the LLM and embedding providers you want to use. The included example contains OpenAI-style `llm` and `embedding` fields plus data/results locations.
+Then edit `Option/Config2.yaml` with the LLM and embedding providers you want to use. Do not commit real API keys.
 
-Do not commit real API keys.
+## 3. Current agent-facing surface: MCP
 
-## 3. Preferred architecture: MCP / external intelligent harness
-
-The preferred architectural surface is:
+The strongest current modern agent-facing protocol surface is:
 
 ```text
 digimon_mcp_stdio_server.py
 ```
 
-It exposes DIGIMON through `FastMCP` over stdio. Configure your MCP-capable harness/client to launch that server using the client-specific stdio-server configuration mechanism.
+It exposes DIGIMON through `FastMCP` over stdio. Configure an MCP-capable harness/client to launch that server using the client's stdio-server configuration mechanism.
 
-The harness can then work at three levels:
+A capable harness can:
 
-1. call individual DIGIMON capabilities/operators and compose them itself;
+1. call specialized DIGIMON capabilities/operators and compose them itself;
 2. execute a named reference method when a known composition is convenient;
-3. optionally use DIGIMON's auto-selection helper to choose a reference method.
+3. optionally use DIGIMON's method-selection convenience behavior.
 
-For a capable harness, **individual capability composition is the conceptual default**. Reference/auto modes are conveniences, not mandatory orchestration.
+The external harness owns adaptive reasoning and sequencing. MCP is **an interface to DIGIMON, not the project thesis**. The target public surfaces are CLI + Python runtime + MCP over the same maintained representation/retrieval/analytics core.
 
-The same MCP surface also provides corpus/graph construction, resource/config inspection, graph/community helpers, analysis, and cross-modal tools.
+The MCP surface also exposes corpus/graph construction, resource/config inspection, community/graph helpers, analysis and cross-modal tools.
 
-Two current implementation caveats are worth knowing before treating the operator catalog as a complete planner:
+Current implementation facts worth knowing:
 
-- slot-kind compatibility/chain discovery does not prove that all resources/prerequisites are available;
-- static plan validation and runtime dispatch currently have different strictness, and explicit strict-vs-best-effort execution is still a roadmap item.
+- required typed plan inputs must be explicitly wired by name;
+- invalid plans fail closed by default; best-effort execution must be requested explicitly;
+- active graph and canonical entity/relation VDB selection are tracked pragmatically;
+- rebuilt graphs invalidate known stale VDB/community/matrix artifacts;
+- current head still lacks a fresh runtime certification in the available development environment.
 
-See `IMPLEMENTATION_MAP.md` for the exact current behavior and `../FUNCTIONALITY.md` for the capability inventory.
+See `CURRENT_STATE.md` for exact current behavior.
 
-## 4. Choose a corpus directory
+## 4. Standalone raw corpus mode
 
-For CLI/API experimentation, use an existing directory under `Data/` or a directory containing the documents you want DIGIMON to work with.
+For CLI/raw-corpus experimentation, use an existing directory under `Data/` or another document directory.
 
 Example:
 
@@ -77,9 +79,11 @@ Example:
 Data/MySampleTexts/
 ```
 
+The maintained standalone path now applies configured chunking. In the broader ecosystem architecture, however, governed semantic IR from onto-canon6 is the intended canonical upstream seam; raw-document mode remains useful for independent operation, benchmarks and compatibility.
+
 ## 5. Transitional CLI
 
-`digimon_cli.py` is implemented, but it still instantiates the older internal `PlanningAgent` / `AgentOrchestrator`. Treat it as a **transitional/compatibility entry point**, not the target orchestration boundary.
+`digimon_cli.py` is implemented, but it still instantiates the older internal `PlanningAgent` / `AgentOrchestrator`. Treat it as a **transitional human-facing entry point**, not the definition of the target runtime architecture.
 
 Interactive mode:
 
@@ -119,19 +123,26 @@ The repository also contains `api.py` as a secondary HTTP/API entry point:
 python api.py
 ```
 
-See `API_REFERENCE.md` for API-oriented documentation in this snapshot. The API/UI surfaces are not currently the architectural center of the reconciliation.
+See `API_REFERENCE.md` for API-oriented documentation. API/UI surfaces are not currently the architectural center.
+
+## 7. Deterministic verification path
+
+When a real runner is available, the maintained minimal verification sequence is:
+
+```bash
+pip install -r requirements-minimal.txt
+pytest tests/core -q
+python tests/e2e/test_mcp_smoke.py
+DIGIMON_CANARY_REBUILD=1 python tests/e2e/test_mcp_smoke.py
+```
+
+Do not treat source-reviewed tests or historical Actions runs as proof that current head is green until this is actually executed.
 
 ## Configuration notes
 
-`Option/Config2.example.yaml` includes:
+`Option/Config2.example.yaml` includes LLM/embedding configuration plus data/results locations and optional behavior flags. Provider availability and credentials depend on the runtime environment.
 
-- LLM provider/model configuration;
-- embedding provider/model configuration;
-- `data_root`;
-- `working_dir`;
-- optional `disable_colbert` behavior.
-
-Provider support is mediated through the repository's provider layer; model availability and provider-specific credentials depend on the runtime environment.
+Custom ontology configuration exists, but the maintained selected-path → loaded ontology → extraction flow is still an explicit current gap; see `CURRENT_STATE.md` / `ROADMAP.md` rather than assuming every override is already proven.
 
 ## Troubleshooting
 
@@ -141,29 +152,27 @@ Check `Option/Config2.yaml` and the provider configuration used by the selected 
 
 ### Optional dependency conflicts
 
-Start with `requirements-minimal.txt` and enable additional research components only when needed.
+Start with `requirements-minimal.txt` and enable broader research components only when needed.
 
 ### CLI corpus-path errors
 
 The current CLI declares `--corpus/-c` as required. Verify that the directory exists before launching it.
 
-### Missing MCP prerequisite/resource
+### Missing/stale graph-derived resources
 
-The MCP layer exposes resource inspection and several prerequisite-building helpers. Resource lifecycle/prerequisite handling is still **Partial** because those semantics are not yet unified under one typed resource catalog. See `GAP_ANALYSIS.md` rather than assuming every missing resource is auto-built uniformly.
-
-### A decomposition prompt changed but behavior did not
-
-DIGIMON currently has both YAML decomposition/synthesis prompts and equivalent typed meta-operator prompt text. They are aligned in this snapshot, but they are not yet loaded from one source. Check the execution path you are actually using; prompt ownership/parity is an explicit roadmap item.
+Current resource handling is pragmatic rather than a generalized resource-governance subsystem: graph source manifests trigger rebuilds when source chunks change, and successful rebuilds invalidate known canonical downstream VDB/community/matrix artifacts. See `CURRENT_STATE.md` for remaining edge cases such as graph-scoped sparse identity.
 
 ## Next reading
 
-1. `../README.md` — concise project/architecture overview.
-2. `CURRENT_STATE.md` — code-truth status map.
-3. `IMPLEMENTATION_MAP.md` — exact module/capability classification and implementation caveats.
-4. `ARCHITECTURE.md` — target design.
-5. `GAP_ANALYSIS.md` — what remains incomplete.
-6. `ROADMAP.md` — architecture-completion sequence.
-7. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-first reasoning and AoT/GoT heuristic policy.
-8. `FUTURE_EVALUATION_QUESTIONS.md` — deliberately deferred benchmarking/research questions.
+1. `../README.md` — concise project overview.
+2. `VISION.md` — full project thesis.
+3. `CURRENT_STATE.md` — code-truth status map.
+4. `ARCHITECTURE.md` — target technical design.
+5. `IMPLEMENTATION_MAP.md` — module/capability detail.
+6. `GAP_ANALYSIS.md` — what remains incomplete.
+7. `ROADMAP.md` — ordered implementation sequence.
+8. `DOCUMENTATION_COVERAGE.md` — documentation reconciliation checklist.
+9. `AGENT_INTELLIGENCE_ENHANCEMENTS.md` — harness-control/AoT-GoT policy detail.
+10. `FUTURE_EVALUATION_QUESTIONS.md` — deferred evaluation/research questions.
 
-`../MCP_IMPLEMENTATION_TRACKER.md`, `../MCP_INTEGRATION_DETAILED_PLAN.md`, and `../MCP_QUICK_REFERENCE.md` are retained only as historical pointers; their original checkpoint plans are available in Git history.
+Historical root MCP planning/tracker files remain lineage pointers; they are not current execution plans.
