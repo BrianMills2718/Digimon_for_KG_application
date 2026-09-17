@@ -1,68 +1,80 @@
 # DIGIMON Implementation Map
 
-**Reconciled:** 2026-09-16  
-**Purpose:** map the current repository to the canonical harness-first architecture so a contributor can tell what to extend, what to treat as transitional, and what not to mistake for the target design.
+**Reconciled:** 2026-09-17  
+**Purpose:** map the current repository to the canonical DIGIMON vision so contributors can distinguish maintained implementation, transitional surfaces, target-state gaps and historical lineage.
 
-This document complements, rather than replaces:
+This document complements:
 
-- `CURRENT_STATE.md` — status of the system now;
-- `ARCHITECTURE.md` — target architecture;
-- `GAP_ANALYSIS.md` — current → target gaps;
-- `ROADMAP.md` — ordered closure plan.
+- `VISION.md` — project north star;
+- `CURRENT_STATE.md` — current implementation truth;
+- `ARCHITECTURE.md` — target technical design;
+- `GAP_ANALYSIS.md` — current→target gaps;
+- `ROADMAP.md` — ordered implementation sequence.
 
-It is based on source inspection. It is **not** a claim that every provider-dependent path was rerun during this reconciliation.
+It is based on source inspection. It is **not** a claim that current head has passed a fresh full runtime certification.
 
-## Architectural center of gravity
+## Current implementation center of gravity
 
-The current preferred execution model is:
+The strongest maintained path today is:
 
 ```text
-external intelligent harness
-        ↓
-digimon_mcp_stdio_server.py
-        ↓
-capability/build/analysis surface
-        ↓
-Core/Operators + Core/Composition + Core/Methods
-        ↓
-GraphRAGContext / graph / index / chunk / provider implementations
-        ↓
-derived resources + original source material
+typed values / records
+      ↓
+capability implementations + descriptors
+      ↓
+strict composition / reference plans
+      ↓
+current graph / VDB / community / sparse resources
+      ↓
+exact source/evidence materialization
+      ↓
+grounded answer or explicit evidence gap
 ```
 
-The external harness owns adaptive orchestration. DIGIMON owns capabilities, typed contracts, resource/prerequisite facts, bounded model-assisted operations, and evidence boundaries.
+That is the current implementation center, not the full product thesis. The target remains broader:
+
+```text
+governed semantic IR
+→ REPRESENT
+→ RETRIEVE
+→ ANALYZE / TRANSFORM
+→ evidence / derived findings
+```
 
 ## Module classification
 
 | Path / surface | Classification | Current role | Guidance |
 |---|---|---|---|
-| `Core/Schema/SlotTypes.py` | **Canonical / Implemented** | Seven typed operator dataflow kinds and record classes | Extend carefully; provenance/resource work will likely add structure around these records |
-| `Core/Schema/OperatorDescriptor.py` | **Canonical / Implemented, limited** | Machine-readable operator metadata, cost and prerequisite flags | Preferred metadata foundation; current boolean prerequisites are too narrow for the target resource model |
-| `Core/Operators/registry.py` | **Canonical / Implemented** | Registers the current 26 retrieval/meta operators | Keep synchronized with implementations and MCP exposure; descriptor drift is a Stage-1 concern |
-| `Core/Operators/` | **Canonical / Implemented** | Entity, relationship, chunk, subgraph, community and meta operations | Preferred home for reusable typed retrieval operations |
-| `Core/Composition/ChainValidator.py` | **Canonical / Partial hardening** | Static slot-compatibility checks for plans | Useful but currently permissive; not a complete prerequisite/resource validator |
-| `Core/Composition/PipelineExecutor.py` | **Canonical / Implemented, Partial semantics** | Resolves typed inputs and executes plans, loops and conditionals | Has stricter pre-dispatch slot checks; error/result semantics still need normalization |
-| `Core/Composition/OperatorComposer.py` | **Canonical / Implemented, Partial validation policy** | Profiles/builds/executes ten reference methods | Does not own global LLM routing; currently logs validation failures and may execute best-effort |
-| `Core/Methods/` | **Canonical reference layer / Implemented** | Ten named reference operator plans | Keep as shortcuts, compatibility paths and future baselines; do not make them the system identity |
-| `Core/AgentSchema/context.py` | **Canonical foundation / Partial resource model** | Runtime context for providers plus graph/VDB instances | Useful foundation, but only graphs/VDBs are first-class resource collections today |
-| `Core/AgentTools/graph_construction_tools.py` and corpus/build tools | **Canonical capability implementations / Implemented** | Corpus and graph construction used by MCP | Map into the eventual common capability/resource descriptor model |
-| `Core/AgentTools/cross_modal_tools.py` | **Implemented / Experimental integration** | Graph↔table↔vector transformations and embedding adapters | Substantive code, but outside the seven-slot operator/resource model and provenance contract |
-| `Core/AgentTools/*planner*` and older planner utilities | **Legacy / Experimental** | Earlier internal planning strategies | Do not expand as the primary reasoning architecture |
-| `digimon_mcp_stdio_server.py` | **Canonical external facade / Implemented in code** | FastMCP stdio surface for build, operators, methods, resources, analysis and cross-modal tools | Preferred harness boundary; future work should reduce manual metadata/resource drift |
-| `Core/MCP/` | **Mixed legacy/experimental MCP lineage** | Older MCP clients/servers, coordination and integration experiments | Do not assume these modules define the current MCP architecture; inspect callers before modifying |
-| `Core/AgentBrain/` | **Legacy / Transitional** | Broad internal planning and synthesis logic used by some older entry points | Maintain only for compatibility while live callers remain; do not deepen as default architecture |
-| `Core/AgentOrchestrator/` | **Legacy / Transitional** | Multiple generations of internal orchestration | Identify callers and consolidate over time |
-| `Core/AOT/` | **Legacy** | Programmed atomic states, dependency sets and transition probabilities | Not the target AoT/GoT architecture; current policy is advisory prompting |
-| `Core/Memory/` | **Experimental / Legacy lineage** | Earlier memory/strategy-learning architecture | Not a current architecture priority unless a concrete use case reintroduces it |
-| `Core/Graph/`, `Core/Index/`, `Core/Chunk/`, `Core/Community/`, `Core/Provider/` | **Foundational implementation** | Underlying graph/index/chunk/community/provider machinery | Keep behind stable capability/resource contracts where possible |
-| `eval/` | **Implemented infrastructure / Deferred priority** | Benchmark execution and quality/cost measurements | Preserve; architecture work currently takes precedence over benchmark optimization |
-| `tests/`, `testing/`, root `test_*.py` | **Mixed active/experimental test estate** | Unit, integration, E2E and historical test scripts | Build a canonical test taxonomy before treating file presence as support status |
-| `digimon_cli.py` | **Implemented / Transitional entry point** | Uses internal `PlanningAgent`/`AgentOrchestrator`, optional ReAct mode | Compatibility surface, not preferred orchestration boundary |
-| `api.py`, dashboards, Streamlit, React UI | **Secondary / Mixed-generation surfaces** | Alternate user/application interfaces | Do not add new architectural policy here; eventually adapt to canonical capabilities or label clearly |
+| `Core/Schema/SlotTypes.py` | **Canonical / Implemented** | Current typed retrieval/composition vocabulary | Extend only for reusable data semantics such as tables/derived artifacts when concrete capabilities require them |
+| `Core/Schema/OperatorDescriptor.py` | **Canonical / Implemented, evolving** | Machine-readable operator metadata | Use as descriptor foundation; broaden carefully for real representation/analytics needs rather than speculative universal schema |
+| `Core/Operators/registry.py` | **Canonical / Implemented, dynamic** | Registers typed operator families; utility operators may register alongside the original base set | Do not hard-code a permanent operator count in docs/architecture |
+| `Core/Operators/` | **Canonical / Implemented** | Entity, relationship, chunk, subgraph, community, meta and utility operations | Preferred home for reusable typed retrieval/transform operations |
+| `Core/Composition/ChainValidator.py` | **Canonical / materially hardened** | Static named-slot/type validation | Required inputs must be explicitly wired by input name; do not rely on old permissive same-kind auto-wiring assumptions |
+| `Core/Composition/PipelineExecutor.py` | **Canonical / materially hardened** | Executes plans, loops and conditionals | Control-owned body steps are not re-run top-level; carried loop outputs preserve actual slot kind; keep runtime checks fail-closed |
+| `Core/Composition/OperatorComposer.py` | **Canonical / Implemented** | Profiles/builds/executes maintained reference plans | Invalid plans are rejected by default; best-effort must be explicit; composer does not own global user-level routing policy |
+| `Core/Methods/` | **Canonical reference layer / Implemented** | Ten maintained named compositions | Keep as useful shortcuts/regression baselines, not system identity |
+| `Core/AgentSchema/context.py` | **Canonical foundation / pragmatic resource state** | Tracks target dataset, providers, graph/VDB instances and active graph state | Current pragmatic selection/invalidation is real; do not assume a generalized resource catalog is already necessary |
+| `Core/AgentTools/graph_construction_tools.py` | **Canonical build implementation / hardened** | Shared lifecycle for ER/RK/tree/balanced/passage builds | Uses source-chunk manifests, truthful success, non-empty graph checks and known-artifact invalidation |
+| `Core/AgentTools/derived_resource_cleanup.py` | **Canonical pragmatic lifecycle helper** | Deletes known stale derived artifacts after successful rebuild | Keep concrete; generalize only when new representation families require shared lifecycle semantics |
+| `Core/AgentTools/graph_chunk_manifest.py` | **Canonical pragmatic freshness helper** | Detects changed/added/missing chunk sources before graph reuse | Important current source-freshness mechanism |
+| `Core/AgentTools/cross_modal_tools.py` | **Implemented / Experimental integration** | Graph↔table↔vector transformations | Useful precursor to broader representation plane; not yet canonical governed-IR projection architecture |
+| `Core/Common/EntityNormalization.py` | **Canonical helper / Implemented** | Unicode-safe graph identity and semantic-text normalization | Use identity normalization for graph keys/endpoints, semantic-text normalization for descriptions/keywords |
+| `Core/Graph/`, `Core/Index/`, `Core/Chunk/`, `Core/Community/`, `Core/Provider/` | **Foundational implementation** | Graph/index/chunk/community/provider machinery | Keep behind stable typed/public boundaries where possible |
+| `digimon_mcp_stdio_server.py` | **Implemented agent-facing protocol surface** | Current strongest modern MCP facade | MCP is an interface, not the product thesis; future public surfaces should converge on the same maintained core |
+| `digimon_cli.py` | **Implemented / Transitional human surface** | CLI still uses `PlanningAgent`/`AgentOrchestrator`/optional ReAct | Modernize toward maintained runtime; do not deepen old internal-brain dependency |
+| prospective `digimon/` public runtime | **Partial / target surface** | Intended developer/application library seam | Should expose maintained projection/resource/retrieval/analysis behavior cleanly |
+| `Core/AgentBrain/` | **Legacy / Transitional** | Older broad internal planning logic used by some older entry points | Do not extend as default architecture |
+| `Core/AgentOrchestrator/` | **Legacy / Transitional** | Multiple older orchestration generations | Identify callers and isolate/remove over time |
+| `Core/AOT/` | **Legacy** | Programmed atomic states/transitions | Not target AoT/GoT policy; current decomposition is advisory |
+| `Core/Memory/` | **Experimental / Legacy lineage** | Earlier strategy/memory architecture | Not current priority without concrete consumer need |
+| older `Core/MCP/` | **Mixed legacy/experimental** | Older MCP clients/servers/coordination experiments | Do not infer current architecture from presence |
+| `eval/` | **Implemented infrastructure / Deferred primary priority** | Benchmark/quality/cost evaluation | Preserve; do not let benchmarks define architecture before target seams are real |
+| `tests/`, `testing/`, root `test_*.py` | **Mixed active/experimental estate** | Deterministic contracts, E2E, historical experiments | Current core tests need fresh execution before claiming green runtime |
+| `api.py`, dashboards, Streamlit, React UI | **Secondary / mixed generation** | Alternate surfaces | Do not add architecture policy here; converge later or label clearly |
 
-## Canonical typed operator core
+## Typed operator/composition core
 
-### Slot kinds
+### Current slot kinds
 
 `Core/Schema/SlotTypes.py` currently defines:
 
@@ -74,31 +86,17 @@ The external harness owns adaptive orchestration. DIGIMON owns capabilities, typ
 6. `COMMUNITY_SET`
 7. `SCORE_VECTOR`
 
-Current records include useful provenance foundations:
+These are current useful semantics, not a claim that the final representation/analytics algebra is complete. Likely future additions should come from real capabilities—for example `TABLE` or a derived-artifact/finding type—not from encoding thought-process states.
 
-- `EntityRecord.source_id`;
-- `RelationshipRecord.source_id`;
-- `ChunkRecord.chunk_id`;
-- `SlotValue.producer` and free-form `metadata`.
+### Operator catalog
 
-These are useful primitives, but they are not yet a universal evidence contract.
+The original static registry included the main entity/relationship/chunk/subgraph/community/meta families. Maintained reference-plan construction now also registers utility operators such as materialization/merge helpers dynamically.
 
-### Registered operators
-
-The registry currently contains 26 operators:
-
-| Category | Count | Operators |
-|---|---:|---|
-| entity | 7 | `entity.vdb`, `entity.ppr`, `entity.onehop`, `entity.link`, `entity.tfidf`, `entity.agent`, `entity.rel_node` |
-| relationship | 4 | `relationship.onehop`, `relationship.vdb`, `relationship.score_agg`, `relationship.agent` |
-| chunk | 3 | `chunk.from_relation`, `chunk.occurrence`, `chunk.aggregator` |
-| subgraph | 3 | `subgraph.khop_paths`, `subgraph.steiner_tree`, `subgraph.agent_path` |
-| community | 2 | `community.from_entity`, `community.from_level` |
-| meta | 7 | `meta.extract_entities`, `meta.reason_step`, `meta.rerank`, `meta.generate_answer`, `meta.pcst_optimize`, `meta.decompose_question`, `meta.synthesize_answers` |
+**Rule:** treat the operator catalog as discoverable runtime metadata, not a permanent hard-coded integer.
 
 ### Reference methods
 
-`Core/Methods/__init__.py` currently exposes ten plans:
+Maintained plans:
 
 - `basic_local`
 - `basic_global`
@@ -111,202 +109,290 @@ The registry currently contains 26 operators:
 - `kgp`
 - `med`
 
-`OperatorComposer` intentionally profiles/builds/executes these plans without making the method-selection decision itself.
+Recent source-level repairs include:
 
-## Composition: what is implemented and what is not
+- all methods normally terminate in grounded answer generation;
+- Basic Global actually materializes selected community evidence;
+- ToG/KGP use explicit hop unrolling rather than broken generic loop state;
+- KGP accumulates earlier-hop evidence;
+- GR/DALK/Med structural selections control evidence materialization;
+- FastGraphRAG/HippoRAG explicitly request their intended PPR modes;
+- structural paths/Steiner/PCST behavior is more truthful and fail-closed.
 
-The composition layer is real, but it should not be described as a fully closed type/resource system yet.
+Fresh runtime execution is still required before calling these current-head certified.
 
-### Implemented
+## Composition behavior now
 
-- typed slot descriptors;
-- plan wiring checks;
-- named-output tracking;
-- pre-dispatch slot-name/type validation in `PipelineExecutor`;
-- fail-fast operator execution by default;
-- loops and conditional branches;
-- method plan profiling/execution;
-- basic compatibility/chain-discovery helpers.
+### Implemented/hardened
 
-### Important limitations
+- explicit named-slot wiring checks;
+- slot-kind/type validation;
+- unknown named output rejection;
+- invalid plans rejected by default;
+- explicit best-effort only when intentionally requested;
+- pre-dispatch runtime checks;
+- loops/conditionals without duplicate top-level body execution;
+- loop accumulation preserving actual slot kind;
+- reference-plan profiling/execution.
 
-1. **Registry compatibility helpers are slot-kind heuristics.** `get_compatible_successors()` looks for overlapping kinds, not proof that every required input/prerequisite is satisfied.
-2. **Chain discovery is not resource-aware.** `find_chains_to_goal()` reasons about available slot kinds, not VDB/community/matrix/resource availability, field requirements, cost or semantic applicability.
-3. **Static validation is permissive.** `ChainValidator` can treat any prior output of the same kind as satisfying an unwired required input and emits a warning rather than requiring explicit wiring.
-4. **Composer validation is currently fail-open.** `OperatorComposer.execute()` logs validation errors and proceeds best-effort; `PipelineExecutor` may then reject bad inputs at dispatch time.
-5. **Loop accumulation is not fully typed.** Accumulated loop outputs are currently wrapped as `ENTITY_SET`, regardless of the conceptual output being accumulated.
-6. **Some descriptors are semantically broader than their slot type.** For example, `meta.rerank` documents that it can rerank chunks while its descriptor is expressed as `ENTITY_SET`.
+### Remaining limitations
 
-These are architecture-hardening gaps, not reasons to discard the composition layer.
+- compatibility/chain-discovery helpers remain heuristic and should not be confused with proof of semantic/resource executability;
+- descriptor coverage is still centered on the retrieval/meta core rather than the full future Represent/Retrieve/Analyze plane;
+- some generic meta/task concepts still use transitional types;
+- error/result conventions remain uneven across all maintained/non-maintained surfaces.
 
-## Prompt and reasoning surfaces
+## Representation map
 
-### Current policy
+### Property graphs — **strong/current**
 
-AoT/GoT/ReAct are optional heuristics. They may suggest a reasoning shape; the harness remains free to choose a different path.
+- ER graph;
+- RK graph;
+- tree/balanced tree;
+- passage graph;
+- graph communities;
+- sparse graph propagation structures.
 
-### Current implementations
+### Vector — **strong/current**
 
-- `prompts/decompose_question.yaml` — dependency-aware advisory decomposition;
-- `prompts/synthesize_answers.yaml` — evidence-aware synthesis guidance;
-- `Core/Operators/meta/decompose_question.py` — typed operator-local advisory decomposition prompt;
-- `Core/Operators/meta/synthesize_answers.py` — typed operator-local evidence-aware synthesis prompt.
+- entity VDB;
+- relationship VDB;
+- FAISS-backed similarity retrieval;
+- graph-to-vector related conversion code.
 
-As of this reconciliation, the operator-local prompts have been aligned with the same policy as the YAML prompts.
+### Source/evidence — **strong/current foundations**
 
-### Remaining prompt gap
+- exact chunk IDs/text;
+- graph-source relationships;
+- evidence materialization;
+- grounded answer citation validation.
 
-There are still **multiple prompt sources of truth**. The typed meta operators do not automatically load the YAML templates; equivalent instructions exist in two places. This can drift again.
+### Relational/tabular — **partial / target gap**
 
-A future cleanup should either:
+DataFrame/table conversions exist, but there is not yet a canonical governed-IR→relational database projection with stable cross-representation IDs and documented schema.
 
-- centralize prompt loading/templates, or
-- explicitly define which prompt surface is authoritative for each execution path and test semantic parity.
+### Wiki/progressive-disclosure catalog — **planned**
 
-### Transitional sub-question representation
+No canonical generator exists yet for the agent-readable semantic/environment map described in `VISION.md`.
 
-`meta.decompose_question` currently returns suggested sub-questions in `EntityRecord.entity_name` inside an `ENTITY_SET` slot. This preserves compatibility with the existing seven-slot model but is semantically awkward.
+### Semantic/RDF graph — **planned / not canonical**
 
-Do not introduce a formal reasoning DAG solely to fix this. First decide whether a more general typed text/task-list slot is useful across capabilities. A dependency object is justified only if it serves scheduling, resumability, caching, provenance or another concrete system function.
+Not yet a maintained projection/runtime surface.
 
-## Resource/runtime state
+### Specialized lexical index — **planned selectively**
 
-### Current context
+Only justified where BM25/fielded ranking adds value beyond native harness search.
 
-`GraphRAGContext` directly models:
+## Graph/vector implementation facts
 
-- target dataset name;
-- config;
-- LLM provider;
-- embedding provider;
-- chunk factory/storage manager;
-- graph instances;
-- VDB instances;
-- resolved configuration values.
+### Graph construction
 
-It does **not** yet provide one common typed catalog for corpus artifacts, communities, sparse matrices, converted tables/vectors, build fingerprints, staleness or dependency edges.
+All five maintained graph wrappers share a truthful lifecycle:
 
-### MCP state
+- choose graph-specific namespace;
+- load current chunks;
+- compare source manifest;
+- force rebuild when source chunk set changes or caller requests it;
+- require successful non-empty build;
+- persist current manifest;
+- invalidate known dependent artifacts only after a successful usable rebuild.
 
-`digimon_mcp_stdio_server.py` maintains process-level `_state` initialized lazily and stores configuration/providers/context there. It also changes the working directory to the project root during initialization.
+### Raw chunking
 
-This is adequate for the current single-process tool-server model, but session/multi-client isolation and explicit resource identity are not first-class architecture yet.
+`ChunkFactory` now applies configured chunking for ordinary document records. Already-pre-chunked records remain compatible. Chunk IDs include document identity so identical boilerplate in different documents does not collapse, and global chunk indices preserve sparse-column alignment.
 
-### Prerequisites
+### Entity/relationship VDBs
 
-Operator descriptors currently use booleans such as:
+Recent hardening includes:
 
-- `requires_entity_vdb`;
-- `requires_relationship_vdb`;
-- `requires_community`;
-- `requires_sparse_matrices`;
-- `requires_llm`.
+- truthful build success;
+- actual embedding dimension inference;
+- correct FAISS score direction;
+- typed entity seed extraction;
+- exact graph match before approximate link;
+- full entity identity content in entity embeddings;
+- source/target identity included in relationship embedding text;
+- canonical VDB prioritization.
 
-MCP helpers and reference-method execution add additional build/reuse behavior. The target is a resource requirement model that tells the harness *which compatible resource* is needed and *which capability can produce it*, rather than only a boolean flag.
+### PPR / propagation
 
-## Evidence/provenance map
+- reset/teleport semantics corrected;
+- FastGraphRAG and HippoRAG pin different intended PPR modes;
+- sparse propagation validates dimensions;
+- unresolved evidence is skipped rather than fabricated;
+- same-shaped cross-graph sparse matrix reuse remains a known identity gap.
 
-### Present now
+## Analytics map
 
-- entity/relationship `source_id` fields;
-- chunk IDs and chunk text;
-- graph→chunk retrieval paths;
+DIGIMON's current code already contains meaningful graph-oriented analysis/transformation capability, though it is not yet organized as a complete first-class analytics catalog.
+
+Current examples include:
+
+- PPR/diffusion scoring;
+- community detection/materialization;
+- k-hop/path/subgraph transforms;
+- PCST optimization;
+- Steiner approximation;
+- score propagation/aggregation;
+- tree/community-derived transforms;
+- cross-modal graph/table/vector transformations.
+
+The target analytical plane should inventory existing centrality/SNA/statistical capabilities before adding new ones, then promote reusable methods into typed descriptors/outputs.
+
+## Evidence and derivation map
+
+### Evidence provenance — current strong path
+
+Current foundations include:
+
+- `EntityRecord.source_id`;
+- `RelationshipRecord.source_id`;
+- exact `ChunkRecord.chunk_id`;
+- graph→chunk/source materialization;
 - `SlotValue.producer`/metadata;
-- evidence-aware synthesis instructions;
-- operator-local synthesis now includes available chunk/source markers in the prompt context.
+- evidence IDs/provenance preserved into grounded answer results;
+- answer citations validated against retrieved evidence.
 
-### Still missing
+### Semantic provenance — upstream authority
 
-- one universal evidence/assertion type;
-- source-document identity/metadata contract across all loaders;
-- enforced lineage propagation through score aggregation, subgraphs, communities and conversions;
-- explicit distinction between retrieved assertion and derived inference at every layer;
-- canonical conflict/time-validity representation;
-- typed lossiness/provenance behavior for graph/table/vector conversion.
+Onto-canon6 owns governed semantic/source provenance. DIGIMON should preserve those identities/provenance through projections rather than redefine semantic authority.
 
-## Error semantics
+### Artifact/derivation lineage — target gap
 
-Current error behavior varies by layer:
+Current manifests, producer metadata and invalidation rules are foundations, but there is not yet one first-class derivation graph recording:
 
-- `PipelineExecutor` raises `PipelineExecutionError` for several plan/dispatch failures and defaults to fail-fast execution;
-- some individual operators catch exceptions and return an empty or failure-valued `SlotValue` with logs/metadata;
-- MCP/build tools may raise runtime exceptions or return structured status objects;
-- an empty retrieval and a failed retrieval are therefore not represented uniformly today.
+```text
+input artifact/version
+→ projection/retrieval/analytic execution + parameters
+→ output artifact/version
+→ finding
+```
 
-The target error model should make these cases machine-distinguishable so a harness can choose build, retry, fallback, reformulation or stop behavior.
+This graph is distinct from the domain/property graph.
 
-## Cross-modal implementation
+## Resource/freshness behavior
 
-`Core/AgentTools/cross_modal_tools.py` implements substantive graph/table/vector conversions using NetworkX, pandas and NumPy, with embedding provider adapters including a deterministic hash provider for testing.
+The old description “no canonical invalidation semantics” is now too broad.
 
-It is real functionality, but its current payloads (`DataFrame`, `ndarray`, dictionaries) are not normalized into the seven-slot operator system or the target resource/evidence model. Treat it as **implemented functionality with partial architectural integration**.
+Current pragmatic behavior includes:
 
-## Testing and CI interpretation
+- active dataset/graph selection;
+- canonical VDB preference;
+- in-memory same-dataset VDB eviction when graph is replaced;
+- source-chunk manifests for graph freshness;
+- removal of canonical entity/relation VDB artifacts after successful rebuild;
+- community report/map invalidation;
+- ER sparse-matrix invalidation;
+- fail-closed use of stale in-memory community reports.
 
-The repository has meaningful tests and a CI workflow, but support claims should remain bounded:
+This is not a generalized enterprise resource catalog, and that is intentional. Generalize only when concrete new projections/analytics require shared machinery.
 
-- CI runs Black and Flake8 as blocking checks;
-- MyPy is currently non-blocking (`|| true`);
-- unit tests are blocking in the workflow;
-- integration tests are currently non-blocking (`|| true`);
-- build and Docker jobs depend on lint/test jobs;
-- provider/LLM-dependent behavior is not equivalent to deterministic contract coverage.
+## Unicode identity/text
 
-The target is a clear test matrix where capability/slot/resource/provenance/MCP contract tests are blocking and live-provider tests are separately classified.
+Maintained graph extraction/link/community paths now distinguish:
 
-## Documentation classification
+- Unicode-safe graph identity normalization; and
+- Unicode-safe semantic text cleanup.
 
-### Canonical current docs
+Non-ASCII names/descriptions should not be erased merely because older `clean_str()` behavior was ASCII-oriented.
+
+## Prompt/reasoning surfaces
+
+Current policy remains:
+
+- AoT/GoT/ReAct/decomposition are advisory heuristics;
+- harness may ignore/reorder/branch/parallelize/revise;
+- malformed decomposition falls back conservatively rather than turning arbitrary prose into planner state;
+- reason-step refinement is evidence-gated;
+- synthesis is evidence-gated.
+
+Prompt duplication between YAML and operator-local text may still merit cleanup, but it is not the project north star.
+
+## Public/control surfaces
+
+### MCP
+
+Current strongest modern agent-facing protocol facade. Useful for specialized DIGIMON state/capabilities, but not the product identity.
+
+### CLI
+
+Human-facing but internally transitional because it still uses older PlanningAgent/AgentOrchestrator logic.
+
+### Python runtime
+
+Target developer/application surface; needs consolidation over the same maintained core.
+
+Target: **CLI + Python + MCP over one core**.
+
+## Harness-native capability boundary
+
+Do not build DIGIMON wrappers merely because a conceptual capability can be named.
+
+If the external harness already handles file reading, grep/text search, link following, directory/wiki navigation, planning, sequencing or retries well, DIGIMON should generally generate good artifacts and expose only the specialized state/engines it owns.
+
+## Testing / runtime verification
+
+Many deterministic contract tests have been added around the repaired semantics above. However:
+
+- current head has not been run in this environment;
+- current connector-created commits/PRs have not produced fresh GitHub Actions runs;
+- historical Actions failures occurred during dependency installation before meaningful testing.
+
+Do not claim current-head green status until a real runner executes:
+
+```bash
+pip install -r requirements-minimal.txt
+pytest tests/core -q
+python tests/e2e/test_mcp_smoke.py
+DIGIMON_CANARY_REBUILD=1 python tests/e2e/test_mcp_smoke.py
+```
+
+## Canonical documentation
 
 - `README.md`
 - `FUNCTIONALITY.md`
 - `docs/README.md`
+- `docs/VISION.md`
 - `docs/CURRENT_STATE.md`
 - `docs/IMPLEMENTATION_MAP.md`
 - `docs/ARCHITECTURE.md`
 - `docs/GAP_ANALYSIS.md`
 - `docs/ROADMAP.md`
+- `docs/DOCUMENTATION_COVERAGE.md`
 - `docs/PLANNING_SUMMARY.md`
 - `docs/AGENT_INTELLIGENCE_ENHANCEMENTS.md`
 - `docs/FUTURE_EVALUATION_QUESTIONS.md`
-- `docs/adr/002-harness-first-capability-architecture.md`
 - `AGENTS.md`
 - `CLAUDE.md`
 
-### Historical or superseded examples
-
-- `docs/CHECKPOINT_PROGRESS.md` — earlier internal-orchestrator/AoT checkpoint program;
-- `docs/adr/001-agent-orchestration-architecture.md` — superseded orchestration decision;
-- root WebSocket MCP plans/trackers — retained as historical stubs/provenance;
-- older UKRF/multi-agent/cognitive-architecture reports and handoffs unless restated by canonical docs.
-
-Historical material may still contain useful implementation ideas. It does not define current priority.
+`docs/adr/002-harness-first-capability-architecture.md` remains the accepted **orchestration-ownership** decision, not the complete project vision.
 
 ## Contributor decision rule
 
-Before adding a new abstraction, ask:
+Before adding an abstraction, ask:
 
-1. Is this a reusable capability or resource fact that DIGIMON should own?
-2. Can it fit the typed capability/resource/evidence model?
-3. Is it actually orchestration policy that a capable harness can own instead?
-4. Does an existing legacy planner/orchestrator already attempt the same thing?
-5. Will the change preserve source evidence and produce machine-actionable failures?
+1. Does it support Represent, Retrieve or Analyze/Transform?
+2. Is it a specialized capability/data/identity/derivation fact DIGIMON should own, or orchestration policy the harness already owns?
+3. Does it preserve canonical cross-representation identity?
+4. Does it preserve or explicitly characterize evidence/derivation lineage?
+5. Is there an existing implementation that should be promoted instead of rebuilt?
+6. Does a concrete failure/use case justify generalization?
 
-Prefer improving the capability/resource/evidence plane over creating another internal reasoning layer.
+Prefer concrete improvements to representations, specialized capabilities, identity, evidence and derivation over another internal reasoning framework.
 
 ## Where to work next
 
-The implementation map points directly to the current roadmap order:
+Follow `ROADMAP.md`:
 
-1. capability/descriptor/MCP inventory and parity;
-2. explicit strict-vs-best-effort validation semantics;
-3. prompt source-of-truth/parity;
-4. typed resource catalog and prerequisite links;
-5. provenance/evidence record and propagation;
-6. clean harness-first entry points;
-7. legacy planner/orchestrator/AoT/MCP consolidation;
-8. cross-modal normalization;
-9. standardized errors/recovery;
-10. blocking architecture contract tests and CI;
-11. incremental/temporal/conflict semantics later;
-12. benchmarking/research validation after the architecture is coherent.
+1. fresh current-head deterministic execution;
+2. custom ontology + first real runtime failures;
+3. canonical onto-canon/Foundation IR handoff;
+4. cross-representation identity;
+5. canonical relational projection;
+6. progressive-disclosure wiki/catalog;
+7. first-class analytic capability inventory/promotion;
+8. derivation records across projection→retrieval→analysis;
+9. exact graph identity for remaining derived resources;
+10. Python/CLI/MCP convergence;
+11. deterministic architecture tests;
+12. broader evaluation later.
