@@ -1,206 +1,289 @@
 # AGENTS.md — DIGIMON Contributor and Coding-Agent Guide
 
-**Updated:** 2026-09-16
+**Updated:** 2026-09-17
 
-This file gives implementation guidance to coding agents working in this repository. It points to the canonical documentation rather than duplicating a dated checkpoint plan.
+This file gives implementation guidance to coding agents. It should point to the canonical documentation rather than becoming another architecture/status document.
 
 ## Read these first
 
-The source-of-truth documentation is:
+1. `docs/VISION.md` — durable north star.
+2. `docs/CURRENT_STATE.md` — what is actually implemented now.
+3. `docs/IMPLEMENTATION_MAP.md` — module classification and code caveats.
+4. `docs/ARCHITECTURE.md` — target technical design.
+5. `docs/GAP_ANALYSIS.md` — concrete current→target gaps.
+6. `docs/ROADMAP.md` — dependency-ordered implementation sequence.
+7. `docs/DOCUMENTATION_COVERAGE.md` — checklist for avoiding myopic documentation changes.
+8. `docs/adr/002-harness-first-capability-architecture.md` — accepted decision about orchestration ownership.
 
-1. `docs/CURRENT_STATE.md` — what is actually implemented now.
-2. `docs/IMPLEMENTATION_MAP.md` — module classification and concrete implementation caveats.
-3. `docs/ARCHITECTURE.md` — target architecture.
-4. `docs/GAP_ANALYSIS.md` — concrete current→target gaps.
-5. `docs/ROADMAP.md` — ordered architecture-completion plan and exit criteria.
-6. `docs/adr/002-harness-first-capability-architecture.md` — accepted orchestration decision.
+`README.md` and `FUNCTIONALITY.md` are concise public views. Older MCP checkpoints, UKRF plans, internal-agent proposals and historical implementation reports are not current authority unless the canonical docs restate them.
 
-`README.md` and `FUNCTIONALITY.md` are concise public views. Older status trackers, UKRF plans, MCP checkpoint plans and implementation reports are historical unless the canonical docs explicitly restate them.
+## Project thesis versus control policy
 
-## Current architectural direction
+Do not collapse these into one statement.
 
-DIGIMON is **harness-first**.
+### Project thesis
 
-### External intelligent harness owns
+DIGIMON is a **general text-derived representation, retrieval, and analytics runtime**. The canonical ecosystem input is governed semantic IR from onto-canon6. DIGIMON projects that semantic core into complementary representations, exposes specialized retrieval and analytical capabilities, preserves shared identity/provenance across them, and supports reusable evidence-to-action workflows.
 
-- goal interpretation;
-- whether/how to decompose a problem;
-- tool/capability selection and sequencing;
-- retries, fallbacks, branching and parallel work;
+The three capability planes are:
+
+```text
+REPRESENT → RETRIEVE → ANALYZE / TRANSFORM
+```
+
+### Control-policy decision
+
+DIGIMON is **harness-first for adaptive reasoning**.
+
+The external intelligent harness owns:
+
+- interpreting the goal;
+- deciding whether/how to decompose;
+- selecting representations/tools;
+- sequencing, branching and parallelization;
+- retries/fallbacks;
 - adapting after observations;
 - stopping criteria.
 
-### DIGIMON owns
+DIGIMON owns:
 
-- corpus/graph/index/resource construction;
-- typed retrieval and analysis capabilities;
-- capability metadata and compatibility;
-- resource/prerequisite facts and lifecycle;
-- source/evidence lineage;
-- bounded model-assisted operations where an individual capability requires semantic judgment;
-- reference method plans as optional conveniences.
+- derived representations and their schemas/identity;
+- specialized retrieval capabilities;
+- analytical/transformation capabilities;
+- typed contracts and compatibility facts;
+- evidence/provenance/derivation facts;
+- bounded local model-assisted operations where intrinsically required.
 
 Do **not** add another general-purpose planner/orchestrator or mandatory cognitive state machine unless a new ADR explicitly changes this decision.
 
-## Canonical code center
+## Ecosystem boundary
 
-The strongest current core is:
+### onto-canon6 owns
 
-- `Core/Schema/SlotTypes.py` — typed slot/dataflow records;
+- source-backed semantic extraction/binding;
+- ontology/profile semantics;
+- governance/review;
+- promoted assertions;
+- canonical semantic identity/aliases;
+- source/evidence provenance;
+- governed Foundation-style IR/export.
+
+### DIGIMON owns downstream projection/retrieval/analytics
+
+Raw-document ingestion/chunking remains useful standalone/compatibility functionality but is not the conceptual ecosystem authority path.
+
+## Representation families
+
+The target representation plane includes:
+
+- relational/tabular;
+- vector;
+- property graph;
+- semantic/RDF graph where useful;
+- hierarchy/tree;
+- specialized lexical/full-text indexes where they add capability beyond harness-native search;
+- source/evidence artifacts;
+- progressive-disclosure wiki/catalog artifacts.
+
+Geospatial is out of current text-focused scope.
+
+Do not add a representation just for symmetry. Add it when it exposes a useful native operation family or materially improves agent navigation/analysis.
+
+## Wiki/catalog rule
+
+The target wiki is a **progressive-disclosure semantic and operational map** of the knowledge environment.
+
+It should help an agent discover:
+
+- what knowledge exists;
+- how it is semantically organized;
+- which representations exist;
+- their schemas/ontologies;
+- canonical IDs linking them;
+- which specialized retrieval/analytic capabilities apply;
+- where source/evidence lives.
+
+Do not implement `wiki.open`, `wiki.follow`, basic grep/search wrappers merely for symmetry if the harness already provides those abilities well. Prefer generating high-quality artifacts that native harness tooling can navigate.
+
+## Cross-representation identity is a core invariant
+
+Preserve canonical IDs wherever possible:
+
+- `entity_id`;
+- `assertion_id`;
+- `predicate_id`;
+- `source_ref`;
+- evidence/span identity.
+
+A harness should be able to find an entity in the wiki, query it in SQL, traverse it in the graph, inspect vector metadata and recover evidence using explicit identity rather than fuzzy rediscovery.
+
+Projection-local IDs may exist but should not become the only bridge across representations.
+
+## Analytics are first-class
+
+Do not treat DIGIMON as retrieval-only.
+
+The canonical analytical pattern is:
+
+```text
+retrieve bounded working set
+→ apply analytic/transformation method
+→ produce typed derived artifact
+→ reuse that artifact in later retrieval/analysis
+```
+
+Graph/SNA examples include centrality, PageRank/diffusion, Leiden/community detection, connected components, k-core/cohesion/density/assortativity, brokerage/bridging, shortest paths, PCST/Steiner and subgraph transforms.
+
+Non-graph analytics should be added from concrete reusable needs such as SQL aggregation, descriptive statistics, clustering, anomaly detection or trend calculations.
+
+Before adding new analytic methods, inventory existing code first and promote real current capabilities into coherent descriptors/types.
+
+## Derived state is not source evidence
+
+Keep these distinct:
+
+1. source-backed semantic state;
+2. retrieval artifacts/working sets;
+3. derived analytical artifacts;
+4. findings/interpretations.
+
+A centrality score, community assignment, bridge classification, forecast or model output is derived state. It should retain method, parameters, input artifacts/representation version and evidence/uncertainty where relevant.
+
+## Provenance terminology
+
+Do not conflate:
+
+- **evidence provenance** — which source supports a claim/answer;
+- **semantic provenance** — how governed semantic assertions derive from source evidence/candidates;
+- **artifact/derivation lineage** — what prior artifacts and transformation executions produced each projection, retrieval artifact, analytic artifact or finding.
+
+The derivation/provenance graph is not the domain/property graph.
+
+## Current code center
+
+The strongest maintained implementation currently includes:
+
+- `Core/Schema/SlotTypes.py` — typed values/records;
 - `Core/Schema/OperatorDescriptor.py` — operator metadata;
-- `Core/Operators/registry.py` — 26-operator registry;
-- `Core/Operators/` — operator implementations;
+- `Core/Operators/` and registry — retrieval/meta/utility capabilities;
 - `Core/Composition/` — validation/execution/composition;
-- `Core/Methods/` — 10 reference plans;
-- `digimon_mcp_stdio_server.py` — current external-harness MCP facade.
+- `Core/Methods/` — ten maintained reference plans;
+- graph/VDB/community/index/build implementations;
+- `digimon_mcp_stdio_server.py` — strongest current agent-facing protocol facade.
 
-When adding functionality, prefer extending or mapping into this capability/resource/evidence model rather than creating a parallel registry/execution abstraction.
+The operator catalog is extensible/dynamic. **Do not hard-code a permanent operator count in documentation or new architecture.**
 
-## Important current implementation caveats
+## Important current implementation facts
 
-Do not infer more guarantees than the code currently provides:
+Do not reintroduce already-fixed defects or stale docs:
 
-- registry compatibility helpers are primarily slot-kind discovery aids, not proof that prerequisites/resources make a chain executable;
-- `ChainValidator` is permissive in places and can warn about implicit same-kind wiring;
-- `OperatorComposer.execute()` currently logs static validation failures and may proceed best-effort;
-- `PipelineExecutor` performs stricter pre-dispatch slot checks and defaults to fail-fast operator execution;
-- strict versus best-effort composition must become an explicit contract;
-- `GraphRAGContext` directly tracks graphs/VDBs, not every derived resource type;
-- `meta.decompose_question` currently uses `ENTITY_SET`/`EntityRecord` as a transitional carrier for sub-question text;
-- decomposition/synthesis policy exists in both YAML and operator-local prompt text, so prompt ownership/parity is not finished;
-- error representation differs across composition, individual operators and MCP/build tools;
-- cross-modal DataFrame/array/dictionary payloads are not yet normalized into the core slot/resource/provenance system.
+- required inputs must be explicitly wired by name;
+- invalid plans fail closed by default; best-effort is explicit;
+- control-flow body steps are not also executed top-level;
+- loop carry-forward preserves real slot kinds;
+- configured raw-document chunking occurs on the maintained standalone path;
+- graph source manifests detect missing/changed/added chunks;
+- successful rebuilds pragmatically invalidate known VDB/community/matrix artifacts;
+- active graph identity and canonical VDB selection are explicit;
+- answer generation fails closed on no evidence and validates citations;
+- Unicode graph identity/text handling is preserved in maintained extraction/link/community paths;
+- reference methods have received substantial wiring/evidence repairs;
+- sparse matrices still have a same-shaped cross-graph identity edge case;
+- current head still lacks a fresh runtime certification in the available environment.
 
-See `docs/IMPLEMENTATION_MAP.md` before changing these areas.
+See `docs/CURRENT_STATE.md` before assuming a gap still exists.
 
 ## Current implementation priorities
 
-Follow `docs/ROADMAP.md`. The active sequence is:
+Follow `docs/ROADMAP.md`. The current sequence is:
 
-1. audit capability descriptors, implementations and MCP parity;
-2. make strict-vs-best-effort validation semantics explicit;
-3. establish prompt source-of-truth/parity for meta operators;
-4. unify resource identities/lifecycle/prerequisites;
-5. make evidence/provenance an end-to-end contract;
-6. clean the harness-first execution boundary;
-7. consolidate legacy internal planning/AoT/MCP layers;
-8. normalize cross-modal capabilities;
-9. standardize machine-actionable errors/recovery;
-10. harden architectural contract tests and CI.
+1. get a real current-head deterministic test/canary run;
+2. finish custom ontology wiring and first runtime reds;
+3. verify the canonical onto-canon/Foundation IR handoff;
+4. enforce cross-representation identity;
+5. implement the first canonical relational projection;
+6. generate the progressive-disclosure wiki/catalog;
+7. inventory/promote existing graph analytics into a first-class typed analytic catalog;
+8. add minimal derivation lineage across projection → retrieval → analysis;
+9. bind remaining graph-derived resources such as sparse matrices to exact graph identity;
+10. converge Python/CLI/MCP on the same maintained core;
+11. expand deterministic architecture tests;
+12. evaluate broadly only after those seams are real.
 
-Benchmark optimization, novelty claims, router calibration and new UI surfaces are not the current priority.
-
-## Status vocabulary
-
-Use these terms consistently:
-
-- **Implemented** — substantive code exists and is wired into a current surface.
-- **Partial** — code exists but lifecycle/integration/contracts/reliability are incomplete.
-- **Legacy** — retained for compatibility/history, not target architecture.
-- **Planned** — not materially complete yet.
-
-Do not call something “complete” merely because a module/file exists.
-
-## Legacy/transitional areas
-
-Treat these carefully:
-
-- `Core/AOT/` — legacy programmed atomic-state/transition approach;
-- `Core/AgentBrain/` — older broad internal planning layer;
-- `Core/AgentOrchestrator/` — multiple older/transitional orchestrators;
-- `Core/Memory/` — earlier strategy/memory architecture, not current priority;
-- much of `Core/MCP/` — older MCP/coordination lineage; the root stdio server is the current preferred facade;
-- `digimon_cli.py` — still calls internal `PlanningAgent`/`AgentOrchestrator`;
-- historical MCP/checkpoint/UKRF/multi-agent documents.
-
-Before deleting legacy code, identify live callers/tests. Before extending it, verify the canonical capability architecture cannot serve the need more cleanly.
-
-## AoT / GoT / ReAct guidance
-
-These are **reasoning heuristics**, not mandatory DIGIMON runtimes.
-
-Dependency-aware subgoals may refer to prior discoveries, for example `<q1.entity>`. The harness may merge, skip, reorder, branch, parallelize or revise them.
-
-Do not formalize a reasoning DAG merely because the prompt can express dependencies. Only add such structure when it enables a concrete function such as scheduling, resumability, caching, provenance or auditing.
-
-If better typing is needed for decomposition output, consider a reusable text/task-list record before building a cognitive-runtime abstraction.
-
-## Prompt maintenance
-
-Current decomposition/synthesis behavior exists in both:
-
-- `prompts/*.yaml` templates; and
-- typed meta-operator prompt text under `Core/Operators/meta/`.
-
-They are aligned in the current snapshot but are duplicate sources. Until prompt ownership is centralized, changes to one must be reconciled with the other and covered by parity tests where practical.
+Do not replace this sequence with a new speculative framework unless a concrete failure requires it.
 
 ## Capability design guidance
 
-For a new canonical capability, prefer:
+For a new canonical specialized capability, prefer:
 
 1. explicit typed inputs/outputs;
-2. machine-readable descriptor/metadata;
-3. explicit resource prerequisites;
-4. stable resource identifiers;
-5. clear strict/best-effort and failure semantics;
-6. source/evidence lineage preservation;
-7. deterministic behavior where possible;
-8. bounded/documented LLM use where semantic judgment is intrinsic;
-9. MCP exposure/discovery synchronized with the capability definition;
-10. contract tests.
+2. stable capability identity;
+3. clear representation/resource prerequisites;
+4. canonical cross-representation IDs where possible;
+5. deterministic behavior where possible;
+6. bounded/documented LLM use only when semantic judgment is intrinsic;
+7. explicit source/derived-state behavior;
+8. derivation metadata for material transformations;
+9. machine-actionable failure semantics;
+10. deterministic contract tests.
 
-Avoid hiding prerequisites or resource-building side effects from the caller.
+Do not hide resource-building side effects or silently fabricate evidence/identity.
 
-## Evidence rules
+## AoT / GoT / ReAct
 
-Current records provide `source_id`, `chunk_id`, producer and metadata foundations. Preserve them whenever possible.
+These are reasoning heuristics, not mandatory DIGIMON runtimes. The harness may merge, skip, reorder, branch, parallelize or revise suggested subgoals.
 
-Do not:
+Do not formalize a reasoning DAG merely because a prompt can express dependencies. Add such structure only when it enables a concrete function such as scheduling, resumability, caching, provenance or auditing.
 
-- treat missing graph evidence as proof a claim is false;
-- strip evidence identifiers unnecessarily;
-- silently select one source when sources conflict;
-- invent confidence values as a substitute for evidence;
-- convert retrieved evidence into unsupported inference during synthesis.
+## Legacy/transitional areas
+
+Treat carefully:
+
+- `Core/AOT/` — legacy programmed atomic-state/transition approach;
+- `Core/AgentBrain/` — older broad internal planning layer;
+- `Core/AgentOrchestrator/` — older/transitional orchestrators;
+- `Core/Memory/` — earlier strategy/memory architecture;
+- much of `Core/MCP/` — older MCP/coordination lineage;
+- `digimon_cli.py` — human-facing but still coupled to old planner/orchestrator internals;
+- historical MCP/checkpoint/UKRF/multi-agent documents.
+
+Before deleting legacy code, identify live callers/tests. Before extending it, verify that the maintained core cannot serve the need more cleanly.
 
 ## Testing guidance
 
 Prefer deterministic contract tests for:
 
-- descriptor↔implementation parity;
-- slot/field compatibility;
-- strict/best-effort validation behavior;
-- operator execution boundaries;
-- MCP discovery/execution parity;
-- prompt semantic parity while duplicate prompt sources remain;
-- resource registration/prerequisite/invalidation behavior;
-- provenance propagation;
-- standardized errors;
-- graph-build→retrieve→evidence flows.
+- governed IR → projection behavior;
+- cross-representation identity;
+- typed retrieval/analysis composition;
+- evidence versus derived-state semantics;
+- graph/source freshness and invalidation;
+- derivation lineage;
+- supported Python/CLI/MCP parity;
+- machine-actionable errors;
+- clean build/reuse canaries.
 
-Keep live-LLM/provider tests clearly separated because they have cost, network and model-variance concerns.
+Keep live provider/LLM suites separately classified.
 
-Do not cite an old test result as current runtime truth unless it has been rerun or explicitly labeled historical.
+Never cite an old test result as current runtime truth unless it has been rerun or explicitly labeled historical.
 
 ## Documentation maintenance
 
-When implementation changes architectural status:
+Before changing high-authority docs, read `docs/DOCUMENTATION_COVERAGE.md`.
+
+When implementation changes status:
 
 1. update `docs/CURRENT_STATE.md`;
-2. update `docs/IMPLEMENTATION_MAP.md` when module/contracts change;
+2. update `docs/IMPLEMENTATION_MAP.md` when modules/contracts change;
 3. reconcile `docs/GAP_ANALYSIS.md`;
-4. update `docs/ROADMAP.md` if priorities/exit criteria change;
-5. update `docs/ARCHITECTURE.md` only if the target design changes;
-6. create/update an ADR for a real architectural decision;
-7. reconcile `README.md`, `FUNCTIONALITY.md`, `AGENTS.md`, and `CLAUDE.md` when guidance changes.
+4. update `docs/ROADMAP.md` if priority/exit criteria change;
+5. update `docs/ARCHITECTURE.md` only for target-design changes;
+6. update `docs/VISION.md` only for durable project-thesis/boundary changes;
+7. create/update an ADR for a real architectural decision;
+8. reconcile `README.md`, `FUNCTIONALITY.md`, `AGENTS.md`, `CLAUDE.md` and `QUICK_START.md` when guidance changes.
 
-Do not create another competing “current status” or checkpoint document.
+Do not create another competing current-status or roadmap document.
 
 ## Default decision rule
 
-When choosing between:
-
-- making the internal agent brain more elaborate, or
-- making a capability/resource/evidence/validation contract clearer,
-
-prefer the **capability/resource/evidence/validation contract** unless the concrete task explicitly requires otherwise.
+When choosing between making DIGIMON's internal agent brain more elaborate and making its representations, specialized capabilities, identity, evidence or derivation contracts clearer, prefer the latter unless a concrete supported requirement says otherwise.
