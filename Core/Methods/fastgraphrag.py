@@ -12,7 +12,7 @@ from Core.AgentSchema.plan import (
 def fastgraphrag_plan(query: str, **kwargs) -> ExecutionPlan:
     return ExecutionPlan(
         plan_description=(
-            "FastGraphRAG: VDB seeds -> PPR -> entity/relationship/chunk score "
+            "FastGraphRAG: VDB seeds -> similarity-seeded PPR -> sparse chunk "
             "propagation -> answer"
         ),
         target_dataset_name=kwargs.get("dataset", ""),
@@ -33,11 +33,12 @@ def fastgraphrag_plan(query: str, **kwargs) -> ExecutionPlan:
             ),
             ExecutionStep(
                 step_id="ppr",
-                description="Diffuse relevance through graph topology",
+                description="Diffuse vector-weighted seed relevance through graph topology",
                 action=DynamicToolChainConfig(
                     tools=[
                         ToolCall(
                             tool_id="entity.ppr",
+                            parameters={"use_entity_similarity_for_ppr": True},
                             inputs={
                                 "query": "plan_inputs.query",
                                 "entities": ToolInputSource(
