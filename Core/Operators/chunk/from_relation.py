@@ -1,16 +1,26 @@
-"""Chunk from relationships operator.
-
-Extract text chunks referenced by relationship source_ids.
-"""
+"""Materialize exact source chunks referenced by relationship provenance."""
 
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
-from Core.Common.Logger import logger
 from Core.Common.Utils import split_string_by_multi_markers, truncate_list_by_token_size
 from Core.Schema.SlotTypes import ChunkRecord, SlotKind, SlotValue
+
+
+def _chunk_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return str(value.get("content", value.get("text", "")) or "")
+    if hasattr(value, "content"):
+        return str(getattr(value, "content") or "")
+    if hasattr(value, "text"):
+        return str(getattr(value, "text") or "")
+    return ""
 
 
 async def chunk_from_relation(
@@ -19,42 +29,95 @@ async def chunk_from_relation(
     params: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, SlotValue]:
     """
-    Inputs:  {"relationships": SlotValue(RELATIONSHIP_SET)}
-    Outputs: {"chunks": SlotValue(CHUNK_SET)}
+    Inputs:  {"relationships": RELATIONSHIP_SET}
+    Outputs: {"chunks": CHUNK_SET}
+
+    Relationship source IDs are the only admissible source references. Missing
+    or unrecognized stored values are skipped rather than converted to object
+    representations or synthetic evidence.
     """
-    rels = inputs["relationships"].data  # List[RelationshipRecord]
-    if not rels:
-        return {"chunks": SlotValue(kind=SlotKind.CHUNK_SET, data=[], producer="chunk.from_relation")}
+    relationships = inputs["relationships"].data
+    if not relationships:
+        return {
+            "chunks": SlotValue(
+                kind=SlotKind.CHUNK_SET,
+                data=[],
+                producer="chunk.from_relation",
+            )
+        }
 
-    all_text_units_lookup = {}
-    for index, rel in enumerate(rels):
-        source_id = rel.source_id
-        if not source_id:
-            # Try extra dict for raw edge data
-            source_id = rel.extra.get("source_id", "")
+    evidence: dict[str, dict[str, Any]] = {}
+    for order, relationship in enumerate(relationships):
+        source_id = relationship.source_id or relationship.extra.get("source_id", "")
         chunk_ids = split_string_by_multi_markers(source_id, [GRAPH_FIELD_SEP])
-        for c_id in chunk_ids:
-            if c_id and c_id not in all_text_units_lookup:
-                data = await ctx.doc_chunks.get_data_by_key(c_id)
-                all_text_units_lookup[c_id] = {"data": data, "order": index}
+        for chunk_id in chunk_ids:
+            if not chunk_id:
+                continue
 
-    # Filter None, sort by order, truncate
+            if chunk_id not in evidence:
+                raw = await ctx.doc_chunks.get_data_by_key(chunk_id)
+                text = _chunk_text(raw).strip()
+                if not text:
+                    continue
+                evidence[chunk_id] = {
+                    "text": text,
+                    "order": order,
+                    "score": relationship.score,
+                    "relationships": [
+                        (relationship.src_id, relationship.tgt_id)
+                    ],
+                }
+                continue
+
+            current = evidence[chunk_id]
+            if relationship.score is not None and (
+                current["score"] is None
+                or float(relationship.score) > float(current["score"])
+            ):
+                current["score"] = float(relationship.score)
+            pair = (relationship.src_id, relationship.tgt_id)
+            if pair not in current["relationships"]:
+                current["relationships"].append(pair)
+
     items = [
-        {"id": k, **v} for k, v in all_text_units_lookup.items()
-        if v.get("data") is not None
+        {"id": chunk_id, **value}
+        for chunk_id, value in evidence.items()
     ]
-    items.sort(key=lambda x: x["order"])
+    items.sort(
+        key=lambda item: (
+            item["order"],
+            -(float(item["score"]) if item["score"] is not None else 0.0),
+        )
+    )
 
     if ctx.config and hasattr(ctx.config, "local_max_token_for_text_unit"):
         items = truncate_list_by_token_size(
             items,
-            key=lambda x: x["data"],
+            key=lambda item: item["text"],
             max_token_size=ctx.config.local_max_token_for_text_unit,
         )
 
     records = [
-        ChunkRecord(chunk_id=it["id"], text=it["data"])
-        for it in items
+        ChunkRecord(
+            chunk_id=item["id"],
+            text=item["text"],
+            score=(
+                float(item["score"])
+                if item["score"] is not None
+                else None
+            ),
+            extra={
+                "relationship_order": item["order"],
+                "relationships": item["relationships"],
+            },
+        )
+        for item in items
     ]
 
-    return {"chunks": SlotValue(kind=SlotKind.CHUNK_SET, data=records, producer="chunk.from_relation")}
+    return {
+        "chunks": SlotValue(
+            kind=SlotKind.CHUNK_SET,
+            data=records,
+            producer="chunk.from_relation",
+        )
+    }
