@@ -44,21 +44,16 @@ class ChainValidator:
         plan,
         plan_input_kinds: Optional[Set[SlotKind]] = None,
     ) -> ValidationResult:
-        """Check that required inputs are available and type-compatible."""
+        """Check that required inputs/outputs are available and type-compatible."""
         from Core.AgentSchema.plan import DynamicToolChainConfig
 
         errors: List[ValidationError] = []
         warnings: List[str] = []
         available: Dict[str, SlotKind] = {}
 
-        # Generic plan-input kinds are useful for discovery/fallback checks.
         for kind in plan_input_kinds or set():
             available[f"plan_inputs.{kind.value}"] = kind
 
-        # Concrete plan input references must have a known type before they can
-        # satisfy an explicitly wired operator slot. Today the standard plan
-        # input is a natural-language query; additional typed plan inputs should
-        # be added here deliberately rather than silently accepted as QUERY_TEXT.
         if plan.plan_inputs:
             for key in plan.plan_inputs:
                 if "query" in key.lower():
@@ -87,14 +82,13 @@ class ChainValidator:
                         continue
 
                     satisfied = False
-                    explicit_source = None
-                    if tool_call.inputs:
-                        explicit_source = tool_call.inputs.get(slot_spec.name)
+                    explicit_source = (
+                        tool_call.inputs.get(slot_spec.name)
+                        if tool_call.inputs
+                        else None
+                    )
 
                     if explicit_source is not None:
-                        # Explicit wiring must be checked against the exact
-                        # source type. Do not let a wrong explicit wire fall
-                        # through to some unrelated compatible value elsewhere.
                         if isinstance(explicit_source, str) and explicit_source.startswith(
                             "plan_inputs."
                         ):
@@ -107,7 +101,7 @@ class ChainValidator:
                                         slot_name=slot_spec.name,
                                         expected_kind=slot_spec.kind,
                                         message=(
-                                            f"Unknown or untyped plan input reference: "
+                                            "Unknown or untyped plan input reference: "
                                             f"{explicit_source}; expected {slot_spec.kind}"
                                         ),
                                     )
@@ -125,8 +119,6 @@ class ChainValidator:
                                         ),
                                     )
                                 )
-                            # An explicit source was examined, so suppress a
-                            # second generic "missing input" error.
                             satisfied = True
 
                         elif hasattr(explicit_source, "from_step_id"):
@@ -164,21 +156,16 @@ class ChainValidator:
                             satisfied = True
 
                         else:
-                            # Literal/non-reference values have no reliable
-                            # static SlotKind. Runtime validation remains the
-                            # authority unless the plan schema grows typed
-                            # literal inputs.
                             warnings.append(
-                                f"Step {step.step_id}/{tool_call.tool_id}: "
-                                f"cannot statically type literal input "
-                                f"'{slot_spec.name}'"
+                                f"Step {step.step_id}/{tool_call.tool_id}: cannot "
+                                f"statically type literal input '{slot_spec.name}'"
                             )
                             satisfied = True
 
                     elif tool_call.inputs:
-                        # The required slot was not wired by name. Retain the
-                        # legacy convenience check, but only accept sources with
-                        # the correct known kind.
+                        # Legacy convenience: a differently named input can
+                        # satisfy a slot only when its source kind is known and
+                        # exactly compatible.
                         for source in tool_call.inputs.values():
                             if isinstance(source, str) and source.startswith(
                                 "plan_inputs."
@@ -222,21 +209,34 @@ class ChainValidator:
                         )
 
                 if tool_call.named_outputs:
+                    output_specs = {
+                        output_spec.name: output_spec
+                        for output_spec in operator.output_slots
+                    }
                     for output_name in tool_call.named_outputs:
-                        for output_spec in operator.output_slots:
-                            if (
-                                output_spec.name == output_name
-                                or output_name in output_spec.name
-                            ):
-                                available[
-                                    f"{step.step_id}.{output_name}"
-                                ] = output_spec.kind
-                                break
-                        else:
-                            if operator.output_slots:
-                                available[
-                                    f"{step.step_id}.{output_name}"
-                                ] = operator.output_slots[0].kind
+                        output_spec = output_specs.get(output_name)
+                        if output_spec is None:
+                            errors.append(
+                                ValidationError(
+                                    step_id=step.step_id,
+                                    tool_id=tool_call.tool_id,
+                                    slot_name=output_name,
+                                    expected_kind=(
+                                        operator.output_slots[0].kind
+                                        if operator.output_slots
+                                        else SlotKind.QUERY_TEXT
+                                    ),
+                                    message=(
+                                        f"Unknown named output '{output_name}' for "
+                                        f"operator '{tool_call.tool_id}'. Available outputs: "
+                                        f"{sorted(output_specs)}"
+                                    ),
+                                )
+                            )
+                            continue
+                        available[
+                            f"{step.step_id}.{output_name}"
+                        ] = output_spec.kind
 
         return ValidationResult(
             valid=not errors,
@@ -249,7 +249,10 @@ class ChainValidator:
         result = self.validate(plan)
         suggestions = []
         for error in result.errors:
-            if "Type mismatch" in error.message and error.expected_kind == SlotKind.ENTITY_SET:
+            if (
+                "Type mismatch" in error.message
+                and error.expected_kind == SlotKind.ENTITY_SET
+            ):
                 suggestions.append(
                     AdapterSuggestion(
                         after_step_id=error.step_id,
