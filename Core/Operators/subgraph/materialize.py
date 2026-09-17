@@ -27,14 +27,14 @@ async def subgraph_materialize(
     Inputs:  {"subgraph": SUBGRAPH}
     Outputs: {"entities": ENTITY_SET, "chunks": CHUNK_SET}
     Params:  {"top_k_chunks": int | None}
+
+    Only graph-resolved entities and source chunks with real textual content are
+    emitted. Unknown runtime objects are skipped rather than stringified into
+    fake evidence.
     """
     subgraph = inputs["subgraph"].data
-    if subgraph is None:
-        subgraph_nodes = set()
-        subgraph_edges = []
-    else:
-        subgraph_nodes = set(subgraph.nodes or set())
-        subgraph_edges = list(subgraph.edges or [])
+    subgraph_nodes = set(subgraph.nodes or set()) if subgraph is not None else set()
+    subgraph_edges = list(subgraph.edges or []) if subgraph is not None else []
 
     entity_records = []
     chunk_ids = []
@@ -52,7 +52,8 @@ async def subgraph_materialize(
 
     for node_id in sorted(subgraph_nodes):
         node_data = await ctx.graph.get_node(node_id)
-        node_data = node_data or {}
+        if not node_data:
+            continue
         add_source_ids(node_data.get("source_id", ""))
         entity_records.append(
             EntityRecord(
@@ -83,16 +84,20 @@ async def subgraph_materialize(
         data = await ctx.doc_chunks.get_data_by_key(chunk_id)
         if data is None:
             continue
+
+        text = None
         if isinstance(data, str):
             text = data
-        elif hasattr(data, "content"):
-            text = str(data.content)
-        elif hasattr(data, "text"):
-            text = str(data.text)
         elif isinstance(data, dict):
-            text = str(data.get("content", data.get("text", "")))
-        else:
-            text = str(data)
+            text = data.get("content", data.get("text"))
+        elif hasattr(data, "content"):
+            text = getattr(data, "content")
+        elif hasattr(data, "text"):
+            text = getattr(data, "text")
+
+        text = str(text).strip() if text is not None else ""
+        if not text:
+            continue
 
         chunk_records.append(
             ChunkRecord(
