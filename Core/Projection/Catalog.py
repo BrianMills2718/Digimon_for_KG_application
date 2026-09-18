@@ -83,7 +83,7 @@ def _representation_rows(project_manifest: dict[str, Any]) -> list[tuple[str, st
         ("Graph neighborhood retrieval", "available", "DIGIMON graph runtime over binary entity graph"),
         ("Vector index", "unavailable", "Batch 3 requires an observed semantic embedding/index route"),
         ("Progressive-disclosure catalog", "available", "this catalog"),
-        ("Analytic suite", "partial", "existing graph analytics not yet normalized onto this saved-project surface"),
+        ("Analytic suite", "available / partial", "degree, betweenness, PageRank, closeness, eigenvector centrality; components/density/clustering/coreness/bridges/articulation/assortativity summaries; Leiden unavailable until its real dependency path is present"),
     ]
 
 

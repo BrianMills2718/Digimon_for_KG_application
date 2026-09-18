@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from .Project import FoundationProject
 
 ANALYTICS_VERSION = "1.0"
-SUPPORTED_CENTRALITY = ("degree", "betweenness", "pagerank")
+SUPPORTED_CENTRALITY = ("degree", "betweenness", "pagerank", "closeness", "eigenvector")
 
 
 def _ordered_nodes(graph: nx.Graph) -> list[str]:
@@ -59,8 +59,15 @@ def centrality_from_subgraph(
         scores = nx.degree_centrality(graph)
     elif method == "betweenness":
         scores = nx.betweenness_centrality(graph, normalized=True, weight=None)
-    else:
+    elif method == "pagerank":
         scores = nx.pagerank(graph, alpha=0.85, weight="weight")
+    elif method == "closeness":
+        scores = nx.closeness_centrality(graph)
+    else:
+        try:
+            scores = nx.eigenvector_centrality(graph, max_iter=1000, tol=1.0e-9, weight="weight")
+        except nx.PowerIterationFailedConvergence as exc:
+            raise ValueError("eigenvector centrality did not converge") from exc
     values = np.asarray([float(scores[node]) for node in nodes], dtype=float)
     if values.shape != (len(nodes),) or not np.isfinite(values).all():
         raise ValueError("centrality returned a non-finite or misaligned score vector")
@@ -197,6 +204,139 @@ async def analyze_foundation_subgraph(
         }
         return {**report, "artifact": ref}
 
+
+
+def structural_summary_from_subgraph(subgraph: SlotValue) -> dict[str, Any]:
+    """Return inspectable SNA structure metrics for the exact SUBGRAPH working set.
+
+    Self-loops are retained in topology counts but removed for algorithms whose
+    mathematical contract rejects them (coreness/bridges/articulation). This
+    policy is returned explicitly rather than silently changing the graph.
+    """
+    if subgraph.kind != SlotKind.SUBGRAPH:
+        raise TypeError("structural summary requires a SUBGRAPH slot")
+    graph = getattr(subgraph.data, "nx_graph", None)
+    if graph is None or not isinstance(graph, nx.Graph):
+        raise ValueError("subgraph does not carry its attributed NetworkX working set")
+    if graph.number_of_nodes() == 0:
+        raise ValueError("structural summary requires a nonempty working set")
+
+    simple = nx.Graph(graph)
+    self_loops = sorted((str(u), str(v)) for u, v in nx.selfloop_edges(simple))
+    loopless = simple.copy()
+    loopless.remove_edges_from(nx.selfloop_edges(loopless))
+    components = [sorted(str(node) for node in component) for component in nx.connected_components(loopless)]
+    components.sort(key=lambda nodes: (-len(nodes), nodes))
+    isolates = sorted(str(node) for node in nx.isolates(loopless))
+    coreness = nx.core_number(loopless) if loopless.number_of_nodes() else {}
+    bridges = sorted(tuple(sorted((str(u), str(v)))) for u, v in nx.bridges(loopless))
+    articulation = sorted(str(node) for node in nx.articulation_points(loopless))
+
+    assortativity: float | None = None
+    assortativity_reason: str | None = None
+    if loopless.number_of_edges() == 0:
+        assortativity_reason = "undefined for a graph with no edges"
+    else:
+        with np.errstate(all="ignore"):
+            raw_assortativity = float(nx.degree_assortativity_coefficient(loopless))
+        if np.isfinite(raw_assortativity):
+            assortativity = raw_assortativity
+        else:
+            assortativity_reason = "undefined for this degree distribution"
+
+    return {
+        "analytics_version": ANALYTICS_VERSION,
+        "derived_state": True,
+        "node_count": simple.number_of_nodes(),
+        "edge_count": simple.number_of_edges(),
+        "self_loops": self_loops,
+        "component_count": len(components),
+        "components": components,
+        "isolates": isolates,
+        "density": float(nx.density(simple)),
+        "transitivity": float(nx.transitivity(loopless)),
+        "average_clustering": float(nx.average_clustering(loopless)),
+        "coreness": {str(node): int(value) for node, value in sorted(coreness.items(), key=lambda item: str(item[0]))},
+        "bridges": bridges,
+        "articulation_points": articulation,
+        "degree_assortativity": assortativity,
+        "degree_assortativity_note": assortativity_reason,
+        "algorithm_policy": {
+            "direction": "undirected",
+            "parallel_edges": "runtime association view already aggregated by entity pair",
+            "self_loops": "retained for counts/density; excluded from coreness, bridge, articulation and clustering calculations",
+            "weights": "topology metrics unweighted; centrality methods declare weight use separately",
+        },
+        "interpretation_warning": "structural metrics are derived from the retrieved association view; they are not source evidence, causal influence, or population-wide claims",
+    }
+
+
+async def analyze_foundation_structure(
+    project: "FoundationProject",
+    entity_ids: list[str],
+    *,
+    k: int = 2,
+    predicates: list[str] | None = None,
+) -> dict[str, Any]:
+    """Retrieve -> structural SNA summary -> exact selected-subgraph evidence."""
+    from .GraphRuntime import retrieve_foundation_subgraph
+    from .Project import _write_json
+
+    slots = await retrieve_foundation_subgraph(project, entity_ids, k=k, predicates=predicates)
+    subgraph = slots["subgraph"]
+    subgraph_ref = subgraph.metadata["artifact"]
+    with project.log.operation(
+        "analytics.structural_summary",
+        inputs=[subgraph_ref],
+        parameters={
+            "entity_ids": entity_ids,
+            "k": k,
+            "predicates": predicates,
+            "graph_scope": "retrieved_subgraph",
+        },
+    ) as run:
+        summary = structural_summary_from_subgraph(subgraph)
+        evidence = [
+            {
+                "passage_id": chunk.chunk_id,
+                "assertion_ids": sorted(chunk.extra.get("assertion_ids", ())),
+                "source_ref": chunk.extra.get("source_ref"),
+                "namespace_id": chunk.extra.get("namespace_id"),
+                "source_registry_id": chunk.extra.get("source_registry_id"),
+                "text": chunk.text,
+            }
+            for chunk in slots["chunks"].data
+        ]
+        graph = subgraph.data.nx_graph
+        report = {
+            "status": "ok" if evidence else "insufficient_evidence",
+            "execution_id": run.execution_id,
+            "analysis": "structural_summary",
+            "parameters": {"k": k, "predicates": predicates},
+            "graph_scope": {
+                "seed_entity_ids": list(entity_ids),
+                "nodes": sorted(str(node) for node in graph.nodes()),
+                "edges": sorted(tuple(sorted((str(src), str(tgt)))) for src, tgt in graph.edges()),
+                "subgraph_artifact": subgraph_ref,
+            },
+            "metrics": summary,
+            "evidence": evidence,
+            "input_digests": project.manifest["input_digests"],
+        }
+        output = project.root / "observations" / f"{run.execution_id}.json"
+        _write_json(output, report)
+        ref = asdict(ArtifactRef.from_file(
+            project.root, output, "structural_analysis", project.manifest["input_digests"]
+        ))
+        ref["producing_execution"] = run.execution_id
+        run.outputs = [ref]
+        run.diagnostics = {
+            "node_count": summary["node_count"],
+            "edge_count": summary["edge_count"],
+            "component_count": summary["component_count"],
+            "evidence_count": len(evidence),
+        }
+        return {**report, "artifact": ref}
 
 def aggregate_foundation_predicates(project: "FoundationProject") -> dict[str, Any]:
     """Exact SQL aggregation over the relational projection, with lineage."""

@@ -4,8 +4,10 @@ from .Analytics import (
     ANALYTICS_VERSION,
     SUPPORTED_CENTRALITY,
     aggregate_foundation_predicates,
+    analyze_foundation_structure,
     analyze_foundation_subgraph,
     centrality_from_subgraph,
+    structural_summary_from_subgraph,
     leiden_runtime_status,
 )
 """Canonical projection inputs and projection helpers."""
@@ -56,8 +58,10 @@ __all__ = [
     "ANALYTICS_VERSION",
     "SUPPORTED_CENTRALITY",
     "aggregate_foundation_predicates",
+    "analyze_foundation_structure",
     "analyze_foundation_subgraph",
     "centrality_from_subgraph",
+    "structural_summary_from_subgraph",
     "leiden_runtime_status",
     "CATALOG_FORMAT_VERSION",
     "CatalogProjection",

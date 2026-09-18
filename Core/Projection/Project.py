@@ -171,6 +171,11 @@ class FoundationProject:
         from .Analytics import aggregate_foundation_predicates
         return aggregate_foundation_predicates(self)
 
+    async def analyze_structure(self, entity_ids: list[str], *, k: int = 2, predicates: list[str] | None = None) -> dict[str, Any]:
+        """Retrieve a bounded graph and compute an inspectable structural SNA summary."""
+        from .Analytics import analyze_foundation_structure
+        return await analyze_foundation_structure(self, entity_ids, k=k, predicates=predicates)
+
     def lineage_for_artifact(self, artifact: str | dict[str, Any]) -> dict[str, Any]:
         """Trace a retained artifact backward through successful executions."""
         from .Lineage import trace_artifact_lineage

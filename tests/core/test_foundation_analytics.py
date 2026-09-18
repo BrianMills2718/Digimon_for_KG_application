@@ -154,3 +154,85 @@ def test_leiden_runtime_status_is_truthful_for_environment():
         assert "dependency present" in status["reason"]
     else:
         assert "graspologic" in status["reason"]
+
+
+@pytest.mark.parametrize("method", ["closeness", "eigenvector"])
+def test_additional_centralities_are_finite_and_aligned(method):
+    graph = nx.path_graph(["entity:a", "entity:b", "entity:c", "entity:d"])
+    slot = SlotValue(
+        SlotKind.SUBGRAPH,
+        SubgraphRecord(nodes=set(graph), edges=list(graph.edges()), nx_graph=graph),
+    )
+    result = centrality_from_subgraph(slot, method=method)
+    assert result.metadata["node_ids"] == ["entity:a", "entity:b", "entity:c", "entity:d"]
+    assert np.isfinite(result.data).all()
+
+
+def test_structural_summary_has_expected_path_graph_metrics():
+    from Core.Projection.Analytics import structural_summary_from_subgraph
+
+    graph = nx.path_graph(["a", "b", "c", "d"])
+    slot = SlotValue(
+        SlotKind.SUBGRAPH,
+        SubgraphRecord(nodes=set(graph), edges=list(graph.edges()), nx_graph=graph),
+    )
+    summary = structural_summary_from_subgraph(slot)
+    assert summary["node_count"] == 4
+    assert summary["edge_count"] == 3
+    assert summary["component_count"] == 1
+    assert summary["components"] == [["a", "b", "c", "d"]]
+    assert summary["isolates"] == []
+    assert summary["density"] == pytest.approx(0.5)
+    assert summary["transitivity"] == 0.0
+    assert summary["average_clustering"] == 0.0
+    assert summary["coreness"] == {"a": 1, "b": 1, "c": 1, "d": 1}
+    assert summary["bridges"] == [("a", "b"), ("b", "c"), ("c", "d")]
+    assert summary["articulation_points"] == ["b", "c"]
+    assert summary["derived_state"] is True
+
+
+def test_structural_summary_declares_self_loop_policy():
+    from Core.Projection.Analytics import structural_summary_from_subgraph
+
+    graph = nx.Graph()
+    graph.add_edge("a", "a")
+    graph.add_edge("a", "b")
+    slot = SlotValue(
+        SlotKind.SUBGRAPH,
+        SubgraphRecord(nodes=set(graph), edges=list(graph.edges()), nx_graph=graph),
+    )
+    summary = structural_summary_from_subgraph(slot)
+    assert summary["self_loops"] == [("a", "a")]
+    assert summary["coreness"] == {"a": 1, "b": 1}
+    assert "excluded" in summary["algorithm_policy"]["self_loops"]
+
+
+def test_structural_summary_reports_undefined_assortativity_without_nan():
+    from Core.Projection.Analytics import structural_summary_from_subgraph
+
+    graph = nx.Graph()
+    graph.add_node("only")
+    slot = SlotValue(
+        SlotKind.SUBGRAPH,
+        SubgraphRecord(nodes={"only"}, edges=[], nx_graph=graph),
+    )
+    summary = structural_summary_from_subgraph(slot)
+    assert summary["degree_assortativity"] is None
+    assert summary["degree_assortativity_note"] == "undefined for a graph with no edges"
+    assert summary["isolates"] == ["only"]
+
+
+def test_retrieve_structural_summary_then_exact_evidence_and_lineage(tmp_path):
+    project = _project(tmp_path)
+    result = asyncio.run(project.analyze_structure(["entity:a"], k=3))
+    assert result["status"] == "ok"
+    assert result["metrics"]["node_count"] == 4
+    assert result["metrics"]["component_count"] == 1
+    assert result["metrics"]["articulation_points"] == ["entity:b", "entity:c"]
+    assert {item["passage_id"] for item in result["evidence"]} == {
+        "passage:1", "passage:2", "passage:3"
+    }
+    lineage = project.lineage_for_artifact(result["artifact"])
+    operations = {item["operation"] for item in lineage["executions"]}
+    assert "analytics.structural_summary" in operations
+    assert "subgraph.khop_paths" in operations
