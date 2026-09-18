@@ -1,212 +1,78 @@
 # DIGIMON Current State
 
-**Snapshot:** 2026-09-17  
-**Repository:** `BrianMills2718/Digimon_for_KG_application`  
-**Purpose:** describe what is materially present in the code now, without confusing the full north star with current implementation or historical plans.
+**Latest execution checkpoint:** [Foundation graph runtime, Batch 02](reports/PROJECTION_BATCH_02.md).  
+**Repository:** `BrianMills2718/Digimon_for_KG_application`.  
+**Full vision:** [VISION.md](VISION.md), not only the latest implementation batch.
 
 ## Executive summary
 
-DIGIMON remains a **hybrid/transitional codebase**, but the maintained core is substantially more coherent than the 2026-09-16 documentation described.
+DIGIMON is a text-derived **representation, retrieval, and analytics** runtime downstream of onto-canon6's governed semantic IR. The recent increment makes a concrete part of that vision executable: saved IR → SQLite/graphs → maintained graph retrieval → exact source evidence, with shared identity and local execution lineage.
 
-The strongest current implementation is a typed representation/retrieval/analysis core with:
+**69 selected tests passed, zero skipped**, in the final recorded Batch 2 run. This is scoped execution on verified source bytes, **not** the full repository suite, clean dependency installation, live-provider path, MCP canaries, or autonomous-harness observation. Earlier blanket statements that no new projection tests had run are superseded by the two receipts below.
 
-- typed operator slots and records;
-- strict-by-default composition validation/execution;
-- ten maintained reference methods;
-- ER/RK/tree/balanced-tree/passage graph build surfaces;
-- vector indexes and graph-derived resources;
-- entity/relationship/chunk/subgraph/community operations;
-- graph structural/analytic operators such as PPR, PCST, Steiner and community-related transforms;
-- evidence-grounded synthesis with exact evidence IDs and citation validation;
-- source/chunk manifests and practical invalidation rules for derived resources;
-- active dataset/graph and canonical VDB selection;
-- a stdio MCP surface plus transitional CLI/API surfaces;
-- deterministic core contract tests covering many repaired semantics.
+The codebase remains transitional. The broader graph/vector/reference-method inventory below carries forward the previous source review; it was not all re-executed in this batch. The detailed historical source inventory is retained in Git history at the parent revision `2b2a35322187951008759cb33ec127c055076225`.
 
-The target project vision is broader: DIGIMON should eventually project governed semantic IR into complementary representations, support composable retrieval and analytics over them, materialize an agent-readable progressive-disclosure catalog/wiki, preserve shared identity across projections, and maintain artifact/derivation lineage. See [VISION.md](VISION.md).
+## Evidence vocabulary
 
-This file is a **source-level current-state reconciliation**, not a fresh full runtime certification. The current head has not been executed end-to-end in the available environment. Historical GitHub Actions failed during dependency installation before tests, while commits made through the connected GitHub path have not generated new workflow runs. “Implemented” below means substantive code is present and wired, not that every current path is freshly certified green.
+Keep **source present**, **focused checks passed**, **intended consumer observed**, and **full outcome observed** separate. No single “implemented” label implies all four. Synthetic tests do not establish production-corpus quality, semantic retrieval, or agent usefulness.
 
-## Status vocabulary
+## Newly executed governed-input path
 
-- **Implemented** — meaningful code exists and is wired into a maintained/current surface.
-- **Partial** — meaningful code exists, but coverage/integration/reliability or the target architecture remains incomplete.
-- **Legacy / Transitional** — retained for compatibility/history or still used by an older entry point but not the preferred target architecture.
-- **Planned** — part of the target vision but not materially complete in current code.
-
-## Current capability map
-
-| Area | Status | Current reality |
+| Capability | Current evidence | Remaining boundary |
 |---|---|---|
-| Typed operator dataflow | **Implemented** | Current core has typed query/entity/relationship/chunk/subgraph/community/score-vector values plus producer/metadata lineage. |
-| Operator registry | **Implemented / evolving** | Stable typed operators exist across entity, relationship, chunk, subgraph, community and meta families. Utility adapters such as materialization/merge operators can register alongside the original base set, so documentation should not depend on a permanent hard-coded operator count. |
-| Composition validation | **Implemented / materially hardened** | Explicit wiring/type validation is stricter; omitted required named inputs no longer pass merely because a same-kind value exists elsewhere. Unknown named outputs are errors. |
-| Composition execution | **Implemented / materially hardened** | `OperatorComposer` rejects static-invalid plans by default; best-effort is explicit. Generic loop/conditional ownership was repaired so control-owned steps are not executed again at top level, and loop carry-forward preserves actual slot kinds. |
-| Reference methods | **Implemented / repaired** | Ten maintained plans: `basic_local`, `basic_global`, `lightrag`, `fastgraphrag`, `hipporag`, `tog`, `gr`, `dalk`, `kgp`, `med`. They normally terminate in grounded answer generation; context-only mode strips only the terminal answer step. |
-| Canonical raw corpus path | **Implemented / standalone mode** | Raw corpus preparation exists and the maintained `ChunkFactory` now actually applies configured chunking instead of treating each document as one chunk. Pre-chunked records remain supported. This is useful standalone/compatibility behavior, not the canonical ecosystem authority boundary. |
-| Graph build lifecycle | **Implemented / hardened** | All five graph wrappers return truthful success/failure, require usable non-empty graphs, share one lifecycle path, use source-chunk manifests to detect corpus changes, and invalidate known derived artifacts after successful rebuilds. |
-| ER/RK extraction | **Implemented / hardened** | Rich metadata defaults are retained; RK enables keyword extraction; zero-node extraction fails closed; entity identity/text normalization now preserves Unicode rather than deleting non-ASCII semantics. |
-| Vector indexes / FAISS | **Implemented / hardened** | Dimensions derive from actual embeddings, L2 distances are normalized in the correct direction, persisted/load state is fail-closed, batch retrieval exists, and single-item upsert no longer replaces the entire collection. |
-| Entity VDB | **Implemented / hardened** | Build refuses false success; stale registered indexes reload/rebuild; graph-prepared identity content is embedded; graph-native metadata survives indexing; stable graph IDs are preferred; exact graph entity linking precedes approximate VDB linking. |
-| Relationship VDB | **Implemented / hardened** | Exact requested IDs are preserved, build success is checked, retrieval uses normalized scores, endpoints/source metadata survive mapping, and embedding text includes source/target identity plus relation semantics. |
-| Entity retrieval / linking | **Implemented** | Vector retrieval, one-hop, PPR, linking, TF-IDF and model-assisted extraction paths exist. Exact canonical graph matches bypass VDB approximation. |
-| PPR / diffusion | **Implemented / corrected** | Teleport/reset vs damping semantics were corrected; maintained methods explicitly select intended similarity-vs-specificity behavior; seed fallback handles valid entities when matrix lookup misses. |
-| Relationship retrieval | **Implemented** | One-hop, VDB, score aggregation and model-assisted relation selection exist. ToG relation selection now explores the whole beam and preserves exact source chunk IDs. |
-| Chunk/evidence retrieval | **Implemented / evidence-safe** | Occurrence, relation→chunk and score→chunk paths resolve exact stored source IDs, normalize real `TextChunk` objects, and fail closed instead of fabricating placeholder/fuzzy evidence. |
-| Subgraph/path retrieval | **Implemented / repaired** | K-hop/path normalization no longer invents adjacency across concatenated paths; Steiner is a real NetworkX approximation and degrades to the best connected terminal group on disconnected inputs; PCST prizes/costs reflect retrieved relevance. |
-| Structural materialization | **Implemented** | Subgraph selections are materialized back to exact graph entities/source chunks, allowing GR/DALK/Med structural choices to control evidence rather than remain decorative. |
-| Community operations | **Implemented / hardened** | Community materialization exists; singleton graphs bypass unnecessary Leiden calls; persisted metadata identity/level/occurrence comes from authoritative schema; set-valued schema fields serialize safely; stale community artifacts are invalidated/rejected after graph rebuild. |
-| Basic Global | **Implemented / repaired** | Community selection now reaches exact report/evidence materialization and grounded answer generation. |
-| ToG | **Implemented / repaired** | Explicit depth unrolling replaces the broken pseudo-loop; each hop consumes prior entities; relationship→entity bridge works; beam entities are all explored; evidence is accumulated across selected hops. |
-| KGP | **Implemented / repaired** | Explicit hop unrolling replaces stale-state loop behavior; refinement is evidence-gated; TF-IDF uses direct sklearn with stop-word fallback; evidence can accumulate across hops. |
-| FastGraphRAG | **Implemented / corrected** | Typed entity seeds are mapped correctly into score-matrix lookup; similarity-seeded PPR is requested explicitly; sparse propagation fails on shape mismatch rather than producing plausible wrong rankings. |
-| HippoRAG | **Implemented / corrected** | Extract/link/PPR propagation is wired, and the method explicitly requests its intended specificity/IDF-aware PPR mode instead of silently sharing FastGraphRAG defaults. |
-| GR / DALK / Med | **Implemented / repaired** | Retrieved/filtered structural results now feed materialization/evidence paths; disconnected Med terminals degrade explicitly instead of collapsing the method. |
-| Grounded answer generation | **Implemented / hardened** | No evidence => no LLM call and explicit insufficient-evidence status. Evidence enters prompts with exact IDs; citations are validated; evidence IDs/provenance survive output metadata and composer serialization. |
-| Meta decomposition | **Implemented / advisory** | Dependency-aware decomposition is explicitly optional/harness-controlled; malformed model output falls back conservatively to the original question rather than inventing subquestions from prose. |
-| Meta synthesis | **Implemented / fail-closed** | Empty evidence/subanswer synthesis does not invite unsupported LLM bridging. |
-| Resource selection | **Implemented / pragmatic** | `GraphRAGContext` tracks active dataset/graph, prioritizes exact canonical VDB IDs, restores canonical graph namespaces at registration and evicts same-dataset in-memory VDBs when a graph is replaced. |
-| Derived-resource invalidation | **Implemented / pragmatic, not generalized** | Successful graph rebuilds remove canonical entity/relation VDB artifacts and community files; ER rebuilds also invalidate sparse matrices. This is intentionally smaller than a generalized resource-governance system. |
-| Graph/source freshness | **Implemented / pragmatic** | Per-graph source-chunk manifests detect missing/changed/added chunks and force rebuild before reuse. |
-| Sparse propagation | **Implemented / guarded** | Entity→relationship and relationship→chunk propagation validate matrix dimensions; unresolved chunk IDs/unknown objects no longer become pseudo-evidence. Same-shaped cross-graph matrix reuse remains a known edge case. |
-| Cross-modal graph/table/vector code | **Implemented / experimental integration** | Conversion code exists, but it is not yet the complete projection system described in the vision and does not yet include all target representation families/catalog metadata. |
-| Analytical tool suite | **Partial** | Substantial graph analytics/transformations exist (PPR, community, PCST, Steiner, paths and related score/subgraph operations). The broader general analytical suite—centrality families, statistical/table analytics, typed finding/model artifacts—is not yet organized as a complete first-class capability plane. |
-| Governed Foundation IR input | **Implemented source-side / unverified** | A strict Foundation IR 1.3 + passage 1.0 consumer now preserves canonical IDs, additive qualifiers, value fillers, snapshot SHA-256, provenance indexes, and assertion→passage closure. Contract tests are committed but not yet executed on the current head. |\n| Cross-representation identity contract | **Implemented source-side / unverified** | A projection identity manifest exposes exact entity/assertion/predicate/provenance/passage/source identities for downstream projections without reminting. |\n| Relational projection/runtime | **Implemented source-side / unverified** | Foundation IR now projects to a normalized SQLite database with entities, aliases, assertions, n-ary roles, qualifiers, provenance, source URLs and passages plus an agent-facing schema manifest. Runtime execution remains unverified. |\n| Foundation property-graph projections | **Implemented source-side / not runtime-integrated** | Pure projectors provide a lossless role-aware assertion MultiDiGraph and a binary-only entity MultiGraph. N-ary assertions are not clique-expanded; parallel assertion identity is retained. These are intentionally not yet wired into GraphRAGContext/reference methods. |
-| Wiki/progressive-disclosure projection | **Planned** | The target agent-readable semantic/representation catalog is not yet a canonical implemented projection. |
-| RDF/semantic-graph projection | **Planned / not canonical** | Not yet a maintained projection surface in current DIGIMON. |
-| Specialized lexical/BM25 index | **Planned / selective** | Ordinary harness-native text/file search should not be rewrapped. A specialized lexical index remains a target only where it adds real retrieval capability. |
-| Artifact/derivation graph | **Partial foundations / target gap** | Evidence IDs, producer metadata, manifests and invalidation exist, but there is not yet a first-class cross-representation graph of projection/retrieval/transformation executions and analytical findings. |
-| MCP agent surface | **Implemented in code** | Stdio MCP exposes build, retrieval, inspection, composition and resource tools; it is the strongest current modern agent-facing surface. |
-| Python public runtime | **Partial / target gap** | The target is a clean developer/application library over the maintained core; current code is less consolidated than the vision requires. |
-| CLI | **Implemented / Transitional** | `digimon_cli.py` remains human-facing but currently instantiates legacy `PlanningAgent`/`AgentOrchestrator` and optional ReAct behavior rather than the maintained typed runtime directly. |
-| Internal agent brain / old orchestrators / programmed AoT | **Legacy / Transitional** | Significant older planning/orchestration code remains and is still used by some entry points, but it is not the target control architecture. |
-| Error/recovery semantics | **Partial** | Many fail-open cases were repaired, but one small uniform machine-actionable error taxonomy/envelope is not yet universal across all layers. |
-| Evaluation framework | **Implemented / deferred priority** | Benchmark/evaluation code exists, but evaluation is not the current architecture driver. |
-| Current-head runtime certification | **Not available yet** | Deterministic contracts have been added source-side, but the available environment cannot execute the repository and current connector-created commits/PRs have not triggered GitHub Actions. |
+| Foundation IR 1.3 + passage 1.0 consumer | Focused import/identity/field/source-scope tests pass; actual file hashes checked | Real producer/corpus export integration remains unobserved |
+| Shared identity | Canonical entity/assertion/passage keys survive tested SQL/graph moves; same labels do not merge IDs | Vector/catalog identity still needs integration |
+| SQLite projection | Normalized roles/qualifiers/provenance and original payload; exact entity-to-passage joins, safe overwrite, reopen tested | Broader relational/analytical workflows and other engines not certified |
+| Assertion graph | Tested supported-field reconstruction after GraphML save/reload, including n-ary roles | Not universal fidelity certification for every possible input/edit |
+| Binary MultiGraph | Parallel assertion IDs retained; n-ary assertions explicitly skipped | It is a lossy declared projection, not a universal semantic graph |
+| Saved project | Input/artifact hashes, safe generation publication, stale detection, fresh-process reopening tested | No production lifecycle service or scaling claim |
+| Maintained graph adoption | `GraphRuntime.py` binds actual `NetworkXStorage` and `OperatorContext`; existing khop/materialize functions execute | Global GraphRAGContext/MCP registration and all reference methods not certified on this input |
+| Bounded graph working set | One/two/three hops, filters before aggregation, isolates/self-loops, typed SUBGRAPH and attributed `nx_graph` tested | General analytics plane not yet integrated |
+| Graph evidence | Exact passage text/source scope; selected-edge evidence only; partial/missing evidence explicit | Grounded answer generation and actual agent findings not exercised here |
+| Execution/derivation foundations | Runtime view → subgraph → evidence each has exact artifact/producer lineage; injected failure/recovery tested | Full derivation query/invalidation graph and findings/model lineage still incomplete |
+| Local Python/CLI bridge | `FoundationProject.graph_neighborhood`, typed helper, and `--graph-hops` demo build/reuse executed | Legacy main CLI modernization and parity across Python/CLI/MCP remain |
 
-## Current architectural center
+The retrieval adapter uses **undirected binary assertion associations**, unit weight per entity pair, retained self-loops, explicit predicate selection, and all parallel assertion records. It does not reinterpret polarity as affirmative truth, assign confidence as tie strength, or infer causal/social influence. SQL still exposes claims intentionally absent from the binary network.
 
-The strongest maintained path is now:
+## Existing wider core — source inventory, not newly certified
 
-```text
-typed capability records
-        ↓
-strict composition / reference plans
-        ↓
-current graph / VDB / community / matrix resources
-        ↓
-exact evidence recovery
-        ↓
-grounded answer or explicit evidence gap
-```
+| Area | Carried-forward reality |
+|---|---|
+| Typed operators/composition | QUERY_TEXT, ENTITY_SET, RELATIONSHIP_SET, CHUNK_SET, SUBGRAPH, COMMUNITY_SET, SCORE_VECTOR; strict named wiring/execution and reference-plan machinery |
+| Reference methods | basic_local, basic_global, lightrag, fastgraphrag, hipporag, tog, gr, dalk, kgp, med; prior source-level semantic repairs remain, not all freshly executed |
+| Standalone ingestion/build | Raw corpus preparation/chunking; ER/RK/tree/balanced-tree/passage builders, source manifests and practical invalidation |
+| Vector/index machinery | FAISS/entity/relationship indexes and prior scoring/identity/upsert repairs; **not yet integrated with the new Foundation project** |
+| Retrieval and structural transforms | Entity/relation/chunk, PPR/diffusion, path/subgraph, PCST/Steiner, community operations and source materialization |
+| Grounded synthesis | Evidence IDs/citation validation and empty-evidence safeguards exist; no fresh live-provider certification in this tranche |
+| Resource context | Active dataset/graph, canonical VDB selection, pragmatic invalidation; same-shaped cross-graph sparse-resource identity remains a gap |
+| Current interfaces | MCP exists; legacy CLI/API still couple to older orchestration; the new local projection bridge is not their complete replacement |
+| Legacy/research | Older AgentBrain/AOT/orchestrator/memory/MCP and evaluation code remain; retain useful capabilities, isolate ambiguity, do not build another brain |
 
-That is an important current implementation center, but it is narrower than the full `Represent → Retrieve → Analyze` north star.
+Public operator exports now load lazily so direct graph access does not eagerly initialize unrelated LLM/vector dependencies. Existing names are retained; complete import/registry compatibility across all optional stacks remains a broader regression obligation.
 
-## Current public/control surfaces
+## Full north star and remaining gaps
 
-### MCP
+The target still includes relational, vector, property graph, semantic/RDF where useful, hierarchy/tree, specialized lexical retrieval beyond native search, source evidence, and an agent-readable wiki/catalog. Geospatial is outside this text-focused scope.
 
-The stdio MCP server is currently the strongest modern agent-facing integration surface. It supports individual capabilities and maintained reference methods, plus older/direct helpers.
+The wiki is a **progressive-disclosure map of content and the operational environment**: entities/topics/sources, actual representations, schemas/ontology references, canonical join keys, capability availability and evidence locations. It is not merely pages about entities and not a reason to duplicate native file/search/wiki tools.
 
-### CLI
+Analytics remain first-class: retrieve a working set → transform/analyze → reuse typed outputs → recover evidence and form a finding. The new attributed SUBGRAPH is an input to that work, not completion of Leiden/centrality or the broader statistical suite.
 
-The CLI is a real human-facing surface but still belongs to the older planner/orchestrator generation internally.
+The external harness still owns strategy, planning, composition, adaptation and stopping. DIGIMON owns representations, specialized retrieval/analytics, contracts, and observed lineage. CLI/Python/MCP should converge over that capability core without imposing another planner.
 
-### Python/application surface
+Evidence provenance, semantic provenance and artifact/execution derivation are distinct. Source-backed assertions, retrieved sets, computed scores/communities and interpretations must not be conflated. The derivation graph is not the domain graph. Local traces/artifact references are an implemented foundation, not completion of the whole provenance architecture.
 
-A clean consolidated public library over the same maintained runtime remains incomplete.
+## Ordered frontier
 
-The target is **CLI + Python + MCP over one core**, not three independent architectures.
+Follow [the living plan](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 3. Batches 0–2 have bounded execution evidence. **Next is real vectors from the same IR through the existing provider/index seam**, including query and persisted reload. Then progressive-disclosure catalog, first-class analytic access and source recovery, integrated harness finding, and broader hardening/representation coverage.
 
-## Current representation reality
+FAISS, llama-index and provider packages were absent from the scoped Batch 2 runner. Recheck authorized execution/configuration; do not promote a document list or hash embedding as semantic vector retrieval. Do not accumulate dependent unexecuted code.
 
-### Strong/current
+## Receipts and limitations
 
-- property graphs (ER/RK plus tree/passage variants);
-- vector indexes;
-- communities/sparse structures;
-- graph/table/vector conversion experiments;
-- exact source/chunk evidence representation.
+- [Batch 01](reports/PROJECTION_BATCH_01.md): baseline repairs and saved/reopened project, 45 selected tests.
+- [Batch 02](reports/PROJECTION_BATCH_02.md): maintained graph storage/operator adoption and exact evidence, 69 selected cumulative tests.
 
-### New source-side projections awaiting runtime certification/integration
+Both used a byte-verified scoped snapshot because direct Git/DNS access was unavailable. Normal repository pytest configuration/root fixtures were retained; no wholesale test bypass or fake provider execution. These do not certify all tests/core, dependency installation, other runtimes, CI, MCP, real production corpora, vectors, analytics or external-harness composition. Historical CI observations are not current green signals.
 
-- Foundation IR 1.3 + passage 1.0 canonical consumer;
-- normalized SQLite relational projection;
-- lossless Foundation assertion graph;
-- binary-only Foundation entity graph with explicit skipped n-ary assertions.
-
-### Partial or target-state only
-
-- first-class semantic/RDF projection;
-- generated wiki/progressive-disclosure catalog describing semantic organization plus available representations/schemas/capabilities;
-- specialized lexical/BM25 representation where native harness search is insufficient;
-- unified analytical artifact/finding model across graph and non-graph methods.
-
-## Current analytics reality
-
-DIGIMON already has significant graph-focused analytical machinery reflecting its GraphRAG/SNA lineage. However, analytics are not yet documented/organized as fully as retrieval.
-
-Current substantive examples include:
-
-- PPR/diffusion scores;
-- community detection/materialization;
-- PCST optimization;
-- Steiner-tree approximation;
-- k-hop/path/subgraph operations;
-- score aggregation/propagation;
-- tree/community-derived structures.
-
-The broader north-star suite—centrality families, cohesion/brokerage measures, general table/statistical methods, explicit model/finding outputs—remains a gap rather than a current guarantee.
-
-## Current provenance reality
-
-### Implemented foundations
-
-- entity/relationship source IDs;
-- exact chunk/evidence IDs;
-- evidence provenance carried into answers;
-- composer step metadata;
-- graph/source manifests;
-- practical dependent-artifact invalidation;
-- source-aware structural materialization;
-- community source lineage.
-
-### Missing target layer
-
-The system does not yet have one explicit derivation graph recording, for every important artifact:
-
-```text
-input artifact/version
-→ projection/retrieval/analytic execution + parameters
-→ output artifact/version
-→ finding
-```
-
-That target is broader than answer citations and should not be confused with the domain/property graph.
-
-## Important remaining implementation gaps
-
-1. **Fresh runtime execution** — run the deterministic core suite and E2E canaries on the current head; fix real failures before more speculative refactors.
-2. **Governed IR projection integration** — the strict Foundation IR consumer now exists source-side; next prove it at runtime and adapt the resulting projections into maintained retrieval surfaces without losing semantic identity.
-3. **Representation plane expansion** — the relational and initial property-graph projections now exist source-side; wiki/catalog, vector-from-IR integration, RDF where useful, and maintained runtime registration remain incomplete.
-4. **Analytics as a first-class plane** — expose/describe a coherent analytic method taxonomy and typed outputs, not only retrieval/reference methods.
-5. **Artifact/derivation lineage** — record projection/retrieval/transformation executions and outputs, extending the current evidence/manifests/invalidation foundations.
-6. **Cross-graph sparse resources** — sparse matrices are still effectively dataset/ER scoped and can theoretically be same-shaped but semantically stale for another active graph.
-7. **Public surfaces convergence** — modernize CLI/Python surfaces onto the same maintained core used by agent-facing capabilities.
-8. **Error/result uniformity** — finish a small machine-actionable convention across maintained layers.
-9. **Legacy isolation** — continue classifying/deprecating old internal brain/orchestrator/AoT/MCP paths without deleting useful lineage prematurely.
-
-## Verification boundary
-
-No current documentation should claim that the present head has passed the full deterministic suite or clean-rebuild canary until a real runner executes it.
-
-Historical CI evidence showed dependency installation failing before meaningful tests due the obsolete `umap==0.1.1` dependency. That dependency has been removed, but current commits have not produced a fresh GitHub Actions signal through the available integration.
-
-Continue with:
-
-- [VISION.md](VISION.md) — full north star;
-- [ARCHITECTURE.md](ARCHITECTURE.md) — target system design;
-- [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) — module-level reality;
-- [GAP_ANALYSIS.md](GAP_ANALYSIS.md) — current → target gaps;
-- [ROADMAP.md](ROADMAP.md) — closure order;
-- [DOCUMENTATION_COVERAGE.md](DOCUMENTATION_COVERAGE.md) — reconciliation checklist.
+[IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md), [GAP_ANALYSIS.md](GAP_ANALYSIS.md), [ROADMAP.md](ROADMAP.md), and [DOCUMENTATION_COVERAGE.md](DOCUMENTATION_COVERAGE.md) retain the broader context. Where an older source-only status conflicts with the bounded receipts above, use the newer receipt for that exact tested scope, not as evidence for unrelated capabilities.

@@ -6,10 +6,10 @@ Steiner trees) and evidence-grounded answer generation.
 
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, Optional
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
-from Core.Common.Utils import split_string_by_multi_markers
 from Core.Schema.SlotTypes import (
     ChunkRecord,
     EntityRecord,
@@ -40,12 +40,17 @@ async def subgraph_materialize(
     chunk_ids = []
     seen_chunk_ids = set()
 
-    def add_source_ids(source_id):
-        if not source_id:
-            return
-        for chunk_id in split_string_by_multi_markers(
-            str(source_id), [GRAPH_FIELD_SEP]
-        ):
+    def add_source_ids(metadata):
+        # Explicit lists preserve opaque IDs even when they contain <SEP>.
+        if "passage_ids_json" in metadata:
+            source_ids = json.loads(metadata["passage_ids_json"])
+            if not isinstance(source_ids, list) or not all(
+                isinstance(item, str) and item for item in source_ids
+            ):
+                raise ValueError("invalid graph passage identity list")
+        else:
+            source_ids = str(metadata.get("source_id", "")).split(GRAPH_FIELD_SEP)
+        for chunk_id in source_ids:
             if chunk_id and chunk_id not in seen_chunk_ids:
                 seen_chunk_ids.add(chunk_id)
                 chunk_ids.append(chunk_id)
@@ -54,7 +59,7 @@ async def subgraph_materialize(
         node_data = await ctx.graph.get_node(node_id)
         if not node_data:
             continue
-        add_source_ids(node_data.get("source_id", ""))
+        add_source_ids(node_data)
         entity_records.append(
             EntityRecord(
                 entity_name=str(node_id),
@@ -73,7 +78,7 @@ async def subgraph_materialize(
         if edge_data is None:
             edge_data = await ctx.graph.get_edge(tgt, src)
         if edge_data:
-            add_source_ids(edge_data.get("source_id", ""))
+            add_source_ids(edge_data)
 
     top_k_chunks = (params or {}).get("top_k_chunks")
     if top_k_chunks is not None:
@@ -95,15 +100,24 @@ async def subgraph_materialize(
         elif hasattr(data, "text"):
             text = getattr(data, "text")
 
-        text = str(text).strip() if text is not None else ""
-        if not text:
+        # Test emptiness without rewriting the producer's source text. Unknown
+        # payloads are not strings and must never become fabricated evidence.
+        if not isinstance(text, str) or not text.strip():
             continue
 
+        provenance = {}
+        if isinstance(data, dict):
+            provenance = {
+                key: data[key]
+                for key in ("source_ref", "namespace_id", "source_registry_id",
+                            "source_urls", "supporting_provenance_refs", "assertion_ids")
+                if key in data
+            }
         chunk_records.append(
             ChunkRecord(
                 chunk_id=str(chunk_id),
                 text=text,
-                extra={"selected_by_subgraph": True},
+                extra={**provenance, "selected_by_subgraph": True},
             )
         )
 

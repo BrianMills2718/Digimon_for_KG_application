@@ -1,43 +1,45 @@
-"""Modular operator system for composable KG retrieval pipelines.
+"""Lazy public exports: importing a graph operator does not load LLM/vector stacks."""
 
-Each operator is a standalone async function with uniform signature:
-    async def op(inputs: Dict[str, SlotValue], ctx: OperatorContext, params: Dict) -> Dict[str, SlotValue]
-"""
-
+from importlib import import_module
 from Core.Operators._context import OperatorContext
 
-# Entity operators
-from Core.Operators.entity.vdb import entity_vdb
-from Core.Operators.entity.ppr import entity_ppr
-from Core.Operators.entity.onehop import entity_onehop
-from Core.Operators.entity.link import entity_link
-from Core.Operators.entity.tfidf import entity_tfidf
-from Core.Operators.entity.agent import entity_agent
-from Core.Operators.entity.rel_node import entity_rel_node
+_EXPORTS = {
+    'entity_vdb': 'Core.Operators.entity.vdb',
+    'entity_ppr': 'Core.Operators.entity.ppr',
+    'entity_onehop': 'Core.Operators.entity.onehop',
+    'entity_link': 'Core.Operators.entity.link',
+    'entity_tfidf': 'Core.Operators.entity.tfidf',
+    'entity_agent': 'Core.Operators.entity.agent',
+    'entity_rel_node': 'Core.Operators.entity.rel_node',
+    'relationship_onehop': 'Core.Operators.relationship.onehop',
+    'relationship_vdb': 'Core.Operators.relationship.vdb',
+    'relationship_score_agg': 'Core.Operators.relationship.score_aggregator',
+    'relationship_agent': 'Core.Operators.relationship.agent',
+    'chunk_from_relation': 'Core.Operators.chunk.from_relation',
+    'chunk_occurrence': 'Core.Operators.chunk.occurrence',
+    'chunk_aggregator': 'Core.Operators.chunk.aggregator',
+    'subgraph_khop_paths': 'Core.Operators.subgraph.khop_paths',
+    'subgraph_steiner_tree': 'Core.Operators.subgraph.steiner_tree',
+    'subgraph_agent_path': 'Core.Operators.subgraph.agent_path',
+    'community_from_entity': 'Core.Operators.community.from_entity',
+    'community_from_level': 'Core.Operators.community.from_level',
+    'meta_extract_entities': 'Core.Operators.meta.extract_entities',
+    'meta_reason_step': 'Core.Operators.meta.reason_step',
+    'meta_rerank': 'Core.Operators.meta.rerank',
+    'meta_generate_answer': 'Core.Operators.meta.generate_answer',
+    'meta_pcst_optimize': 'Core.Operators.meta.pcst_optimize',
+}
 
-# Relationship operators
-from Core.Operators.relationship.onehop import relationship_onehop
-from Core.Operators.relationship.vdb import relationship_vdb
-from Core.Operators.relationship.score_aggregator import relationship_score_agg
-from Core.Operators.relationship.agent import relationship_agent
+__all__ = ["OperatorContext", *_EXPORTS]
 
-# Chunk operators
-from Core.Operators.chunk.from_relation import chunk_from_relation
-from Core.Operators.chunk.occurrence import chunk_occurrence
-from Core.Operators.chunk.aggregator import chunk_aggregator
 
-# Subgraph operators
-from Core.Operators.subgraph.khop_paths import subgraph_khop_paths
-from Core.Operators.subgraph.steiner_tree import subgraph_steiner_tree
-from Core.Operators.subgraph.agent_path import subgraph_agent_path
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(import_module(_EXPORTS[name]), name)
+    globals()[name] = value
+    return value
 
-# Community operators
-from Core.Operators.community.from_entity import community_from_entity
-from Core.Operators.community.from_level import community_from_level
 
-# Meta operators
-from Core.Operators.meta.extract_entities import meta_extract_entities
-from Core.Operators.meta.reason_step import meta_reason_step
-from Core.Operators.meta.rerank import meta_rerank
-from Core.Operators.meta.generate_answer import meta_generate_answer
-from Core.Operators.meta.pcst_optimize import meta_pcst_optimize
+def __dir__():
+    return sorted(set(globals()) | set(__all__))

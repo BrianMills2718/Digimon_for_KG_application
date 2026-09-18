@@ -10,7 +10,7 @@ import networkx as nx
 import numpy as np
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
-from Core.Common.Logger import logger
+from loguru import logger
 from Core.Schema.CommunitySchema import LeidenInfo
 from Core.Storage.BaseGraphStorage import BaseGraphStorage
 

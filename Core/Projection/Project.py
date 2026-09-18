@@ -89,6 +89,18 @@ class FoundationProject:
         conn.row_factory = sqlite3.Row
         return conn
 
+    async def graph_neighborhood(self, entity_ids: list[str], *, k: int = 2,
+                                 predicates: list[str] | None = None) -> dict[str, Any]:
+        """Existing typed graph retrieval -> exact evidence over this snapshot.
+
+        For composable typed outputs, use GraphRuntime.retrieve_foundation_subgraph.
+        This convenience method returns the persisted JSON observation.
+        """
+        from .GraphRuntime import retrieve_foundation_subgraph
+        slots = await retrieve_foundation_subgraph(self, entity_ids, k=k, predicates=predicates)
+        metadata = slots["chunks"].metadata
+        return {**metadata["report"], "artifact": metadata["artifact"]}
+
     def evidence_for_entity(self, entity_id: str) -> dict[str, Any]:
         """Exact entity -> assertion -> producer reference -> original passage."""
         artifact = self.manifest["artifacts"]["relational"]

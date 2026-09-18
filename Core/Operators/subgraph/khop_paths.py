@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from Core.Common.Logger import logger
+from loguru import logger
 from Core.Schema.SlotTypes import SlotKind, SlotValue, SubgraphRecord
 
 
