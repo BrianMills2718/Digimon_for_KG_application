@@ -475,13 +475,32 @@ def parse_foundation_ir(
         if passage_payload is not None
         else ()
     )
-    return FoundationIR(
+    ir = FoundationIR(
         format_version=format_version,
         producer=producer,
         assertions=assertions,
         source_sha256=source_sha256,
         passages=passages,
     )
+
+    if passage_payload is not None:
+        assertion_refs = set(ir.assertions_by_provenance_ref)
+        passage_refs = set(ir.passages_by_provenance_ref)
+        missing = sorted(assertion_refs - passage_refs)
+        orphaned = sorted(passage_refs - assertion_refs)
+        if missing:
+            raise FoundationIRContractError(
+                "Foundation passage companion is missing provenance refs for "
+                + ", ".join(missing)
+            )
+        if orphaned:
+            raise FoundationIRContractError(
+                "Foundation passage companion contains provenance refs outside "
+                "the assertion selection: "
+                + ", ".join(orphaned)
+            )
+
+    return ir
 
 
 def _load_json_file(path: Path) -> tuple[Any, str]:
