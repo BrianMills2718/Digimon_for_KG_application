@@ -1,19 +1,27 @@
 # DIGIMON Planning
 
-**Updated:** 2026-09-16
+**Updated:** 2026-09-17
 
-This directory contains multiple generations of planning material. The active rapid-implementation plans are:
+## Active Execution Authority
 
-1. [CORE_CANARY_PLAN.md](CORE_CANARY_PLAN.md) — establish reproducible core MCP behavior; fix only observed failures.
-2. [CI_RECOVERY_PLAN.md](CI_RECOVERY_PLAN.md) — restore a small meaningful automated health signal.
-3. [FAILURE_DRIVEN_CORE_FIXES_PLAN.md](FAILURE_DRIVEN_CORE_FIXES_PLAN.md) — drive subsequent fixes from canary/CI failures.
+[NORTH_STAR_VERTICAL_SLICE_PLAN.md](NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 2, is the single active execution plan for the governed-IR north-star slice. It owns the batch sequence, additional LOC ranges, current baseline, focused checks, trace/lineage expectations, unresolved assumptions and exact next action.
 
-These execution stubs follow the repository planning convention: **goal → evidence → checkpoints → tests → success criteria → execution order/stop rule**.
+Its operating model is **brief contract → coherent implementation batch → execute → inspect trace/counterexample → repair → cumulative rerun → coherent commit**. The approximately 1,000 LOC/hour authoring target is measured separately from verified progress. Do not build another dependent batch on an unexecuted one.
 
-They are subordinate to the canonical architecture/status documents in `docs/`, especially `CURRENT_STATE.md`, `ARCHITECTURE.md`, and `ROADMAP.md`.
+[FOUNDATION_PROPERTY_GRAPH_DESIGN.md](FOUNDATION_PROPERTY_GRAPH_DESIGN.md) records the two-graph design intent. Round-trip fidelity and runtime adoption require tests; the design's use of “lossless” is not runtime certification.
 
-Older files in this directory document project history unless a canonical document or one of the active plans above explicitly restates the work.
+[The planning-path record](supporting/north-star-speedrun-path.json) selects Company Planning's durable_solo route for one-writer continuity. It is consumed by the planning-path validator, not a work-claim registry or dispatcher.
 
-## Execution rule
+## Supporting Workstreams, Not Competing Priorities
 
-Prefer implementation over plan expansion. Update a plan only when a result changes the next action; do not add process artifacts unless they remove real ambiguity.
+- [CORE_CANARY_PLAN.md](CORE_CANARY_PLAN.md) retains the maintained MCP/core reuse and rebuild checks.
+- [CI_RECOVERY_PLAN.md](CI_RECOVERY_PLAN.md) retains CI recovery work when an actual execution blocker requires it.
+- [FAILURE_DRIVEN_CORE_FIXES_PLAN.md](FAILURE_DRIVEN_CORE_FIXES_PLAN.md) retains the concrete defect/evidence ledger.
+
+They support the active frontier rather than each selecting a different next project. Historical source-only progress records do not imply test success.
+
+## Relationship To Canonical Documentation
+
+[../VISION.md](../VISION.md) owns the full Represent/Retrieve/Analyze thesis and ecosystem boundary. [../ARCHITECTURE.md](../ARCHITECTURE.md) owns target invariants. [../ROADMAP.md](../ROADMAP.md) retains the longer capability horizon. [../CURRENT_STATE.md](../CURRENT_STATE.md) and [../IMPLEMENTATION_MAP.md](../IMPLEMENTATION_MAP.md) own system-wide code status. [../PLANNING_SUMMARY.md](../PLANNING_SUMMARY.md) is a concise navigation view.
+
+Older plans are historical unless the active authorities explicitly retain them. Prefer a useful implementation result over expanding plans. Update the living plan when evidence changes status, scope, assumptions or the next action; add no second tracker or per-fix packet merely for ceremony.
