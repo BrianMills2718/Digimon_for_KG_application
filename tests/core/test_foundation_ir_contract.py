@@ -5,6 +5,7 @@ import json
 
 import pytest
 
+from Core.Projection.Identity import build_identity_manifest
 from Core.Projection.FoundationIR import (
     FoundationIRContractError,
     load_foundation_ir,
@@ -105,6 +106,24 @@ def test_parse_preserves_identity_and_additive_qualifiers():
     assert [p.passage_id for p in ir.passages_for_assertion("gassert2_abc")] == [
         "gpassage1_abc"
     ]
+
+
+
+def test_identity_manifest_reuses_foundation_ids_verbatim():
+    ir = parse_foundation_ir(
+        _assertion_bundle(),
+        passage_payload=_passage_bundle(),
+    )
+    manifest = build_identity_manifest(ir)
+
+    assert manifest.entity_ids == ("entity:acme", "entity:alice")
+    assert manifest.assertion_ids == ("gassert2_abc",)
+    assert manifest.predicate_ids == ("org:employs",)
+    assert manifest.provenance_refs == ("cand_001",)
+    assert manifest.passage_ids == ("gpassage1_abc",)
+    assert manifest.source_refs == ("source-window:1",)
+    assert manifest.namespace_ids == ("person:alice",)
+    assert manifest.source_registry_ids == ("registry:test",)
 
 
 def test_parse_preserves_value_fillers_for_later_projections():
