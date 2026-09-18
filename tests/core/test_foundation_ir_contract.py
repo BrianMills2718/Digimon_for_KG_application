@@ -166,6 +166,22 @@ def test_counts_are_verified():
         parse_foundation_ir(bundle)
 
 
+def test_passage_companion_must_close_over_assertion_provenance():
+    passages = _passage_bundle()
+    passages["passages"][0]["supporting_provenance_refs"] = ["cand_other"]
+    with pytest.raises(FoundationIRContractError):
+        parse_foundation_ir(_assertion_bundle(), passage_payload=passages)
+
+
+def test_passage_companion_cannot_omit_selected_assertion_provenance():
+    passages = _passage_bundle()
+    passages["passages"] = []
+    passages["passage_count"] = 0
+    with pytest.raises(FoundationIRContractError):
+        parse_foundation_ir(_assertion_bundle(), passage_payload=passages)
+
+
+
 def test_passage_content_hash_must_be_sha256():
     passages = _passage_bundle()
     passages["passages"][0]["content_hash"] = "not-a-sha"
