@@ -155,3 +155,31 @@ Verification boundary:
 
 Next implementation-ready slice:
 - make the cross-representation identity contract explicit over FoundationIR before building the first relational projection.
+
+
+### 2026-09-17 — Identity + first projections implemented source-side
+
+Cross-representation identity:
+- Core/Projection/Identity.py defines the immutable projection identity manifest.
+- entity/assertion/predicate/provenance/passage/source/namespace/registry IDs are exposed without reminting.
+- contract test locks exact ID reuse.
+
+Relational projection:
+- Core/Projection/Relational.py materializes Foundation IR into normalized SQLite with no new dependency.
+- tables preserve entities, names, types, aliases, assertions, n-ary roles, qualifiers, provenance, source URLs, passages, and passage support.
+- relational_schema_manifest() provides agent/catalog-facing schema descriptions.
+- contract test proves canonical entity lookup → assertion role → provenance → exact passage join.
+- SQLite is intentionally the first proof backend; DuckDB can be added later if analytical workload evidence justifies the dependency.
+
+Property graph bounded design:
+- docs/planning/FOUNDATION_PROPERTY_GRAPH_DESIGN.md records the n-ary mapping decision.
+- canonical assertion graph = lossless MultiDiGraph with assertion nodes and role edges.
+- retrieval entity graph = binary-only undirected MultiGraph; non-binary assertions are reported as skipped rather than clique-expanded.
+- parallel assertions preserve assertion identity through MultiGraph edge keys.
+- these pure projectors are not yet wired into GraphRAGContext/reference methods.
+
+Verification boundary remains source-review only. No new runtime-green claim is made.
+
+Next boundary:
+- execute the prepared contract tests when a runner becomes available;
+- then adapt the binary entity projection into the maintained ER runtime only after defining the exact MultiGraph→current simple-Graph merge behavior, or evolve the runtime storage deliberately.
