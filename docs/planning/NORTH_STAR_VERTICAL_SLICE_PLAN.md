@@ -123,3 +123,35 @@ Proceed now:
 ## Next action
 
 Implement Active slice B now while keeping Active slice A visibly blocked on a real runner.
+
+## Progress log
+
+### 2026-09-17 — Foundation IR seam implemented source-side
+
+Implemented:
+- Core/Projection/FoundationIR.py — strict Foundation IR 1.3 and passage 1.0 consumer;
+- Core/Projection/__init__.py — projection-layer public exports;
+- tests/core/test_foundation_ir_contract.py — deterministic contract coverage prepared for the next runner;
+- exact producer/version/count validation;
+- canonical assertion/entity IDs preserved verbatim, including Unicode;
+- value fillers preserved for later relational/graph projections;
+- additive qualifier keys preserved without DIGIMON interpreting upstream semantic policy;
+- assertion/entity/provenance/passages indexes;
+- assertion-to-passage lookup through candidate provenance refs;
+- snapshot SHA-256 recomputation and optional sidecar verification;
+- passage companion closure: every selected assertion provenance ref must resolve and no orphaned companion provenance refs are accepted.
+
+Evidence:
+- planning commit 0b05893177f5c1360abbdac8bbbd9915ce918da5
+- projection package commit 89f5c39d2aeeda1619671ac70135793db64b2d56
+- consumer commit 6fa83beaf23887c247cbb70c33f36fe1f6473df0
+- contract-test commit 05a5913001330f64737b5b64ce691ef0141651e6
+- provenance-closure commits b47efd6802873043b644eea730e66fc0291038ec and 0d146615a8b00789a584d3e4df595c2300dd0358
+
+Verification boundary:
+- source reviewed only;
+- tests have not executed in the available environment;
+- do not promote this slice to runtime-certified until the Stage-1 runner commands pass.
+
+Next implementation-ready slice:
+- make the cross-representation identity contract explicit over FoundationIR before building the first relational projection.
