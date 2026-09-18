@@ -128,9 +128,15 @@ The target is **CLI + Python + MCP over one core**, not three independent archit
 - graph/table/vector conversion experiments;
 - exact source/chunk evidence representation.
 
+### New source-side projections awaiting runtime certification/integration
+
+- Foundation IR 1.3 + passage 1.0 canonical consumer;
+- normalized SQLite relational projection;
+- lossless Foundation assertion graph;
+- binary-only Foundation entity graph with explicit skipped n-ary assertions.
+
 ### Partial or target-state only
 
-- canonical governed-IR→relational database projection;
 - first-class semantic/RDF projection;
 - generated wiki/progressive-disclosure catalog describing semantic organization plus available representations/schemas/capabilities;
 - specialized lexical/BM25 representation where native harness search is insufficient;
@@ -181,8 +187,8 @@ That target is broader than answer citations and should not be confused with the
 ## Important remaining implementation gaps
 
 1. **Fresh runtime execution** — run the deterministic core suite and E2E canaries on the current head; fix real failures before more speculative refactors.
-2. **Governed IR projection seam** — make the onto-canon/Foundation IR path the clear canonical ecosystem input and verify what semantic fields each target projection requires.
-3. **Representation plane expansion** — relational database projection, wiki/catalog projection, and other high-value text-derived representations are not yet first-class maintained outputs.
+2. **Governed IR projection integration** — the strict Foundation IR consumer now exists source-side; next prove it at runtime and adapt the resulting projections into maintained retrieval surfaces without losing semantic identity.
+3. **Representation plane expansion** — the relational and initial property-graph projections now exist source-side; wiki/catalog, vector-from-IR integration, RDF where useful, and maintained runtime registration remain incomplete.
 4. **Analytics as a first-class plane** — expose/describe a coherent analytic method taxonomy and typed outputs, not only retrieval/reference methods.
 5. **Artifact/derivation lineage** — record projection/retrieval/transformation executions and outputs, extending the current evidence/manifests/invalidation foundations.
 6. **Cross-graph sparse resources** — sparse matrices are still effectively dataset/ER scoped and can theoretically be same-shaped but semantically stale for another active graph.
