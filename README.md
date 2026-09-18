@@ -1,5 +1,16 @@
 # DIGIMON
 
+> [!WARNING]
+> **HISTORICAL REPOSITORY — NOT CURRENT DIGIMON DEVELOPMENT AUTHORITY**
+>
+> This repository is retained for historical implementation, experiments, tests, reports, and design ideas. Do not start new DIGIMON development here unless the task explicitly concerns historical recovery or comparison.
+>
+> **Current personal upstream:** `BrianMills2718/digimon_application_20260215`
+>
+> **Active Inside Success downstream:** `Inside-Success/graph-retrieval`
+>
+> See [`DEPRECATED.md`](DEPRECATED.md) for reuse and port-forward guidance.
+
 DIGIMON is a **general text-derived representation, retrieval, and analytics runtime**.
 
 Its ecosystem role is to consume governed semantic IR—primarily from `onto-canon6`—and project that semantic core into complementary retrieval/analysis representations such as relational tables, property graphs, vector indexes, hierarchies, communities and agent-navigable knowledge surfaces. It then exposes specialized retrieval and analytic operations over those representations so a capable external agent or application can compose its own evidence-to-action workflow.

@@ -1,5 +1,16 @@
 # CLAUDE.md — DIGIMON Implementation Guide
 
+> [!WARNING]
+> **HISTORICAL REPOSITORY — NOT CURRENT DIGIMON DEVELOPMENT AUTHORITY**
+>
+> This repository is retained for historical implementation, experiments, tests, reports, and design ideas. Do not start new DIGIMON development here unless the task explicitly concerns historical recovery or comparison.
+>
+> **Current personal upstream:** `BrianMills2718/digimon_application_20260215`
+>
+> **Active Inside Success downstream:** `Inside-Success/graph-retrieval`
+>
+> See [`DEPRECATED.md`](DEPRECATED.md) for reuse and port-forward guidance.
+
 **Updated:** 2026-09-17
 
 This repository contains multiple generations of DIGIMON architecture. Use the canonical documentation rather than inferring current intent from older planners, checkpoint files or historical reports.

@@ -1,5 +1,16 @@
 # AGENTS.md — DIGIMON Contributor and Coding-Agent Guide
 
+> [!WARNING]
+> **HISTORICAL REPOSITORY — NOT CURRENT DIGIMON DEVELOPMENT AUTHORITY**
+>
+> This repository is retained for historical implementation, experiments, tests, reports, and design ideas. Do not start new DIGIMON development here unless the task explicitly concerns historical recovery or comparison.
+>
+> **Current personal upstream:** `BrianMills2718/digimon_application_20260215`
+>
+> **Active Inside Success downstream:** `Inside-Success/graph-retrieval`
+>
+> See [`DEPRECATED.md`](DEPRECATED.md) for reuse and port-forward guidance.
+
 **Updated:** 2026-09-17
 
 This file gives implementation guidance to coding agents. It should point to the canonical documentation rather than becoming another architecture/status document.

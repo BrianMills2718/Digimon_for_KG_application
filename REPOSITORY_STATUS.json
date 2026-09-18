@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "project": "DIGIMON",
+  "repository": "BrianMills2718/Digimon_for_KG_application",
+  "repository_role": "historical-readonly",
+  "active_development": false,
+  "superseded_by": "https://github.com/BrianMills2718/digimon_application_20260215",
+  "company_downstream": "https://github.com/Inside-Success/graph-retrieval",
+  "historical_value": true,
+  "reuse_policy": "inspect-and-port-forward",
+  "agent_write_policy": "stop-unless-explicitly-requested"
+}
