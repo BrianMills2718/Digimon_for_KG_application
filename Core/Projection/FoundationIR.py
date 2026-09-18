@@ -8,7 +8,9 @@ pages.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields, is_dataclass
+from copy import deepcopy
+import math
 import hashlib
 import json
 from pathlib import Path
@@ -34,7 +36,9 @@ def _require_nonempty_string(value: Any, field_name: str) -> str:
 def _optional_string(value: Any, field_name: str) -> str | None:
     if value is None:
         return None
-    return _require_nonempty_string(value, field_name)
+    if not isinstance(value, str):
+        raise FoundationIRContractError(f"{field_name} must be a string or null")
+    return value
 
 
 def _string_list(value: Any, field_name: str) -> tuple[str, ...]:
@@ -51,7 +55,7 @@ def _string_list(value: Any, field_name: str) -> tuple[str, ...]:
 def _mapping(value: Any, field_name: str) -> Mapping[str, Any]:
     if not isinstance(value, dict):
         raise FoundationIRContractError(f"{field_name} must be an object")
-    return MappingProxyType(dict(value))
+    return MappingProxyType(deepcopy(value))
 
 
 @dataclass(frozen=True)
@@ -85,10 +89,13 @@ class FoundationRoleFillerRecord:
         )
         raw = _optional_string(payload.get("raw"), f"{context}.raw")
 
-        if kind == "entity" and entity_id is None:
+        if kind == "entity" and (entity_id is None or not entity_id.strip()):
             raise FoundationIRContractError(
                 f"{context}.entity_id is required for entity fillers"
             )
+
+        if entity_id is not None and kind != "entity":
+            raise FoundationIRContractError(f"{context}: non-entity filler has entity_id")
 
         return cls(
             kind=kind,
@@ -154,6 +161,7 @@ class FoundationAssertionRecord:
         if raw_confidence is not None and (
             isinstance(raw_confidence, bool)
             or not isinstance(raw_confidence, (int, float))
+            or not math.isfinite(raw_confidence)
         ):
             raise FoundationIRContractError(
                 f"{context}.confidence must be numeric or null"
@@ -211,15 +219,7 @@ class FoundationPassageRecord:
         content_hash = _optional_string(
             payload.get("content_hash"), f"{context}.content_hash"
         )
-        if content_hash is not None:
-            lowered = content_hash.lower()
-            if len(lowered) != 64 or any(
-                char not in "0123456789abcdef" for char in lowered
-            ):
-                raise FoundationIRContractError(
-                    f"{context}.content_hash must be a 64-character SHA-256 hex digest"
-                )
-            content_hash = lowered
+        # Producer metadata is opaque; only our file digests have SHA-256 semantics.
 
         supporting = _string_list(
             payload.get("supporting_provenance_refs"),
@@ -272,6 +272,9 @@ class FoundationIR:
     assertions: tuple[FoundationAssertionRecord, ...]
     source_sha256: str | None = None
     passages: tuple[FoundationPassageRecord, ...] = ()
+    passage_sha256: str | None = None
+    source_payload_json: str | None = field(default=None, repr=False)
+    passage_payload_json: str | None = field(default=None, repr=False)
 
     assertions_by_id: Mapping[str, FoundationAssertionRecord] = field(init=False)
     entities_by_id: Mapping[str, FoundationEntityRecord] = field(init=False)
@@ -298,7 +301,7 @@ class FoundationIR:
         assertions_by_provenance_ref: dict[str, list[str]] = {}
 
         for assertion in self.assertions:
-            for provenance_ref in assertion.provenance_refs:
+            for provenance_ref in dict.fromkeys(assertion.provenance_refs):
                 assertions_by_provenance_ref.setdefault(provenance_ref, []).append(
                     assertion.assertion_id
                 )
@@ -329,7 +332,7 @@ class FoundationIR:
 
         passages_by_provenance_ref: dict[str, list[str]] = {}
         for passage in self.passages:
-            for provenance_ref in passage.supporting_provenance_refs:
+            for provenance_ref in dict.fromkeys(passage.supporting_provenance_refs):
                 passages_by_provenance_ref.setdefault(provenance_ref, []).append(
                     passage.passage_id
                 )
@@ -370,6 +373,17 @@ class FoundationIR:
             ),
         )
 
+    def to_payload(self) -> dict[str, Any]:
+        """Return a detached source-shaped payload, retaining absent/null distinctions."""
+        if self.source_payload_json is not None:
+            return json.loads(self.source_payload_json)
+        return {
+            "format_version": self.format_version,
+            "producer": self.producer,
+            "assertion_count": len(self.assertions),
+            "assertions": [_plain_json(item) for item in self.assertions],
+        }
+
     def passages_for_assertion(
         self, assertion_id: str
     ) -> tuple[FoundationPassageRecord, ...]:
@@ -378,12 +392,29 @@ class FoundationIR:
             raise KeyError(assertion_id)
         passage_ids: list[str] = []
         seen: set[str] = set()
-        for provenance_ref in assertion.provenance_refs:
+        for provenance_ref in dict.fromkeys(assertion.provenance_refs):
             for passage_id in self.passages_by_provenance_ref.get(provenance_ref, ()):
                 if passage_id not in seen:
                     seen.add(passage_id)
                     passage_ids.append(passage_id)
         return tuple(self.passages_by_id[item] for item in passage_ids)
+
+
+def _plain_json(value: Any) -> Any:
+    if is_dataclass(value):
+        return {item.name: _plain_json(getattr(value, item.name)) for item in fields(value)}
+    if isinstance(value, Mapping):
+        return {key: _plain_json(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_plain_json(item) for item in value]
+    return value
+
+
+def _snapshot_json(value: Any) -> str:
+    try:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise FoundationIRContractError(f"Foundation payload must contain finite JSON values: {exc}") from exc
 
 
 def _validate_envelope(payload: Any) -> tuple[str, str, list[Any]]:
@@ -461,7 +492,11 @@ def parse_foundation_ir(
     *,
     passage_payload: Any | None = None,
     source_sha256: str | None = None,
+    passage_sha256: str | None = None,
 ) -> FoundationIR:
+    source_payload_json = _snapshot_json(payload)
+    payload = deepcopy(payload)
+    passage_payload_json = _snapshot_json(passage_payload) if passage_payload is not None else None
     format_version, producer, raw_assertions = _validate_envelope(payload)
     assertions = tuple(
         FoundationAssertionRecord.from_payload(item, index=index)
@@ -481,6 +516,9 @@ def parse_foundation_ir(
         assertions=assertions,
         source_sha256=source_sha256,
         passages=passages,
+        passage_sha256=passage_sha256,
+        source_payload_json=source_payload_json,
+        passage_payload_json=passage_payload_json,
     )
 
     if passage_payload is not None:
@@ -499,6 +537,18 @@ def parse_foundation_ir(
                 "the assertion selection: "
                 + ", ".join(orphaned)
             )
+
+        for ref in assertion_refs:
+            for assertion_id in ir.assertions_by_provenance_ref[ref]:
+                assertion = ir.assertions_by_id[assertion_id]
+                for passage_id in ir.passages_by_provenance_ref[ref]:
+                    passage = ir.passages_by_id[passage_id]
+                    if (assertion.namespace_id, assertion.source_registry_id) != (
+                        passage.namespace_id, passage.source_registry_id
+                    ):
+                        raise FoundationIRContractError(
+                            f"source scope mismatch for {assertion_id}, {ref}, {passage_id}"
+                        )
 
     return ir
 
@@ -548,11 +598,16 @@ def load_foundation_ir(
         _validate_sha256_sidecar(source_path, digest)
 
     passage_payload = None
+    passage_digest = None
     if passage_path is not None:
-        passage_payload, _ = _load_json_file(Path(passage_path))
+        passage_file = Path(passage_path)
+        passage_payload, passage_digest = _load_json_file(passage_file)
+        if validate_sidecar:
+            _validate_sha256_sidecar(passage_file, passage_digest)
 
     return parse_foundation_ir(
         payload,
         passage_payload=passage_payload,
         source_sha256=digest,
+        passage_sha256=passage_digest,
     )

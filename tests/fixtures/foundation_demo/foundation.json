@@ -1,0 +1,78 @@
+{
+  "assertion_count": 2,
+  "assertions": [
+    {
+      "assertion_id": "gassert2_binary",
+      "claim_text": "Acme employs Alice.",
+      "predicate": "org:employs",
+      "provenance_refs": [
+        "cand_binary"
+      ],
+      "qualifiers": {
+        "sys:tier": "public"
+      },
+      "roles": {
+        "employee": [
+          {
+            "entity_id": "entity:alice",
+            "entity_type": "org:Person",
+            "kind": "entity",
+            "name": "Alice"
+          }
+        ],
+        "employer": [
+          {
+            "entity_id": "entity:acme",
+            "entity_type": "org:Organization",
+            "kind": "entity",
+            "name": "Acme"
+          }
+        ],
+        "since": [
+          {
+            "kind": "value",
+            "value": "2025-01-01",
+            "value_kind": "date"
+          }
+        ]
+      }
+    },
+    {
+      "assertion_id": "gassert2_ternary",
+      "claim_text": "Alice transferred a report from Acme to Beta.",
+      "predicate": "org:transferred",
+      "provenance_refs": [
+        "cand_ternary"
+      ],
+      "qualifiers": {},
+      "roles": {
+        "actor": [
+          {
+            "entity_id": "entity:alice",
+            "entity_type": "org:Person",
+            "kind": "entity",
+            "name": "Alice"
+          }
+        ],
+        "destination": [
+          {
+            "entity_id": "entity:beta",
+            "entity_type": "org:Organization",
+            "kind": "entity",
+            "name": "Beta"
+          }
+        ],
+        "source": [
+          {
+            "entity_id": "entity:acme",
+            "entity_type": "org:Organization",
+            "kind": "entity",
+            "name": "Acme"
+          }
+        ]
+      }
+    }
+  ],
+  "format_version": "1.3",
+  "producer": "onto-canon6"
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.0",
+  "passage_count": 2,
+  "passages": [
+    {
+      "passage_id": "gpassage1_binary",
+      "source_ref": "source-window:1",
+      "supporting_provenance_refs": [
+        "cand_binary"
+      ],
+      "text": "Acme employs Alice."
+    },
+    {
+      "passage_id": "gpassage1_ternary",
+      "source_ref": "source-window:2",
+      "supporting_provenance_refs": [
+        "cand_ternary"
+      ],
+      "text": "Alice transferred a report from Acme to Beta."
+    }
+  ],
+  "producer": "onto-canon6"
+}

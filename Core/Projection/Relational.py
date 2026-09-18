@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
+import tempfile
 from pathlib import Path
 import sqlite3
 from typing import Any
@@ -18,7 +20,7 @@ from .FoundationIR import FoundationIR
 from .Identity import build_identity_manifest
 
 
-RELATIONAL_PROJECTION_VERSION = "1.0"
+RELATIONAL_PROJECTION_VERSION = "1.1"
 
 
 @dataclass(frozen=True)
@@ -133,7 +135,8 @@ CREATE TABLE assertions (
     claim_text TEXT,
     confidence REAL,
     namespace_id TEXT,
-    source_registry_id TEXT
+    source_registry_id TEXT,
+    payload_json TEXT NOT NULL
 );
 
 CREATE TABLE assertion_roles (
@@ -216,15 +219,20 @@ def project_foundation_ir_to_sqlite(
     """Materialize a deterministic relational view of one Foundation IR snapshot."""
 
     output = Path(path)
-    if output.exists():
-        if not overwrite:
-            raise FileExistsError(output)
-        output.unlink()
+    if output.is_symlink():
+        raise ValueError("refusing to replace a symlink projection path")
+    if output.exists() and not overwrite:
+        raise FileExistsError(output)
     output.parent.mkdir(parents=True, exist_ok=True)
 
     identity = build_identity_manifest(ir)
-    conn = sqlite3.connect(str(output))
+    raw_assertions = {item["assertion_id"]: item for item in ir.to_payload()["assertions"]}
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
+    os.close(fd)
+    temporary = Path(temporary_name)
+    conn = None
     try:
+        conn = sqlite3.connect(str(temporary))
         conn.executescript(_SCHEMA)
         with conn:
             metadata = {
@@ -233,6 +241,7 @@ def project_foundation_ir_to_sqlite(
                 "foundation_format_version": ir.format_version,
                 "foundation_producer": ir.producer,
                 "source_sha256": ir.source_sha256 or "",
+                "passage_sha256": ir.passage_sha256 or "",
             }
             conn.executemany(
                 "INSERT INTO projection_metadata(key, value) VALUES (?, ?)",
@@ -263,8 +272,8 @@ def project_foundation_ir_to_sqlite(
                     """
                     INSERT INTO assertions(
                         assertion_id, predicate, claim_text, confidence,
-                        namespace_id, source_registry_id
-                    ) VALUES (?, ?, ?, ?, ?, ?)
+                        namespace_id, source_registry_id, payload_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         assertion.assertion_id,
@@ -273,6 +282,7 @@ def project_foundation_ir_to_sqlite(
                         assertion.confidence,
                         assertion.namespace_id,
                         assertion.source_registry_id,
+                        _json(raw_assertions[assertion.assertion_id]),
                     ),
                 )
                 for role_name, fillers in assertion.roles.items():
@@ -319,7 +329,7 @@ def project_foundation_ir_to_sqlite(
                     """,
                     (
                         (assertion.assertion_id, value)
-                        for value in assertion.provenance_refs
+                        for value in dict.fromkeys(assertion.provenance_refs)
                     ),
                 )
                 conn.executemany(
@@ -329,7 +339,7 @@ def project_foundation_ir_to_sqlite(
                     """,
                     (
                         (assertion.assertion_id, value)
-                        for value in assertion.source_urls
+                        for value in dict.fromkeys(assertion.source_urls)
                     ),
                 )
 
@@ -357,7 +367,7 @@ def project_foundation_ir_to_sqlite(
                     """,
                     (
                         (passage.passage_id, value)
-                        for value in passage.supporting_provenance_refs
+                        for value in dict.fromkeys(passage.supporting_provenance_refs)
                     ),
                 )
                 conn.executemany(
@@ -367,16 +377,25 @@ def project_foundation_ir_to_sqlite(
                     """,
                     (
                         (passage.passage_id, value)
-                        for value in passage.source_urls
+                        for value in dict.fromkeys(passage.source_urls)
                     ),
                 )
-    except Exception:
+        if conn.execute("PRAGMA foreign_key_check").fetchall():
+            raise ValueError("relational projection has unresolved foreign keys")
+        if conn.execute("PRAGMA quick_check").fetchone() != ("ok",):
+            raise ValueError("relational projection integrity check failed")
         conn.close()
-        if output.exists():
-            output.unlink()
-        raise
-    else:
-        conn.close()
+        conn = None
+        # Publishing is the only mutation of the final path. Failed builds leave
+        # the previous database intact; no-overwrite publication is race-safe.
+        if overwrite:
+            os.replace(temporary, output)
+        else:
+            os.link(temporary, output)
+    finally:
+        if conn is not None:
+            conn.close()
+        temporary.unlink(missing_ok=True)
 
     return RelationalProjection(
         path=output,

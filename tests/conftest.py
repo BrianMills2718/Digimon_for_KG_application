@@ -22,10 +22,9 @@ warnings.filterwarnings("ignore", message="Tensorflow not installed")
 # Set minimal test environment
 os.environ["DIGIMON_TEST_MODE"] = "true"
 
-from Config.LLMConfig import LLMConfig
-from Core.Provider.LiteLLMProvider import LiteLLMProvider
-from Core.AgentSchema.context import GraphRAGContext
-from Core.AgentOrchestrator.orchestrator import AgentOrchestrator
+# Import optional runtime/provider stacks only when a fixture actually needs them.
+# Pure projection/contract tests must remain runnable without live-model dependencies.
+
 
 
 @pytest.fixture(scope="session")
@@ -45,6 +44,8 @@ def test_data_dir():
 @pytest.fixture
 def mock_llm_config():
     """Mock LLM configuration for testing."""
+    from Config.LLMConfig import LLMConfig
+
     return LLMConfig(
         api_type="litellm",
         model="openai/gpt-3.5-turbo",
@@ -109,6 +110,8 @@ def mock_llm_provider(mock_llm_config):
 @pytest.fixture
 def mock_context():
     """Mock GraphRAG context for testing."""
+    from Core.AgentSchema.context import GraphRAGContext
+
     return GraphRAGContext(
         corpus_name="test_corpus",
         dataset_name="test_dataset",
@@ -120,6 +123,8 @@ def mock_context():
 @pytest.fixture
 def mock_orchestrator(mock_context):
     """Mock agent orchestrator for testing."""
+    from Core.AgentOrchestrator.orchestrator import AgentOrchestrator
+
     orchestrator = Mock(spec=AgentOrchestrator)
     orchestrator.context = mock_context
     orchestrator.execute_plan = AsyncMock(return_value={"status": "success"})

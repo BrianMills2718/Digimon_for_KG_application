@@ -17,10 +17,10 @@ import networkx as nx
 
 from Core.Common.Constants import GRAPH_FIELD_SEP
 
-from .FoundationIR import FoundationIR, FoundationRoleFillerRecord
+from .FoundationIR import FoundationIR, FoundationIRContractError, FoundationRoleFillerRecord
 
 
-PROPERTY_GRAPH_PROJECTION_VERSION = "1.0"
+PROPERTY_GRAPH_PROJECTION_VERSION = "1.1"
 
 
 @dataclass(frozen=True)
@@ -47,12 +47,19 @@ def project_foundation_ir_to_assertion_graph(ir: FoundationIR) -> nx.MultiDiGrap
     canonical entity identity.
     """
 
+    source = ir.to_payload()
+    raw_assertions = {item["assertion_id"]: item for item in source["assertions"]}
+    collisions = set(ir.entities_by_id).intersection(ir.assertions_by_id)
+    if collisions:
+        raise FoundationIRContractError(f"entity/assertion ID collision: {sorted(collisions)}")
     graph = nx.MultiDiGraph(
         projection_kind="foundation_assertion_graph",
         projection_version=PROPERTY_GRAPH_PROJECTION_VERSION,
         foundation_format_version=ir.format_version,
         foundation_producer=ir.producer,
         source_sha256=ir.source_sha256 or "",
+        passage_sha256=ir.passage_sha256 or "",
+        foundation_envelope_json=_json({k: v for k, v in source.items() if k != "assertions"}),
     )
 
     for entity in ir.entities_by_id.values():
@@ -66,12 +73,16 @@ def project_foundation_ir_to_assertion_graph(ir: FoundationIR) -> nx.MultiDiGrap
             alias_ids_json=_json(entity.alias_ids),
         )
 
-    for assertion in ir.assertions:
+    for assertion_ordinal, assertion in enumerate(ir.assertions):
+        raw_assertion = raw_assertions[assertion.assertion_id]
         passages = _passage_ids(ir, assertion.assertion_id) if ir.passages else ()
         graph.add_node(
             assertion.assertion_id,
             node_kind="assertion",
             assertion_id=assertion.assertion_id,
+            assertion_ordinal=assertion_ordinal,
+            assertion_header_json=_json({k: v for k, v in raw_assertion.items() if k != "roles"}),
+            role_counts_json=_json({k: len(v) for k, v in raw_assertion["roles"].items()}),
             predicate=assertion.predicate,
             claim_text=assertion.claim_text or "",
             confidence=assertion.confidence if assertion.confidence is not None else "",
@@ -91,6 +102,8 @@ def project_foundation_ir_to_assertion_graph(ir: FoundationIR) -> nx.MultiDiGrap
                     target_id = (
                         f"value::{assertion.assertion_id}::{role_name}::{ordinal}"
                     )
+                    if target_id in graph or target_id in ir.assertions_by_id:
+                        raise FoundationIRContractError(f"projection-local ID collision: {target_id}")
                     graph.add_node(
                         target_id,
                         node_kind="value",
@@ -112,6 +125,7 @@ def project_foundation_ir_to_assertion_graph(ir: FoundationIR) -> nx.MultiDiGrap
                     role_name=role_name,
                     filler_ordinal=ordinal,
                     filler_kind=filler.kind,
+                    filler_payload_json=_json(raw_assertion["roles"][role_name][ordinal]),
                 )
 
     return graph
@@ -206,3 +220,38 @@ def project_foundation_ir_to_binary_entity_graph(
         graph=graph,
         skipped_assertion_ids=tuple(skipped),
     )
+
+
+def assertion_graph_to_foundation_payload(graph: nx.MultiDiGraph) -> dict[str, Any]:
+    """Reconstruct supported source fields from the saved assertion/role structure.
+
+    This is a fidelity check, not a route for publishing graph edits upstream.
+    Missing or inconsistent role edges fail rather than silently dropping data.
+    """
+    if graph.graph.get("projection_kind") != "foundation_assertion_graph":
+        raise FoundationIRContractError("expected a Foundation assertion graph")
+    envelope = json.loads(graph.graph["foundation_envelope_json"])
+    assertions = []
+    nodes = [(node, data) for node, data in graph.nodes(data=True) if data.get("node_kind") == "assertion"]
+    for node, data in sorted(nodes, key=lambda pair: pair[1]["assertion_ordinal"]):
+        assertion = json.loads(data["assertion_header_json"])
+        counts = json.loads(data["role_counts_json"])
+        indexed = {role: {} for role in counts}
+        for _, target, edge in graph.out_edges(node, data=True):
+            role, ordinal = edge["role_name"], int(edge["filler_ordinal"])
+            if role not in indexed or ordinal in indexed[role]:
+                raise FoundationIRContractError(f"duplicate/unknown role occurrence at {node}")
+            filler = json.loads(edge["filler_payload_json"])
+            if filler.get("kind") == "entity" and filler.get("entity_id") != target:
+                raise FoundationIRContractError(f"entity role target mismatch at {node}")
+            indexed[role][ordinal] = filler
+        assertion["roles"] = {}
+        for role, expected_count in counts.items():
+            if set(indexed[role]) != set(range(expected_count)):
+                raise FoundationIRContractError(f"missing role occurrence at {node}/{role}")
+            assertion["roles"][role] = [indexed[role][i] for i in range(expected_count)]
+        assertions.append(assertion)
+    if len(assertions) != envelope["assertion_count"]:
+        raise FoundationIRContractError("assertion graph count mismatch")
+    envelope["assertions"] = assertions
+    return envelope

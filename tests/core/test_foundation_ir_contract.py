@@ -201,11 +201,11 @@ def test_passage_companion_cannot_omit_selected_assertion_provenance():
 
 
 
-def test_passage_content_hash_must_be_sha256():
+def test_passage_content_hash_is_opaque_producer_metadata():
     passages = _passage_bundle()
     passages["passages"][0]["content_hash"] = "not-a-sha"
-    with pytest.raises(FoundationIRContractError):
-        parse_foundation_ir(_assertion_bundle(), passage_payload=passages)
+    ir = parse_foundation_ir(_assertion_bundle(), passage_payload=passages)
+    assert ir.passages[0].content_hash == "not-a-sha"
 
 
 def test_snapshot_sha256_is_recorded_and_sidecar_verified(tmp_path):
