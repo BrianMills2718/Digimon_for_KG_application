@@ -4,6 +4,7 @@
   "repository": "BrianMills2718/Digimon_for_KG_application",
   "repository_role": "historical-readonly",
   "active_development": false,
+  "repository_deletion_allowed": false,
   "superseded_by": "https://github.com/BrianMills2718/digimon_application_20260215",
   "company_downstream": "https://github.com/Inside-Success/graph-retrieval",
   "historical_value": true,

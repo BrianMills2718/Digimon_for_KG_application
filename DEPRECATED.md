@@ -2,6 +2,8 @@
 
 This repository is a historical DIGIMON implementation and is **not the current canonical development repository**.
 
+**This repository is permanently preserved and must never be deleted.** Historical/read-only status controls development authority; it does not make the repository disposable.
+
 - **Current personal upstream:** `BrianMills2718/digimon_application_20260215`
 - **Active Inside Success downstream:** `Inside-Success/graph-retrieval`
 - **This repository:** `BrianMills2718/Digimon_for_KG_application`
