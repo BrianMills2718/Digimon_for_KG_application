@@ -1,168 +1,52 @@
 # DIGIMON Planning Summary
 
 **Updated:** 2026-09-17  
-**Status:** current planning summary
+**Role:** short view of the authoritative roadmap and active execution plan; not a second schedule.
 
-## Current direction
+## Unchanged North Star
 
-DIGIMON's north star is broader than the recent harness-first retrieval refactor:
+**Governed semantic IR → Represent → Retrieve → Analyze/Transform → grounded evidence/findings → action**, with shared canonical identity and derivation lineage.
 
-> **Governed semantic IR → Represent → Retrieve → Analyze/Transform → grounded evidence/findings → action, with shared canonical identity and derivation lineage across the whole path.**
+onto-canon6 owns semantic authority and governance. DIGIMON owns complementary derived representations and specialized retrieval/analytics. The external harness owns planning, composition, adaptation and stopping; native file navigation, ordinary search and existing SQL tools are reused rather than reimplemented.
 
-The canonical upstream semantic authority is onto-canon6. DIGIMON should consume governed Foundation-style IR, project it into complementary retrieval/analytic representations, expose specialized retrieval and analytical methods over those representations, and preserve evidence/derivation lineage.
+The wiki/catalog is a progressive-disclosure map of both semantic content and the operational environment: representations, actual schemas/ontology references, canonical IDs, capabilities, availability and source evidence. It describes possibilities rather than prescribing a retrieval sequence.
 
-The external harness still owns adaptive reasoning policy: selecting representations/tools, sequencing, branching, retrying and stopping. Harness-first is therefore an architectural boundary underneath the product thesis, not the project identity.
+Analytics remain first-class. The representative workflow is retrieve a graph/subgraph, compute Leiden/centrality, use the output to retrieve again, and produce a finding with evidence and derivation. Analytical scores, communities and interpretations are derived state, not original evidence. The provenance graph is distinct from the domain graph.
 
-## Three capability planes
+## Active Execution Plan
 
-### Represent
+Use [planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 2, for batch contracts, proposed file surfaces, acceptance checks, telemetry/lineage facts, unresolved assumptions and the exact next action.
 
-Target representation families include:
+The contributor's approximately **1,000 authored code/test LOC per active authoring hour** is a target to measure, not a quota or correctness claim. The shortest integrated slice is provisionally **3,000–5,000 additional implementation/test lines**. Generated data/wiki pages, formatting churn and planning prose are excluded. Calendar guesses from earlier discussion no longer schedule the frontier.
 
-- relational/tabular;
-- vector;
-- property graph;
-- semantic/RDF graph where useful;
-- specialized lexical/full-text indexes where native harness search is insufficient;
-- hierarchy/tree;
-- source/evidence representations;
-- a progressive-disclosure agent wiki/catalog describing semantic content, representation schemas, canonical IDs and available specialized capabilities.
+The next sequence is **baseline execution → one saved/reopened project with trace/lineage → maintained graph retrieval → actual vector indexing/query → progressive-disclosure catalog → subgraph analytics and evidence → observed integrated harness journey**.
 
-Raw-document ingestion/chunking remains valid standalone/compatibility behavior, but governed semantic IR is the canonical ecosystem seam.
+Graph and vector work are independent after the shared seam is stable. Analytics can follow graph integration before catalog polish. Every batch extends and reruns the same journey; final integration is not deferred until everything has been written.
 
-### Retrieve
+## Current Baseline
 
-The agent should be able to obtain bounded working sets using each representation's native strengths: SQL, vector search, graph traversal/PPR/community/subgraph methods, hierarchy expansion, specialized lexical retrieval and exact evidence recovery.
+At inspected base `d548f0c1f84e3450c252eedea8f3a02abf0f3520`, `Core/Projection/` already contains the Foundation IR consumer, shared identity manifest, normalized SQLite projection and two graph projectors. Their source and tests exist; this planning revision does not claim those tests passed or that the projectors are adopted by maintained runtime consumers.
 
-### Analyze / transform
+Still missing/unverified are actual execution, graph runtime adoption, vectors from the same IR, generated catalog, bounded analytic access, persisted artifact/execution lineage and the real harness workflow. The older “no runner” status must be checked against actual available tools rather than carried forward indefinitely. Local Python was available in this session; a direct Git request failed DNS, and no DIGIMON tests ran.
 
-DIGIMON is also an analytical suite. Its SNA/graph lineage matters: a common workflow is retrieve a graph/subgraph, run an analytic transformation such as Leiden or centrality, then reuse the derived result in subsequent retrieval/analysis.
+## Delivery Rules
 
-Graph analytics already exist substantially but need to be organized as a coherent first-class typed capability plane. Non-graph analytics should be added from concrete reusable needs rather than as an indiscriminate toolbox.
+Generate a coherent batch, compile/import, run focused checks and the growing integration path, inspect the first divergence, repair and rerun, then record/commit a coherent result. Do not accumulate dependent unexecuted batches.
 
-## Cross-representation identity
+Use bounded machine-readable traces with exact revisions, input/output artifact identities, parameters, counts, omission reasons, expected/actual failures and a small reproducer. Traces explain execution; producer fixtures, exact joins/ID checks, graph oracles, and negative controls test correctness. Do not create a telemetry service.
 
-Canonical identity is the glue for composition. IDs such as `entity_id`, `assertion_id`, `predicate_id`, `source_ref` and evidence identity should survive derived projections wherever possible.
+Start minimal derivation records at the first artifact, rather than reconstructing lineage later. Keep diagnostic logs and retained analytical lineage distinct. Preserve prior usable outputs when rebuilds fail.
 
-This should let a harness:
+Keep fresh focused checks, broad deterministic regression, provider-dependent canaries, and stakeholder observation separate. A fixed demo script, fake embedding, or test-file presence does not prove the authentic outcome.
 
-```text
-find an entity in the wiki/catalog
-→ use its canonical ID in SQL
-→ traverse the corresponding graph node
-→ query vector metadata
-→ recover exact source evidence
-```
+## What Remains Beyond The First Proof
 
-DIGIMON makes those moves possible; the harness decides whether and when to make them.
+The [ROADMAP](ROADMAP.md) retains RDF/semantic graphs, hierarchy/tree projections, specialized lexical/BM25 where native search is insufficient, broader graph/SNA and non-graph analytical methods, remaining reference-method coverage, incremental/resource correctness, derivation queries, Python/CLI/MCP convergence, legacy cleanup and later comparative evaluation.
 
-## Wiki/catalog boundary
+Raw-source chunking/custom ontology remains standalone compatibility work, not the canonical ecosystem input. Geospatial, an internal agent brain, extra UI shells, generic multi-agent infrastructure and production scaling are not first-proof requirements.
 
-The wiki is not primarily a new API family. It is an agent-readable progressive-disclosure artifact and environment map.
+## Exact Next Action
 
-It should describe:
+Run the three existing Foundation/relational/property-graph contract test files listed in Batch 0 of the living plan on a usable checkout. Record the exact revision/environment and the first failure or scoped pass. Only then extend the growing demo.
 
-- semantic organization of the knowledge;
-- available representations;
-- schemas/ontologies;
-- canonical IDs joining them;
-- specialized retrieval/analytic capabilities;
-- deeper evidence/source paths.
-
-Do not build `wiki.open`, `wiki.follow` or basic text-search wrappers when the external harness already performs those tasks well.
-
-## Provenance / derivation
-
-Keep three concepts distinct:
-
-1. evidence provenance;
-2. semantic provenance;
-3. artifact/derivation lineage.
-
-The target derivation chain is:
-
-```text
-source artifact
-→ governed semantic IR
-→ representation projection
-→ retrieval artifact / bounded working set
-→ analytic transformation + parameters
-→ derived artifact
-→ finding
-```
-
-The derivation graph is different from the domain/property graph. It exists for reproducibility, invalidation, auditability and source recovery.
-
-## Current implementation reality
-
-The current maintained implementation is strongest in graph/vector retrieval and evidence grounding. Recent work materially repaired:
-
-- strict composition wiring/execution;
-- loop/conditional control flow;
-- raw standalone chunking;
-- graph build truthfulness and source manifests;
-- VDB score/identity semantics;
-- PPR modes;
-- reference-method wiring and evidence accumulation;
-- structural/community materialization;
-- grounding/citation validation;
-- active graph/canonical VDB selection;
-- pragmatic VDB/community/matrix invalidation;
-- multilingual graph identity/semantic text handling.
-
-These fixes are necessary foundations but do not constitute the whole north star.
-
-## Largest current gaps
-
-- no fresh current-head deterministic runtime certification;
-- canonical onto-canon/Foundation IR → DIGIMON projection path needs to become the dominant tested seam;
-- cross-representation identity needs explicit projection invariants;
-- no canonical relational database projection yet;
-- no generated progressive-disclosure agent wiki/catalog yet;
-- graph analytics are not yet organized as a comprehensive typed analytic plane;
-- no first-class artifact/execution derivation graph across projections, retrievals and analytics;
-- sparse matrices still have a same-shaped cross-graph identity edge case;
-- Python/CLI/MCP have not fully converged on one maintained runtime;
-- custom ontology selection/load on the maintained build path still needs closure.
-
-## Active plan
-
-The authoritative sequence is in [ROADMAP.md](ROADMAP.md):
-
-1. get a real current-head core/canary execution signal;
-2. finish first concrete runtime reds and custom-ontology wiring;
-3. verify the current onto-canon/Foundation IR handoff;
-4. establish cross-representation canonical identity;
-5. implement the first canonical relational/tabular projection;
-6. generate the first progressive-disclosure wiki/catalog over the same fixture;
-7. inventory/promote existing graph analytics into typed analytic capabilities;
-8. add minimal derivation records across projection → retrieval → analysis;
-9. bind remaining graph-derived resources to exact graph identity;
-10. converge Python/CLI/MCP on one maintained core;
-11. broaden deterministic architecture tests;
-12. make benchmarking/research validation primary only after those seams are real.
-
-## What is deliberately not the plan
-
-Do not respond to this vision by building:
-
-- another internal general-purpose agent brain;
-- another orchestrator generation;
-- a mandatory AoT/GoT/ReAct executor;
-- wrapper tools around native harness file/search/wiki navigation merely for symmetry;
-- a generalized enterprise resource catalog before concrete projections require it;
-- geospatial support in the current text-derived scope;
-- every possible database/analytics engine at once;
-- benchmark-specific core architecture.
-
-## Current source-of-truth set
-
-- `docs/VISION.md`
-- `docs/CURRENT_STATE.md`
-- `docs/IMPLEMENTATION_MAP.md`
-- `docs/ARCHITECTURE.md`
-- `docs/GAP_ANALYSIS.md`
-- `docs/ROADMAP.md`
-- `docs/DOCUMENTATION_COVERAGE.md`
-
-`docs/adr/002-harness-first-capability-architecture.md` remains an accepted decision about **orchestration ownership**, not the complete DIGIMON north star.
+No human decision is required to begin that baseline. Runtime access, real authorized input, embedding/provider availability and observed throughput are still evidence questions. This planning update does not authorize new spending, public release of private data or deployment.
