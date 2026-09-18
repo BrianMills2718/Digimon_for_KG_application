@@ -1,7 +1,23 @@
+from .Finding import FINDING_FORMAT_VERSION, create_analytic_finding
+from .Lineage import LINEAGE_QUERY_VERSION, load_terminal_executions, trace_artifact_lineage
+from .Analytics import (
+    ANALYTICS_VERSION,
+    SUPPORTED_CENTRALITY,
+    aggregate_foundation_predicates,
+    analyze_foundation_subgraph,
+    centrality_from_subgraph,
+    leiden_runtime_status,
+)
 """Canonical projection inputs and projection helpers."""
 
 from .Execution import ArtifactRef, ExecutionLog
 from .Project import FoundationProject, build_foundation_project
+from .Catalog import (
+    CATALOG_FORMAT_VERSION,
+    CatalogProjection,
+    generate_foundation_catalog,
+    validate_foundation_catalog,
+)
 from .Identity import ProjectionIdentityManifest, build_identity_manifest
 from .PropertyGraph import (
     assertion_graph_to_foundation_payload,
@@ -32,6 +48,21 @@ from .FoundationIR import (
 )
 
 __all__ = [
+    "FINDING_FORMAT_VERSION",
+    "create_analytic_finding",
+    "LINEAGE_QUERY_VERSION",
+    "load_terminal_executions",
+    "trace_artifact_lineage",
+    "ANALYTICS_VERSION",
+    "SUPPORTED_CENTRALITY",
+    "aggregate_foundation_predicates",
+    "analyze_foundation_subgraph",
+    "centrality_from_subgraph",
+    "leiden_runtime_status",
+    "CATALOG_FORMAT_VERSION",
+    "CatalogProjection",
+    "generate_foundation_catalog",
+    "validate_foundation_catalog",
     "ArtifactRef",
     "ExecutionLog",
     "FoundationProject",

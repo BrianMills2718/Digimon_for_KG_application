@@ -1,14 +1,14 @@
 # DIGIMON Current State
 
-**Latest execution checkpoint:** [Foundation graph runtime, Batch 02](reports/PROJECTION_BATCH_02.md).  
+**Latest execution checkpoint:** [Catalog + analytics + lineage/finding](reports/PROJECTION_BATCH_03_05.md).  
 **Repository:** `BrianMills2718/Digimon_for_KG_application`.  
 **Full vision:** [VISION.md](VISION.md), not only the latest implementation batch.
 
 ## Executive summary
 
-DIGIMON is a text-derived **representation, retrieval, and analytics** runtime downstream of onto-canon6's governed semantic IR. The recent increment makes a concrete part of that vision executable: saved IR → SQLite/graphs → maintained graph retrieval → exact source evidence, with shared identity and local execution lineage.
+DIGIMON is a text-derived **representation, retrieval, and analytics** runtime downstream of onto-canon6's governed semantic IR. The recent increment makes a concrete part of that vision executable: saved IR → SQLite/graphs → catalog → maintained graph retrieval / SQL aggregation → centrality → exact evidence → queryable lineage → persisted finding, with shared identity throughout.
 
-**69 selected tests passed, zero skipped**, in the final recorded Batch 2 run. This is scoped execution on verified source bytes, **not** the full repository suite, clean dependency installation, live-provider path, MCP canaries, or autonomous-harness observation. Earlier blanket statements that no new projection tests had run are superseded by the two receipts below.
+**95 selected tests passed, zero skipped**, in the final recorded cumulative run. This is scoped execution on verified source bytes, **not** the full repository suite, clean dependency installation, live-provider path, MCP canaries, or autonomous-harness observation. Earlier blanket statements that no new projection tests had run are superseded by the two receipts below.
 
 The codebase remains transitional. The broader graph/vector/reference-method inventory below carries forward the previous source review; it was not all re-executed in this batch. The detailed historical source inventory is retained in Git history at the parent revision `2b2a35322187951008759cb33ec127c055076225`.
 
@@ -21,16 +21,16 @@ Keep **source present**, **focused checks passed**, **intended consumer observed
 | Capability | Current evidence | Remaining boundary |
 |---|---|---|
 | Foundation IR 1.3 + passage 1.0 consumer | Focused import/identity/field/source-scope tests pass; actual file hashes checked | Real producer/corpus export integration remains unobserved |
-| Shared identity | Canonical entity/assertion/passage keys survive tested SQL/graph moves; same labels do not merge IDs | Vector/catalog identity still needs integration |
+| Shared identity | Canonical entity/assertion/passage keys survive tested SQL/graph/catalog/analytic moves; same labels do not merge IDs | Vector identity still needs authentic integration |
 | SQLite projection | Normalized roles/qualifiers/provenance and original payload; exact entity-to-passage joins, safe overwrite, reopen tested | Broader relational/analytical workflows and other engines not certified |
 | Assertion graph | Tested supported-field reconstruction after GraphML save/reload, including n-ary roles | Not universal fidelity certification for every possible input/edit |
 | Binary MultiGraph | Parallel assertion IDs retained; n-ary assertions explicitly skipped | It is a lossy declared projection, not a universal semantic graph |
 | Saved project | Input/artifact hashes, safe generation publication, stale detection, fresh-process reopening tested | No production lifecycle service or scaling claim |
 | Maintained graph adoption | `GraphRuntime.py` binds actual `NetworkXStorage` and `OperatorContext`; existing khop/materialize functions execute | Global GraphRAGContext/MCP registration and all reference methods not certified on this input |
-| Bounded graph working set | One/two/three hops, filters before aggregation, isolates/self-loops, typed SUBGRAPH and attributed `nx_graph` tested | General analytics plane not yet integrated |
-| Graph evidence | Exact passage text/source scope; selected-edge evidence only; partial/missing evidence explicit | Grounded answer generation and actual agent findings not exercised here |
-| Execution/derivation foundations | Runtime view → subgraph → evidence each has exact artifact/producer lineage; injected failure/recovery tested | Full derivation query/invalidation graph and findings/model lineage still incomplete |
-| Local Python/CLI bridge | `FoundationProject.graph_neighborhood`, typed helper, and `--graph-hops` demo build/reuse executed | Legacy main CLI modernization and parity across Python/CLI/MCP remain |
+| Bounded graph working set | One/two/three hops, filters before aggregation, isolates/self-loops, typed SUBGRAPH and attributed `nx_graph` tested | Broader analytics beyond the first centrality slice remain |
+| Graph evidence | Exact passage text/source scope; selected-edge evidence only; partial/missing evidence explicit | Live provider-grounded synthesis and external agent use remain |
+| Execution/derivation foundations | Runtime view → subgraph → analytic result → finding can now be recursively traced through execution-qualified artifact refs; failure/reuse semantics tested | General invalidation queries and broader finding/model families remain |
+| Catalog / local bridge | Progressive-disclosure catalog, graph retrieval, SQL aggregation, centrality, finding and lineage all execute through `FoundationProject` / growing CLI build+reuse | Legacy main CLI modernization, MCP parity and external harness observation remain |
 
 The retrieval adapter uses **undirected binary assertion associations**, unit weight per entity pair, retained self-loops, explicit predicate selection, and all parallel assertion records. It does not reinterpret polarity as affirmative truth, assign confidence as tie strength, or infer causal/social influence. SQL still exposes claims intentionally absent from the binary network.
 
@@ -56,7 +56,7 @@ The target still includes relational, vector, property graph, semantic/RDF where
 
 The wiki is a **progressive-disclosure map of content and the operational environment**: entities/topics/sources, actual representations, schemas/ontology references, canonical join keys, capability availability and evidence locations. It is not merely pages about entities and not a reason to duplicate native file/search/wiki tools.
 
-Analytics remain first-class: retrieve a working set → transform/analyze → reuse typed outputs → recover evidence and form a finding. The new attributed SUBGRAPH is an input to that work, not completion of Leiden/centrality or the broader statistical suite.
+Analytics remain first-class: retrieve a working set → transform/analyze → reuse outputs → recover evidence and form a finding. Degree, betweenness and PageRank centrality plus SQL predicate aggregation now execute on the saved-project surface. Leiden and the broader statistical suite remain open.
 
 The external harness still owns strategy, planning, composition, adaptation and stopping. DIGIMON owns representations, specialized retrieval/analytics, contracts, and observed lineage. CLI/Python/MCP should converge over that capability core without imposing another planner.
 
@@ -64,7 +64,7 @@ Evidence provenance, semantic provenance and artifact/execution derivation are d
 
 ## Ordered frontier
 
-Follow [the living plan](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 3. Batches 0–2 have bounded execution evidence. **Next is real vectors from the same IR through the existing provider/index seam**, including query and persisted reload. Then progressive-disclosure catalog, first-class analytic access and source recovery, integrated harness finding, and broader hardening/representation coverage.
+Follow [the living plan](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 4. Batches 0–2 plus the independent catalog/analytics/lineage-finding tranche have bounded execution evidence. **Next is authentic semantic vectors from the same IR through the existing provider/index seam**, then real Leiden over the bounded working set and an external harness journey. Catalog, centrality, evidence recovery and a deterministic finding are no longer merely target-state.
 
 FAISS, llama-index and provider packages were absent from the scoped Batch 2 runner. Recheck authorized execution/configuration; do not promote a document list or hash embedding as semantic vector retrieval. Do not accumulate dependent unexecuted code.
 
@@ -72,6 +72,7 @@ FAISS, llama-index and provider packages were absent from the scoped Batch 2 run
 
 - [Batch 01](reports/PROJECTION_BATCH_01.md): baseline repairs and saved/reopened project, 45 selected tests.
 - [Batch 02](reports/PROJECTION_BATCH_02.md): maintained graph storage/operator adoption and exact evidence, 69 selected cumulative tests.
+- [Catalog + analytics + lineage/finding](reports/PROJECTION_BATCH_03_05.md): progressive-disclosure catalog, centrality/SQL analytics, derivation query and persisted finding, 95 selected cumulative tests.
 
 Both used a byte-verified scoped snapshot because direct Git/DNS access was unavailable. Normal repository pytest configuration/root fixtures were retained; no wholesale test bypass or fake provider execution. These do not certify all tests/core, dependency installation, other runtimes, CI, MCP, real production corpora, vectors, analytics or external-harness composition. Historical CI observations are not current green signals.
 

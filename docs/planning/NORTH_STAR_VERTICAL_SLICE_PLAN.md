@@ -1,6 +1,6 @@
 # DIGIMON North-Star Vertical Slice — Batch and Converge
 
-**Revision:** 3 — execution checkpoint after Batch 2; outcome and operating model unchanged.  
+**Revision:** 4 — execution checkpoint after catalog/analytics/lineage-finding; outcome and operating model unchanged.  
 **Planning path:** durable_solo, one writer, reversible local implementation.  
 **Authority:** [VISION](../VISION.md), [ARCHITECTURE](../ARCHITECTURE.md), [ROADMAP](../ROADMAP.md), and the contributor's batch-generation/trace-driven-repair direction.  
 **Consumer:** the contributor and the next execution session. This remains the sole active execution plan; reports below are evidence, not competing priorities.  
@@ -60,10 +60,10 @@ Ranges are the revision-2 allowances, not freshly claimed measured effort. Later
 | 0 | Execute and repair IR/SQLite/graph/evidence baseline | Focused checks observed; real-corpus and full-install evidence open | 300–600 |
 | 1 | One saved/reopened project, growing runner, minimal trace/lineage | Observed in Batch 01 receipt | 400–700 |
 | 2 | Saved graph → maintained storage/operators → bounded subgraph → exact evidence | Observed in Batch 02 receipt; not global MCP/all-method registration | 500–800 |
-| 3 | Real entity/assertion/passage embedding/index query and reload | Next; environment/provider route not verified | 400–700 |
-| 4 | Progressive-disclosure catalog linking real content, schemas, and resources | Conditional on actual representation metadata | 500–800 |
-| 5 | Selected subgraph → Leiden/centrality → entity IDs → evidence; SQL aggregation | Conditional on analytic adapter/engine availability; graph input now real | 500–800 |
-| 6 | Clean/reuse/failure checks plus actual external-harness finding/journey | Conditional on 3–5; extends same integration runner | 400–600 |
+| 3 | Real entity/assertion/passage embedding/index query and reload | **Blocked operationally** in scoped runner: no FAISS/llama-index/configured semantic embedding route | 400–700 |
+| 4 | Progressive-disclosure catalog linking real content, schemas, and resources | **Observed**; vectors truthfully shown unavailable | 500–800 |
+| 5 | Selected subgraph → Leiden/centrality → entity IDs → evidence; SQL aggregation | **Partially observed**: degree/betweenness/PageRank + SQL aggregation + evidence; Leiden blocked by missing real dependency path | 500–800 |
+| 6 | Clean/reuse/failure checks plus actual external-harness finding/journey | **Partially observed**: deterministic finding + recursive lineage + build/reuse; external-harness journey still open | 400–600 |
 
 Graph/vector lanes were independent after the shared project seam; analytics may follow graph before catalog polish. One writer remains the default. Introduce coordination only for actual concurrent writers/shared mutation, not imagined parallelism.
 
@@ -75,17 +75,17 @@ Graph/vector lanes were independent after the shared project seam; analytics may
 - Observed implementation base for Batch 2: `2b2a35322187951008759cb33ec127c055076225`; the receipt and committed file hashes bind the result. Successful graph adoption is through the narrow local Python/CLI operator path. Broader GraphRAGContext/MCP, reference methods, vectors, analytics, and autonomous harness observation remain unproved.
 - Direct Git DNS failed. Execution used the mounted byte-verified scoped snapshot plus pinned connector-transferred dependencies, normal pytest configuration/root fixtures, and no dependency stubs. This is real bounded execution, not a complete checkout/install.
 
-## Active Slice — Batch 3
+- [Catalog + analytics + lineage/finding receipt](../reports/PROJECTION_BATCH_03_05.md): **95 selected tests passed, zero skipped**, final cumulative run **9.02 seconds**. Catalog, SQL aggregation, degree/betweenness/PageRank, exact evidence, recursive lineage and persisted finding execute on the same saved project.
+- Vector execution was rechecked and remains authentically blocked in this runner because FAISS/llama-index and a configured semantic embedding route are absent. No TF-IDF/hash-vector substitute was accepted.
+- Leiden remains unclaimed because the repository's graspologic/igraph path is absent in this runner; no differently named clustering algorithm was substituted.
 
-**Visible result:** semantic vector retrieval over the **same** saved Foundation project, with persisted reload and canonical identities in the returned records.
+## Active Slice — Remaining first-demo blockers
 
-**Reuse:** current Foundation records/identity, Project/Execution artifacts, and the existing embedding/provider/index owner. Inspect the actual VDB interface before adding an adapter. Document lists and hash-embedding stand-ins cannot satisfy semantic retrieval.
+**Vector:** obtain an authorized runtime with the repository's real semantic embedding/index dependencies and configured route. Build entity/assertion/passage documents from the same Foundation project, run a genuine semantic query, persist/reload, and bind model/dimension/metric/source digests. Do not substitute hash embeddings, TF-IDF, or a document list.
 
-**Likely surfaces:** narrow `Core/Projection/Vector.py`, current VDB/provider seams, the existing growing runner, focused vector tests, and this plan's evidence checkpoint. Do not invent a new vector service, router, or planner.
+**Leiden:** obtain the actual graspologic/igraph dependency path and run community detection over the exact bounded working set with seed/parameters recorded. Do not substitute Louvain or another algorithm while calling it Leiden.
 
-**Checks:** entity/assertion/passage keys preserved; nonempty correctly rendered input text; collection/model/dimension/metric and both source digests recorded; actual index query; source-linked results; save/reload; incompatible or stale index rejected; empty/missing resources explicit. Controlled deterministic fixtures may test plumbing, but label them separately from a genuine embedding/index run.
-
-**Known prerequisite:** FAISS/llama-index/provider packages were absent from the scoped Batch 2 runner. Recheck available authorized execution routes and configured embedding access. No new provider spending is authorized by this plan. Missing access is an evidence/operational gate, not a reason to write the remaining dependent features source-only.
+**Harness observation:** once vectors and Leiden are real, run one external harness journey beginning at the generated catalog and showing at least one cross-representation move plus analytic-result → evidence recovery. The existing CLI remains regression/replay evidence, not autonomous strategy proof.
 
 ## Observability And Acceptance
 
@@ -111,4 +111,4 @@ Retain RDF/SPARQL, specialized lexical/BM25 beyond native search, hierarchy/tree
 
 Course-correct when supporting work repeats without a capability, repeated failures provide no new evidence, or the adapter becomes another platform. Return to the smallest authentic integration or demonstrated blocker; do not add a new roadmap/approval checkpoint. Change architecture only for a concrete counterexample. Every analysis should make the next one easier.
 
-**Exact next action:** inspect the existing embedding/index consumer and obtain a suitable authorized runtime/configuration for Batch 3. Reuse the saved project and the 69-test cumulative baseline; produce a real query/reload receipt before advancing dependent vector/catalog claims.
+**Exact next action:** obtain a suitable authorized runtime/configuration for the existing semantic embedding/index consumer and execute the real vector query/reload against the 95-test saved-project baseline. In parallel only where independently executable, obtain the real Leiden dependency path. Do not regress the catalog/centrality/lineage/finding path to source-only status.

@@ -1,6 +1,6 @@
 # DIGIMON Planning Summary
 
-**Current execution authority:** [North-star batch-and-converge plan](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 3. This page is navigation, not a second schedule.
+**Current execution authority:** [North-star batch-and-converge plan](planning/NORTH_STAR_VERTICAL_SLICE_PLAN.md), revision 4. This page is navigation, not a second schedule.
 
 The unchanged north star is **governed semantic IR → Represent → Retrieve → Analyze/Transform → grounded evidence/findings → action**, with shared identity and derivation lineage. onto-canon6 owns semantic authority; the external harness owns planning/composition/adaptation. DIGIMON supplies complementary representations and specialized retrieval/analytics, not another internal agent brain.
 
@@ -8,7 +8,7 @@ The wiki/catalog must describe semantic organization and actual representations,
 
 ## Observed progress
 
-[Batch 01](reports/PROJECTION_BATCH_01.md) executed the repaired Foundation input/SQLite/graph/save-reopen path (45 selected tests). [Batch 02](reports/PROJECTION_BATCH_02.md) connected saved graphs to actual NetworkXStorage/OperatorContext and existing khop/materialize operators, with exact passage and parallel-assertion preservation (**69 cumulative selected tests passed, zero skipped**).
+[Batch 01](reports/PROJECTION_BATCH_01.md) executed the repaired Foundation input/SQLite/graph/save-reopen path (45 selected tests). [Batch 02](reports/PROJECTION_BATCH_02.md) connected saved graphs to actual NetworkXStorage/OperatorContext and existing khop/materialize operators, with exact passage and parallel-assertion preservation (**95 cumulative selected tests passed, zero skipped**).
 
 Batch 2 added 636 and deleted 60 Python lines, 696 changed / 576 net. Generated data/docs/transferred unchanged code are excluded. The approximately 1,000 authored LOC/hour target remains experimental; no isolated authoring-hour rate was measured. Working consumer paths, not line count, advance the plan.
 
@@ -16,7 +16,9 @@ These are scoped synthetic execution receipts, not full repository/provider/MCP/
 
 ## Next
 
-**Batch 3:** Foundation entity/assertion/passage records → existing embedding/index machinery → genuine query + save/reload over the same project. First verify an authorized execution environment and configured route; requisite vector/provider packages are absent from the scoped runner. No new spend is authorized. A document list or hash-embedding surrogate cannot establish semantic retrieval.
+**Observed since Batch 2:** the same saved project now generates the progressive-disclosure catalog, runs exact SQL aggregation and degree/betweenness/PageRank over a bounded retrieved subgraph, recovers exact evidence, recursively queries derivation lineage, and persists a deterministic finding. The cumulative focused suite is 95 passing tests.
+
+**Next:** authentic semantic vectors through the existing embedding/index machinery remain blocked by the scoped runner's missing FAISS/llama-index/configured embedding route. Leiden is likewise not claimed without the repository's real graspologic/igraph path. After those two operational blockers, run one external-harness journey using the catalog and analytic-result→evidence path.
 
 Then catalog, first-class graph/SNA analytics and source recovery, and an actual integrated harness finding. The same growing runner is exercised after each coherent batch. Trace input/output identities and failures; use independent expected results to test correctness; do not stack dependent unexecuted code.
 

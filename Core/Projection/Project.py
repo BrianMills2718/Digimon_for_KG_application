@@ -79,6 +79,64 @@ class FoundationProject:
                 raise ValueError(f"missing/changed project artifact: {name}")
         return cls(root, manifest)
 
+    def _load_ir(self):
+        foundation = _inside(self.root, self.manifest["artifacts"]["foundation"]["path"])
+        passage_artifact = self.manifest["artifacts"].get("passages")
+        passages = _inside(self.root, passage_artifact["path"]) if passage_artifact is not None else None
+        return load_foundation_ir(foundation, passage_path=passages, validate_sidecar=False)
+
+    def generate_catalog(self, *, overwrite: bool = False) -> dict[str, Any]:
+        """Generate or revalidate the progressive-disclosure catalog for this generation."""
+        from .Catalog import generate_foundation_catalog, validate_foundation_catalog
+
+        output = self.root / "catalog" / self.manifest["generation_id"]
+        existing = output / "catalog.json"
+        operation = "catalog.generate" if overwrite or not existing.is_file() else "catalog.reuse"
+        with self.log.operation(
+            operation,
+            inputs=list(self.manifest["artifacts"].values()),
+            parameters={"generation_id": self.manifest["generation_id"], "overwrite": overwrite},
+        ) as run:
+            if existing.is_file() and not overwrite:
+                catalog = validate_foundation_catalog(output, expected_project_manifest=self.manifest)
+                manifest_path = existing
+                index_path = output / catalog["entry_point"]
+                counts = {
+                    "entities": len(catalog["entity_pages"]),
+                    "assertions": len(catalog["assertion_pages"]),
+                    "passages": len(catalog["passage_pages"]),
+                }
+                reused = True
+            else:
+                result = generate_foundation_catalog(
+                    self._load_ir(), self.manifest, output, overwrite=overwrite
+                )
+                manifest_path = result.manifest_path
+                index_path = result.index_path
+                counts = {
+                    "entities": result.entity_count,
+                    "assertions": result.assertion_count,
+                    "passages": result.passage_count,
+                }
+                reused = False
+            ref = ArtifactRef.from_file(
+                self.root, manifest_path, "catalog_manifest", self.manifest["input_digests"]
+            )
+            run.outputs = [asdict(ref)]
+            run.diagnostics = {
+                "entry_point": index_path.relative_to(self.root).as_posix(),
+                "counts": counts,
+                "reused": reused,
+            }
+            return {
+                "status": "ok",
+                "execution_id": run.execution_id,
+                "catalog_manifest": asdict(ref),
+                "entry_point": index_path.relative_to(self.root).as_posix(),
+                "counts": counts,
+                "reused": reused,
+            }
+
     def _connection(self) -> sqlite3.Connection:
         artifact = self.manifest["artifacts"]["relational"]
         path = _inside(self.root, artifact["path"])
@@ -100,6 +158,28 @@ class FoundationProject:
         slots = await retrieve_foundation_subgraph(self, entity_ids, k=k, predicates=predicates)
         metadata = slots["chunks"].metadata
         return {**metadata["report"], "artifact": metadata["artifact"]}
+
+    async def analyze_graph(self, entity_ids: list[str], *, k: int = 2, method: str = "betweenness", top_n: int = 5, predicates: list[str] | None = None) -> dict[str, Any]:
+        """Retrieve a bounded graph, compute centrality, and recover scoped evidence."""
+        from .Analytics import analyze_foundation_subgraph
+        return await analyze_foundation_subgraph(
+            self, entity_ids, k=k, method=method, top_n=top_n, predicates=predicates
+        )
+
+    def aggregate_predicates(self) -> dict[str, Any]:
+        """Exact relational assertion counts grouped by predicate."""
+        from .Analytics import aggregate_foundation_predicates
+        return aggregate_foundation_predicates(self)
+
+    def lineage_for_artifact(self, artifact: str | dict[str, Any]) -> dict[str, Any]:
+        """Trace a retained artifact backward through successful executions."""
+        from .Lineage import trace_artifact_lineage
+        return trace_artifact_lineage(self.log.path, artifact)
+
+    def create_finding(self, analytic_result: dict[str, Any], *, title: str | None = None) -> dict[str, Any]:
+        """Persist a bounded finding over one successful analytical result."""
+        from .Finding import create_analytic_finding
+        return create_analytic_finding(self, analytic_result, title=title)
 
     def evidence_for_entity(self, entity_id: str) -> dict[str, Any]:
         """Exact entity -> assertion -> producer reference -> original passage."""
